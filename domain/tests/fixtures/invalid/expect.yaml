@@ -1,0 +1,252 @@
+# Invalid scale-catal documents, one defect each (built by build_fixtures.py from a valid public example).
+# `scale check` and test_invalid_fixtures.py validate each one and require that it is rejected (exit 1)
+# with an error message containing `error`; `reason` says why the schema must reject it. A fixture pins its base
+# example's version: domain/examples/scale-catal/driving-force-examples/electro.json, or the example `base` names.
+fixtures:
+  - file: dangling-link.json
+    error: does not resolve
+    reason: A link must join two records of the document; a target that is no record is a broken graph.
+  - file: unknown-property.json
+    error: is not declared for this type
+    reason: Curators never invent attributes; what the schema cannot express goes in the record's unmodeled list.
+  - file: value-without-status.json
+    error: a value needs a status
+    reason: A value says whether it is present or why it is missing; a bare number hides missingness.
+  - file: enum-value-not-allowed.json
+    error: is not one of
+    reason: An enumerated property takes one of its listed values, so that queries can rely on them.
+  - file: edge-endpoint-not-allowed.json
+    error: USES_CATALYST source must be
+    reason: An edge type joins only the labels it declares; a source document does not use a catalyst.
+  - file: evidence-without-locator.json
+    error: evidence needs locator
+    reason: Evidence says where in the source a statement is (section, table, figure), so that a reader can check it.
+  - file: reported-in-without-evidence.json
+    error: is not backed by its evidence
+    reason: REPORTED_IN is derived from a record's evidence; a link that no evidence backs asserts a source without proof.
+  - file: research-data-without-stewardship.json
+    error: a research_data graph declares stewardship
+    reason: Research data says who contributed it, which project it belongs to and who may see it.
+  - file: temperature-in-kg.json
+    error: "unit 'kg' is mass (M), not a dimension of temperature"
+    reason: A value is in a unit of its property's kind (the quantity contract); a temperature in kilograms is no temperature, whatever its number.
+  - file: fraction-in-mol-per-litre.json
+    error: "unit 'mol/L' is amount_concentration (L-3 N), not a dimension of composition_fraction"
+    reason: A fraction is a dimensionless share of the whole; a concentration in mol/L is HAS_COMPONENT.concentration, so the two are never compared as one quantity.
+  - file: normalized-by-without-denominator.json
+    error: "normalized_by names a denominator, but temperature is not divided by one"
+    reason: A normalization reference names what a normalized quantity is divided by; a temperature is divided by nothing, so the reference would assert a meaning it cannot have.
+  - file: normalized-by-wrong-dimension.json
+    error: "is mass_per_area (M L-2) (mg/cm2), not a denominator of current_density (area (L2), mass (M))"
+    reason: A current density is divided by an electrode area or a catalyst mass; a reference to a mass per area names no such denominator.
+  - file: normalized-by-unresolved-path.json
+    error: "does not resolve to a property"
+    reason: A normalization reference names a value the graph holds; a path to a property the record does not have cites a denominator that is not there.
+  - file: product-target-is-a-source.json
+    error: "its target ex:df-electro/source/paper is a Source, but the species a faradaic_efficiency is counted for is a ChemicalSpecies"
+    reason: In catalysis the species an efficiency, a yield or a selectivity is counted for is a chemical species (context_targets); a source document can never qualify as a product.
+  - file: result-without-variable.json
+    error: "a result entry names its variable"
+    reason: A result says what it is a value of (a Variable, whose quantity_kind gives its contract), so that a yield is never read as a selectivity.
+  - file: result-without-id.json
+    error: "a result entry has an id"
+    reason: A reference names a result by its id, so that appending to the list, reordering or filtering it never redirects the reference to another assay.
+  - file: result-ids-repeat.json
+    error: "an id names one value"
+    reason: An id that two results share names neither; a reference to it could reach either assay.
+  - file: result-without-evidence-ids.json
+    error: "names the evidence items that state it (evidence_ids)"
+    reason: An answer cites the evidence of the result that satisfied it, never the passages of the other results of its record.
+  - file: product-result-without-identity.json
+    error: "a faradaic_efficiency is counted for a species: name it (target) or say the source does not identify it (unresolved_target)"
+    reason: A product's identity is stated, either as the species or as unidentified; a result whose product is silently missing could be read as any product.
+  - file: target-and-unresolved-target.json
+    error: "target and unresolved_target do not go together"
+    reason: A result refers to one species or to what the source names without identifying it, never both.
+  - file: result-ref-by-position.json
+    error: "names a result by its position; name it by its id"
+    reason: A position in result_values names another result once the list is reordered, appended to or filtered; an id does not.
+  - file: interpretation-not-in-vocabulary.json
+    error: "interpretations[0]: 'catalytic_synergy' is not one of"
+    reason: What a test is read as showing comes from a closed list, so that the checklist knows which evidence the reading needs; a reading the vocabulary does not name asks for nothing and would pass unchecked.
+  - file: transport-basis-not-in-vocabulary.json
+    error: "evaluation_basis: 'estimated' is not one of"
+    reason: A transport check is asserted, numerical or experimental (or not reported); an unlisted basis would hide whether the verdict rests on a calculation, a test or neither.
+  - file: has-site-from-a-test.json
+    error: "HAS_SITE source must be ['Catalyst', 'CatalystSample', 'CatalystState'], got CatalyticTest"
+    reason: A site population belongs to a catalyst, a sample or the catalyst state it was counted in; a test is measured in a state (IN_STATE) and has no sites of its own, so a population on a test could not say which state it holds for.
+  - file: site-fraction-in-umol-per-gram.json
+    error: "population_fraction: unit 'µmol/g' is amount_per_mass (M-1 N), not a dimension of site_fraction"
+    reason: A population fraction is a dimensionless share of a stated whole; a number of sites per gram is a count (site_inventory or exposed_metal_count), and the two are never one quantity.
+  - file: site-inventory-as-surface-area.json
+    error: "site_inventory: unit 'm2/g' is M-1 L2, not a dimension of site_count"
+    reason: A metal surface area is not a count of sites; turning one into the other needs a stated number of atoms per area, which is a derived value with what produced it, never an unstated assumption.
+  - file: computed-site-count-without-producer.json
+    error: "site_inventory: a computed value names the experiment that produced it (produced_by)"
+    reason: A computed site count keeps the computation, and through it the model, that produced it, so that a count from a model is never read as one counted on a specimen.
+  - file: tof-divided-by-a-share.json
+    error: "is a site_fraction, not a denominator of turnover_frequency (a site_count or a site_density)"
+    reason: A turnover frequency is divided by a number of sites (a count or a density); a share of sites is dimensionless like a count but is not one, so a rate divided by it is not per site.
+  - file: operando-specimen-not-in-vocabulary.json
+    error: "specimen: 'same_reactor' is not one of"
+    reason: Which specimen an operando observation saw comes from a closed list, so that the checklist can tell an observation paired with the performance of the same specimen from one that only overlapped a run.
+  - file: adsorption-energy-of-a-species.json
+    error: "its target ex:df-electro/species/nitrate is a ChemicalSpecies, but the process a reaction_energy is of is a Reaction or ElementaryStep"
+    reason: An adsorption energy is the energy change of a reaction whose reactants and products name its reference species (the adsorbate relative to H2O and H2, or to O2); the adsorbate alone does not say what the energy is relative to, so two such values could not be told apart.
+  - file: activation-energy-in-volts.json
+    error: "unit 'V' is electric_potential (M L2 T-3 I-1), not a dimension of activation_energy"
+    reason: An elementary step's activation energy is an energy (eV, kJ/mol) or, as a mechanism file may give it, an energy divided by the gas constant (K); a number in volts is a potential, whatever it measures.
+  - file: charge-treatment-not-in-vocabulary.json
+    error: "charge_treatment: 'grand_canonical' is not one of"
+    reason: Whether a calculation holds its charge or its potential constant comes from a closed list (constant_charge, constant_potential), so that a comparison can keep the two apart.
+  - file: turnover-number-per-second.json
+    error: "unit 's-1' is frequency (T-1), not a dimension of turnover_number"
+    reason: A turnover number counts events per site or per molecule of catalyst over a run, dimensionless; per second it is a turnover frequency, another kind.
+  - file: enzyme-activity-in-kilojoules.json
+    error: "unit 'kJ' is energy (M L2 T-2), not a dimension of enzyme_activity"
+    reason: An enzyme activity is an amount converted per time (U, a micromole per minute, or kat), per mass (U/mg) or per volume (U/mL); an energy is none of these.
+  - file: catalysis-mode-not-in-vocabulary.json
+    error: "catalysis_mode: 'slurry' is not one of"
+    reason: How a source describes its catalysis comes from a closed list (heterogeneous, homogeneous, biocatalytic, other, not_reported); a slurry reactor is how the test is run, not what kind of catalysis it is.
+  - file: check-names-unknown-record.json
+    base: domain/examples/scale-catal/agentic-examples/self-driving-campaign.json
+    error: "is not a node or link of this graph"
+    reason: A person's check names the records it covered; one the graph does not hold would claim a check of nothing.
+  - file: check-counts-more-wrong-than-checked.json
+    base: domain/examples/scale-catal/agentic-examples/self-driving-campaign.json
+    error: "exceeds fields_checked"
+    reason: The fields found wrong are among the fields checked; more wrong than checked makes the extraction's precision
+      meaningless.
+  - file: acknowledgement-on-an-unchecked-record.json
+    base: domain/examples/scale-catal/agentic-examples/self-driving-campaign.json
+    error: "is not among the records this check covers"
+    reason: A person acknowledges a warning on a record they checked; acknowledging one on a record they did not check
+      would close a warning nobody read.
+  - file: autonomy-level-not-in-vocabulary.json
+    base: domain/examples/scale-catal/agentic-examples/self-driving-campaign.json
+    error: "is not one of"
+    reason: A level of autonomy is one of TRACE-AI's A0-A5 (or not_reported), so that campaigns can be compared by it.
+  - file: split-strategy-not-in-vocabulary.json
+    base: domain/examples/scale-catal/agentic-examples/self-driving-campaign.json
+    error: "is not one of"
+    reason: How a validation held its data out is one of the listed strategies, so that a random split can be told from a
+      grouped one.
+  - file: waveform-not-in-vocabulary.json
+    base: domain/examples/scale-catal/transient-examples/transient-kinetics.json
+    error: "is not one of"
+    reason: A waveform is one of the listed shapes, so that a square-wave modulation is found as one, whatever a source
+      calls it.
+  - file: program-detail-not-in-vocabulary.json
+    base: domain/examples/scale-catal/transient-examples/transient-kinetics.json
+    error: "is not one of"
+    reason: How much of a program the source gives is exact, parametric or descriptive, so that a reader knows whether it
+      can be rebuilt.
+  - file: residence-time-in-kelvin.json
+    base: domain/examples/scale-catal/transient-examples/transient-kinetics.json
+    error: "not a dimension of surface_residence_time"
+    reason: A surface residence time is a time; a value in kelvin is no residence time, whatever its number.
+  - file: reactor-model-not-in-vocabulary.json
+    base: domain/examples/scale-catal/transient-examples/transient-kinetics.json
+    error: "is not one of"
+    reason: A fit's reactor treatment is one of the listed ones, so that constants fitted under two treatments are told
+      apart in a comparison.
+  - file: interval-method-not-in-vocabulary.json
+    base: domain/examples/scale-catal/transient-examples/transient-kinetics.json
+    error: "is not one of"
+    reason: How an interval was obtained is one of the listed methods, so that an asymptotic interval is never read as a
+      profile or a posterior.
+  - file: phase-reference-not-in-vocabulary.json
+    base: domain/examples/scale-catal/transient-examples/transient-kinetics.json
+    error: "is not one of"
+    reason: What a phase delay is measured against is the stimulus or another species' response, so that delays against
+      two references are never compared.
+  - file: partition-method-not-in-vocabulary.json
+    base: domain/examples/scale-catal/thermal-examples/thermal-contribution.json
+    error: "is not one of"
+    reason: How an analysis separates heating from the other effects of a driving force is one of the listed methods, so
+      that a reading resting on a control at matched temperature is told apart from one resting on a dependence.
+  - file: lump-subset-of-cycle.json
+    error: "SUBSET_OF forms a cycle"
+    reason: Containment is a strict order; two lumps each inside the other have no outer one, and no selectivity of either could be left out of a sum as the one that contains the other.
+  - file: lump-subset-of-self.json
+    error: "a SUBSET_OF link joins a lump to itself"
+    reason: A lump is not a proper part of itself; the link would hide the lump from every sum that leaves out a lump that contains another.
+  - file: lump-subset-of-species.json
+    error: "SUBSET_OF target must be ['ProductLump']"
+    reason: Containment joins two lumps; a chemical species is an identity, not a class of products, so a lump is never declared inside one.
+  - file: lump-carbon-window-inverted.json
+    error: "carbon_min 11 is above carbon_max 5"
+    reason: A carbon window runs from its least to its greatest carbon number; an inverted one holds no product and would never overlap anything.
+  - file: lump-open-ended-with-maximum.json
+    error: "an open-ended product lump has no carbon_max"
+    reason: C5+ has no upper carbon number; a lump that is open ended and also gives one states two windows at once.
+  - file: integration-mode-not-allowed.json
+    error: "integration_mode: 'sandwich' is not one of"
+    reason: How the components of a multifunctional catalyst are put together comes from a closed list, so that catalysts can be grouped by it; an unlisted mode ("sandwich") is either one of the listed ones under another name or "other" said with its meaning.
+  - file: function-is-a-species.json
+    error: "is a ChemicalSpecies, expected ['Reaction']"
+    reason: A component's function is the reaction or step it performs, a Reaction record; a species (CO) is what the step converts, not what the component does.
+  - file: function-is-no-record.json
+    error: "reference 'ex:bifunctional/reaction/missing' does not resolve"
+    reason: A function names a reaction of the document; an id that is no record says nothing a reader can follow.
+  - file: function-on-has-part.json
+    error: "property 'function' is not declared for this type"
+    reason: The function is the scope of a component in its catalyst, so only HAS_COMPONENT states it; on the HAS_PART link between a reaction and its step it would have no meaning.
+  - file: site-proximity-without-status.json
+    error: "site_proximity: a value needs a status"
+    reason: A proximity says whether it is present or why it is missing; a bare distance or level hides missingness.
+  - file: failure-kind-not-in-vocabulary.json
+    base: domain/examples/scale-catal/method-examples/computational-methods.json
+    error: "is not one of"
+    reason: What stopped a failed calculation is one of the listed kinds, so that failures of one kind are found together;
+      the source's words stay in status_reason.
+  - file: method-kind-not-in-vocabulary.json
+    base: domain/examples/scale-catal/method-examples/computational-methods.json
+    error: "is not one of"
+    reason: A method is one of the listed kinds, so that the functionals, the dispersion corrections and the basis sets
+      are each found as one.
+  - file: uses-method-of-software.json
+    base: domain/examples/scale-catal/method-examples/computational-methods.json
+    error: "USES_METHOD target must be"
+    reason: USES_METHOD names a method record; the code that ran the calculation is a Software it USES_SOFTWARE, whose
+      version is not a method's.
+  - file: synthesis-function-not-in-vocabulary.json
+    base: domain/examples/scale-catal/synthesis-examples/synthesis-strategies.json
+    error: "is not one of"
+    reason: The function an input serves in a synthesis is one of the listed functions, so that every capping agent, every
+      structure-directing agent and every reducing agent is found as one, whatever the chemical.
+  - file: preparation-method-not-in-vocabulary.json
+    base: domain/examples/scale-catal/synthesis-examples/synthesis-strategies.json
+    error: "is not one of"
+    reason: A preparation's method families are listed values, so that the syntheses of one family are found together;
+      the source's own name for the method stays in method.
+  - file: particle-shape-not-in-vocabulary.json
+    base: domain/examples/scale-catal/synthesis-examples/synthesis-strategies.json
+    error: "is not one of"
+    reason: A particle shape is one of the listed shapes, so that the cubes of one paper and of another are found as one.
+  - file: synthesis-function-on-a-component.json
+    base: domain/examples/scale-catal/synthesis-examples/synthesis-strategies.json
+    error: "is not declared for this type"
+    reason: A function in a synthesis belongs to an input of a preparation or of a step (HAS_INPUT); a catalyst's
+      component has a role in the catalyst (HAS_COMPONENT.role), which says what it is there, not what it did while the
+      catalyst was made.
+  - file: ligand-removal-action-as-function.json
+    base: domain/examples/scale-catal/synthesis-examples/staged-colloid.json
+    error: "is not one of"
+    reason: What a step does (remove_ligands) is its action; what an input does in it is its function
+      (ligand_removal_agent), so that steps and the chemicals used in them are found apart.
+  - file: stock-concentration-as-volume.json
+    base: domain/examples/scale-catal/synthesis-examples/synthesis-conditions.json
+    error: "not a dimension of concentration"
+    reason: The concentration of the solution an input was added as is an amount or a mass per volume; the volume added
+      is the input's amount, so the two are never read as one another.
+  - file: gas-flow-mode-in-words.json
+    base: domain/examples/scale-catal/synthesis-examples/synthesis-conditions.json
+    error: "is not one of"
+    reason: Whether a step's gas flowed is one of the listed modes, so that calcinations in static and in flowing air are
+      found apart; the source's words stay in atmosphere.
+  - file: variants-in-a-cycle.json
+    base: domain/examples/scale-catal/synthesis-examples/synthesis-conditions.json
+    error: "VARIANT_OF forms a cycle"
+    reason: A variant is a procedure carried out as an earlier one with something changed, so the earlier one is not a
+      variant of it in turn; variants never form a cycle.

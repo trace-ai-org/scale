@@ -1,0 +1,46 @@
+"""Invalid scale-catal documents, one defect each: every one is rejected, for the reason expect.yaml
+states, and nothing else is wrong with it (so the fixture tests the rule it names). Each is checked under the version
+it pins, as `scale graph validate` (and so `scale check`) checks it; each pins its base example's version (the
+electro example's, or the example expect.yaml names as `base`)."""
+
+import pytest
+
+from conftest import FIXTURES, pinned_schema, spec_of
+from scale import pgraph
+from scale.devcheck import invalid_fixtures
+from scale.util import load_doc, load_yaml
+
+INDEX = load_yaml(FIXTURES / "invalid/expect.yaml")["fixtures"]
+
+
+@pytest.mark.parametrize("entry", INDEX, ids=[e["file"] for e in INDEX])
+def test_each_invalid_fixture_is_rejected_for_its_stated_reason(entry):
+    doc = load_doc(FIXTURES / "invalid" / entry["file"])
+    rep = pgraph.validate(doc, spec_of(doc))
+    assert not rep.ok
+    assert [e["message"] for e in rep.errors if entry["error"] in e["message"]], [e["message"] for e in rep.errors]
+    assert len(rep.errors) == 1, [e["message"] for e in rep.errors]          # one defect each
+    assert entry["reason"]
+
+
+def test_the_index_names_every_fixture_and_scale_check_uses_it():
+    from conftest import REPO
+    assert len(invalid_fixtures(REPO)) == len(INDEX) >= 8
+    assert sorted(p.name for p in (FIXTURES / "invalid").glob("*.json")) == sorted(e["file"] for e in INDEX)
+    electro = load_doc(REPO / "domain/examples/scale-catal/driving-force-examples/electro.json")
+    bi = load_doc(REPO / "domain/examples/scale-catal/bifunctional-examples/tandem-granule-mixture.json")
+    lump = load_doc(REPO / "domain/examples/scale-catal/product-measurement-examples/product-lumps-cheng-like.json")
+    for e in INDEX:                                                          # each pins its base example's version
+        doc = load_doc(FIXTURES / "invalid" / e["file"])
+        # an entry may name its base; otherwise build_fixtures built the multifunctional ones (#40) on the bifunctional
+        # example, the lump ones on the lump example, and every other one on the base example
+        if "base" in e:
+            on = load_doc(REPO / e["base"])
+        elif e["file"].startswith("lump-"):
+            on = lump
+        elif any(n["id"].startswith("ex:bifunctional/") for n in doc["nodes"]):
+            on = bi
+        else:
+            on = electro
+        assert doc["graph"]["schema_version"] == on["graph"]["schema_version"], (e["file"], doc["graph"]["schema_version"])
+        assert pinned_schema(on)                                              # the head or a frozen version

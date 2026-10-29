@@ -1,0 +1,18 @@
+distribution: scale-catal
+framework: SCALE — Shared Concepts, Attributes, and Links with Evidence
+release: v0.3.0
+schema_version: 0.7.8
+status: development
+core: core/CORE.yaml
+domain_profiles:
+- domain/DOMAIN.yaml
+skills:
+- skills/index-sources
+- skills/fetch-corpus
+- skills/curate-corpus
+- skills/query-graph
+- skills/map-coverage
+- skills/scan-conflicts
+- skills/export-graph
+- skills/evolve-schema
+- skills/triage-feedback

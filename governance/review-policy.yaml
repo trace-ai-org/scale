@@ -1,0 +1,71 @@
+# SCALE review policy (machine-readable), explained in governance/GOVERNANCE.md. GitHub pull-request reviews are the
+# approvals and GitHub's ruleset on main enforces them. Changing this file is a governance change: it needs the same
+# approval as every other pull request.
+policy_version: 4
+
+principles:
+  - Anyone, a person or an agent, may suggest a change (an issue, a comment) or open a pull request. Every change,
+    whatever it touches, goes through one pull request.
+  - Agents do the work. @scale-agents take up every suggestion on their own, with no tag or label; a discovery
+    strategist coordinates, a data scientist, a protocol compiler and an evidence verifier prepare and assess the
+    change, and a systems engineer opens a pull request holding the change set under the team's own
+    GitHub identity (the Claude GitHub App), never under a person's account.
+  - Every reviewer is asked to review every pull request (CODEOWNERS); the first approval is enough, and the
+    reviewers workflow withdraws the other requests. A request for changes blocks until its reviewer approves.
+  - One person approves and merges. Any reviewer listed below may approve, including the person who suggested the
+    change; GitHub does not let the author of a pull request approve it, so whoever opened it needs another
+    reviewer. Agents never approve or merge.
+  - A schema change raises the schema's one version (kernel and catalysis together) in the same pull request;
+    a breaking change raises the second number (0.1.0 -> 0.2.0), an additive change the third (0.1.0 -> 0.1.1).
+    CI checks it and posts a summary for the reviewer.
+  - New concepts enter as provisional.
+
+# The reviewers: the owner and the domain experts invited to review, with no fixed number (each added here and on
+# every line of CODEOWNERS, with Write access). Every reviewer is asked; any one of them approves a change. Only real
+# people who agreed are listed; an entry marked `placeholder: true` is nobody, and `scale check` warns about it.
+reviewers:
+  team: '@hlxin'
+  members:
+    - name: Hongliang Xin
+      github: hlxin
+      since: '2026-09-26'
+    - name: Tianyou Mou
+      github: mutianyou2013
+      since: '2026-10-11'
+    - name: Raul Diaz
+      github: diazr04
+      since: '2026-10-11'
+
+# What a pull request needs before it merges. The latest review of each reviewer counts (GitHub's review state); a
+# reviewer whose latest review requests changes blocks until they approve or their review is dismissed.
+approvals:
+  required: 1
+
+# The kinds of change, stated in CI's summary so that the reviewer knows what they review; every kind needs the same
+# one approval.
+tiers:
+  0:
+    name: no change in meaning
+    examples: documentation, tooling, typos
+  1:
+    name: records
+    examples: new curation, corrections of curated values
+  2:
+    name: additive or loosening
+    examples: new class, property, enum value or quantity kind; refined definitions; deprecations; mappings
+    needs: the third version number raised (scale schema bump), a test that uses what is added
+  3:
+    name: breaking or redefining
+    examples: removals, narrowed ranges, newly required properties, changed normalization basis, renames
+    needs: the second version number raised (scale schema bump) and a migration rule (STEP_RULES in
+      tools/pgraph_migrate.py)
+
+new_concepts_maturity: provisional
+
+# Records extracted by an agent: how many a person checks against the sources (scale review sample). Each check is
+# recorded in the graph it checked (graph.checks, docs/trace-ai.md), with what it found.
+records:
+  agent_extracted_records:
+    full_check_first_batches: 3
+    sample_fraction: 0.1
+    always_check: flagged records (warnings, extraction-error gaps, low-confidence notes)

@@ -1,0 +1,25 @@
+# Institutions, people, curation software and projects that contribute to SCALE graphs.
+# Edited by people and reviewed like any specification. Add a partner institution, person or project
+# here, then reference its id from a graph's stewardship file. Leave identifiers out rather than guess them.
+institutions:
+  - id: scale:org/scale-researchers
+    name: SCALE researchers
+    institution_kind: other
+    note: the researchers who curate and maintain SCALE's public graphs; no institution or person is named
+persons: []
+software: []
+projects:
+  - id: scale:project/methanol-synthesis-pre1966
+    name: Methanol synthesis before 1966
+    note: The methanol-synthesis benchmark graph, curated from the historical literature on methanol synthesis from
+      CO/CO2 + H2 (graphs/methanol-synthesis-pre1966); its public-domain part, with its PDFs, is
+      examples/methanol-synthesis-public.
+    participants:
+      - member: scale:org/scale-researchers
+        role: data_provider
+  - id: scale:project/catal-commons
+    name: Catal commons
+    note: SCALE's evolving catalysis graph (graphs/catal-commons), grown one source at a time through pull requests.
+    participants:
+      - member: scale:org/scale-researchers
+        role: data_provider
