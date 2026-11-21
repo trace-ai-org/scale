@@ -29,6 +29,9 @@ update it or rebuild the index. Everything else is just a request, no mode:
   (`find_si.py`: ACS/PLOS `.s001` components, DataCite deposits, Crossref relations, PubMed Central files, and for
   topics up to 50,000 sources the Elsevier/MDPI CDNs and open publisher pages; index SI column "Available (n
   deposits)"). fetch-corpus fetches the listed files first; SI on walled sites comes when the source is fetched.
+- **Only English**, if you want it: the topic gate's `english_only` keeps records in other languages out of every later
+  search; `remove_sources.py --non-english` takes those already indexed out (each logged in full, its files kept under
+  `.scripts/removed/`). Sources leave the index only when you ask.
 - **A corpus** is the selection a question needs, frozen by a rule (relevance, Topic A/B/C, document types, years,
   access types, or a list of IDs): `freeze_corpus.py` writes `sources/<topic>/corpora/<name>/sources.json`, which
   fetch-corpus fetches and curate-corpus curates.
@@ -93,7 +96,7 @@ only "set (…last 4)" or "missing").
 | `springer` | free — dev.springernature.com | Springer Nature metadata incl. Nature, BMC, SpringerOpen |
 | `ieee` | free (limited) — developer.ieee.org | IEEE Xplore |
 | `ads` | free — ui.adsabs.harvard.edu → Settings → API Token | NASA ADS |
-| `scopus` (+ optional `scopus_insttoken`) | dev.elsevier.com; works with the library's Scopus subscription (campus network or VPN; the institutional token lets it work off campus) | Scopus |
+| `scopus` (+ optional `scopus_insttoken`) | dev.elsevier.com; works with the library's Scopus subscription (campus network or VPN; the institutional token lets it work off campus) | Scopus; Elsevier's open-access full text for fetch-corpus's download_open.py (ScienceDirect blocks scripts) |
 | `wos` | developer.clarivate.com (Web of Science Starter API; institutional) | Web of Science |
 | `zenodo`, `ncbi`, `cinii` | optional tokens for higher rate limits | Zenodo, PubMed Central, CiNii |
 | `llm_api_key` | your institution's OpenAI-compatible LLM service | relevance screening through that API instead of Claude |

@@ -28,6 +28,14 @@ pip install git+https://github.com/hlxin/scale
 Then `scale call status` to start, or `claude mcp add scale -- scale mcp` to give an AI agent the tools
 ([docs/integrate.md](docs/integrate.md), [AGENTS.md](AGENTS.md)).
 
+**Try it on your paper:** `/first-paper <DOI>` in Claude Code in a clone gives you your paper as a knowledge graph, its
+answers to three questions (what was tested under which conditions, has this been done before, which runs failed) and
+a review sheet of every number beside its quote; you decide whether to contribute it ([CONTRIBUTE.md](CONTRIBUTE.md),
+with a prompt for other coding agents).
+
+**Use it from your agent:** [`agents/`](agents/README.md) has a drop-in instruction file that tells an agent *when* to
+query SCALE (catalyst search under stated conditions, "has this been done?", negative results), and the MCP setup.
+
 **Or in the browser: [the graph explorer](https://hlxin.github.io/scale/).** Pick one of the curated graphs (or
 open a graph file) and see it whole, filter it by label or relationship type, open any node with its verbatim
 evidence, search the evidence, and explore its data (counts, degrees, numeric properties plotted). SCALE's own code
@@ -78,7 +86,7 @@ The kernel and the catalysis domain share **one version number**, set in `domain
 they agree. Every schema change raises it: the second number for a breaking change, the third for an additive
 one. The old version is frozen in `graph/frozen/`, so a document stays readable under the version it names.
 
-The schema is at **0.7.8**; 0.1.0 (2026-10-08) was the first version of this repository's numbering. The schema was
+The schema is at **0.8.2**; 0.1.0 (2026-10-08) was the first version of this repository's numbering. The schema was
 named `scale-graph` until 0.1.0 and is `scale-catal` from 0.2.0 on (a breaking change: documents pin the name):
 
 | version | spec digest (sha256 of the spec document) |
@@ -100,7 +108,11 @@ named `scale-graph` until 0.1.0 and is `scale-catal` from 0.2.0 on (a breaking c
 | scale-catal 0.7.5 (frozen) | `704b56a2c8baa40d21b4521fc1cbc4e9aca5530e85d04db2be0995351dcc4d63` |
 | scale-catal 0.7.6 (frozen) | `08d1813af14e741874046a47ebeef1309fbc5c5e3f1826ddfaf0c4471e6620fb` |
 | scale-catal 0.7.7 (frozen) | `ca78352410ccc5fadc4ebec58c62f074c2e8b46164a0139ed723768ff7f0c286` |
-| scale-catal 0.7.8 | `135f9a2b5a5d238b91d733a119516ba67b72863cf117d99b854a22cff4507c1e` |
+| scale-catal 0.7.8 (frozen) | `135f9a2b5a5d238b91d733a119516ba67b72863cf117d99b854a22cff4507c1e` |
+| scale-catal 0.7.9 (frozen) | `80e8f6aa02446a8af7f172422041851b684cfa951d69debc1973c94aa8b013e8` |
+| scale-catal 0.8.0 (frozen) | `7cc40d129e77e771254a5b48576b1f0c4f239bc3d7ccbc63adc200bb4eff749b` |
+| scale-catal 0.8.1 (frozen) | `45243ccc5c376783bcfafdfc14413b31a1993d1704d61857b83d69d45f5c47dd` |
+| scale-catal 0.8.2 | `bda8a94c9a16841beddf4f52a94c40bf4903d4f63593258089c3f3a3c4d6553b` |
 
 A version number only means something within this repository, so identify a schema by its digest
 (`scale graph spec` prints it).

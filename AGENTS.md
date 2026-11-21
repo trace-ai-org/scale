@@ -31,7 +31,9 @@ scale-catal@0.3.0 …` a pinned one. In a checkout of this repository run `uv ru
   test (a test that lists none is never complete) and record what the source reads it as showing
   (`interpretations`), never your own reading. Check with
   `validate` (or `scale graph validate`) and fix the errors it reports; the graph follows
-  `follows_domains: ["catalysis"]`.
+  `follows_domains: ["catalysis"]`. Then run `scale review values <graph> --out review-values.md` (`scale source
+  check` also reports its counts and the first flagged values), fix or explain every flagged value, and give the
+  sheet to the person who reviews the curation ([CONTRIBUTE.md](CONTRIBUTE.md)).
 - **Rights.** Record each source's rights in the folder's `rights.yaml` and keep quoted text within the
   copyright cap (`scale evidence report`; docs/curation.md); write claims in your own words. Commit only
   public documents (`access: public`); project data not cleared for publication stays outside the repository.
@@ -107,6 +109,11 @@ scale-catal@0.3.0 …` a pinned one. In a checkout of this repository run `uv ru
   `scale check`). Never add third-party text beyond short, capped quotes; material under other terms needs a
   `REUSE.toml` entry, its text in `LICENSES/` and a `NOTICE` line, which humans decide. Never commit project
   data: committed documents state `access: public`.
+- **The framework and the work done with it stay apart.** This repository is the framework, an infrastructure that
+  evolves: the schema, the tools, the skills and the public examples. Work based on SCALE (a project's corpus, a
+  curation run, an evaluation, its results) lives outside it. A changelog entry, a change record, a docstring, a
+  commit message and a pull request say what changed and the general reason, never a run's sizes, counts, models,
+  hardware or incidents, a dataset's name, or an unpublished result.
 - Agents never count as reviewers ([governance/review-policy.yaml](governance/review-policy.yaml)), never
   approve or merge, and never push to `main`, tag or publish.
 

@@ -68,7 +68,7 @@ def test_every_quote_is_in_full_and_found_in_its_page_texts(doc, manifest):
     assert rep.ok, rep.errors[:5]
 
 
-# ------------------------------------------------------------------------------------------ the example's questions
+# --------------------------------------------------------------------------------------------- the example's questions
 @pytest.fixture(scope="module")
 def graph(doc):
     return pgraph_query.Graph(doc, spec_of(doc))

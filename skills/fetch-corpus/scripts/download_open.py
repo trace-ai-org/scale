@@ -7,14 +7,23 @@ Each PDF is validated, checked against the title, and filed by the license print
 
 Sources it cannot get openly are marked: queued for EZproxy when paywalled access is set up and the publisher is
 supported, otherwise left as "No" with the reason in Notes. Paywalled sources are never attempted here. Datasets and
-software are indexed only (never downloaded); US patents come from the USPTO image server.
+software are indexed only (never downloaded); US patents come from the USPTO image server. Elsevier's open articles
+(ScienceDirect blocks scripted clients) come through Elsevier's article API when a developer key is set (`scopus:` or
+`elsevier:` in keys.txt, from dev.elsevier.com), at most 2.5 requests a second (Elsevier allows 10 a second and 50,000
+a week); a one-page reply means the full text is not open to the key. A 429 (the rate or the week's quota), 401 or 403
+from the API ends that route for the run: its sources are left as they were.
 
 usage:
   python3 -I download_open.py --topic <slug> [--max N] [--workers 10] [--retry-failed] [--added-since YYYY-MM-DD]
+                              [--access OA,OA+ND] [--ids FILE]
+--access (default: the topic's config) and --ids (one source ID per line) narrow a run without touching the rest: a
+source outside them keeps the status it has (queued for the EZproxy runner, failed ...); only one never tried yet is
+marked as of an access type not selected.
 Long runs: nohup python3 -I .../download_open.py --topic <slug> > .scripts/<slug>/download_open.log 2>&1 &
 """
 import argparse
 import json
+import sqlite3
 import sys
 import threading
 import time
@@ -22,11 +31,14 @@ from collections import Counter
 from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 
+import requests
+
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import _core  # noqa: F401,E402  (index-sources' scripts: the shared core)
 import _mdpi as MDPI
-from _common import (ACCESS_TYPES, NOT_DOWNLOADED_TYPES, Project, access_rank, add_project_arg, host_of, json_read,
-                     load_config, log, now_iso, update_state)
+import _pdf as C
+from _common import (ACCESS_TYPES, NOT_DOWNLOADED_TYPES, Project, access_rank, add_project_arg, die, host_of,
+                     json_read, load_config, load_keys, log, now_iso, update_state)
 from _download import (NOT_PROXYABLE, arxiv_pdf, attempt, ez_publisher, fetch, file_pdf, is_blocked, link_existing,
                        load_blocked, pdf_links_from_html, publisher_pdf_patterns)
 from _corpus import add_corpus_arg, scope
@@ -39,7 +51,12 @@ def paywalled_ready(proj):
     return bool(ez.get("enabled") and ez.get("host") and ez.get("verified_at"))
 
 
-def routes(p, selected):
+ELSEVIER_OFF = threading.Event()           # set by a refusal from Elsevier's API: no more API requests this run
+API_REFUSED = {401: "the key is not valid", 403: "the key may not fetch it",
+               429: "too many requests, or the week's quota used"}
+
+
+def routes(p, selected, keys=None):
     """Ordered open URLs for one source: [(entry, url)]."""
     out, seen = [], set()
     doi = p.get("doi")
@@ -56,6 +73,12 @@ def routes(p, selected):
         seen.add(url)
         out.append(entry)
 
+    acc = p.get("access_type")
+    if (doi and doi.split("/")[0] in NOT_PROXYABLE and (keys or {}).get("scopus") and acc in selected
+            and acc != "Paywalled"):                 # Elsevier's own copy, through its API (the key goes in a header)
+        add({"src": "elsevier_api", "url": f"https://api.elsevier.com/content/article/doi/{doi}?httpAccept=application/pdf",
+             "kind": "pdf", "version": "publishedVersion", "license": p.get("license"), "access": acc,
+             "headers": {"X-ELS-APIKey": keys["scopus"]}})
     vers = p.get("versions") or []
     wanted = [v for v in vers if v.get("access") in selected] or vers
     for v in sorted(wanted, key=lambda v: access_rank(v.get("access"))):
@@ -119,8 +142,25 @@ def try_entry(proj, led, p, e):
         url = figshare_pdf(url) or url
         e = {**e, "url": url, "kind": "pdf" if url.startswith("https://ndownloader") or "/files/" in url else e["kind"]}
     accept = "application/pdf,*/*;q=0.8" if e["kind"] == "pdf" else "text/html,application/xhtml+xml,application/pdf;q=0.9,*/*;q=0.8"
+    if e["src"] == "elsevier_api" and ELSEVIER_OFF.is_set():
+        return "api_off"
     t0 = time.time()
-    res = fetch(proj, url, accept=accept)
+    res = fetch(proj, url, accept=accept, headers=e.get("headers"))
+    e = {k: v for k, v in e.items() if k != "headers"}       # nothing below stores or logs a key
+    if e["src"] == "elsevier_api" and res.get("status") in API_REFUSED:
+        if not ELSEVIER_OFF.is_set():
+            ELSEVIER_OFF.set()
+            log(f"Elsevier's article API answered HTTP {res['status']} ({API_REFUSED[res['status']]}): no more API "
+                f"requests this run; its sources are left as they were")
+        attempt(proj, p["id"], p.get("doi"), step=e["src"], url=url, outcome="api_refused", http_status=res["status"])
+        return "api_off"
+    if e["src"] == "elsevier_api" and res["kind"] == "pdf":
+        ok, why, pages = C.validate(res["path"])
+        if not ok or pages < 2:                    # the first page alone: no full text for this key
+            attempt(proj, p["id"], p.get("doi"), step=e["src"], url=url, outcome="first_page_only", reason=why,
+                    pages=pages)
+            Path(res["path"]).unlink(missing_ok=True)
+            return "fail"
     if res["kind"] == "redirect_blocked" or (res["kind"] == "html" and is_blocked(host_of(res.get("final_url", "")))):
         attempt(proj, p["id"], p.get("doi"), step=e["src"], url=url, outcome="redirected_to_bot_walled_host")
         return "walled"
@@ -155,12 +195,22 @@ def main():
     ap.add_argument("--added-since", default=None, help="YYYY-MM-DD or YYYY-MM-DDTHH:MM:SSZ: only sources that entered this "
                                                          "topic at/after that time (update mode: download just the new "
                                                          "sources; build_list.py prints the run's start time)")
+    ap.add_argument("--ids", default=None, help="file of source IDs, one per line: try only these (the others are left "
+                                                "as they are)")
     a = ap.parse_args()
     proj = Project(a.project)
+    keys = load_keys(proj)
     a.topic, ids = scope(a, topic_required=True)
+    if a.ids:                                      # narrows the corpus (or the topic) further
+        if not Path(a.ids).is_file():
+            die(f"no file {a.ids}")
+        only = {int(x) for x in Path(a.ids).read_text().split() if x.strip().isdigit()}
+        ids = only if ids is None else ids & only
     cfg = load_config(proj, a.topic)
     selected = ({x.strip() for x in a.access.split(",") if x.strip()} if a.access else
                 set((cfg.get("download") or {}).get("access_types") or ["OA", "OA+ND", "Free-to-read"]))
+    if a.access and selected - set(ACCESS_TYPES):
+        die(f"unknown access type(s) {sorted(selected - set(ACCESS_TYPES))}; known: {ACCESS_TYPES}")
     ez_ok = paywalled_ready(proj)                  # EZproxy is a route for walled open copies of any selected type
     pw = ez_ok and "Paywalled" in selected         # ... and the only route for Paywalled sources
     load_blocked(proj)
@@ -178,13 +228,15 @@ def main():
         with led.tx():
             for p in rows:
                 if ids is not None and p["id"] not in ids:
-                    continue                                  # not in the corpus
+                    continue                                  # not in the corpus (or --ids)
                 acc = p.get("access_type")
                 if (p.get("doc_type") or "") in NOT_DOWNLOADED_TYPES:
                     skipped["dataset_or_software"] += 1      # indexed only, never downloaded
                     continue
                 if acc not in selected:
-                    if p.get("dl_status") != "not_selected":
+                    # the topic's selection decides for every source; a narrower --access leaves a status of its own
+                    # alone (an OA-only run never takes sources out of the EZproxy runner's queue)
+                    if p.get("dl_status") != "not_selected" and not (a.access and p.get("dl_status")):
                         led.set(p["id"], dl_status="not_selected", dl_note=f"{acc or 'Unknown access'} — type not selected for download")
                     skipped["not_selected"] += 1
                     continue
@@ -212,26 +264,41 @@ def main():
     if a.max:
         todo = todo[:a.max]
     log(f"open download: {len(todo)} sources to try; skipped {dict(skipped)}; EZproxy route ready={ez_ok}")
-    cnt, lock = Counter(), threading.Lock()
+    cnt, lock, route_errors = Counter(), threading.Lock(), [0]
 
     def one(p):
-        status, walled = "no_open_copy", False
-        for e in routes(p, selected):
-            o = try_entry(proj, led, p, e)
+        status, walled, held, errors = "no_open_copy", False, False, []
+        for e in routes(p, selected, keys):
+            try:
+                o = try_entry(proj, led, p, e)
+            except Exception as err:
+                if isinstance(err, (OSError, sqlite3.Error)) and not isinstance(err, requests.RequestException):
+                    raise                          # the disk or the database, not this source: stop the run
+                o = "error"                        # one odd server reply must not end a run of thousands
+                errors.append(f"{type(err).__name__}: {err}"[:160])
+                attempt(proj, p["id"], p.get("doi"), step=e.get("src"), url=e.get("url"), outcome="error",
+                        reason=repr(err)[:300])
+                log(f"source {p['id']}: {e.get('src')} {e.get('url')} raised {err!r:.200}; trying the next route")
             if o in ("valid_pdf", "duplicate"):
                 status = o
                 break
             walled |= (o == "walled")
+            held |= (o == "api_off")
         if status not in ("valid_pdf", "duplicate"):
-            if ez_ok and ez_publisher(p.get("doi")):
+            if held:                               # Elsevier's API refused this run: the status stays for a later one
+                status = "left_for_later"
+            elif ez_ok and ez_publisher(p.get("doi")):
                 led.set(p["id"], dl_status="queued_paywalled", dl_note="Open copy not reachable — queued for EZproxy")
                 status = "queued_paywalled"
             else:
                 note = ("Open copy only on a site that blocks scripted downloads" if walled else
                         "No downloadable open copy found")
+                if errors:
+                    note += f"; {len(errors)} route(s) raised an error ({errors[0]}) — --retry-failed tries again"
                 led.set(p["id"], dl_status="failed", dl_note=note)
                 status = "failed"
         with lock:
+            route_errors[0] += len(errors)
             cnt[status] += 1
             n = sum(cnt.values())
             if n % 100 == 0:
@@ -250,7 +317,8 @@ def main():
         for i in range(0, len(todo), 2000):            # full rows read 2,000 at a time, in download order
             list(ex.map(one, load(todo[i:i + 2000])))
     led.export()
-    res = {"tried": len(todo), "outcomes": dict(cnt), "skipped": dict(skipped), "linked_from_other_topics": linked,
+    res = {"tried": len(todo), "outcomes": dict(cnt), "route_errors": route_errors[0], "skipped": dict(skipped),
+           "linked_from_other_topics": linked,
            "vector_store": after_step(proj, led), "finished_at": now_iso()}
     update_state(proj, a.topic, lambda st: st.setdefault("download_open", {}).update(res))
     print(json.dumps(res))

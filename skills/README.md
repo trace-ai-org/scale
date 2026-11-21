@@ -13,12 +13,14 @@ answers:
 | [index-sources](index-sources/SKILL.md) | find and index the sources of a topic (papers, preprints, patents, theses, reports, and the datasets found with them) into an index that keeps their access, licence and supporting information, and freeze the corpus a question needs |
 | [fetch-corpus](fetch-corpus/SKILL.md) | fetch a frozen corpus's files (PDFs and supporting information; paywalled ones only through the library's proxy) and record in the corpus what was fetched and what was not |
 | [curate-corpus](curate-corpus/SKILL.md) | curate one publication, one data file or a frozen corpus into scale-catal documents, with evidence on every statement and typed absences |
-| [query-graph](query-graph/SKILL.md) | answer a question with a graph query plan, rows as reported with their evidence |
+| [query-graph](query-graph/SKILL.md) | answer a question with a graph query plan, rows as reported with their evidence; a question that asks what to do gets a proposal built from the closest records, each step citing one, checked (and reviewed when asked) |
 | [map-coverage](map-coverage/SKILL.md) | map what the documents cover (materials by properties by conditions) and each kind of absence |
 | [scan-conflicts](scan-conflicts/SKILL.md) | find values that seem to disagree and classify each pair as genuine, apparent or not comparable |
 | [export-graph](export-graph/SKILL.md) | hand a document to another system, validated, capped and filtered for its audience |
 | [evolve-schema](evolve-schema/SKILL.md) | turn missing-concept gaps or a request into one reviewable schema change |
 | [triage-feedback](triage-feedback/SKILL.md) | sort community feedback into topics and options for the reviewers (maintainers) |
+| [first-paper](first-paper/SKILL.md) | a new contributor's first run: one DOI in, a checked graph of the paper, its digest (conditions and results, "has this been done?", negative results) and a review sheet out; a contribution only after the person approves |
+| [upgrade-curation](upgrade-curation/SKILL.md) | on demand, bring a curated graph to a newer schema version: a step-by-step report first, the mechanical upgrade on approval, and a re-reading of only the passages the worklist names |
 
 ## Which skill for a request
 
@@ -27,6 +29,7 @@ answers:
 | a topic: "find / index / list sources", "newer sources" | index-sources |
 | "download the PDFs", "get the papers of …" | index-sources freezes a corpus (or take a frozen one), then fetch-corpus |
 | a topic: "build the graph / curate / extract the data" | index-sources, freeze a corpus, fetch-corpus, then curate-corpus |
+| "try SCALE on my paper", a first contribution | first-paper (it runs curate-corpus for one source) |
 | one source, a DOI, a PDF, or a data file to record | curate-corpus |
 | an unfinished curation run, or "continue" | curate-corpus (references/runs.md) |
 | "what do the sources report about …" | query-graph |
@@ -34,6 +37,7 @@ answers:
 | "do the sources disagree about …" | scan-conflicts |
 | "export / share the graph" | export-graph; a contribution to a graph in `graphs/` only when a person asks |
 | a concept the schema lacks | evolve-schema (a person decides) |
+| "upgrade / migrate this graph to the new schema", "what does the new version mean for our curations" | upgrade-curation |
 
 What catalysis brings to the literature skills (the topic vocabulary index-sources uses, the catalysis index's
 tools) is kept with the commons, in [graphs/catal-commons/literature/](../graphs/catal-commons/literature/README.md).
@@ -41,3 +45,19 @@ The curation rules follow SCALE's schema, whose one domain is catalysis (`domain
 
 `curate-source` and `curate-dataset` were merged into curate-corpus; `scale call skills` still finds it by those names.
 `index-sources` was named paper-acquisition; its download mode is now fetch-corpus.
+
+## Using the skills with Claude Code
+
+`.claude/skills` is a link to this folder, so Claude Code finds the skills of a clone without installing anything:
+open Claude Code in the repository and each skill is a command (`/index-sources`, `/curate-corpus`, `/query-graph`, …),
+read from this folder, so a `git pull` brings the latest versions. The skills run the `scale` command, so install it
+first (`pip install -e .` in the clone, or `uv`).
+
+- **Permissions:** each skill's `allowed-tools` lets Claude Code run the `scale` commands it lists without asking,
+  while the skill is in use (the `scale` on the PATH; `uvx scale-catal …` still asks). Commands that file or publish
+  (`scale gap issue --submit`, `scale graph contribute --write`) always ask.
+- **In another project:** `scale skills install ~/.claude/skills` copies a release's skills into your own skills
+  folder (for every project), or `scale skills install <project>/.claude/skills` for one project. These are copies:
+  run it again with `--force` to update them.
+- **On Windows:** git checks the link out as a plain file unless symlinks are enabled (`core.symlinks`, with Developer
+  Mode on); otherwise use `scale skills install`.

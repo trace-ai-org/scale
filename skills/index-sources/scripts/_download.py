@@ -23,7 +23,7 @@ import requests
 
 import _pdf as C
 from _common import (ACCESS_TYPES, PACER, access_rank, get_json, host_of, json_read, json_write_atomic, jsonl_append,
-                     license_access, log, norm_license, now_iso, session, today)
+                     license_access, location_url, log, norm_license, now_iso, session, today)
 
 # Hosts that answered plain scripted requests with a bot challenge. Open routes never touch them.
 BLOCKED_SEED = {
@@ -36,6 +36,8 @@ BLOCKED_SEED = {
     "papers.ssrn.com", "www.ssrn.com", "doaj.org",
 }
 BLOCKED_SUFFIX = (".onlinelibrary.wiley.com", ".sciencedirect.com", ".elsevier.com", ".mdpi.com", ".science.org")
+# Official APIs on those domains: made for scripts (with a key), unlike the publishers' web pages.
+API_HOSTS = {"api.elsevier.com"}
 
 # DOI prefix -> publisher key (one EZproxy pacing/cap bucket per key). Elsevier (10.1016/10.1006) is absent on
 # purpose: its pages show a CAPTCHA even through EZproxy, and CAPTCHAs are never solved.
@@ -74,12 +76,13 @@ def mark_challenge(host):
         if _challenges[host] >= 2 and host not in _blocked:
             _blocked.add(host)
             log(f"host {host} now treated as bot-walled for open routes")
-            if _blocked_file["path"]:
+            if _blocked_file["path"]:                # keep what other runs listed meanwhile
+                _blocked.update((json_read(_blocked_file["path"], {}) or {}).get("blocked", []))
                 json_write_atomic(_blocked_file["path"], {"blocked": sorted(_blocked), "updated_at": now_iso()})
 
 
 def is_blocked(host):
-    return host in _blocked or host.endswith(BLOCKED_SUFFIX)
+    return host not in API_HOSTS and (host in _blocked or host.endswith(BLOCKED_SUFFIX))
 
 
 def publisher_pdf_patterns(doi):
@@ -102,17 +105,20 @@ def arxiv_pdf(url):
     return f"https://export.arxiv.org/pdf/{m.group(1)}" if m else url
 
 
-def fetch(proj, url, accept="application/pdf,*/*;q=0.8", timeout=(15, 90), max_bytes=300 * 1024 * 1024):
-    """-> dict(kind=pdf|html|challenge|http_error|network_error|redirect_blocked, ...)"""
+def fetch(proj, url, accept="application/pdf,*/*;q=0.8", timeout=(15, 90), max_bytes=300 * 1024 * 1024,
+          headers=None):
+    """-> dict(kind=pdf|html|challenge|http_error|network_error|redirect_blocked, ...). `headers` (an API key) go to
+    the URL's own host only, never to another host a redirect leads to, and are never logged."""
     host = host_of(url)
     PACER.wait(host)
     s = session()
     cur = url
     try:
         for _ in range(10):
-            r = s.get(cur, headers={"Accept": accept}, timeout=timeout, stream=True, allow_redirects=False)
+            extra = (headers or {}) if host_of(cur) == host else {}
+            r = s.get(cur, headers={"Accept": accept, **extra}, timeout=timeout, stream=True, allow_redirects=False)
             if r.status_code in (301, 302, 303, 307, 308) and r.headers.get("location"):
-                nxt = urllib.parse.urljoin(cur, r.headers["location"])
+                nxt = urllib.parse.urljoin(cur, location_url(r.headers["location"]))   # non-UTF-8 bytes too
                 r.close()
                 if is_blocked(host_of(nxt)):
                     return {"kind": "redirect_blocked", "final_url": nxt, "status": r.status_code}
@@ -121,7 +127,7 @@ def fetch(proj, url, accept="application/pdf,*/*;q=0.8", timeout=(15, 90), max_b
                 cur = nxt
                 continue
             break
-    except requests.RequestException as e:
+    except (requests.RequestException, ValueError) as e:     # ValueError: a URL or header no client can use
         return {"kind": "network_error", "error": repr(e)[:200]}
     try:
         it = r.iter_content(65536)
@@ -157,7 +163,7 @@ def fetch(proj, url, accept="application/pdf,*/*;q=0.8", timeout=(15, 90), max_b
         if r.status_code != 200:
             return {"kind": "http_error", "status": r.status_code, "final_url": cur}
         return {"kind": "html", "status": 200, "text": text, "final_url": cur}
-    except requests.RequestException as e:
+    except (requests.RequestException, ValueError) as e:
         return {"kind": "network_error", "error": repr(e)[:200]}
     finally:
         r.close()
@@ -287,9 +293,15 @@ def file_pdf(proj, led, paper, entry, tmp, method, final_url=None):
     tm = C.title_match(paper.get("title"), first)
     thr = 0.5 if entry.get("version") in ("submittedVersion", "acceptedVersion") else 0.55
     if tm is not None and tm < thr:
-        dst = rej / f"{paper['id']}_{uuid.uuid4().hex[:8]}.pdf"
-        Path(tmp).replace(dst)
-        return "wrong_paper", f"title_match={tm:.2f} kept at {proj.rel(dst)}"
+        alt = C.poppler_text(tmp)                 # a second reader: some fonts defeat the first one
+        tm = max(tm, C.title_match(paper.get("title"), alt) or 0.0)
+        first = f"{first}\n{alt}"
+        # the source's own DOI printed in it also proves it (3+ pages: a short correction notice prints it too)
+        if tm < thr and not (pages >= 3 and C.doi_printed(paper.get("doi"), first)):
+            dst = rej / f"{paper['id']}_{uuid.uuid4().hex[:8]}.pdf"
+            Path(tmp).replace(dst)
+            why = f"title_match={tm:.2f}" if first.strip() else "no text layer (pages are images): title not checked"
+            return "wrong_paper", f"{why} kept at {proj.rel(dst)}"
     return _file_checked(proj, led, paper, entry, tmp, pages, final_url, method, decide_access(entry, first, last))
 
 

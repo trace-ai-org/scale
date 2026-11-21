@@ -33,6 +33,21 @@ SCALE writes format **1.1.0** (the identifier the format requires in `bundle.jso
 - **Typed absences.** A value the source does not report, did not measure, or gives below a limit is a
   `_value_status` entry (status and, for `not_reported`, the reason), not a missing property.
 
+**Format 1.2.0, when a graph needs it.** A graph extracted into a curated dataset holds two kinds of link the quote
+rule cannot carry, and SCALE writes them as format 1.2.0 (`ROW_FORMAT_VERSION`) instead of leaving them out; a graph
+without them stays 1.1.0. The export report counts them under `format_1_2`.
+
+- **Structural edges.** A link with no evidence of its own whose two ends are records of one source organizes that
+  source's record (a step is `PART_OF` its preparation, a sample `HAS_FORMULATION` its catalyst, a state is
+  `STATE_OF` a catalyst and `REACHED_BY` a preparation): `"_structural": true`, the one source in
+  `source_paper_ids`, its values kept (a step's `order`), no `_evidence` and no `_statement`. A link with no evidence
+  between two sources' records is still left out, and counted in `not_exported_links`.
+- **Dataset-row evidence.** A claim whose evidence is a dataset row (`kind: dataset_row`, its source a `Dataset`)
+  and a source the dataset attributes it to with no sentence of it to quote (a catalyst's metals, a state's phase)
+  cites `{"source_id": <the source>, "dataset_row": {"dataset": <the Dataset's name>, "row": <its locator>}}`. A
+  claim quoted from its source cites the quote and needs no row. A reader shows it as the dataset's record, never as
+  the source's words.
+
 **The schema is the vocabulary, not the graph's subset.** `kg/schema.json` declares every label and edge type of the
 scale-catal version the graph pins, with every property a bundle can carry, so every bundle of that version declares
 the same schema: `scale-catal 0.1.0` for a catalysis graph (`scale-kernel` for a kernel-only one). Its `extends`
@@ -60,7 +75,10 @@ loads the zip as it is: the first release as a new graph, each later release as 
 
 **To look at one,** open the zip with "Open a graph or bundle" in SCALE's graph explorer (the site, `site/bundle.js`):
 it draws the bundle's graph in the browser, with each record's values and evidence, and searches its quotes. It shows
-the bundle; it does not validate it or check its digests (the format's validator does).
+the bundle; it does not validate it or check its digests (the format's validator does). The page reads the graph a
+record at a time, so a graph larger than the browser holds as one text still opens. One of more than 60,000 records is
+drawn a window at a time, as many records as the reader sets, its sources by year or around a source; the windows one
+after the other cover the whole graph, and its search covers every record.
 
 The mapping from scale-catal to the bundle (ids, units, evidence, statements, access) is described in the module
 docstring of `tools/kgbundle.py`, and the export skill (`skills/export-graph/SKILL.md`) says when to choose

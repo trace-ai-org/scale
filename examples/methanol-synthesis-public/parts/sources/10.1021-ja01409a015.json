@@ -317,7 +317,7 @@
         "pressure": {
           "status": "present",
           "as_reported": "20",
-          "note": "printed 'mm' (millimetres of mercury)",
+          "note": "printed 'mm' (millimetres of mercury); the source does not say whether this pressure is gauge or absolute (whole text read for gauge, gage, absolute, psig, psia) (re-read for scale-catal 0.8.2, 2026-11-20)",
           "unit": "mm Hg",
           "value": 20
         },
@@ -372,7 +372,7 @@
         "pressure": {
           "status": "present",
           "as_reported": "1",
-          "note": "printed 'mm' (millimetres of mercury)",
+          "note": "printed 'mm' (millimetres of mercury); the source does not say whether this pressure is gauge or absolute (whole text read for gauge, gage, absolute, psig, psia) (re-read for scale-catal 0.8.2, 2026-11-20)",
           "unit": "mm Hg",
           "value": 1
         },
@@ -1574,6 +1574,13 @@
             "passage": "10.1021-ja01409a015/p6/1",
             "quote": "A further half hour of evacuation at 400° gave with hydrogen the results in Curve II.",
             "source": "ex:msyn/source/10.1021-ja01409a015"
+          },
+          {
+            "kind": "text",
+            "locator": "p. 6",
+            "note": "states duration ('half an hour'); cited when the value check found the record's quotes did not print it",
+            "quote": "Oct., 1927\nSTUDIES OE METHANOL CATALYSTS.\nI\n2473\nThis adsorbed neither gas after evacuation at 200 or 300°.\nAfter half\nan hour of evacuation at 400°, Curve I, Fig.",
+            "source": "ex:msyn/source/10.1021-ja01409a015"
           }
         ],
         "method": "evacuation",
@@ -1604,6 +1611,13 @@
             "locator": "p. 6",
             "passage": "10.1021-ja01409a015/p6/1",
             "quote": "after a further half hour of evacuation at 400°.",
+            "source": "ex:msyn/source/10.1021-ja01409a015"
+          },
+          {
+            "kind": "text",
+            "locator": "p. 6",
+            "note": "states duration ('half an hour'); cited when the value check found the record's quotes did not print it",
+            "quote": "Oct., 1927\nSTUDIES OE METHANOL CATALYSTS.\nI\n2473\nThis adsorbed neither gas after evacuation at 200 or 300°.\nAfter half\nan hour of evacuation at 400°, Curve I, Fig.",
             "source": "ex:msyn/source/10.1021-ja01409a015"
           }
         ],
@@ -3406,6 +3420,13 @@
       "type": "HAS_COMPONENT",
       "props": {
         "status": "asserted",
+        "amount": {
+          "status": "present",
+          "as_reported": "approximately two moles of ZnO",
+          "qualifier": "approximate",
+          "unit": "mol",
+          "value": 2
+        },
         "evidence": [
           {
             "kind": "text",
@@ -3416,14 +3437,6 @@
             "source": "ex:msyn/source/10.1021-ja01409a015"
           }
         ],
-        "fraction": {
-          "status": "present",
-          "as_reported": "approximately two moles of ZnO",
-          "qualifier": "approximate",
-          "unit": "mol",
-          "value": 2
-        },
-        "fraction_basis": "mole",
         "role": "not_stated"
       },
       "source": "ex:msyn/10.1021-ja01409a015/catalyst/zno-cr2o3-2-1",
@@ -3622,6 +3635,14 @@
       "type": "HAS_COMPONENT",
       "props": {
         "status": "asserted",
+        "amount": {
+          "status": "present",
+          "as_reported": "one mole of Cr2C>3",
+          "note": "OCR 'Cr2C>3' reads Cr2O3",
+          "qualifier": "approximate",
+          "unit": "mol",
+          "value": 1
+        },
         "evidence": [
           {
             "kind": "text",
@@ -3632,15 +3653,6 @@
             "source": "ex:msyn/source/10.1021-ja01409a015"
           }
         ],
-        "fraction": {
-          "status": "present",
-          "as_reported": "one mole of Cr2C>3",
-          "note": "OCR 'Cr2C>3' reads Cr2O3",
-          "qualifier": "approximate",
-          "unit": "mol",
-          "value": 1
-        },
-        "fraction_basis": "mole",
         "role": "not_stated"
       },
       "source": "ex:msyn/10.1021-ja01409a015/catalyst/zno-cr2o3-2-1",
@@ -5118,6 +5130,6 @@
       "target": "ex:msyn/person/g-b-kistiakowsky"
     }
   ],
-  "schema_version": "0.2.0",
+  "schema_version": "0.8.2",
   "source": "ex:msyn/source/10.1021-ja01409a015"
 }

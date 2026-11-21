@@ -2,6 +2,273 @@
 
 ## Unreleased
 
+- **curate-corpus `review-api`: a reasoning reader keeps room to answer (tooling, no schema change, no migration).** A
+  reader that reasons before it answers could end a reading without a verdict: the fitted requests left it too few
+  tokens to think and answer, because compact JSON runs under 3 characters a token and a curator's report could hold
+  its records where the report's `records` holds two counts. Now: 2.5 characters a token; `--answer-tokens` (64,000,
+  at most half the window) kept for the answer; a reading whose answer ran out of room (`finish_reason: length`) is
+  read once more with twice the room (smaller parts); the report goes with records written there replaced by their
+  number (the template's counts unchanged), within 20,000 characters, and the curate template says `records` holds two
+  numbers; the reasoning is kept under vLLM's name `reasoning` too, with the `finish_reason` and `usage` of a failed
+  reading.
+
+- **curate-corpus second readings: a large document is read in parts, issues carry a severity, a re-reading checks the
+  previous issues first, and every reading knows today's date (tooling, no schema change, no migration).** Answers
+  #109 (point 2): a document larger than the reader's context window was never read (HTTP 400), and a source could end
+  `failed` after three fixes, each re-reading finding new issues while the previous ones were fixed. Each reading is
+  fitted to the reader's context window (`prepare --api-context-tokens`, `review-api --context-tokens`; a non-ASCII
+  character counts as a token): a document that fits goes whole (a 1M-token reader rarely needs parts), a larger one
+  is cut into parts of whole records with the links they start, each listing the other parts' records, and the issues
+  are merged; without a window, parts of `--max-doc-chars` (150,000). Every issue is `major` or `minor`; the verdict
+  settles on them (`needs_fix` only for a major issue; an issue without a severity counts as major, so earlier
+  readings keep their verdict), for a subagent's reading too. The previous reading's issues and today's date go with
+  each reading (a reader without the date can take a recent retrieval date for a future one).
+
+- **The skills' `allowed-tools` are Claude Code permission rules, and every description says when to use the skill
+  (tooling, no schema change, no migration).** Each command a skill lists is a rule such as `Bash(scale graph query:*)`,
+  so Claude Code runs it without asking while the skill is in use; what each is for and what a skill may write stay as
+  comments. Commands that file or publish (`scale gap issue --submit`, `scale graph contribute --write`) are left out,
+  so a person sees each one. The seven descriptions without one gain a "Use when ..." sentence, and index-sources'
+  description is shortened to the 1,024-character limit of skill descriptions.
+- **Quantity kind `chain_growth_probability` (the Anderson-Schulz-Flory alpha) (additive, schema 0.8.1 -> 0.8.2).**
+  Requested in #108: alpha was recorded as `fraction`, `ratio` or an undeclared kind. The kernel declares it
+  (provisional, dimensionless), compared by two new contexts, `chain_growth_method` (distribution_fit,
+  lumped_selectivities) and `chain_growth_basis` (weight_fraction, mole_fraction), read from a value's basis or
+  definition; a value that states neither is compared only with such values. Added a fixture, a counterexample (a unit
+  of temperature) and CQ-42. Migration: documents pinning 0.8.1 stay valid; no automatic rewrite, because the kind
+  alone does not tell an alpha from another `fraction` or `ratio`; set `quantity_kind` by hand (docs/changes/108).
+  Limits: the carbon range of a fit stays in the definition; 0..1 is not enforced.
+- **`scale graph validate` warns about a feed whose gas ratio is not on a HAS_COMPONENT edge (no schema change).**
+  Requested by @haod810 (#107, a follow-up of #90): a feed that holds H2:CO only in `Feed.ratios`, or only as the
+  fractions of H2 and CO, is missed by a plan that reads the comparable edge ratio. Two warnings, never errors: a Feed
+  whose `ratios` holds a gas ratio (a key such as `h2_co` or `ph2_pco_ratio`, or a value naming two gases) and a Feed
+  with the fractions (mole or volume) of two reactant gases, each when no HAS_COMPONENT edge of the feed carries a
+  `ratio`. A diluent or inert gas is not a reactant. Nothing is stored or converted. The feed recipe
+  (`skills/curate-corpus`) now says to always write the edge form and keep the printed form in `ratios` only beside
+  it.
+- **`review-api`: a stream cut before `finish_reason` or `[DONE]` is a failure and is retried like an HTTP error; when
+  no verdict is found, the raw `content` and `reasoning_content` are kept in `work/review-raw-<n>.json` (tooling, no
+  schema change, no migration).** Answers #109 (point 1 only; reading a large document in parts stays open).
+
+- **A source that makes or characterizes a material itself is curated, whatever the material is for; `no_data` is for
+  a source with nothing of its own (no schema change).** Requested by @diazr04. The rule was already `no_data` "only
+  when the source reports nothing the catalysis checklist covers", and the checklist covers Preparations (any
+  synthesis of a catalyst, a support, a precursor solid or a colloid), Characterizations and their steps. A curator
+  could read it as "not a catalysis source" and leave `no_data` a paper that makes a material for another use (a
+  sensor, a drug carrier). `templates/curate.md` now says so outright:
+  such a source is curated (what it made, how, what it measured; its stated use in a Claim), and a review, an
+  editorial or a commentary is `no_data`. The second reading (`templates/review.md` and the API reader's prompt in
+  `curate_run.py`) sends back a `no_data` document whose source reports its own preparation or characterization.
+
+- **An API curator's sandbox is binding: no command may run outside it, and no session runs without it (no schema
+  change).** Requested by @diazr04. `api_host.py` passes `--allowedTools Bash`, which approves every Bash call,
+  including one in which the model asks Claude Code to run the command outside the sandbox
+  (`dangerouslyDisableSandbox`): a session could then reach the network, so material from outside the source's own
+  texts could enter its document. And where the sandbox cannot start (a scratch path that makes its socket path too
+  long), a session would run unsandboxed without saying so. `api_host.py` now sets `sandbox.allowUnsandboxedCommands:
+  false`, so a command that asks to leave the sandbox runs inside it (where it reaches no network), and
+  `sandbox.failIfUnavailable: true`, so a session whose sandbox cannot start fails instead of running without it. A
+  source whose scratch folder (`work/tmp`) is longer than 70 characters is refused before its session starts: there
+  the sandbox's bridge sockets cannot be created, every command fails, and the session would still end as a success.
+
+- **A selectivity's basis text that says the count or whole is not stated, or names alternatives, states none (no
+  schema change).** Requested by @haod810 (#91), a follow-up to #86. `statements_in_text` read a term in a clause such
+  as "carbon or mole basis not stated" or "CO2 counted in the denominator, unlike the 'CO2 free' value beside it" as
+  that term, so unstated values formed a `mole` group. For `selectivity_count` and `selectivity_whole`, a clause that
+  holds an absence or uncertainty ("not stated", "unknown", "whether"), alternatives ("or", "/") or a contrast
+  ("unlike", "beside", "vs") now reads nothing, and the value stays `not stated`. The curate-corpus recipes say which
+  phrases are read. The phrases #86 left out ("including CO2", "ex CO2") are not added.
+
+- **`scale` writes UTF-8 to stdout and stderr on every platform (no schema change).** Requested by @haod810 (#96). On
+  Windows a pipe or a file gets the locale's code page (cp1252, gbk), and `scale graph query` stopped with
+  `UnicodeEncodeError` on "−" or "γ" in a curated value. `main()` now reconfigures both streams to UTF-8 when they are
+  not; a test runs the query under cp1252 and gbk.
+- **index-sources 4.2.1 and fetch-corpus 1.2.1: one odd server reply no longer ends a download run (no schema
+  change).** Requested by @diazr04. A redirect whose Location header is not UTF-8 makes requests raise
+  UnicodeDecodeError even with `allow_redirects=False`; uncaught, it ends `download_open.py`, and a new run meets the
+  same source first. The shared session now follows such a redirect as a browser does (the raw bytes percent-encoded;
+  UTF-8 is read as before), `fetch()` answers a URL or header no client can use as a network error, and
+  `download_open.py` logs a route that raises, tries the next one and notes the error on a source no route reached
+  (`--retry-failed` tries it again); a full disk or a database error still stops the run. Tests: fetch-corpus
+  `test_open_redirects.py`.
+
+- **query-graph 0.3.1 weighs what a record measured and what it obtained over its labels, and lays out each step of a
+  proposal so a reader sees what comes from a record, what was changed and why (no schema change).** Requested by
+  @diazr04. A record can be labelled with the composition aimed at while its own characterization measured another,
+  and a reader could not tell, in a proposal's steps, a record's words from the proposer's reasoning.
+  `scripts/check_quotes.py` now lists, for each record a proposal names, what a characterization of its samples
+  measured (composition, loading, sizes, with the technique), what it obtained (shape, architecture, phases, and what
+  shows them, or that they are a label) and the authors' outcome claims about it. The host treats a record whose
+  measurement or outcome shows it missed a requirement as evidence against its route for that requirement, takes from
+  a record only what its own product supports (a step carried across another shape, architecture or secondary phase is
+  a hypothesis with its mechanism said), accepts a composition, phase or shape only by a check that can tell it from
+  its alternatives, and says what must be assessed before a step with a hazard is run. Each step is tagged retrieved,
+  adapted or hypothesis, with its instruction (Do), its record's step and quote (Record), each change as "record's
+  value → this value" (Changed), the reasoning (Why), the typical values no record gives (Typical) and any hazard, on
+  separate lines.
+
+- **Schema 0.8.1 (additive): feed component ratio, acid type, reactor kinds and operation mode, space time, pore
+  volumes and areas (#90, #92, #93, #94, #95).** `HAS_COMPONENT.ratio` states a feed ratio with numerator, denominator and
+  kind (`fraction_basis` gains `partial_pressure`); `ActiveSite.acid_type` (Bronsted, Lewis, not stated, other);
+  `reactor_kind` gains `slurry`, `microchannel`, `monolith` and `Reactor.operation_mode` is new; kernel kind
+  `space_time` (W/F, g h mol-1) with `CatalyticTest.space_time`; kernel kinds `specific_surface_area` and
+  `specific_pore_volume` with shared recipe names for micropore and mesopore values. New concepts are provisional;
+  nothing is converted. Documents that declare a `specific_surface_area` Variable are now unit-checked.
+
+- **curate-corpus runs can be curated by a model behind an API, and a main result printed only in a figure must be
+  digitized (no schema change).** Requested by @diazr04, to curate with open models served by an endpoint or a model
+  host. `curate_run.py prepare --curator api:<model> --api-base-url <url>` records the model as such, and `next` hands
+  its lines the endpoint; `scripts/api_host.py` runs each hand-out on Claude Code pointed at the endpoint's
+  Anthropic-compatible route as that model, the key passed through apiKeyHelper from the key file, the sandbox on, the
+  scratch files in the source's folder, and reading denied for every other run and their saved sessions (a curator
+  could otherwise find and read another run's document of the same source). `review-api` asks for a streamed answer
+  (an endpoint may cap unstreamed answers, which leaves a reasoning reader without a verdict) and sends the document
+  as compact JSON (fewer tokens). The figure rule (SKILL.md, the curate and review templates, review-api's checklist):
+  the curator digitizes a figure that holds a main result the text does not print, by the recipe, and the second
+  reading returns a document that leaves one undigitized, naming the figure; SI and secondary figures may stay
+  declared not curated.
+
+- **query-graph 0.3.0 chooses a proposal's route and reagents from what the closest records do, and checks the
+  chemistry in the target's context (no schema change).** Requested by @diazr04: a step carried from a record can fail
+  in the context of a new target. `scripts/precedents.py --consensus N` reads the N best-ranked preparations whole and
+  counts, each count with records to cite, their routes, the precursors of each metal with the routes each is used in,
+  their inputs by function, the temperature and time of each action and their commonest sequences (`--within` counts
+  within one route); the plan's answer is cached per graph. The host chooses among these options as a chemist would,
+  weighing them against the standard, well-controlled route for the kind of target. Before the check, it reads the
+  procedure again in the target's context (reductant against precursor, medium and pH, precipitates, temperature and
+  atmosphere against support and solvent, equipment, stabilizer, ratio); a step that would fail is changed and
+  labelled *adapted*, with what its record does, so the proposal stays one procedure that runs as written, and a
+  parameter the records do not state gets a typical value labelled as such. A recommendation is only optional advice
+  that leaves its step valid; nothing outside the steps may change one, and the review treats that as a finding.
+
+- **query-graph 0.2.0 answers a question that asks what to do with a proposal built from the graph (no schema
+  change).** Requested by @diazr04. A question with several requirements (a composition, a phase, a size) takes one
+  plan for them all and one per requirement, so the record that reaches one with other elements is found too. When the
+  question asks how to make or run something, `scripts/precedents.py` runs one plan
+  (`references/precedents-plan.json`: every preparation with its catalyst, composition, class, shape, size, phases and
+  components) and ranks the preparations by the requirements they meet, hardest first, with the closest records for
+  each requirement. A base gives the skeleton (solvent, temperatures, atmosphere, work-up) and each aspect it misses
+  comes from the closest record that controls it (precursors, a capping agent, an ordering treatment), compatible with
+  the skeleton and cited; only those records and the base's own variants are read whole (`scale graph recipe`). Each
+  step cites a record's step and quote or is a labelled hypothesis; a composition is read on its stated basis before
+  any computation; `scripts/check_quotes.py` looks every quotation up in the records named and lists their
+  compositions with unit and basis; one light review by a second agent (at most five findings) looks for what the
+  check cannot see, and what stays open goes in the Limits. The proposal fits in two pages, with the candidates
+  considered, for a person to review before anything is run.
+
+- **`scale_recipe` reads the document a toolkit keeps loaded (no schema change).** Requested by @diazr04: each call
+  read the file again and ran the checklists of the whole document. It now reuses the loaded document, as
+  `scale_query` and `scale_search` do, with its recipes' index and checklist findings made once per schema; the answer
+  is the same and shares nothing with it.
+
+- **index-sources 4.2.0 and fetch-corpus 1.2.0: Elsevier's article API, a pause through EZproxy outages, and one
+  vector-store update at a time (no schema change).** Requested by @diazr04. download_open.py fetches Elsevier's open
+  articles (ScienceDirect blocks scripted clients, and Elsevier is never fetched through EZproxy) from Elsevier's
+  article API when a developer key is in keys.txt (`scopus:`): the key goes in a header to `api.elsevier.com` alone,
+  never to a host a redirect leads to, and is never logged; requests stay at most 2.5 a second (Elsevier allows 10 a
+  second and 50,000 a week); a one-page reply is no full text and is not kept; a 429 (the rate or the week's quota),
+  401 or 403 ends the route for the run and leaves its sources as they were. `api.elsevier.com` is exempt from the
+  blocked Elsevier hosts. download_paywalled.py reads three network or proxy errors in a row as an outage: no source
+  loses a try, in the run or in the outcomes log, and the runner waits 15 min, then 30, then an hour each time instead
+  of spending the day's visits on it. The vector store is updated by one process at a time (a step that finds another
+  one at it leaves the update to that one), and a sentence-transformers model on an Apple GPU gives its memory back
+  after each batch: two downloads updating the store at once could each outgrow the computer's memory.
+
+- **A selectivity says what it counts and what it is a share of (breaking, schema 0.7.8 -> 0.8.0).** Answers #82.
+  Selectivities of one product on different wholes (a share of converted CO with CO2 inside, of the hydrocarbons
+  alone, of one pool such as the olefins) or counted differently (carbon atoms, moles, mass) are no longer put in one
+  group by a scientific comparison. New contexts `selectivity_count` and `selectivity_whole`, both in the selectivity
+  kind's `compare_by`, and the provisional value field `relative_to` naming the pool; `wt%` and `mass%` state mass. A
+  value that states neither is compared only with such values (`not stated`); `mol%` is left unread, never guessed.
+  No document needs rewriting (the migration step changes nothing); as-reported comparison is unchanged. Example,
+  counterexample and competency question CQ-41 added.
+
+- **index-sources 4.1.0 and fetch-corpus 1.1.0: a language gate, removal on request, gate rescue rules and download
+  fixes (no schema change).** Requested by @diazr04. The topic gate's `english_only`
+  turns away records in another language (`_lang.py`: only on clear evidence, never on Greek letters, formulas or
+  element symbols) and `remove_sources.py` takes sources out on request (`--non-english`, `--ids`), each logged in full,
+  its files kept under `.scripts/removed/`. Gate rescue rules (`title_any`, `journal_any`, `journal_not`) let in sources
+  of the topic that never write its anchor word, and keyword screening keeps them in scope. search.py stops a secondary
+  OpenAlex query early only after 25 pages in a row with nothing new (one such page used to stop it at its first
+  results), asks OpenAlex for pages of 200, and takes `--queries` and `--label` for a run of its own; raw hits may be
+  kept as `.jsonl.gz`, and build_list.py cuts a raw file larger than a batch at line breaks. The same-source check of a
+  PDF reads it a second time with poppler's `pdftotext`, accepts the source's own DOI printed in a PDF of 3+ pages and
+  names pages that are only images; fetch-corpus's `accept_pdf.py` files a rejected PDF someone has checked, and
+  `import_pdfs.py` copies in the PDFs another project downloaded (one made before the rename is read as it is, never
+  upgraded). download_open.py takes `--ids`, and a narrowed `--access` leaves a source with a status of its own as it
+  is (an open-access-only run no longer takes sources out of the EZproxy queue); download_paywalled.py takes `--access`
+  and `--dry-run` (the queue per publisher, nothing contacted); run_paywalled.sh stops on bad arguments; a run that adds
+  a host to `.scripts/blocked_hosts.json` keeps the ones listed meanwhile, and listing Elsevier's SI CDN there keeps
+  find_si.py and fetch_si.py off it.
+
+- **Schema 0.7.9 (additive): an anneal, three functions of an input, how an input went in, a dispersion, six method
+  families, the structure obtained and sizes as quantity kinds.** Requested by @diazr04: scale-catal 0.7.8 kept these
+  parts of a synthesis as text, notes or `unmodeled`, and recorded a salt matrix as a support. All new terms are
+  provisional.
+  - **An anneal.** A heat treatment the source calls an anneal, held to change the solid's structure (an alloy ordered
+    into an intermetallic, alloyed or crystallized), is `action: anneal`; the checklist asks it what a calcination is
+    asked (temperature, time, gas, ramp and gas flow). A sample annealed apart from its preparation is a Treatment with
+    `treatment_kind: annealing`.
+  - **Three functions of an input.** `isolating_medium` (a salt or an oxide the particles are dispersed in so that they
+    do not sinter while they are heated, washed out afterwards; it is not the support), `phase_transfer_agent` (what
+    carries particles or a precursor into another liquid phase) and `antisolvent` (a liquid added to precipitate
+    particles from their dispersion).
+  - **How an input went in.** `HAS_INPUT.addition_mode`: `all_at_once`, `portionwise`, `dropwise` or `continuous` (its
+    rate then the input's `flow_rate`).
+  - **A dispersion.** `sample_kind: dispersion`, for a colloid kept as a liquid.
+  - **Six method families.** `impregnation` (the source does not say pore volume or excess, which SCALE
+    forbids guessing into one of the two), `chemical_vapor_impregnation`, `photochemical_reduction` and
+    `radiolytic_reduction` (in solution; `photodeposition` is on a photoexcited semiconductor), `spark_ablation` and
+    `arc_melting`.
+  - **The structure obtained.** `architecture: bulk` (an ingot, a foil, a single crystal), and `HAS_PHASE.layer`, the
+    layer a phase forms in a particle of several layers, counted from the core outward (a core,
+    shells or an alloy shell per element). A single-atom alloy is recorded too (`single_atoms`, the
+    isolated metal `bound_to` the host).
+  - **Sizes are quantity kinds.** The kernel declares `particle_size`, `crystallite_size`, `microscopy_particle_size`
+    and its spread, `hydrodynamic_size`, `dispersion_equivalent_size`, `particle_edge_length`, `shell_thickness`,
+    `wire_diameter` and `film_thickness` (lengths) and `aspect_ratio`, which #64 left for when curated records used
+    them, each mapped to QUDT; their units are now checked.
+  - **Two fixes.** A loading is described on the link to the component it measures, as the examples
+    record it (the description put it on the support link). The checklist counts the sample a preparation treats (an
+    anneal of particles made in an earlier stage) as what it was made from, instead of asking it for precursors it
+    does not have.
+  - An example (salt-matrix-anneal: invented PtFe nanoparticles made in one stage and annealed in NaCl in another), a
+    counterexample (an addition mode in other words), tests, the recipes. Existing documents keep their version; the
+    migration step rewrites nothing.
+
+- **Queries about four times faster, with the same answers (no schema change).** Requested by @hlxin. A query
+  re-hashed the schema's quantity contracts twice, rebuilt a table of every link, labelled the same evidence again in
+  every row, and copied its answer with `copy.deepcopy`. Now the contracts are compiled once per loaded schema, the
+  links table and each evidence item's source labels are kept with the document's query `Graph`, and the answer is
+  copied as plain data (`pgraph_query.detached`), still sharing no object with the document. The competency questions
+  on their documents (62 runs) take 18 ms instead of 73 ms, and three broad plans on the public methanol graph (1,494
+  rows) 19 ms instead of 31 ms; every answer is identical.
+
+- **A large knowledge-graph bundle opens in the explorer a window at a time, and is searched whole (no schema
+  change).** Requested by @diazr04: a bundle whose graph is larger than a browser holds as one text fails with
+  "Failed to fetch", and laying out a large graph freezes the page.
+  - The page reads the zip from the file a slice at a time and the graph a record at a time as it is decompressed
+    (`site/bundle.js`), so it is never one text.
+  - A graph of more than 60,000 records is kept whole, each record as compact text, and drawn a window at a time: its
+    sources in an order (by year, the oldest first; or around a source, the sources most like it first, by what their
+    records share, a thing nearly every source shares not counting) and as many records as the reader sets (the width,
+    5,000 to 80,000; 30,000 to begin with). The graph's card says where the window lies ("records 30,000–60,000 of
+    500,000 · 2016–2017"), and its arrows step from one window to the next, so that the windows cover the whole graph;
+    a slider places the window anywhere, and a year jumps to where its sources begin. A double-click on a record draws
+    around its source. Search covers every record of the bundle, drawn or not, in about a second; a match not drawn is
+    drawn around its source when chosen.
+  - A graph of more than 10,000 records is drawn on a canvas instead of as SVG elements, and laid out off the page's
+    thread with cheaper forces (`site/layout.js`: a repulsion felt within 300 px, no collision, fewer steps), its
+    records starting beside the others of their source, and the
+    page stays responsive meanwhile. While the view moves, the last picture moves with it, and the graph is drawn anew
+    when it stops. A click shows a record, a double-click expands it; such a graph exports as PNG. Smaller graphs are
+    drawn as before.
+- **The explorer names no service again (no schema change).** Requested by @diazr04: curating a source and answering
+  questions in words through the service wait for new requirements (a way in without GitHub's authorization page).
+  `site/config.js` names no service again: the page opens, draws and searches graphs in the browser and says the
+  service is not configured, and it shows no Sign in button while there is no service. The service's code stays (the
+  inbox, `SCALE_WEB_INBOX`; questions answered by Claude Code, `SCALE_WEB_ASK`), off unless set.
+
 ## v0.3.0 — 2026-10-29
 
 Schema 0.7.8 (from 0.2.0, with breaking changes on the way: a document at an earlier version stays valid under it

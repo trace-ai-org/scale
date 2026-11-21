@@ -41,6 +41,10 @@ METHODS = REPO / "domain/examples/scale-catal/method-examples/computational-meth
 SYNTHESES = REPO / "domain/examples/scale-catal/synthesis-examples/synthesis-strategies.json"
 STAGED = REPO / "domain/examples/scale-catal/synthesis-examples/staged-colloid.json"
 CONDITIONS = REPO / "domain/examples/scale-catal/synthesis-examples/synthesis-conditions.json"
+SELECTIVITY = REPO / "domain/examples/scale-catal/product-measurement-examples/selectivity-basis.json"
+SALT = REPO / "domain/examples/scale-catal/synthesis-examples/salt-matrix-anneal.json"
+CHAIN = REPO / "domain/examples/scale-catal/product-measurement-examples/chain-growth-probability.json"
+FTS = REPO / "domain/examples/scale-catal/fts-examples/fts-conditions.json"
 
 
 def test_node(doc: dict) -> dict:
@@ -367,6 +371,13 @@ def main() -> None:
                                         "source": "ex:cnd/preparation/pt-sea-11", "target": "ex:cnd/preparation/pt-sea-9",
                                         "props": {"origin": "synthetic", "varied": ["ph"]}}), base=conditions)
 
+    def addition_in_words(d: dict) -> None:
+        e = next(e for e in d["links"] if e["type"] == "HAS_INPUT" and e["source"] == "ex:anl/step/ptfe-add-fe"
+                 and e["target"] == "ex:anl/species/feacac3")
+        e["props"]["addition_mode"] = "slowly over 10 min"
+    defect("addition-mode-in-words", "an input whose addition mode is stated in other words", addition_in_words,
+           base=load_doc(SALT))
+
     def function_on_component(d: dict) -> None:
         e = next(e for e in d["links"] if e["type"] == "HAS_COMPONENT" and e["source"] == "ex:syn/catalyst/pd-cubes-alumina"
                  and e["target"] == "ex:syn/material/gamma-alumina")
@@ -421,6 +432,36 @@ def main() -> None:
                "function", ["ex:bifunctional/reaction/step1"])), base=load_doc(bi))
     defect("site-proximity-without-status", "a site proximity without its status",
            bifunctional(lambda d, c, e: c["props"]["site_proximity"].pop("status")), base=load_doc(bi))
+    # selectivity basis (#82): a share within a pool whose record the document does not hold
+    defect("selectivity-relative-to-unresolved", "a selectivity within a pool of products that is no record of the document",
+           lambda d: next(x for n in d["nodes"] if n["label"] == "CatalyticTest" for x in n["props"].get("result_values", [])
+                          if x["id"] == "c5_olefins_in_olefins").__setitem__("relative_to", "ex:sb/lump/missing"),
+           base=load_doc(SELECTIVITY))
+
+    # Fischer-Tropsch conditions (#90, #92-#95): a feed ratio that is no pure number, an acid kind outside its list, an
+    # operation mode outside its list, a contact time written as a space velocity, a pore volume in an area unit
+    def fts_node(d, local):
+        return next(n for n in d["nodes"] if n["id"].endswith("/" + local))
+
+    def fts_test(d, local):
+        return fts_node(d, "test/" + local)["props"]
+
+    defect("feed-ratio-in-pressure", "a feed ratio of CO over H2 given in bar, which is a pressure, not a ratio",
+           lambda d: next(e for e in d["links"] if e["type"] == "HAS_COMPONENT" and e["props"].get("ratio")
+                          )["props"]["ratio"][0].__setitem__("unit", "bar"), base=load_doc(FTS))
+    defect("acid-type-in-words", "an acid site whose kind is a strength, not one of the listed kinds",
+           lambda d: fts_node(d, "site/bronsted")["props"].__setitem__("acid_type", "strong"), base=load_doc(FTS))
+    defect("operation-mode-not-allowed", "a reactor whose operation mode is outside the list",
+           lambda d: fts_node(d, "instrument/slurry")["props"].__setitem__("operation_mode", "stirred"), base=load_doc(FTS))
+    defect("contact-time-as-space-velocity", "a W/F in g h mol-1 recorded as a space velocity",
+           lambda d: fts_test(d, "slurry").__setitem__("space_velocity", fts_test(d, "slurry").pop("space_time")),
+           base=load_doc(FTS))
+    defect("pore-volume-in-area-unit", "a micropore volume whose unit is an area per mass",
+           lambda d: fts_node(d, "variable/micropore-volume")["props"].__setitem__("unit", "m2/g"), base=load_doc(FTS))
+
+    # a chain-growth probability (#108) is a dimensionless probability, never a quantity of another dimension
+    defect("chain-growth-probability-in-kelvin", "a chain-growth probability whose unit is a temperature",
+           lambda d: fts_test(d, "weight-fit")["result_values"][0].__setitem__("unit", "K"), base=load_doc(CHAIN))
 
 
 if __name__ == "__main__":

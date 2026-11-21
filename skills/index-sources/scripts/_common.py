@@ -240,11 +240,18 @@ def jsonl_append(path, rec_or_recs):
             os.fsync(fh.fileno())
 
 
+def open_text(path):
+    """A text file for reading, gzip-compressed (.gz: raw search hits are kept compressed) or not."""
+    import gzip
+    p = Path(path)
+    return gzip.open(p, "rt", encoding="utf-8") if p.suffix == ".gz" else open(p, encoding="utf-8")
+
+
 def jsonl_iter(path):
     p = Path(path)
     if not p.exists():
         return
-    with open(p, encoding="utf-8") as fh:
+    with open_text(p) as fh:
         for line in fh:
             line = line.strip()
             if not line:
@@ -775,12 +782,35 @@ for _h, _iv in {"api.openalex.org": 0.15, "api.crossref.org": 0.25, "api.unpaywa
     PACER.set(_h, _iv)
 
 _tls = threading.local()
+_URL_SAFE = "!#$%&'()*+,/:;=?@[]~"      # what requests.utils.requote_uri leaves as it is
+
+
+def location_url(value):
+    """A redirect's Location header as a URL that can be requested. http.client hands headers over decoded as latin-1,
+    so encoding back gives the server's bytes: UTF-8 is decoded as requests does; any other bytes (seen: 0xb7) are
+    percent-encoded as they are, the way a browser follows them, instead of raising UnicodeDecodeError."""
+    try:
+        raw = value.encode("latin-1")
+    except UnicodeEncodeError:               # not straight from http.client: already text
+        return value
+    try:
+        return raw.decode("utf-8")
+    except UnicodeDecodeError:
+        return urllib.parse.quote(raw, safe=_URL_SAFE)
+
+
+class _Session(requests.Session):
+    """requests decodes a redirect's Location as UTF-8 and raises on anything else, even with allow_redirects=False
+    (it still works out the next URL): one such server reply ended whole download runs."""
+
+    def get_redirect_target(self, resp):
+        return location_url(resp.headers["location"]) if resp.is_redirect else None
 
 
 def session():
     s = getattr(_tls, "s", None)
     if s is None:
-        s = requests.Session()
+        s = _Session()
         adapter = requests.adapters.HTTPAdapter(pool_connections=20, pool_maxsize=20, max_retries=0)
         s.mount("https://", adapter)
         s.mount("http://", adapter)
@@ -887,16 +917,41 @@ def _compile_terms(terms):
 class Gate:
     """Anchor-term gate from config['gate']: a record passes when its title/abstract contains any `any` term,
     or at least one term of EVERY group in `all_groups`. Terms are case-insensitive phrases (spaces also match
-    hyphens) or regexes prefixed with 're:'. An empty gate passes everything."""
+    hyphens) or regexes prefixed with 're:'. An empty gate passes everything. `"english_only": true` turns away
+    records whose title or abstract is in another language (_lang.non_english), whatever their terms.
+    Rescue rules let in a record of the topic that never writes the anchor word: a `title_any` term in its title
+    (a catalytic reaction: "Heck", "hydroformylation", "... over Pt/Al2O3") or a `journal_any` term in its venue (a
+    catalysis journal), `journal_not` vetoing venues; screening keeps them in scope for that reason (screen.py)."""
 
     def __init__(self, spec):
         spec = spec or {}
         self.any = _compile_terms(spec.get("any"))
         self.groups = [_compile_terms(g) for g in spec.get("all_groups") or [] if g]
         self.title_only = _compile_terms(spec.get("title_only"))
-        self.empty = not (self.any or self.groups or self.title_only)
+        self.title_any = _compile_terms(spec.get("title_any"))
+        self.journal_any = _compile_terms(spec.get("journal_any"))
+        self.journal_not = _compile_terms(spec.get("journal_not"))
+        self.english_only = bool(spec.get("english_only"))
+        self.empty = not (self.any or self.groups or self.title_only or self.title_any or self.journal_any)
 
-    def passes(self, title, abstract):
+    def rescue(self, title, journal=None):
+        """Why a rescue rule lets this record in ("title: hydroformylation", "journal: Journal of Catalysis"), or None."""
+        title = unify_dashes(title or "")
+        for rx in self.title_any:
+            m = rx.search(title)
+            if m:
+                return f"title: {m.group(0).strip()[:60]}"
+        journal = unify_dashes(journal or "")
+        if journal and len(title.split()) >= 4 and any(rx.search(journal) for rx in self.journal_any) \
+                and not any(rx.search(journal) for rx in self.journal_not):     # a titled article, not a news brief
+            return f"journal: {journal[:80]}"
+        return None
+
+    def passes(self, title, abstract, journal=None):
+        if self.english_only:
+            from _lang import non_english
+            if non_english(title, abstract):
+                return False
         if self.empty:
             return True
         title, abstract = unify_dashes(title), unify_dashes(abstract)
@@ -908,4 +963,4 @@ class Gate:
         # records without a usable abstract: a title-only pattern can rescue them
         if len(abstract or "") < 150 and any(rx.search(title or "") for rx in self.title_only):
             return True
-        return False
+        return self.rescue(title, journal) is not None

@@ -26,7 +26,10 @@ ${si_left}
    source on every record and link that states something, typed absences (`not_reported` with `missing_reason`),
    `unmodeled` for what the schema cannot express, every driving force of each test, and the source's own
    interpretations. Claims in your own words. Never extend the schema, never fill a missing value, never record a
-   result the source cites from another work as its own run.
+   result the source cites from another work as its own run. Digitize every figure that holds a main result the
+   text does not print, by the skill's recipe "Digitizing a figure" (`${scale} pages region` for the crop; look at it,
+   read each point against the axes twice; approximate, with a type-B uncertainty; a point you cannot read goes in an
+   `extraction_error` gap): the second reading sends back a main-result figure left undigitized.
 5. **Check until it passes:** `${scale} source check ${folder} --derive-links` (exit 0: zero errors, every quote found,
    the cap respected).
    Gap reports you write by hand (the procedure, step 12) go in `${folder}/work/gaps/`, one `GAP-*.json` each in
@@ -34,6 +37,12 @@ ${si_left}
 6. **Write `${folder}/work/curation.json`:**
    `{"result": "curated" | "no_data", "records": {"nodes": <nodes you added>, "links": <links you added>}, "gaps": <n>,
    "not_curated": "<what you did not look at, e.g. SI tables S4-S6, Source Data>", "note": "<one line>"}`.
+   `records` holds two numbers, never the records themselves: they are in the graph, and the report goes to the second
+   reader with the whole document.
    `no_data` only when the source reports nothing the catalysis checklist covers (say why in `note`); the graph then
-   keeps its header and Source.
+   keeps its header and Source. The checklist covers Preparations, Characterizations and their steps, so a source
+   that makes or characterizes a material itself (a colloid or nanoparticles made for a sensor, a drug carrier or an
+   antibacterial test as much as for a catalyst) is curated: what it made, how, and what it measured, its stated use
+   in a Claim; only what the schema has no place for goes in `unmodeled`. A source that makes, measures and tests
+   nothing itself (a review, an editorial, a commentary) is `no_data`.
 7. **Reply** with the last check's `ok`, its number of errors and warnings, and your one-line note. Nothing else.

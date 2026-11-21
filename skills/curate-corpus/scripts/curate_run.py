@@ -1,12 +1,14 @@
 """Curate a frozen corpus into scale-catal documents: one SCALE working folder per source, curated by a subagent that
 follows the curate-corpus skill's procedure for one source, read a second time by another, and checked by SCALE's tools.
 
-  python3 -I curate_run.py prepare --corpus <sources.json> --run <dir> --curator opus|sonnet|fable|haiku
+  python3 -I curate_run.py prepare --corpus <sources.json> --run <dir> --curator opus|sonnet|fable|haiku|api:<model>
                                    --reviewer opus|sonnet|fable|haiku|api:<model>|skip [--api-base-url <url>]
+                                   [--api-context-tokens N]
                                    [--ids 12,57 | --ids-file F] [--max 50]
                                    [--contributor <id>] [--project <id>] [--version <v>] [--no-si] [--scale "<command>"]
   python3 -I curate_run.py next    --run <dir> --role curate|review|fix [--n 5]
-  python3 -I curate_run.py review-api --run <dir> [--n 5]      (the second reading by a model behind an API)
+  python3 -I curate_run.py review-api --run <dir> [--n 5] [--context-tokens N] [--max-chars 300000] [--max-doc-chars N]
+                                                              (the second reading by a model behind an API)
   python3 -I curate_run.py status  --run <dir> [--apply]
   python3 -I curate_run.py finish  --run <dir> [--public] [--bundle]
   python3 -I curate_run.py assemble --run <dir> [--out <folder>]        (a local graph of the run, to query)
@@ -20,14 +22,30 @@ prepare   checks the manifest with `scale corpus check`, picks its included sour
 next      writes the prompt of the next N sources for a role (from ../templates) and prints one JSON line per source:
           {"id", "role", "prompt", "model"}. Launch one subagent per line, with that model. A handed-out source is not
           handed out again for 3 hours unless its report arrives.
-          Models (asked before prepare): --curator is the model that curates and fixes; --reviewer the one that reads
-          each document a second time — another Claude model (recommended: not the curator's), api:<model> (read by
-          review-api through an OpenAI-compatible endpoint, --api-base-url; key in ~/.scale/sources/keys.txt or
-          an environment variable), or skip (not recommended: a document then passes on SCALE's checks alone, and the
-          index says it was not read a second time).
+          Models (asked before prepare): --curator is the model that curates and fixes — a Claude model (a subagent)
+          or api:<model>, a model behind --api-base-url run by an agent host that follows this skill (the line then
+          carries "base_url"; the host may read that source's folder and SCALE, never another run's folders);
+          --reviewer the one that reads each document a second time — another Claude model (recommended: not the
+          curator's), api:<model> (read by review-api through an OpenAI-compatible endpoint, --api-base-url; key in
+          ~/.scale/sources/keys.txt or an environment variable), or skip (not recommended: a document then passes on
+          SCALE's checks alone, and the index says it was not read a second time). One --api-base-url serves both.
 review-api  the second reading of the next N curated sources by the API model: the document, the curator's report
           and the page texts go to the model with the reading's checklist; its verdict is written to
-          work/review.json as a subagent's would be.
+          work/review.json as a subagent's would be. A stream cut off (no finish_reason or [DONE]) is retried like a
+          5xx; the raw answer of a failed reading is kept in work/review-raw-<n>.json. A document larger than
+          its reader's context window allows (--context-tokens, or prepare --api-context-tokens: 2.5 characters a
+          token, --answer-tokens 64,000 kept for the answer and doubled once for a reading cut by length; without a window, --max-doc-chars, 150,000 characters of compact
+          JSON) is read in parts: each part holds whole records with the links they start,
+          and lists the records of the other parts (id, label, name), so that nothing is read twice or reported
+          missing; the parts' issues are merged into one reading (its "parts" field says how many).
+          Every reading (review-api's and a subagent's) is given today's date and, after a fix, the previous reading's
+          issues to check first.
+
+Severity: each issue of a second reading is major (a value, unit, pairing, condition or result that is wrong,
+unsupported or filled in; a main result missing; a record that misstates the source) or minor (the record holds, but
+its support or wording could be better). The verdict is needs_fix when an issue is major (an issue without a
+severity counts as major) and pass when every issue is minor; the minor issues stay in work/review.json for the
+person who reviews the document.
 status    runs `scale source check <folder>` on every folder (cached while the graph is unchanged), reads the
           curator's report (work/curation.json) and the second reading (work/review.json), and gives each source a
           state; --apply records the settled ones in state.jsonl and hands their result to the source index
@@ -46,6 +64,7 @@ a document's records: the curator writes them, SCALE's tools check them. Prints 
 """
 import argparse
 import datetime as _dt
+import http.client
 import json
 import os
 import re
@@ -68,9 +87,39 @@ INCLUDED = ("in_scope", "included")
 SETTLED = {"passed", "rejected", "failed"}
 MODELS = ("opus", "sonnet", "fable", "haiku")        # Claude models a subagent can run on
 API_CHARS = 300000                                   # page-text characters sent to an API reader at most
+DOC_CHARS = 150000      # document characters (compact JSON) per request of an API reader; a larger one goes in parts
+CHARS_PER_TOKEN = 2.5   # characters a token: compact JSON with ids and units runs under 3
+                        # (prose about 4), so 2.5 is a safe bound
+WIDE = 3                # a character outside ASCII (CJK text, Greek, symbols) can be a token alone: it counts as 3
+ANSWER_TOKENS = 64000   # tokens of a reader's window kept for its answer, thinking included (doubled once for a
+                        # reading cut by length)
+REPORT_CHARS = 20000    # characters of the curator's report sent to an API reader at most
+SEVERITIES = ("major", "minor")
+_WIDE = re.compile(r"[^\x00-\x7f]")
+
+
+def width(text):
+    """Characters as the budgets count them: a character outside ASCII counts as WIDE."""
+    return len(text) + (WIDE - 1) * len(_WIDE.findall(text))
+
+
+def head_within(text, budget):
+    """The longest start of text whose width is within budget."""
+    if width(text) <= budget:
+        return text
+    lo, hi = 0, min(len(text), budget)
+    while lo < hi:
+        mid = (lo + hi + 1) // 2
+        lo, hi = (mid, hi) if width(text[:mid]) <= budget else (lo, mid - 1)
+    return text[:lo]
 
 
 # ------------------------------------------------------------------ small helpers
+def is_model(m, also=()):
+    """A Claude model a subagent runs on, api:<model> (a model behind the run's --api-base-url), or one of `also`."""
+    return m in MODELS + tuple(also) or (isinstance(m, str) and m.startswith("api:") and len(m) > 4)
+
+
 def now():
     return _dt.datetime.now(_dt.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
 
@@ -183,6 +232,28 @@ def folder_id(src):
     return "".join(c if c.isalnum() or c in "._-" else "-" for c in str(src.get("slug") or src.get("id"))).strip("-.")
 
 
+def severity(issue):
+    """An issue's severity: major or minor; one without a valid severity (or a reading made before severities) is
+    major."""
+    s = str((issue or {}).get("severity") or "").strip().lower()
+    return s if s in SEVERITIES else "major"
+
+
+def settled_verdict(review):
+    """The verdict a second reading settles on, whoever wrote it: reject as given; otherwise needs_fix when an issue
+    is major and pass when every issue is minor (or there is none)."""
+    v = (review or {}).get("verdict")
+    if v not in ("pass", "needs_fix"):
+        return v
+    return "needs_fix" if any(severity(x) == "major" for x in review.get("issues") or []) else "pass"
+
+
+def issue_lines(issues):
+    """The issues of a reading as hand-out lines, each tagged with its severity."""
+    return [f"[{severity(x)}] {x.get('record', '?')} ({x.get('locator', '')}): {x.get('problem', '')} → "
+            f"{x.get('fix', '')}" for x in issues or []]
+
+
 # ------------------------------------------------------------------ the run
 class Run:
     def __init__(self, d):
@@ -258,16 +329,18 @@ class Run:
         chk = self.check(i)
         review = read_json(rev) or {}
         review_current = rev.exists() and mtime(rev) >= latest
-        if review_current and review.get("verdict") == "reject":
+        verdict = settled_verdict(review)
+        if review_current and verdict == "reject":
             return "rejected", review.get("note") or "the second reading rejected it"
         if not chk.get("ok"):
             return ("failed", "the check still fails after 3 fixes") if out_of_fixes else \
                 ("check_failed", f"{len(chk.get('errors') or [])} errors in scale source check")
-        if review_current and review.get("verdict") == "pass":
+        if review_current and verdict == "pass":
             return "passed", (read_json(cur) or {}).get("result") or "curated"
-        if review_current and review.get("verdict") == "needs_fix":
-            return ("failed", "issues remain after 3 fixes") if out_of_fixes else \
-                ("needs_fix", f"{len(review.get('issues') or [])} issues from the second reading")
+        if review_current and verdict == "needs_fix":
+            major = sum(1 for x in review.get("issues") or [] if severity(x) == "major")
+            return ("failed", f"{major} major issues remain after 3 fixes") if out_of_fixes else \
+                ("needs_fix", f"{major} major issues from the second reading")
         if self.skip_review:               # chosen at prepare: the check alone settles it
             return "passed", (read_json(cur) or {}).get("result") or "curated"
         return "curated", "waiting for the second reading"
@@ -306,14 +379,15 @@ def cmd_prepare(a):
     if a.reviewer:
         models["reviewer"] = a.reviewer
     if a.api_base_url:
-        models["api"] = {"base_url": a.api_base_url, "key_name": a.api_key_name, "key_env": a.api_key_env}
-    if models.get("curator") not in MODELS or not (models.get("reviewer") in MODELS + ("skip",) or
-                                                   str(models.get("reviewer")).startswith("api:")):
-        die("ask first, then give both: --curator " + "|".join(MODELS) + " (the model that curates; opus is "
-            "recommended) and --reviewer " + "|".join(MODELS) + "|api:<model>|skip (who reads each document a second "
-            "time: recommended, a model other than the curator's; skip is not recommended)")
-    if str(models["reviewer"]).startswith("api:") and not (models.get("api") or {}).get("base_url"):
-        die("--reviewer api:<model> needs --api-base-url (an OpenAI-compatible endpoint)")
+        models["api"] = {"base_url": a.api_base_url, "key_name": a.api_key_name, "key_env": a.api_key_env,
+                         **({"context_tokens": a.api_context_tokens} if a.api_context_tokens else {})}
+    if not (is_model(models.get("curator")) and is_model(models.get("reviewer"), ("skip",))):
+        die("ask first, then give both: --curator " + "|".join(MODELS) + "|api:<model> (the model that curates; "
+            "opus is recommended) and --reviewer " + "|".join(MODELS) + "|api:<model>|skip (who reads each document a "
+            "second time: recommended, a model other than the curator's; skip is not recommended)")
+    for role in ("curator", "reviewer"):
+        if str(models[role]).startswith("api:") and not (models.get("api") or {}).get("base_url"):
+            die(f"--{role} api:<model> needs --api-base-url (the endpoint that serves the model)")
     root = project_root(manifest_path.parent)
     cfg["project_root"] = str(root) if root else None
     picked = []
@@ -427,13 +501,16 @@ def cmd_next(a):
             start_note=("**Note:** " + src["note"] + ".") if src.get("note") else "",
             si_read=bullet(si_read, "none appended"), si_left=bullet(si_left, "none"),
             check_errors=bullet([e.get("message") or json.dumps(e) for e in chk.get("errors") or []], "none"),
-            issues=bullet([f"{x.get('record', '?')} ({x.get('locator', '')}): {x.get('problem', '')} → {x.get('fix', '')}"
-                           for x in review.get("issues") or []] if st == "needs_fix" else [], "none"))
+            issues=bullet(issue_lines(review.get("issues")) if st == "needs_fix" else [], "none"),
+            today=now()[:10],
+            previous=bullet(issue_lines(review.get("issues")) if a.role == "review" and fixes else [],
+                            "none: this is the first reading"))
         p = run.d / "prompts" / a.role / f"{i}.md"
         p.parent.mkdir(parents=True, exist_ok=True)
         p.write_text(text, encoding="utf-8")
         append_jsonl(run.d / "handouts.jsonl", {"id": i, "role": a.role, "t": t, "at": now()})
-        out.append({"id": i, "role": a.role, "prompt": str(p), "model": model})
+        out.append({"id": i, "role": a.role, "prompt": str(p), "model": model,
+                    **({"base_url": run.models["api"]["base_url"]} if str(model).startswith("api:") else {})})
     for o in out:
         print(json.dumps(o))
     if not out:
@@ -451,11 +528,142 @@ that every quote is verbatim in the text; check what they cannot:
 - unknowns typed (not_reported with missing_reason); no typical value filled in; no unreported product as 0;
 - results the source cites from other works are not recorded as its own runs;
 - values read off a figure carry an uncertainty;
-- coverage: the source's main results (its key tables and figures) are recorded, or declared not curated.
+- scope: a document left no_data, or one that leaves out a material the source itself makes or characterizes, is a
+  needs_fix issue when the source reports its own preparation or characterization, whatever the material is for (the
+  checklist covers Preparations and Characterizations; no_data is for a source with nothing of its own, such as a
+  review);
+- coverage: the source's main results (its key tables and figures) are recorded. A main result printed only in a
+  figure is digitized by the skill's recipe ("Digitizing a figure"), the points that cannot be read listed in an
+  extraction_error gap; a main-result figure left undigitized ("not curated", "not digitized") is a needs_fix issue
+  that names the figure. Supporting information and secondary figures may stay declared not curated.
+Today's date comes with the document: a date up to it (a retrieval date, say) is not in the future.
+After a fix, the previous reading's issues come with the document: check each first (those about the records you
+are given); one the fix did not resolve is reported again, with its severity. Then read the rest as above.
+A large document comes in parts: you are given some of its records, with the links they start, and a list of the
+records in the other parts (id, label, name). Read the records you are given; a record or a result in that list is
+in the document, so never report it missing, and judge coverage on the list and your records together.
+Give every issue a severity. major: a value, unit, condition or result that is wrong, not supported by its quote,
+paired with the wrong run or filled in; a main result missing or left undigitized; a record that misstates the
+source (a wrong link, a result cited from another work recorded as the source's own, a driving force or scope left
+out). minor: the record holds, but its support or wording could be better (a quote that supports it in part while the
+sentence beside it holds the rest, a locator, a note, an optional detail). The verdict is needs_fix when an issue is
+major and pass when every issue is minor (minor issues stay in the reading for the person who reviews the document).
 Answer with one JSON object and nothing else:
 {"verdict": "pass" | "needs_fix" | "reject", "issues": [{"record": "<id>", "locator": "<where in the source>",
-"problem": "<what is wrong>", "fix": "<what to do>"}], "coverage": "<one line>", "note": "<one line>"}.
+"problem": "<what is wrong>", "fix": "<what to do>", "severity": "major" | "minor"}], "coverage": "<one line>",
+"note": "<one line>"}.
 Use reject only when the text is of another source or cannot be read."""
+
+
+def doc_parts(graph, budget):
+    """The document as the parts an API reader is sent, each `(part, others)`: `part` a document (the graph's head,
+    whole records and the links they start) of at most `budget` characters of compact JSON where a record allows it,
+    `others` the records held by the other parts as "id | label | name" lines. A document within the budget is one
+    part with no others. Records are grouped by label (in the order labels first appear) and packed in document order;
+    each link goes with the record it starts from (a link from a record outside the document, with the last part), so
+    every record and every link is read exactly once."""
+    def size(x):
+        return width(json.dumps(x, ensure_ascii=False, separators=(",", ":")))
+
+    if size(graph) <= budget:
+        return [(graph, [])]
+    nodes, links = graph.get("nodes") or [], graph.get("links") or []
+    head = {k: v for k, v in graph.items() if k not in ("nodes", "links")}
+    ids = {n.get("id") for n in nodes}
+    starts = {}
+    for link in links:
+        starts.setdefault(link.get("source") if link.get("source") in ids else None, []).append(link)
+    order = {}
+    for n in nodes:
+        order.setdefault(n.get("label"), len(order))
+    groups = [([n], starts.get(n.get("id"), [])) for n in sorted(nodes, key=lambda n: order[n.get("label")])]
+    if starts.get(None):
+        groups.append(([], starts[None]))
+    room = max(1, budget - size({**head, "nodes": [], "links": []}))
+    packs, cur, used = [], [], 0
+    for g in groups:
+        s = sum(size(x) + 1 for x in g[0] + g[1])                            # each item and its comma
+        if cur and used + s > room:
+            packs.append(cur)
+            cur, used = [], 0
+        cur.append(g)
+        used += s
+    packs.append(cur)
+
+    out = []
+    for k, pack in enumerate(packs):
+        mine = [n for g in pack for n in g[0]]
+        others = [outline_line(n) for j, p in enumerate(packs) if j != k for g in p for n in g[0]]
+        out.append(({**head, "nodes": mine, "links": [x for g in pack for x in g[1]]}, others))
+    return out
+
+
+def reading_budget(context, doc_len, text_len, fixed_len, list_len, max_chars, max_doc_chars=None,
+                   answer_tokens=ANSWER_TOKENS):
+    """(page-text characters, document characters per part) for one source's second reading.
+
+    Without the reader's context window (tokens): the page texts up to max_chars and parts of max_doc_chars (DOC_CHARS
+    when not given). With it, the request is fitted to the window: the room is (context - answer_tokens) *
+    CHARS_PER_TOKEN characters less the instructions, the curator's report and the previous issues (fixed_len). The
+    widths count a character outside ASCII as WIDE (width()). The
+    whole document goes in one request when it fits beside the page texts (a 1M-token reader rarely needs parts);
+    otherwise it goes in parts, each beside the page texts and the list of the other parts' records (list_len); the page
+    texts are cut only when the parts would get less than half the room. max_doc_chars, when given, caps a part."""
+    text = min(text_len, max_chars)
+    if not context:
+        return text, max_doc_chars or DOC_CHARS
+    room = max(1, int((context - answer_tokens) * CHARS_PER_TOKEN) - fixed_len - width(READER))
+    if doc_len + text <= room:
+        doc = max(doc_len, 1)
+    else:
+        doc = room - text - list_len
+        if doc < room // 2:
+            doc = room // 2
+            text = max(0, min(text, room - doc - list_len))
+    return text, max(1, min(doc, max_doc_chars) if max_doc_chars else doc)
+
+
+def report_for_reader(raw):
+    """The curator's report as an API reader gets it: `records` holds counts (`{"nodes": n, "links": n}`); when the
+    curator wrote the records themselves there (the document holds them), the reader gets their number. Within
+    REPORT_CHARS."""
+    try:
+        d = json.loads(raw)
+    except ValueError:
+        d = None
+    rec = d.get("records") if isinstance(d, dict) else None
+    counts = isinstance(rec, dict) and all(isinstance(v, int) for v in rec.values())
+    if isinstance(rec, (list, dict)) and not counts:
+        d["records"] = {"listed_in_the_report": len(rec)}
+        raw = json.dumps(d, ensure_ascii=False)
+    shown = head_within(raw, REPORT_CHARS)
+    return shown if len(shown) == len(raw) else f"{shown}\n[the report is cut here, at {REPORT_CHARS} characters]"
+
+
+def outline_line(n):
+    """One record as the parts list it: id | label | name."""
+    p = n.get("props") or {}
+    name = p.get("name") or p.get("formula") or p.get("title") or ""
+    return f"{n.get('id')} | {n.get('label')} | {str(name)[:80]}"
+
+
+def merge_readings(readings):
+    """One reading from the readings of a document's parts: their issues (each once), reject when a part rejects,
+    otherwise the verdict settled by severity."""
+    issues, seen = [], set()
+    for v in readings:
+        for x in v["issues"]:
+            k = (str(x.get("record")), str(x.get("problem")))
+            if k not in seen:
+                seen.add(k)
+                issues.append(x)
+    merged = {"verdict": "reject" if any(v["verdict"] == "reject" for v in readings) else "needs_fix",
+              "issues": issues,
+              "coverage": " | ".join(dict.fromkeys(v["coverage"] for v in readings if v["coverage"])),
+              "note": " | ".join(dict.fromkeys(v["note"] for v in readings if v["note"]))}
+    if merged["verdict"] != "reject":
+        merged["verdict"] = settled_verdict(merged)
+    return merged
 
 
 def _api_key(api):
@@ -472,35 +680,100 @@ def _api_key(api):
     return None
 
 
+class CutStream(RuntimeError):
+    """A stream that ended without `finish_reason` or `[DONE]` (the endpoint closed it, e.g. after 30 minutes): what
+    arrived is kept on the error, never read as the whole answer."""
+
+    def __init__(self, content="", reasoning=""):
+        super().__init__("the stream ended without finish_reason or [DONE] (cut off)")
+        self.content, self.reasoning = content, reasoning
+
+
+class Answer(tuple):
+    """An answer, `(content, reasoning)`, with how it ended: `finish` (the last finish_reason: "stop", or "length" when
+    the reader ran out of room) and the endpoint's `usage` when it reports one."""
+
+    def __new__(cls, content, reasoning, finish=None, usage=None):
+        out = super().__new__(cls, (content, reasoning))
+        out.finish, out.usage = finish, usage
+        return out
+
+
 def _chat(base, key, model, messages, tries=5):
-    """One answer from an OpenAI-compatible chat endpoint (standard library), retried on rate limits and 5xx."""
+    """One answer, `Answer(content, reasoning)`, from an OpenAI-compatible chat endpoint (standard library), retried
+    on rate limits, 5xx, network errors and a cut stream. Asked for as a stream: some endpoints cap an unstreamed
+    answer (8,000 tokens, thinking included), which a reasoning model spends before it writes the verdict; an
+    endpoint that answers in one piece is read as one. A stream is whole only when it ends with a `finish_reason` or
+    `[DONE]`; one that does not is a failure like a 5xx, and after the last try `CutStream` carries what arrived."""
     import urllib.error
     import urllib.request
-    body = json.dumps({"model": model, "messages": messages, "temperature": 0}).encode("utf-8")
-    last = "no answer"
+    body = json.dumps({"model": model, "messages": messages, "temperature": 0, "stream": True,
+                       "stream_options": {"include_usage": True}}).encode("utf-8")
+    last, cut = "no answer", None             # cut: the cut stream with the most content so far
     for attempt in range(tries):
         req = urllib.request.Request(f"{base.rstrip('/')}/chat/completions", data=body, method="POST",
                                      headers={"Authorization": f"Bearer {key}", "Content-Type": "application/json"})
         try:
             with urllib.request.urlopen(req, timeout=900) as r:
-                return json.loads(r.read().decode("utf-8"))["choices"][0]["message"]["content"] or ""
+                if "text/event-stream" not in (r.headers.get("Content-Type") or ""):
+                    d = json.loads(r.read().decode("utf-8"))
+                    m = d["choices"][0]["message"]
+                    return Answer(m.get("content") or "", m.get("reasoning_content") or m.get("reasoning") or "",
+                                  d["choices"][0].get("finish_reason"), d.get("usage"))
+                parts, thoughts, whole, finish, usage = [], [], False, None, None
+                try:
+                    for raw in r:                     # server-sent events: data: {"choices": [{"delta": …}]}
+                        line = raw.decode("utf-8", "replace").strip()
+                        if not line.startswith("data:"):
+                            continue
+                        data = line[5:].strip()
+                        if data == "[DONE]":
+                            whole = True
+                        elif data:
+                            event = json.loads(data)
+                            choice = (event.get("choices") or [{}])[0]
+                            delta = choice.get("delta") or {}
+                            parts.append(delta.get("content") or "")
+                            # reasoning_content, or reasoning (the name vLLM gives it from 2025)
+                            thoughts.append(delta.get("reasoning_content") or delta.get("reasoning") or "")
+                            finish = choice.get("finish_reason") or finish
+                            usage = event.get("usage") or usage
+                            whole = whole or bool(choice.get("finish_reason"))
+                except (OSError, ValueError, http.client.HTTPException):    # the connection broke mid-stream
+                    pass
+                if whole:
+                    return Answer("".join(parts), "".join(thoughts), finish, usage)
+                this = CutStream("".join(parts), "".join(thoughts))
+                if cut is None or len(this.content + this.reasoning) >= len(cut.content + cut.reasoning):
+                    cut = this
+                last = str(this)
         except urllib.error.HTTPError as e:
             last = f"HTTP {e.code}"
             if e.code in (400, 401, 403, 404):
                 break
         except (urllib.error.URLError, OSError, ValueError, KeyError, IndexError) as e:
             last = str(e)[:200]
-        time.sleep(min(60, 5 * 2 ** attempt))
+        if attempt + 1 < tries:
+            time.sleep(min(60, 5 * 2 ** attempt))
+    if cut is not None:                       # a try that was cut keeps its work, whatever failed after it
+        if last != str(cut):
+            cut.args = (f"{cut} (last try: {last})",)
+        raise cut
     raise RuntimeError(last)
 
 
 def _verdict(text):
+    """The reading in an answer, its verdict settled by severity (reject as given)."""
     m = re.search(r"\{.*\}", text or "", re.S)
     v = json.loads(m.group(0)) if m else None
     if not isinstance(v, dict) or v.get("verdict") not in ("pass", "needs_fix", "reject"):
         raise ValueError("the answer holds no verdict")
-    return {"verdict": v["verdict"], "issues": [x for x in v.get("issues") or [] if isinstance(x, dict)],
-            "coverage": str(v.get("coverage") or ""), "note": str(v.get("note") or "")}
+    issues = [{**x, "severity": severity(x)} for x in v.get("issues") or [] if isinstance(x, dict)]
+    out = {"verdict": v["verdict"], "issues": issues, "coverage": str(v.get("coverage") or ""),
+           "note": str(v.get("note") or "")}
+    if out["verdict"] != "reject":
+        out["verdict"] = settled_verdict(out)
+    return out
 
 
 def cmd_review_api(a):
@@ -513,6 +786,8 @@ def cmd_review_api(a):
     if not key:
         die(f"no key for the reader: add `{api.get('key_name', 'llm_api_key')}: <key>` to ~/.scale/sources/keys.txt"
             + (f" or set {api['key_env']}" if api.get("key_env") else ""))
+    context = a.context_tokens or api.get("context_tokens")       # the reader's window: requests are fitted to it
+    answer = a.answer_tokens or api.get("answer_tokens") or ANSWER_TOKENS    # of it, kept for the answer
     hand, done, failed = run.handouts(), [], []
     for i in run.ids():
         if len(done) + len(failed) >= a.n:
@@ -524,20 +799,73 @@ def cmd_review_api(a):
         g, slug = run.graph(i)
         texts = next((f / "work" / "texts").glob("*.txt"), None)
         text = texts.read_text(encoding="utf-8", errors="replace") if texts else ""
-        cut = len(text) > a.max_chars
-        user = (f"THE DOCUMENT ({g.name}):\n{g.read_text(encoding='utf-8')}\n\nTHE CURATOR'S REPORT:\n"
-                f"{(f / 'work' / 'curation.json').read_text(encoding='utf-8')}\n\nTHE SOURCE'S PAGE TEXTS"
-                f"{' (the first ' + str(a.max_chars) + ' characters)' if cut else ''}:\n{text[:a.max_chars]}")
-        append_jsonl(run.d / "handouts.jsonl", {"id": i, "role": "review", "t": time.time(), "at": now(),
-                                                "reader": reviewer})
-        try:
-            v = _verdict(_chat(api["base_url"], key, reviewer[4:], [{"role": "system", "content": READER},
-                                                                     {"role": "user", "content": user}]))
-        except (RuntimeError, ValueError) as e:
-            failed.append({"id": i, "error": str(e)[:200]})
+        fixes = sum(1 for h in hand.get(i, []) if h["role"] == "fix")
+        previous = issue_lines((read_json(f / "work" / "review.json") or {}).get("issues")) if fixes else []
+        graph = json.loads(g.read_text(encoding="utf-8"))
+        report = report_for_reader((f / "work" / "curation.json").read_text(encoding="utf-8"))
+        listed = sum(width(outline_line(n)) + 1 for n in graph.get("nodes") or [])
+        doc_len = width(json.dumps(graph, ensure_ascii=False, separators=(",", ":")))
+        fixed = width(report) + width(bullet(previous, "")) + 2000
+        room_for_answer, doc_cap = answer, a.max_doc_chars
+        for attempt in (1, 2):                    # a reading cut by length is read once more with twice the room
+            chars, doc_chars = reading_budget(context, doc_len, width(text), fixed, listed, a.max_chars, doc_cap,
+                                              room_for_answer)
+            shown = head_within(text, chars)
+            cut = len(shown) < len(text)
+            parts = doc_parts(graph, doc_chars)
+            common = (f"TODAY'S DATE: {now()[:10]}\n\nTHE CURATOR'S REPORT:\n{report}\n\n"
+                      + (f"THE PREVIOUS READING'S ISSUES (a fix followed; check each first):\n"
+                         f"{bullet(previous, '')}\n\n" if previous else "")
+                      + f"THE SOURCE'S PAGE TEXTS{' (the first ' + str(len(shown)) + ' characters)' if cut else ''}:\n"
+                      f"{shown}")
+            append_jsonl(run.d / "handouts.jsonl", {"id": i, "role": "review", "t": time.time(), "at": now(),
+                                                    "reader": reviewer,
+                                                    **({"parts": len(parts)} if len(parts) > 1 else {})})
+            readings, entry, length = [], None, False
+            for k, (part, others) in enumerate(parts, 1):
+                doc = json.dumps(part, ensure_ascii=False, separators=(",", ":"))       # 1/4 fewer tokens
+                if len(parts) == 1:
+                    head = f"THE DOCUMENT ({g.name}, as compact JSON):\n{doc}"
+                else:
+                    head = (f"THE DOCUMENT ({g.name}), PART {k} OF {len(parts)}: these records, with the links they "
+                            f"start, as compact JSON:\n{doc}\n\nTHE RECORDS IN THE OTHER PARTS (id | label | name), "
+                            f"read separately; never report them missing:\n" + "\n".join(others))
+                got = None
+                try:
+                    got = _chat(api["base_url"], key, reviewer[4:], [{"role": "system", "content": READER},
+                                                                     {"role": "user", "content": f"{head}\n\n{common}"}])
+                    readings.append(_verdict(got[0]))
+                except (RuntimeError, ValueError) as e:
+                    content, reasoning = (e.content, e.reasoning) if isinstance(e, CutStream) else (got or ("", ""))
+                    finish = getattr(got, "finish", None)
+                    length = finish == "length"
+                    entry = {"id": i, "error": str(e)[:200] + (" (the answer ran out of room: finish_reason length)"
+                                                               if length else ""),
+                             **({"part": f"{k}/{len(parts)}"} if len(parts) > 1 else {})}
+                    if content or reasoning:          # the reader's work is kept, not lost
+                        n = len(list((f / "work").glob("review-raw-*.json"))) + 1
+                        write_json(f / "work" / f"review-raw-{n}.json",
+                                   {"reader": reviewer, "error": entry["error"], "content": content or "",
+                                    "reasoning_content": reasoning or "", "finish_reason": finish,
+                                    "usage": getattr(got, "usage", None), "answer_tokens": room_for_answer,
+                                    "at": now(), **({"part": f"{k}/{len(parts)}"} if len(parts) > 1 else {})})
+                        entry["raw"] = f"work/review-raw-{n}.json"
+                    break                             # a reading with a part unread is not a reading
+            if not (entry and length and attempt == 1):
+                break
+            if context:
+                room_for_answer = min(2 * room_for_answer, max(room_for_answer, context // 2))
+            else:
+                doc_cap = max(1, (doc_cap or DOC_CHARS) // 2)
+        if entry:
+            failed.append(entry)
             continue
-        write_json(f / "work" / "review.json", {**v, "reader": reviewer, "text_cut": cut, "at": now()})
-        done.append({"id": i, "verdict": v["verdict"], "issues": len(v["issues"])})
+        v = readings[0] if len(readings) == 1 else merge_readings(readings)
+        write_json(f / "work" / "review.json", {**v, "reader": reviewer, "text_cut": cut, "parts": len(parts),
+                                                **({"context_tokens": context, "answer_tokens": room_for_answer}
+                                                   if context else {}), "at": now()})
+        done.append({"id": i, "verdict": v["verdict"], "issues": len(v["issues"]),
+                     **({"parts": len(parts)} if len(parts) > 1 else {}), **({"retried": "length"} if attempt == 2 else {})})
     print(json.dumps({"read": done, "failed": failed, "reader": reviewer,
                       "next": f"curate_run.py status --run {run.d}"}))
 
@@ -689,16 +1017,26 @@ def main():
                                      "documents will be contributed to, e.g. graphs/catal-commons)")
     p.add_argument("--no-si", action="store_true", help="do not append the SI files' text to the page texts")
     p.add_argument("--scale", help='the scale command (default: $SCALE_CMD or "scale"; e.g. "uv run --project <checkout> scale")')
-    p.add_argument("--curator", choices=MODELS, help="the model that curates and fixes (asked first; opus recommended)")
+    p.add_argument("--curator", help="the model that curates and fixes: " + "|".join(MODELS) + " (a subagent; opus "
+                   "recommended) or api:<model> (scripts/api_host.py, on a model behind --api-base-url)")
     p.add_argument("--reviewer", help="who reads each document a second time: " + "|".join(MODELS) +
                    " (recommended: not the curator's), api:<model>, or skip (not recommended)")
-    p.add_argument("--api-base-url", help="for --reviewer api:<model>: an OpenAI-compatible endpoint (…/v1)")
+    p.add_argument("--api-base-url", help="for an api:<model> curator or reviewer: the endpoint that serves it "
+                   "(…/v1; OpenAI-compatible for review-api)")
     p.add_argument("--api-key-name", default="llm_api_key", help="its key's name in ~/.scale/sources/keys.txt")
     p.add_argument("--api-key-env", help="or the environment variable that holds its key")
+    p.add_argument("--api-context-tokens", type=int, help="the API reader's context window in tokens: review-api fits "
+                   "each request to it, reading a large document in parts only when it does not fit")
     p = sub.add_parser("review-api")
     p.add_argument("--run", required=True)
     p.add_argument("--n", type=int, default=5)
     p.add_argument("--max-chars", type=int, default=API_CHARS, help="page-text characters sent at most")
+    p.add_argument("--max-doc-chars", type=int, help=f"document characters (compact JSON) per request at most; a larger "
+                   f"document is read in parts (default: fitted to --context-tokens, else {DOC_CHARS})")
+    p.add_argument("--answer-tokens", type=int, help=f"tokens of the window kept for the reader's answer, thinking "
+                   f"included (default {ANSWER_TOKENS}; a reading cut by length is read once more with twice as many)")
+    p.add_argument("--context-tokens", type=int, help="the reader's context window in tokens (default: the run's, "
+                   "prepare --api-context-tokens): each request is fitted to it, in parts only when it must be")
     p = sub.add_parser("next")
     p.add_argument("--run", required=True)
     p.add_argument("--role", required=True, choices=sorted(ROLE_STATES))

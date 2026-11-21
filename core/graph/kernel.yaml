@@ -228,6 +228,15 @@ value:
         "unidentified oxygenates" or "unaccounted"). It goes without target, so that a value whose product is unknown
         stays explicit;
         it is never read as any one species, and a comparison of species leaves it out.
+    relative_to:
+      type: ref
+      targets: ANY
+      maturity: provisional
+      description: The record a share is taken within, when its whole is that record and not everything formed or
+        converted (the product lump or species a selectivity is a share of, C5+ olefins as a share of all olefins,
+        aldehydes within the oxygenates). A context that reads it (selectivity_whole within_lump) names it, so that
+        shares within two records are two quantities. It goes with a share, never as the target (the numerator); a
+        domain says which records it names.
     id:
       type: string
       maturity: provisional
@@ -2814,6 +2823,10 @@ quantities:
     molar_flow: N T-1
     mass_flow: M T-1
     volume_per_mass_time: L3 M-1 T-1
+    mass_time_per_amount: M T N-1
+    mass_time_per_volume: M L-3 T
+    area_per_mass: L2 M-1
+    volume_per_mass: L3 M-1
     amount_per_energy: N M-1 L-2 T2
     mass_per_energy: L-2 T2
     amount_per_mass_time: N M-1 T-1
@@ -3007,9 +3020,11 @@ quantities:
       wt%:
         dimension: dimensionless
         fraction_basis: mass
+        selectivity_count: mass
       mass%:
         dimension: dimensionless
         fraction_basis: mass
+        selectivity_count: mass
       mol%:
         dimension: dimensionless
         fraction_basis: mole
@@ -3132,6 +3147,8 @@ quantities:
           terms: [volume fraction, by volume, v/v, volume basis]
         relative_to_component:
           terms: [relative to component]
+        partial_pressure:
+          terms: [partial pressure, partial-pressure ratio, partial pressure ratio, pressure ratio]
       unspecified: [not_reported]
       refine:
         relative_to_component: relative_to
@@ -3153,6 +3170,12 @@ quantities:
         volume_per_catalyst_mass:
           terms: [GHSV, per catalyst mass, per gram of catalyst]
           dimensions: [volume_per_mass_time]
+        catalyst_mass_per_molar_flow:
+          terms: [per molar flow, per mole of feed, molar feed flow, molar flow of the feed]
+          dimensions: [mass_time_per_amount]
+        catalyst_mass_per_volumetric_flow:
+          terms: [per volumetric flow, per volume of feed, volumetric feed flow, volumetric flow of the feed]
+          dimensions: [mass_time_per_volume]
     species:
       description: The species a value is counted for, named by its target, the product of a selectivity, a yield, a
         rate, an amount, a Faradaic efficiency, a quantum yield or a partial current density, the reactant of a
@@ -3177,6 +3200,67 @@ quantities:
           terms: [nitrogen balance, N balance]
         mass:
           terms: [mass balance, total mass]
+    selectivity_count:
+      description: What a selectivity counts, carbon atoms (C-mol, carbon basis), moles of product or mass (wt%). The
+        same product share counted by carbon atoms, by moles and by mass are three quantities (a C2 and a C5 product
+        weigh differently per carbon), never compared with one another. A value that states none is compared only with
+        those that state none either.
+      read_from: [unit, basis, definition]
+      values:
+        carbon_atoms:
+          terms: [carbon basis, carbon atoms, carbon atom basis, carbon balance, C-mol, C mol, C-basis, C%, C-atom basis, C atom basis, carbon selectivity]
+        mole:
+          terms: [mole basis, molar basis, mol basis, mole percent, mole selectivity, molar selectivity, by mole]
+        mass:
+          terms: [mass basis, weight basis, weight percent, mass percent, by mass, by weight]
+      unspecified: [not_reported]
+      unstated: group
+    selectivity_whole:
+      description: What a selectivity is a share of, the whole its denominator counts. Three wholes are in use, and a
+        share of one is never compared with a share of another. converted_reactant_incl_co2 is the carbon (or amount)
+        of the reactant converted, CO2 and every other product included, so the shares of the products and of CO2
+        sum to 100. products_excl_co2 is the products formed other than CO2 (the hydrocarbons, or the hydrocarbons and
+        the oxygenates, as the source says), so that CH4 + C2-C4 + C5+ = 100 and a CO2 selectivity is not among them.
+        within_lump is a share inside one pool of products (C5+ olefins of all olefins, aldehydes of the
+        oxygenates), refined by the record of that pool (the value's relative_to); the shares of two pools are two
+        quantities. A value that states none is compared only with those that state none either; no whole is assumed.
+      read_from: [basis, definition, relative_to]
+      values:
+        converted_reactant_incl_co2:
+          terms: [of converted CO, of the converted CO, of converted CO2, of the converted CO2, of converted carbon, of the converted carbon, of the reactant converted, total carbon converted, CO2 in the denominator]
+        products_excl_co2:
+          terms: [CO2-free, CO2 free, excluding CO2, excluded CO2, CO2 excluded, without CO2, free of CO2, hydrocarbon basis, hydrocarbons basis, hydrocarbons only, among hydrocarbons, among the hydrocarbons, within the hydrocarbons]
+        within_lump:
+          terms: [within the lump, within lump, within the pool, within pool, within the sub-pool, within olefins, within the olefins, within oxygenates, within the oxygenates, in the olefins distribution, in the olefin distribution, within paraffins, within the paraffins]
+      unspecified: [not_reported, other]
+      refine:
+        within_lump: relative_to
+      unstated: group
+    chain_growth_method:
+      description: How a chain-growth probability was obtained, a fit of the product distribution (the slope of
+        ln(W_n/n) or of ln(x_n) against carbon number n) or a computation from lumped selectivities (for example the
+        C2-C4 over C2+ split). Values of the two are two quantities, never converted into one another; the carbon
+        range of a fit (C14-C21, C5-C10) stays in the value's definition, as the source states it.
+      read_from: [basis, definition]
+      values:
+        distribution_fit:
+          terms: [slope of ln(W_n/n), slope of ln(Wn/n), slope of ln(x_n), slope of ln(xn), slope of the ASF plot, slope of straight lines, linearized ASF plot, linearized ASF plots, linear fit of the ASF plot, fit of the ASF distribution, ASF fit, fitted to the ASF distribution, regression of ln(W_n/n)]
+        lumped_selectivities:
+          terms: [computed from selectivities, calculated from selectivities, computed from the lumped selectivities, calculated from the lumped selectivities, from the lumped selectivities, from lumped selectivities, from the product selectivities, from the C2-C4 selectivity, from the C2-C4 and C2+ selectivities, from the CH4 selectivity]
+      unspecified: [other, not_reported]
+      unstated: group
+    chain_growth_basis:
+      description: What the distribution a chain-growth probability describes counts, the weight fraction W_n or the mole
+        fraction x_n of the product of carbon number n. A value over the one is never converted to the other; a value
+        that states neither is compared only with those that state neither either, and none is assumed.
+      read_from: [basis, definition]
+      values:
+        weight_fraction:
+          terms: [weight fraction, mass fraction, weight basis, mass basis, by weight, by mass, W_n, Wn]
+        mole_fraction:
+          terms: [mole fraction, molar fraction, mole basis, molar basis, by mole, x_n, xn]
+      unspecified: [other, not_reported]
+      unstated: group
     transport_criterion:
       description: Which criterion a transport check computed. The Weisz-Prater criterion judges diffusion in the pores,
         the Carberry number mass transfer to the particle, the Anderson criterion heat in the particle, and Mears gave
@@ -3388,7 +3472,8 @@ quantities:
         description: The electrode area (geometric or electrochemically active) or the catalyst mass the current is divided by.
         dimensions: [area, mass]
     fraction:
-      description: A part of a whole (a duty cycle), dimensionless; a basis the value states is compared as text.
+      description: A part of a whole (a duty cycle), dimensionless; a basis the value states is compared as text. A
+        chain-growth probability is a chain_growth_probability.
       dimensions: [dimensionless]
       share: true
     species_fraction:
@@ -3417,9 +3502,12 @@ quantities:
     selectivity:
       description: The share of the reactant converted, or of the products formed, that is one product (its target), on
         the basis the value states (carbon, molar, mass), dimensionless. A selectivity counts what was converted, not
-        what was fed.
+        what was fed. Two selectivities of one product are comparable only if they count the same way
+        (selectivity_count) and are shares of the same whole (selectivity_whole, all the reactant converted, CO2
+        included; the products other than CO2; one pool of products, named by the value's relative_to); a value that
+        states either is compared apart from one that does not, and none is assumed.
       dimensions: [dimensionless]
-      compare_by: [species]
+      compare_by: [species, selectivity_count, selectivity_whole]
       share: true
       maturity: provisional
     production_rate:
@@ -3482,9 +3570,33 @@ quantities:
       description: One component's quantity over another's in a mixture or a recipe (Pt:Co 1:1 by mole, ethanol:water
         1:1 by volume, H2O/SiO2 44 in a gel), dimensionless; its target is the component it is relative to (the
         denominator) and its basis says by what it is counted (mole, mass, volume, atom). A share of the whole is a
-        composition_fraction.
+        composition_fraction, a chain-growth probability a chain_growth_probability.
       dimensions: [dimensionless]
       compare_by: [fraction_basis]
+    chain_growth_probability:
+      maturity: provisional
+      description: The probability α that a growing chain adds one more unit rather than terminates (the
+        Anderson-Schulz-Flory distribution of Fischer-Tropsch synthesis, oligomerization and other chain-growth
+        chemistry), the rate of propagation over the sum of the rates of propagation and termination, dimensionless
+        and between 0 and 1. It is not a share of a whole (fraction) and not a ratio of two components (ratio). Two
+        values are comparable only if they were obtained the same way (chain_growth_method) and describe a
+        distribution on the same basis (chain_growth_basis, weight W_n or mole x_n), both read from the value's basis or
+        definition; the carbon range of a fit (C14-C21, C5-C10) is part of the definition, and values over two
+        ranges are two results. Nothing is converted or assumed.
+      dimensions: [dimensionless]
+      compare_by: [chain_growth_method, chain_growth_basis]
+    specific_surface_area:
+      maturity: provisional
+      description: A surface area per mass of solid (m2/g), as a BET area, a mesopore, micropore or external area from a
+        t-plot, or the metal surface area of a chemisorption. The class of area and the method (BET range, t-plot,
+        titrant and stoichiometry) are the value's definition and its measurand's name.
+      dimensions: [area_per_mass]
+    specific_pore_volume:
+      maturity: provisional
+      description: A pore volume per mass of solid (cm3/g, mL/g), as a total pore volume at a stated p/p0, a micropore
+        volume (t-plot, Dubinin-Radushkevich) or a mesopore volume; the class and the method are the value's
+        definition and its measurand's name.
+      dimensions: [volume_per_mass]
     ph:
       maturity: provisional
       description: The pH of a solution, a slurry or a gel, dimensionless (unit 1); its definition says when and of what
@@ -3495,6 +3607,54 @@ quantities:
       description: Revolutions per time of a stirrer, a tumbling vessel or a mill (rpm, Hz); its definition says of
         what.
       dimensions: [frequency]
+    particle_size:
+      maturity: provisional
+      description: A size of particles as the source gives it, when it names no technique or statistic; a size
+        measured by a named technique has that technique's kind.
+      dimensions: [length]
+    crystallite_size:
+      maturity: provisional
+      description: The size of coherently diffracting domains from the broadening of a diffraction line (Scherrer),
+        its reflection and phase in the definition.
+      dimensions: [length]
+    microscopy_particle_size:
+      maturity: provisional
+      description: The mean or median of a particle-size distribution counted by microscopy; the definition says
+        which, and the count is its own value.
+      dimensions: [length]
+    microscopy_particle_size_spread:
+      maturity: provisional
+      description: The spread of that distribution (a standard deviation or a range), as the definition says.
+      dimensions: [length]
+    hydrodynamic_size:
+      maturity: provisional
+      description: The size of particles in a liquid from light scattering (a DLS Z-average), with its solvent in the
+        definition.
+      dimensions: [length]
+    dispersion_equivalent_size:
+      maturity: provisional
+      description: The size a measured dispersion gives for an assumed particle shape, the shape in the definition.
+      dimensions: [length]
+    particle_edge_length:
+      maturity: provisional
+      description: The edge of a polyhedral particle (a cube, an octahedron, a plate's side).
+      dimensions: [length]
+    shell_thickness:
+      maturity: provisional
+      description: The thickness of a particle's shell or of one of its layers.
+      dimensions: [length]
+    wire_diameter:
+      maturity: provisional
+      description: The diameter of a wire or a rod.
+      dimensions: [length]
+    film_thickness:
+      maturity: provisional
+      description: The thickness of a film or an overlayer.
+      dimensions: [length]
+    aspect_ratio:
+      maturity: provisional
+      description: A particle's length to its width (a rod, a wire, a plate), dimensionless.
+      dimensions: [dimensionless]
     flow_rate:
       description: A volumetric, molar or mass flow rate; a volumetric flow is comparable only at one stated reference
         condition.
@@ -3514,6 +3674,17 @@ quantities:
       denominator:
         description: The catalyst bed volume or catalyst mass the flow is divided by.
         dimensions: [volume, mass]
+    space_time:
+      maturity: provisional
+      description: The catalyst amount over the feed flow (W/F, in g h mol-1 or g s mL-1; often called contact time or
+        space time), the inverse of a space velocity on a catalyst-mass basis; what is divided by what, and at which
+        conditions a gas volume is counted, decide the quantity. It is never converted to a space velocity.
+      dimensions: [time, mass_time_per_amount, mass_time_per_volume]
+      compare_by:
+      - space_velocity_basis
+      - context: flow_reference
+        when:
+          space_velocity_basis: [catalyst_mass_per_volumetric_flow]
     faradaic_efficiency:
       description: The share of the charge passed that forms one product (its target), dimensionless.
       dimensions: [dimensionless]

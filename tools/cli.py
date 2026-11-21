@@ -6,6 +6,7 @@ import argparse
 import hashlib
 import json
 import sys
+from collections import Counter
 from pathlib import Path
 
 from . import __version__, layout
@@ -62,6 +63,34 @@ def cmd_graph_migrate(args):
     rep["written"] = args.dest
     _emit(rep, args)
     return 0 if rep["validation"]["error"] == 0 else 1
+
+
+def cmd_graph_upgrade(args):
+    """On demand: what a newer schema version means for a graph (markdown report and JSON worklist), and with --write
+    the mechanical upgrade (tools/upgrade.py)."""
+    from . import upgrade
+    from .util import write_json
+    doc = load_doc(args.graph)
+    res, new = upgrade.plan(doc, _repo(args), args.to, args.spec, args.enrich)
+    name = Path(args.graph).name.removesuffix(".json").removesuffix(".graph")
+    stem = Path(args.report_dir) / f"upgrade-{name}-{res['from']}-to-{res['to']}"
+    stem.parent.mkdir(parents=True, exist_ok=True)
+    md, js = stem.parent / f"{stem.name}.md", stem.parent / f"{stem.name}.json"
+    md.write_text(upgrade.render(res), encoding="utf-8")
+    write_json(js, res)
+    out = {"from": res["from"], "to": res["to"], "report": str(md), "worklist": str(js), "blocked": res["blocked"],
+           "verdicts": dict(Counter(s["verdict"] for s in res["steps"]))}
+    if new is not None:
+        out.update({"errors_after": res["after"]["errors"], "checklist_new": res["checklist"]["new"],
+                    "values_needing_a_context": res["comparability"]["values_now_needing_a_context"],
+                    "reread": {"records": res["worklist"]["records"], "sources": res["worklist"]["sources"]}})
+    if args.write or args.write_to:
+        if new is None:
+            raise ScaleError(f"not written: the upgrade stops ({res['blocked']}); see {md}")
+        if res["after"]["errors"]:
+            raise ScaleError(f"not written: {res['after']['errors']} validation errors after the upgrade; see {md}")
+        out["written"] = str(upgrade.write(new, Path(args.write_to or args.graph)))
+    print(to_json(out))
 
 
 def cmd_graph_validate(args):
@@ -334,6 +363,14 @@ def cmd_source_check(args):
     print(to_json(res))
     if not res["ok"]:
         raise SystemExit(1)
+
+
+def cmd_source_digest(args):
+    """One paper's graph at a glance: its tests, conditions and results, whether SCALE's graphs report the same
+    catalysts and reactions, its negative results, its claims, and what a person checks first (tools/digest.py)."""
+    from .digest import digest_path
+    d, md = digest_path(args.path, _repo(args), args.against)
+    _emit(d, args, md)
 
 
 def cmd_source_finish(args):
@@ -710,6 +747,20 @@ def cmd_review_sample(args):
     _emit({"fraction": frac, "seed": args.seed, "sample": sample, "check": check,
            "to_record": "after the check, add checked_by (a Person), checked_on, scope, outcome and the counts "
                         "(fields_checked, fields_wrong, fields_missed) to check, and append it to the graph's checks"}, args)
+
+
+def cmd_review_values(args):
+    """Every numeric value checked against its own as_reported text and the quotes its record cites, with a review
+    sheet for the person who checks the curation (tools/valuecheck.py)."""
+    from .valuecheck import check_document, review_sheet
+    doc = load_doc(args.graph)
+    res = check_document(doc)
+    title = f"Value review sheet: {((doc.get('graph') or {}).get('title')) or Path(args.graph).name}"
+    summary = {k: v for k, v in res.items() if k != "rows"}
+    data = {**summary, "rows": res["rows"] if args.all else [r for r in res["rows"] if r["outcome"] != "ok"]}
+    _emit(data, args, review_sheet(res, title, all_values=args.all))
+    if args.strict and res["counts"]["flag"]:
+        raise SystemExit(1)
 
 
 def cmd_trace_ai(args):
@@ -1179,6 +1230,17 @@ def build_parser() -> argparse.ArgumentParser:
     sp = add("migrate", cmd_graph_migrate, "move a scale-catal document along the schema's version steps to the current version (ids kept)", gr)
     sp.add_argument("file"); sp.add_argument("dest", help="where to write the migrated document"); sp.add_argument("--spec")
     out_opts(sp)
+    sp = add("upgrade", cmd_graph_upgrade, "on demand: what a newer schema version means for a graph, step by step "
+             "(a markdown report and a JSON re-reading worklist); --write upgrades it mechanically (ids kept)", gr)
+    sp.add_argument("graph", help="a graph file, or a folder of parts (rewritten in place with --write)")
+    sp.add_argument("--to", help="the version to upgrade to (default: the current schema)")
+    sp.add_argument("--report-dir", default=".", help="where to write upgrade-<graph>-<from>-to-<to>.md and .json "
+                    "(default: the current directory)")
+    sp.add_argument("--enrich", action="append", metavar="LABEL.PROPERTY", help="add to the worklist the records that "
+                    "could record this new property (repeatable; the report lists what is available)")
+    sp.add_argument("--write", action="store_true", help="write the upgraded graph in place of the input")
+    sp.add_argument("--write-to", help="write the upgraded graph here instead")
+    sp.add_argument("--spec")
     sp = add("split", cmd_graph_split, "keep a graph as one part per source: write parts/ (header, shared records, "
              "sources/<slug>.json) from a document", gr)
     sp.add_argument("file"); sp.add_argument("--out", required=True, help="the graph's folder (parts/ is written in it)")
@@ -1299,6 +1361,12 @@ def build_parser() -> argparse.ArgumentParser:
              "gaps and the copyright cap (exit 1 on any error)", cu)
     sp.add_argument("folder")
     sp.add_argument("--derive-links", action="store_true", help="first write the REPORTED_IN links the evidence implies")
+    sp = add("digest", cmd_source_digest, "one paper's graph at a glance: tests with conditions and results, whether "
+             "SCALE's graphs report the same catalysts and reactions, negative results, claims, what to check first", cu)
+    sp.add_argument("path", help="a curation folder (checked as source check does) or a graph file")
+    sp.add_argument("--against", action="append", help="a graph to look the paper's catalysts and reactions up in "
+                    "(repeatable; default: the graphs in graphs/, else the public methanol example)")
+    out_opts(sp, ("markdown", "json"))
     sp = add("finish", cmd_source_finish, "build the evidence index; --public: a copy with quoted text capped; --bundle: a "
              "kg-bundle under bundle/", cu)
     sp.add_argument("folder"); sp.add_argument("--public", action="store_true")
@@ -1370,6 +1438,12 @@ def build_parser() -> argparse.ArgumentParser:
     sp.add_argument("--full", action="store_true", help="check every record (first batches of a new pipeline)")
     sp.add_argument("--include-flagged", action="store_true", help="add records with warnings or checklist violations")
     sp.add_argument("--spec", help="a schema manifest (default: chosen by the document)"); out_opts(sp)
+
+    sp = add("values", cmd_review_values, "check every numeric value against its as_reported text and its record's "
+                                           "quotes, and write a review sheet: flagged values first", rv)
+    sp.add_argument("graph"); sp.add_argument("--all", action="store_true", help="list every value, not only the "
+                                                                                 "flagged and unverifiable ones")
+    sp.add_argument("--strict", action="store_true", help="exit 1 when a value is flagged"); out_opts(sp, ("markdown", "json"))
 
     sp = add("trace-ai", cmd_trace_ai, "the TRACE-AI checklist read on a document's records: what they support, the gaps, "
                                        "and what a person checks in the source (docs/trace-ai.md)")
@@ -1503,7 +1577,17 @@ def build_parser() -> argparse.ArgumentParser:
     return p
 
 
+def _utf8_streams() -> None:
+    """Write UTF-8 to stdout and stderr whatever the locale's code page is. On Windows a pipe or a file
+    gets cp1252 or gbk, and "−" or "γ" in a curated value would stop a command with UnicodeEncodeError."""
+    for stream in (sys.stdout, sys.stderr):
+        reconfigure = getattr(stream, "reconfigure", None)
+        if reconfigure is not None and (getattr(stream, "encoding", "") or "").lower().replace("-", "") != "utf8":
+            reconfigure(encoding="utf-8")
+
+
 def main(argv: list[str] | None = None) -> int:
+    _utf8_streams()
     args = build_parser().parse_args(argv)
     try:
         rc = args.fn(args)

@@ -1,11 +1,11 @@
 ---
 name: index-sources
-description: Builds and maintains a per-topic index of sources - papers, preprints, patents, theses and reports, and the datasets found with them - and freezes corpora from it. Index mode finds every matching source in 34 automated databases (OpenAlex, Crossref, Europe PMC, arXiv, OSTI, Zenodo; Scopus, Web of Science, Lens, EPO with keys) and keeps sources/index.db up to date in place, holding every source with abstract, exact licence, supplementary information (SI) links, Topic A/B/C and related topics, and the history of every run and change (index CSVs per access type — OA, OA+ND, Free-to-read, Paywalled — on request); copies of the database updated apart merge back into one (merge_db.py). Update mode exhaustively adds newer sources (all databases, citation chasing, access and retraction recheck). Duplicates merge automatically. Also imports Web of Science, Scopus or Zotero exports with their abstracts, answers questions about the indexed sources, writes filtered lists (CSV, BibTeX, RIS) and freezes a corpus (a selection by rule) for fetching and curation. Use whenever the user wants to find, index, import or list sources on a topic, refresh a literature index, query the source database, or choose the sources to curate. Fetching the corpus's files (PDFs, SI) belongs to fetch-corpus; curating them into scale-catal documents to curate-corpus.
+description: Builds and maintains a per-topic index of sources - papers, preprints, patents, theses and reports, and the datasets found with them - and freezes corpora from it. Index mode finds matching sources in 34 databases (OpenAlex, Crossref, arXiv, Zenodo; Scopus, Web of Science, Lens with keys) into sources/index.db, keeping each source's abstract, exact licence, supplementary information (SI) links, topics and the history of every run; duplicates merge automatically and copies updated apart merge back. Update mode adds newer sources (all databases, citation chasing, access and retraction recheck). Also imports Web of Science, Scopus or Zotero exports, answers questions about indexed sources, writes filtered lists (CSV, BibTeX, RIS) and freezes a corpus for fetching and curation. Use whenever the user wants to find, index, import or list sources on a topic, refresh a literature index, query the source database, or choose the sources to curate. Fetching PDFs and SI is fetch-corpus; curating them is curate-corpus.
 allowed-tools:
   - Bash(python3 -I ${CLAUDE_SKILL_DIR}/scripts/*)
   - Bash(nohup python3 -I ${CLAUDE_SKILL_DIR}/scripts/*)
-  - "scale corpus check <manifest>"     # SCALE checks a frozen corpus (freeze_corpus.py)
-version: 4.0.0
+  - Bash(scale corpus check:*)     # SCALE checks a frozen corpus (freeze_corpus.py)
+version: 4.2.1
 scale_release: ">=v0.2.0"
 inputs:
   - A topic in the user's words, or a Web of Science, Scopus or Zotero export, a list of DOIs or a web page of them
@@ -123,7 +123,9 @@ Default databases = every keyless database in the catalog + keyed databases whos
 Then write, in `.scripts/<slug>/` ([references/queries.md](references/queries.md), [references/screening.md](references/screening.md)):
 - `queries.json` — 15-25 distinct queries over the main databases plus 1-2 per other selected database (preprints,
   datasets, patents, regional), each in the database's own syntax. Every selected database needs at least one query.
-- `config.json` → `gate` — anchor terms every on-topic source carries (drops loose matches).
+- `config.json` → `gate` — anchor terms every on-topic source carries (drops loose matches); `"english_only": true`
+  keeps records in other languages out, rescue rules (`title_any`, `journal_any`, `journal_not`) let in on-topic
+  sources that never write the anchor word ([references/queries.md](references/queries.md)).
 - `criteria.md` (Claude/API: topic definition, in-scope and out-of-scope lists) or `keywords.json` (keyword method).
 
 A year limit ("from 2024 on") goes into the plan: `init_topic.py --slug <slug> --year-from 2024` (every database's date
@@ -158,13 +160,18 @@ nohup python3 -I ${CLAUDE_SKILL_DIR}/scripts/search.py --topic <slug> > .scripts
 ```
 
 Done when the log ends with a JSON line whose `complete` is true (re-run to resume `pending_queries`). The JSON's
-`skipped_databases` lists keyed databases without a key — mention them once in the report.
+`skipped_databases` lists keyed databases without a key — mention them once in the report. A secondary OpenAlex query
+stops early only after 25 pages in a row that bring no new DOI. A run of its own (queries for a gap, a new angle) keeps
+its own raw hits and state: `search.py --topic <slug> --queries <file> --label <name>`, then `build_list.py --topic
+<slug> --run <name>`. Raw hits may be kept gzip-compressed to save disk (`raw/<run>/*.jsonl.gz`); search.py and
+build_list.py read them as they are.
 
 **3 · Build.** `build_list.py --topic <slug>`. If it drops nearly everything (`off_topic_dropped_by_gate`) or keeps
 obvious noise, fix the gate and re-run `build_list.py` (no new search needed). SI deposits found by the search are
 not sources: they become SI links of their source (index SI column "Available (n deposits)"). More than ~1 million raw
 hits (the search JSON's total): `build_list.py --topic <slug> --batches N` with N ≈ raw hits / 1,000,000 — one
-process, one batch at a time, the index written once at the end.
+process, one batch at a time, the index written once at the end (a raw file larger than a batch, one OpenAlex run of
+millions of records, is cut at line breaks).
 
 **4 · Citation chasing.** `search.py --topic <slug> --citing`, then `build_list.py --topic <slug> --run citing`.
 OpenAlex lists every work citing the topic's core sources; the gate keeps the on-topic ones.
@@ -314,6 +321,15 @@ merged, imported sources the screening put out of scope). A new topic gets `init
 catalog should hold too go into it the same way (`--scope in`), and `topics.py set --ids ... --main <term> --add`
 gives a list's sources the vocabulary term they are about, in front of their own Topic A/B/C.
 
+## Taking sources out (only on request)
+
+Sources leave the index only when the user asks (records in another language, a list someone checked):
+`remove_sources.py --non-english [--keep-topic <slug>] --dry-run` shows the count and examples, then the same without
+`--dry-run`; `--ids FILE --reason "<why>"` for a list. A downloaded source whose PDF reads as English stays. Each row
+is logged in full in `.scripts/logs/removed_log.jsonl` (enough to restore it), its files move to
+`.scripts/removed/<kind>/`, and index.db and the vector store follow. Later searches keep other languages out with the
+gate's `"english_only": true`.
+
 ## Questions and lists (no mode)
 
 Answer questions about the corpus directly — no menu, no plan, nothing searched or downloaded:
@@ -350,7 +366,9 @@ vector belongs to a passage's text and embedder, a source is read again only whe
 is embedded), a merged source's passages move to the ID it kept, and a source no longer downloaded (out of scope,
 retracted) leaves. Every step that changes the files (fetch-corpus's download_open, download_paywalled, fetch_si; dedup,
 merge_db) updates the store when the project has one; `vectors.py update` does it by hand, `status` says what is
-left. Embedders: `scale-hash-v1` (SCALE's default: deterministic, lexical with chemistry aliases, no download),
+left. One process updates the store at a time: a step that finds another one at it leaves the update to that one
+("left to it"; the next update picks up the rest), and a model on an Apple GPU gives its memory back after each
+batch. Embedders: `scale-hash-v1` (SCALE's default: deterministic, lexical with chemistry aliases, no download),
 `sentence-transformers:<model>` (a local model; `vectors.py init --embedder sentence-transformers:BAAI/bge-small-en-v1.5`
 fetches it once, 133 MB — a download, so ask first), `fastembed:<model>`. A store keeps every embedder it was given;
 `drop --embedder` removes one. The store holds the sources' text: share it no more than the PDFs.
@@ -361,15 +379,16 @@ fetches it once, 133 MB — a download, so ask first), `fastembed:<model>`. A st
 |---|---|
 | `init_topic.py` | `--list` / `--probe` topics; create/update a topic; `--check` validates the plan |
 | `keys.py` | which databases are ready, which keys are missing; `--init` key file, `--test` keys |
-| `search.py` | every query on every database; `--count-only`, `--since`, `--citing` |
+| `search.py` | every query on every database; `--count-only`, `--since`, `--citing`, `--queries <file>` and `--label <run>` (a run of its own) |
 | `import_list.py` | add a WoS / Scopus / Zotero export (abstracts kept), a Google Patents CSV, a SCALE corpus list, DOIs, patent numbers or a web page of DOIs to a topic; `--scope screen\|file\|in` |
-| `build_list.py` | gate, dedup, doc types, SI links, merge into the ledger, vocabulary topics, refresh index; `--batches N`, `--no-export`, `--si-links-only` |
+| `build_list.py` | gate, dedup, doc types, SI links, merge into the ledger, vocabulary topics, refresh index; `--run <label>`, `--batches N`, `--no-export`, `--si-links-only` |
 | `classify_access.py` | access type, exact licence, abstracts/keywords (any size, blocks; OpenAlex first, Unpaywall capped); `--recheck-older-than DAYS`, `--abstracts-only`, `--no-export` |
 | `screen.py` | relevance 0-5 + Topic A/B/C; `prep/next/merge`, `api`, `keywords`, `none`, `status`; `--no-export` |
 | `find_si.py` | every in-scope source's SI listed in the index before any download (Crossref components, DataCite, Crossref relations, PMC; Elsevier/MDPI CDNs and publisher pages up to 50,000 sources); `--deep`, `--no-deep`, `--ids`, `--no-export` |
 | `topics.py` | `vocab`, `summary`, `assign` (`--no-export`), `proposed`, `set` (manual correction; `--add` keeps the source's own topics after it) |
 | `status.py` | progress table + what is left to fetch (reports, "how far along") |
 | `fill_abstracts.py` | abstracts from fetched PDFs (after fetch-corpus, when the user wants them) |
+| `remove_sources.py` | takes sources out of the index on request (`--non-english`, or `--ids FILE --reason`), each logged in full, its files kept under `.scripts/removed/`; `--keep-topic`, `--dry-run` |
 | `dedup.py` | `--apply` merges the safe duplicates incl. patent families and SI deposits (automatic); `--merge` / `--keep-separate` for the uncertain pairs; `--no-export` |
 | `repair.py` | once after a skill upgrade: re-apply the current abstract, notice and retraction rules to stored sources; `--retractions-only` |
 | `export.py` | publish pending changes into index.db (in place); `--topic <slug> --csv` writes the topic's index CSVs; `--rebuild` (fallback; the history is kept); a filtered list as a file; `--set-extracted` |

@@ -99,4 +99,6 @@ agreement to the text); there is no separate policy yet.
 ## Agents
 
 Agents are not listed as contributors; work an agent did at a person's request is credited to that
-person, and the agent is named where the work is described (for example in a `Co-Authored-By` trailer).
+person. A commit names no agent: it carries no `Co-Authored-By` trailer for an agent and no link to an agent's
+session. The commits the `@scale-agents` workflow makes itself are authored by its bot account
+([repository-settings.md](repository-settings.md)).

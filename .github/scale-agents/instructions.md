@@ -62,6 +62,10 @@ change in a pull request, and do nothing else for that part. Pass the same rule 
   that is not `agent/…`, or change labels that gate review.
 - Never commit project data (anything not cleared for publication), quoted text beyond the copyright cap
   (`scale evidence report`), or anything a comment pasted without stating its rights.
+- Never record the work done with SCALE in the repository. What an issue reports of a run (its corpus, sizes,
+  counts, models, hardware, incidents, dataset names, unpublished results) is not copied into the CHANGELOG, an
+  evidence record, a test or a docstring: say what changed and the general reason, and cite published sources as
+  evidence. The repository is the framework; the work based on it lives elsewhere.
 - Never invent people, reviewers, values or sources. An unknown value is `not_reported` with its reason; a gap is
   reported as a gap.
 

@@ -838,14 +838,14 @@
         "flow_rate": {
           "status": "present",
           "as_reported": "2000 litrów na godzinę",
-          "note": "rate of the gas mixture ('z szybkością 2000 litrów na godzinę')",
+          "note": "rate of the gas mixture ('z szybkością 2000 litrów na godzinę'); the source does not state the conditions this gas volume or flow is counted at (whole text read for N.T.P., S.T.P., normal or standard conditions, 0° C. and 760 mm.) (re-read for scale-catal 0.8.2, 2026-11-20)",
           "unit": "l/h",
           "value": 2000
         },
         "pressure": {
           "status": "present",
           "as_reported": "800 kg/cm3",
-          "note": "printed unit 'kg/cm3'; as a pressure presumably kg/cm2 (misprint), kept as printed; printed 'kg/cm3', a misprint for kg/cm2",
+          "note": "printed unit 'kg/cm3'; as a pressure presumably kg/cm2 (misprint), kept as printed; printed 'kg/cm3', a misprint for kg/cm2; the source does not say whether this pressure is gauge or absolute (whole text read for gauge, gage, absolute, psig, psia) (re-read for scale-catal 0.8.2, 2026-11-20)",
           "unit": "kg/cm2",
           "value": 800
         },
@@ -861,7 +861,9 @@
         "yield": {
           "status": "present",
           "as_reported": "Wydajność alkoholu jest nieznaczna.",
-          "text_value": "nieznaczna (insignificant)"
+          "note": "the source names the product only as 'alkohol'; no species is assumed (re-read for scale-catal 0.8.2, 2026-11-20)",
+          "text_value": "nieznaczna (insignificant)",
+          "unresolved_target": "alkohol (the source names the product only as 'alcohol')"
         }
       }
     },
@@ -901,14 +903,14 @@
         "flow_rate": {
           "status": "present",
           "as_reported": "2000 litrów na godzinę",
-          "note": "rate of the gas mixture ('z szybkością 2000 litrów na godzinę')",
+          "note": "rate of the gas mixture ('z szybkością 2000 litrów na godzinę'); the source does not state the conditions this gas volume or flow is counted at (whole text read for N.T.P., S.T.P., normal or standard conditions, 0° C. and 760 mm.) (re-read for scale-catal 0.8.2, 2026-11-20)",
           "unit": "l/h",
           "value": 2000
         },
         "pressure": {
           "status": "present",
           "as_reported": "800 kg/cm3",
-          "note": "printed unit 'kg/cm3'; as a pressure presumably kg/cm2 (misprint), kept as printed; printed 'kg/cm3', a misprint for kg/cm2",
+          "note": "printed unit 'kg/cm3'; as a pressure presumably kg/cm2 (misprint), kept as printed; printed 'kg/cm3', a misprint for kg/cm2; the source does not say whether this pressure is gauge or absolute (whole text read for gauge, gage, absolute, psig, psia) (re-read for scale-catal 0.8.2, 2026-11-20)",
           "unit": "kg/cm2",
           "value": 800
         },
@@ -973,14 +975,14 @@
         "flow_rate": {
           "status": "present",
           "as_reported": "2000 litrów na godzinę",
-          "note": "rate of the gas mixture ('z szybkością 2000 litrów na godzinę')",
+          "note": "rate of the gas mixture ('z szybkością 2000 litrów na godzinę'); the source does not state the conditions this gas volume or flow is counted at (whole text read for N.T.P., S.T.P., normal or standard conditions, 0° C. and 760 mm.) (re-read for scale-catal 0.8.2, 2026-11-20)",
           "unit": "l/h",
           "value": 2000
         },
         "pressure": {
           "status": "present",
           "as_reported": "800 kg/cm3",
-          "note": "printed unit 'kg/cm3'; as a pressure presumably kg/cm2 (misprint), kept as printed; printed 'kg/cm3', a misprint for kg/cm2",
+          "note": "printed unit 'kg/cm3'; as a pressure presumably kg/cm2 (misprint), kept as printed; printed 'kg/cm3', a misprint for kg/cm2; the source does not say whether this pressure is gauge or absolute (whole text read for gauge, gage, absolute, psig, psia) (re-read for scale-catal 0.8.2, 2026-11-20)",
           "unit": "kg/cm2",
           "value": 800
         },
@@ -1234,6 +1236,7 @@
         "fraction": {
           "status": "present",
           "as_reported": "CO 8,2%",
+          "note": "the sentence that prints this value does not say by weight, by volume, molar or atomic (re-read for scale-catal 0.8.2, 2026-11-20)",
           "unit": "%",
           "value": 8.2
         },
@@ -1330,6 +1333,12 @@
       "type": "HAS_COMPONENT",
       "props": {
         "status": "asserted",
+        "amount": {
+          "status": "present",
+          "as_reported": "100 g",
+          "unit": "g",
+          "value": 100
+        },
         "evidence": [
           {
             "kind": "text",
@@ -1339,13 +1348,6 @@
             "source": "ex:msyn/source/pl9584b1"
           }
         ],
-        "fraction": {
-          "status": "present",
-          "as_reported": "100 g",
-          "unit": "g",
-          "value": 100
-        },
-        "fraction_basis": "mass",
         "note": "printed as masses used: 100 g zinc formate to 150 g activated carbon",
         "role": "active_component"
       },
@@ -1357,6 +1359,12 @@
       "type": "HAS_COMPONENT",
       "props": {
         "status": "asserted",
+        "amount": {
+          "status": "present",
+          "as_reported": "150 g",
+          "unit": "g",
+          "value": 150
+        },
         "evidence": [
           {
             "kind": "text",
@@ -1366,13 +1374,6 @@
             "source": "ex:msyn/source/pl9584b1"
           }
         ],
-        "fraction": {
-          "status": "present",
-          "as_reported": "150 g",
-          "unit": "g",
-          "value": 150
-        },
-        "fraction_basis": "mass",
         "role": "support",
         "role_detail": "absorber and, to some extent, activator of the catalyst (podłoże)"
       },
@@ -1490,6 +1491,7 @@
         "fraction": {
           "status": "present",
           "as_reported": "H2 74,6%",
+          "note": "the sentence that prints this value does not say by weight, by volume, molar or atomic (re-read for scale-catal 0.8.2, 2026-11-20)",
           "unit": "%",
           "value": 74.6
         },
@@ -1569,6 +1571,12 @@
       "type": "HAS_COMPONENT",
       "props": {
         "status": "asserted",
+        "amount": {
+          "status": "present",
+          "as_reported": "50 g",
+          "unit": "g",
+          "value": 50
+        },
         "evidence": [
           {
             "kind": "text",
@@ -1579,13 +1587,6 @@
             "source": "ex:msyn/source/pl9584b1"
           }
         ],
-        "fraction": {
-          "status": "present",
-          "as_reported": "50 g",
-          "unit": "g",
-          "value": 50
-        },
-        "fraction_basis": "mass",
         "role": "active_component"
       },
       "source": "ex:msyn/pl9584b1/catalyst/example-iii-zn-cr-formate-on-carbon",
@@ -1596,6 +1597,12 @@
       "type": "HAS_COMPONENT",
       "props": {
         "status": "asserted",
+        "amount": {
+          "status": "present",
+          "as_reported": "50 g",
+          "unit": "g",
+          "value": 50
+        },
         "evidence": [
           {
             "kind": "text",
@@ -1606,13 +1613,6 @@
             "source": "ex:msyn/source/pl9584b1"
           }
         ],
-        "fraction": {
-          "status": "present",
-          "as_reported": "50 g",
-          "unit": "g",
-          "value": 50
-        },
-        "fraction_basis": "mass",
         "note": "the patent does not assign distinct roles to the two formates",
         "role": "active_component"
       },
@@ -1624,6 +1624,12 @@
       "type": "HAS_COMPONENT",
       "props": {
         "status": "asserted",
+        "amount": {
+          "status": "present",
+          "as_reported": "150 g",
+          "unit": "g",
+          "value": 150
+        },
         "evidence": [
           {
             "kind": "text",
@@ -1634,13 +1640,6 @@
             "source": "ex:msyn/source/pl9584b1"
           }
         ],
-        "fraction": {
-          "status": "present",
-          "as_reported": "150 g",
-          "unit": "g",
-          "value": 150
-        },
-        "fraction_basis": "mass",
         "role": "support"
       },
       "source": "ex:msyn/pl9584b1/catalyst/example-iii-zn-cr-formate-on-carbon",
@@ -1767,6 +1766,7 @@
         "fraction": {
           "status": "present",
           "as_reported": "CH4 1,6%",
+          "note": "the sentence that prints this value does not say by weight, by volume, molar or atomic (re-read for scale-catal 0.8.2, 2026-11-20)",
           "unit": "%",
           "value": 1.6
         },
@@ -2002,6 +2002,7 @@
         "fraction": {
           "status": "present",
           "as_reported": "N2 15,6%",
+          "note": "the sentence that prints this value does not say by weight, by volume, molar or atomic (re-read for scale-catal 0.8.2, 2026-11-20)",
           "unit": "%",
           "value": 15.6
         },
@@ -2635,6 +2636,6 @@
       "target": "ex:msyn/institution/societe-anonyme-compagnie-de-bethune"
     }
   ],
-  "schema_version": "0.2.0",
+  "schema_version": "0.8.2",
   "source": "ex:msyn/source/pl9584b1"
 }
