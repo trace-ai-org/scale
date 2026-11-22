@@ -307,7 +307,9 @@ def test_the_page_names_the_service_and_the_readme_links_the_page():
     site = REPO / "site"
     html = (site / "index.html").read_text(encoding="utf-8")
     assert "config.js" in html and "app.js" in (site / "publication.html").read_text(encoding="utf-8")
-    assert "apiKey" not in (site / "explorer.js").read_text(encoding="utf-8")     # no reader is asked for a model key
+    js = (site / "explorer.js").read_text(encoding="utf-8")
+    assert '"/ask"' in js and js.count('"x-api-key"') == 1     # the service answers without a reader's key; a reader's own
+    assert "https://api.anthropic.com/v1/messages" in js       # key, when given, goes only to its provider (test_site.py)
     assert "SCALE_SERVICE_URL" in (site / "config.js").read_text(encoding="utf-8")
     assert "trace-ai-org.github.io/scale" in (REPO / "README.md").read_text(encoding="utf-8")
 

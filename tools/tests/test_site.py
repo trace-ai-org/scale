@@ -2,6 +2,7 @@
 explorer runs in the browser, which works from its bundled data alone (no checkout), as a wheel does."""
 
 import json
+import re
 import shutil
 import subprocess
 import sys
@@ -210,16 +211,34 @@ def test_a_bundle_too_large_to_draw_at_once_is_drawn_a_window_at_a_time_and_sear
     assert json.loads(whole.stdout) == 19
 
 
-def test_the_explorer_runs_scales_own_tools_and_asks_no_reader_for_a_key():
+def test_the_explorer_runs_scales_own_tools_and_sends_a_readers_key_only_to_their_provider():
     page = (REPO / "site/index.html").read_text()
     js = (REPO / "site/explorer.js").read_text()
     worker = (REPO / "site/worker.js").read_text()
     assert 'src="explorer.js"' in page and 'src="config.js"' in page
     assert "py/scale-py.zip" in worker and "ScaleToolkit" in worker
-    # every script comes from a pinned version
+    # every script comes from a pinned version, and every script from a CDN is checked against its digest
     assert "pyodide/v0.26.4/" in worker and "d3/7.9.0/" in page
-    # a question goes to the service, which holds the model's key; no reader is asked for one
-    assert '"/ask"' in js and "apiKey" not in js and "@anthropic-ai/sdk" not in js
+    cdn = re.findall(r'<script src="https://cdnjs[^>]*>', page)
+    assert cdn and all('integrity="sha384-' in s and 'crossorigin="anonymous"' in s for s in cdn)
+    # a signed-in reader's question goes to the service, which holds its own key; the service is never sent a reader's
+    assert '"/ask"' in js and "@anthropic-ai/sdk" not in js
+    service_call = js[js.index("async function call("):js.index("\n}\n", js.index("async function call("))]
+    assert "ownKey" not in service_call and "worker.postMessage({ id, ...msg })" in js
+    # a reader's own key is sent once, in the one request to Anthropic's API, by the query-graph skill the site carries
+    assert js.count('"x-api-key"') == 1 and 'const ANTHROPIC = "https://api.anthropic.com/v1/messages"' in js
+    # or, for OpenAI or OpenRouter, once as a bearer token to the chosen provider's chat completions endpoint, and never
+    # carried over to another provider
+    assert js.count("Bearer ${ownKey}") == 1 and js.count("fetch(p.url") == 1
+    assert 'url: "https://api.openai.com/v1/chat/completions"' in js and 'url: "https://openrouter.ai/api/v1/chat/completions"' in js
+    assert "(sameKey ? editing.key : \"\")" in js
+    assert '"anthropic-dangerous-direct-browser-access": "true"' in js and 'fetch("data/query-graph.md")' in js
+    # the reader's keys, a list with one in use, are kept in the tab unless the reader asks for this device, and
+    # forgotten on request; a key saved before the list is moved into it and its old entries cleared
+    assert 'store.set("scale-own-keys", ownKeys.length ? JSON.stringify(ownKeys) : "", ownKeep)' in js
+    assert 'ownKeys = []; ownActive = ""' in js and 'store.set(k, "", false)' in js
+    # a key not scoped to a workspace is sent with the workspace the reader gives
+    assert '"anthropic-workspace-id": ownWorkspace' in js
     # the graph's type in its card is a link back to the graph on the canvas, as its schema is a link to the schema
     # "Upload, curate, and explore" opens Curate, a toolbar button like the account's; the Visualization is gone
     assert 'id="curate-open"' in page and "Upload, curate, and explore" in page and "viz-btn" not in page and "plotly" not in page.lower() and "Plotly" not in js
