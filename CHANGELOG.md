@@ -2,6 +2,16 @@
 
 ## Unreleased
 
+- **The graph explorer answers questions in words with a reader's own Claude API key (site, no schema change, no
+  migration).** Until the web service runs, a question in the explorer only listed the matching evidence. Now a reader
+  may give their own key (the toolbar's *Your API key*, with Claude Opus 5.5, Sonnet 5.5 or Haiku 5.5): the page runs
+  the service's question loop itself, calling Anthropic's Messages API from the browser and running the model's
+  `describe`, `stats`, `search` and `query` calls with SCALE's own code in Pyodide, by the query-graph skill the site
+  already carries. The key is kept in the tab (or on the device when the reader asks), sent only to
+  `api.anthropic.com`, and forgotten on request; the answer card lists the plans and the tokens spent on the reader's
+  account. A signed-in reader is still answered by the service, which never receives a reader's key. The page's CDN
+  scripts now carry integrity digests, so none can change unseen. Curating still needs the service.
+
 - **curate-corpus `review-api`: a reasoning reader keeps room to answer (tooling, no schema change, no migration).** A
   reader that reasons before it answers could end a reading without a verdict: the fitted requests left it too few
   tokens to think and answer, because compact JSON runs under 3 characters a token and a curator's report could hold

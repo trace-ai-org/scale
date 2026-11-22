@@ -1,8 +1,9 @@
 // The graph explorer. Pick a graph of this repository (data/graphs.json, written by `scale site build`) or open a file:
 // the whole graph is drawn by a force layout (circle area by connectivity, colour by label), its labels and
 // relationship types filter it, and a node's properties, evidence and neighbours show on the right. "Search by asking"
-// lists the evidence that matches; signed in, the SCALE service answers in words by SCALE's query-graph skill. No reader
-// ever gives a model key: the service curates, answers and contributes within its own budget.
+// lists the evidence that matches; signed in, the SCALE service answers in words by SCALE's query-graph skill, within
+// its own budget. A reader may instead give their own Claude API key: the page then calls Anthropic's API itself (the
+// key goes nowhere else) and runs the model's query plans here, by the same skill. Curating needs the service.
 // Search, query plans and descriptions run SCALE's own code in a worker (worker.js).
 import { readBundle } from "./bundle.js";
 const $ = (id) => document.getElementById(id);
@@ -1308,10 +1309,13 @@ async function search(q) {
     card(`Matching evidence · ${hits.length}`, (hits.length ? hits.map((h) => `<div class="gx-hit" data-id="${esc(h.record)}">
         <div class="gx-quote">“${esc(h.text)}”</div>
         <div class="gx-meta">${esc(h.label || "")}: ${esc(h.record_name || h.record)} · ${esc(name(G.byId.get(h.source)))}${h.source_year ? ` (${esc(h.source_year)})` : ""}, ${esc(h.locator || "")} · ${Number(h.score || 0).toFixed(3)}</div></div>`).join("")
-      : `<p>No evidence matches “${esc(q)}”.</p>`) + (SERVICE && !token ? `<p class="gx-meta">These are the quotes that match, found in this browser.
-        <a href="#" role="button" data-signin="search">Sign in with GitHub</a> to have
-        questions answered in words: free, no API key.</p>` : ""));
+      : `<p>No evidence matches “${esc(q)}”.</p>`) + (!ownKey && !(SERVICE && token) ? `<p class="gx-meta">These are the quotes that
+        match, found in this browser. ${SERVICE ? `<a href="#" role="button" data-signin="search">Sign in with GitHub</a> to have
+        questions answered in words (free, no API key), or <a href="#" role="button" data-ownkey="search">use your own Claude API
+        key</a>.` : `To have questions answered in words, <a href="#" role="button" data-ownkey="search">use your own Claude API
+        key</a>.`}</p>` : ""));
     $("card-body").querySelectorAll(".gx-hit").forEach((el) => (el.onclick = () => goTo(el.dataset.id)));
+    $("card-body").querySelector("[data-ownkey]")?.addEventListener("click", (ev) => { ev.preventDefault(); ev.stopPropagation(); openOwnKeyMenu(); });
   } catch (err) { card("Matching evidence", `<p class="gx-card-warn">${esc(err.message)}</p>`); }
 }
 // ------------------------------------------------------------------------------------------ answers in words
@@ -1337,11 +1341,159 @@ async function ask(question) {
   card("Answer", `<p class="gx-meta">Answering… the service runs query plans over this graph.</p>`);
   try {
     const r = await call("POST", "/ask", { graph: (G.base || G).doc, question });
-    card("Answer", `${idLinks(md(r.answer || "No answer."))}
-      ${(r.plans || []).length ? `<details><summary>How it was answered (${r.plans.length} plan${r.plans.length > 1 ? "s" : ""})</summary>${r.plans.map((p, i) =>
-        `<p class="gx-meta">Plan ${i + 1}: ${esc(p.status || "?")}, ${p.rows ?? 0} rows</p><pre>${esc(JSON.stringify(p.plan, null, 1))}</pre>`).join("")}</details>` : ""}
-      <p class="gx-meta">about ${Number(r.tokens || 0).toLocaleString()} tokens, from the service's budget</p>`);
+    answerCard(r, `about ${Number(r.tokens || 0).toLocaleString()} tokens, from the service's budget`);
   } catch (err) { card("Answer", `<p class="gx-card-warn">${esc(err.message || err)}</p>`); search(question); }
+}
+// The answer, the query plans that gave its rows, and what it cost (the service's answer and the page's own alike).
+function answerCard(r, cost) {
+  card("Answer", `${idLinks(md(r.answer || "No answer."))}
+    ${r.stopped ? `<p class="gx-card-warn">Stopped early: ${esc(r.stopped)}.</p>` : ""}
+    ${(r.plans || []).length ? `<details><summary>How it was answered (${r.plans.length} plan${r.plans.length > 1 ? "s" : ""})</summary>${r.plans.map((p, i) =>
+      `<p class="gx-meta">Plan ${i + 1}: ${esc(p.status || "?")}, ${p.rows ?? 0} rows</p><pre>${esc(JSON.stringify(p.plan, null, 1))}</pre>`).join("")}</details>` : ""}
+    <p class="gx-meta">${esc(cost)}</p>`);
+}
+
+// ------------------------------------------------------------------------------------------ answers with the reader's key
+// The service's question loop (service/scaleweb/agent.py, answer), run in this page: the model (Anthropic's Messages
+// API, called from this browser with the reader's key) follows the query-graph skill (data/query-graph.md, written by
+// `scale site build`) through describe, stats, search and query, which run SCALE's own code here (worker.js). The key
+// is kept in this tab (sessionStorage), or on this device (localStorage) when the reader asks, and is sent only to
+// api.anthropic.com; never to the service, GitHub or anyone else. A reader's key is spent on their own account.
+const ANTHROPIC = "https://api.anthropic.com/v1/messages";
+const OWN_MODELS = [["claude-opus-5-5", "Claude Opus 5.5"], ["claude-sonnet-5-5", "Claude Sonnet 5.5"], ["claude-haiku-5-5", "Claude Haiku 5.5"]];
+const OWN_TURNS = 30, OWN_TOKENS = 400_000, RESULT_CHARS = 40_000;   // as the service's loop: turns, a question's tokens, a result
+let ownKey = store.get("scale-own-key"), ownModel = store.get("scale-own-model") || OWN_MODELS[0][0];
+if (!OWN_MODELS.some(([m]) => m === ownModel)) ownModel = OWN_MODELS[0][0];
+let skillText = null;
+const OWN_TOOLS = [
+  { name: "describe", description: "The schema: labels and edge types with their properties (scale describe).",
+    input_schema: { type: "object", properties: { names: { type: "array", items: { type: "string" } } }, required: [] } },
+  { name: "stats", description: "The graph's units in use per property and its link patterns (scale graph stats).",
+    input_schema: { type: "object", properties: {}, required: [] } },
+  { name: "search", description: "Search the graph's evidence by words and meaning (scale graph search); hits lead to the records that cite them.",
+    input_schema: { type: "object", properties: { query: { type: "string" }, k: { type: "integer" }, published_before: { type: "string" } }, required: ["query"] } },
+  { name: "query", description: "Run a graph query plan (scale graph query): match, steps, where, return, evidence, order_by, limit, text, published_before. Returns rows, the kind of answer and the coverage.",
+    input_schema: { type: "object", properties: { plan: { type: "object" } }, required: ["plan"] } },
+];
+const WORKING_HERE = "\n\n# Working here\n\nYou answer in a web page, through the tools given (no shell). The graph is the one the user is viewing. "
+  + "Write the answer in Markdown: every factual sentence from returned rows, citing record ids and evidence locators in brackets, then a "
+  + "**Limits** line. Keep your own extrapolations in a separate, labelled paragraph.";
+const clip = (obj) => { const s = typeof obj === "string" ? obj : JSON.stringify(obj); return s.length <= RESULT_CHARS ? s : `${s.slice(0, RESULT_CHARS)}\n… (${s.length - RESULT_CHARS} more characters cut)`; };
+
+async function claude(body) {
+  const fallback = !body.model.startsWith("claude-haiku");          // a declined request is answered by another model
+  const r = await fetch(ANTHROPIC, { method: "POST", headers: {
+    "content-type": "application/json", "x-api-key": ownKey, "anthropic-version": "2023-06-01",
+    "anthropic-dangerous-direct-browser-access": "true", ...(fallback ? { "anthropic-beta": "server-side-fallback-2026-07-01" } : {}) },
+    body: JSON.stringify(fallback ? { ...body, fallbacks: "default" } : body) });
+  const j = await r.json().catch(() => ({}));
+  if (r.ok) return j;
+  const why = j.error?.message || `HTTP ${r.status}`;
+  if (r.status === 401) throw new Error(`Anthropic did not accept the API key (${why}). Check it under Your API key.`);
+  if (r.status === 429) throw new Error(`Your API account's rate limit was reached; ask again in a minute (${why}).`);
+  throw new Error(`Anthropic's API answered: ${why}`);
+}
+async function ownTool(name, a, plans) {
+  if (name === "describe") return scale("describe", { names: a.names || [], domain: "catalysis" });
+  if (name === "stats") return scale("stats", {});
+  if (name === "search") return scale("search", { query: String(a.query || ""), k: Number(a.k) || 10, ...(a.published_before ? { published_before: a.published_before } : {}) });
+  if (name === "query") {
+    const res = await scale("query", { plan: a.plan });
+    plans.push({ plan: a.plan, status: res.status || res.error, rows: res.row_count || 0 });
+    return res;
+  }
+  throw new Error(`unknown tool ${name}`);
+}
+async function askOwnKey(question) {
+  leaveSchema();
+  const g = G, model = ownModel, modelName = OWN_MODELS.find(([m]) => m === model)[1];
+  const progress = (line) => { if (G === g) card("Answer", `<p class="gx-meta">Answering with ${esc(modelName)} and your API key; the query plans run in this browser.</p>${line ? `<p class="gx-meta">${esc(line)}</p>` : ""}`); };
+  progress("");
+  const plans = [];
+  let inTok = 0, outTok = 0, text = "", stopped = "";
+  try {
+    if (skillText === null) {
+      const s = await fetch("data/query-graph.md");
+      if (!s.ok) throw new Error(`data/query-graph.md: HTTP ${s.status}`);
+      skillText = await s.text();
+    }
+    const system = [{ type: "text", text: skillText + WORKING_HERE, cache_control: { type: "ephemeral" } }];
+    const messages = [{ role: "user", content: question }];
+    for (let turn = 0; ; turn++) {
+      if (turn >= OWN_TURNS) { stopped = `turn limit reached (${OWN_TURNS} turns)`; break; }
+      const r = await claude({ model, max_tokens: 16000, system, tools: OWN_TOOLS, messages });
+      if (G !== g) return;                                  // another graph was opened meanwhile
+      const u = r.usage || {};
+      inTok += (u.input_tokens || 0) + (u.cache_creation_input_tokens || 0) + (u.cache_read_input_tokens || 0);
+      outTok += u.output_tokens || 0;
+      const blocks = r.content || [];
+      messages.push({ role: "assistant", content: blocks });   // as returned, thinking blocks included
+      text = blocks.filter((b) => b.type === "text").map((b) => b.text).join("\n").trim();
+      if (r.stop_reason === "refusal") { stopped = "the model declined to answer this question"; break; }
+      const calls = blocks.filter((b) => b.type === "tool_use");
+      if (!calls.length) { if (r.stop_reason === "max_tokens") stopped = "the answer ran out of room"; break; }
+      progress(`Turn ${turn + 1}: ${calls.map((c) => c.name).join(", ")}`);
+      const results = [];
+      for (const c of calls) {
+        try { results.push({ type: "tool_result", tool_use_id: c.id, content: clip(await ownTool(c.name, c.input || {}, plans)) }); }
+        catch (err) { results.push({ type: "tool_result", tool_use_id: c.id, is_error: true, content: String(err.message || err) }); }
+      }
+      messages.push({ role: "user", content: results });
+      if (inTok + outTok >= OWN_TOKENS) { stopped = `token limit for one question reached (${OWN_TOKENS.toLocaleString()})`; break; }
+    }
+    answerCard({ answer: text, plans, stopped }, `${inTok.toLocaleString()} input and ${outTok.toLocaleString()} output tokens on your API account (${modelName})`);
+  } catch (err) {
+    if (G === g) card("Answer", `<p class="gx-card-warn">${esc(err.message || err)}</p>`);
+  }
+}
+function renderOwnKey() {
+  const btn = $("ownkey-btn");
+  $("ownkey-label").textContent = ownKey ? "API key set" : "Your API key";
+  btn.classList.toggle("gx-ownkey-btn-set", !!ownKey);
+  btn.title = ownKey ? `Questions are answered with your API key (${OWN_MODELS.find(([m]) => m === ownModel)[1]})`
+    : "Have questions answered in words with your own Claude API key";
+  $("search-input").placeholder = ownKey ? "Ask a question (answered with your API key)..." : "Search by asking...";
+}
+function ownKeyMenu(note = "") {
+  const box = $("ownkey-menu"), kept = !!inStore("localStorage", (s) => s.getItem("scale-own-key"));
+  box.innerHTML = `${note ? `<p class="gx-account-note gx-err">${esc(note)}</p>` : ""}
+    <p class="gx-account-note">Have questions answered in words with your own Claude API key. The key stays in this browser and
+      is sent only to Anthropic (api.anthropic.com); the query plans run here. A question costs a few cents to a few tens of
+      cents on your API account.</p>
+    <p class="gx-account-note gx-subtle">Use a key from a separate workspace with a low spend limit
+      (<a href="https://platform.claude.com/settings/keys" target="_blank" rel="noopener">platform.claude.com</a>), and forget it
+      here on a shared computer.</p>
+    <form class="gx-ownkey-form" id="ownkey-form">
+      <label>API key<input type="password" id="ownkey-input" autocomplete="off" spellcheck="false"
+        placeholder="${ownKey ? "set; paste another to replace it" : "sk-ant-..."}"></label>
+      <label>Model<select class="gx-select" id="ownkey-model">${OWN_MODELS.map(([m, n]) =>
+        `<option value="${m}"${m === ownModel ? " selected" : ""}>${n}</option>`).join("")}</select></label>
+      <label class="gx-ownkey-keep"><input type="checkbox" id="ownkey-keep"${kept ? " checked" : ""}>Remember on this device</label>
+      <button class="gx-btn gx-btn-primary" type="submit">Save</button>
+      ${ownKey ? `<button class="gx-menu-item" type="button" id="ownkey-forget">Forget the key</button>` : ""}
+    </form>`;
+  $("ownkey-form").onsubmit = (e) => {
+    e.preventDefault();
+    const key = $("ownkey-input").value.trim() || ownKey;
+    if (!key) { ownKeyMenu("Paste an API key first."); return; }
+    const keep = $("ownkey-keep").checked;
+    ownKey = key; ownModel = $("ownkey-model").value;
+    store.set("scale-own-key", ownKey, keep);
+    store.set("scale-own-model", ownModel, keep);
+    renderOwnKey();
+    box.hidden = true; $("ownkey-btn").setAttribute("aria-expanded", "false");
+  };
+  $("ownkey-forget")?.addEventListener("click", () => {
+    ownKey = ""; store.set("scale-own-key", "", false); store.set("scale-own-model", "", false);
+    renderOwnKey(); ownKeyMenu();
+  });
+  box.hidden = false;
+  $("ownkey-btn").setAttribute("aria-expanded", "true");
+  $("ownkey-input").focus();
+}
+function openOwnKeyMenu() {
+  for (const [, b] of menus) if (b !== $("ownkey-menu")) b.hidden = true;
+  ownKeyMenu();
 }
 
 // ------------------------------------------------------------------------------------------ controls
@@ -1349,11 +1501,12 @@ $("search-form").onsubmit = (e) => {
   e.preventDefault();
   const q = $("search-input").value.trim();
   if (!q || !G) return;
-  if (SERVICE && token) ask(q); else search(q);
+  if (ownKey && G.loaded) askOwnKey(q);                 // a bundle drawn a window at a time is searched, not asked
+  else if (SERVICE && token) ask(q); else search(q);
 };
 $("labels-btn").onclick = () => { S.linkLabels = linkLabelsShown() ? "off" : "on"; draw(); };
 $("unhide-btn").onclick = () => { S.hidden.clear(); draw(); };
-const menus = [[$("layout-btn"), $("layout-menu")], [$("export-btn"), $("export-menu")], [$("account-btn"), $("account-menu")]];
+const menus = [[$("layout-btn"), $("layout-menu")], [$("export-btn"), $("export-menu")], [$("account-btn"), $("account-menu")], [$("ownkey-btn"), $("ownkey-menu")]];
 for (const [btn, box] of menus) btn.onclick = (e) => { e.stopPropagation(); for (const [, b] of menus) if (b !== box) b.hidden = true; box.hidden = !box.hidden; btn.setAttribute("aria-expanded", String(!box.hidden)); };
 document.addEventListener("click", () => { for (const [, b] of menus) b.hidden = true; });
 $("account-btn").onclick = (e) => {
@@ -1363,6 +1516,13 @@ $("account-btn").onclick = (e) => {
   else { $("account-menu").hidden = true; $("account-btn").setAttribute("aria-expanded", "false"); }
 };
 $("account-menu").onclick = (e) => e.stopPropagation();
+$("ownkey-btn").onclick = (e) => {
+  e.stopPropagation();
+  if ($("ownkey-menu").hidden) openOwnKeyMenu();
+  else { $("ownkey-menu").hidden = true; $("ownkey-btn").setAttribute("aria-expanded", "false"); }
+};
+$("ownkey-menu").onclick = (e) => e.stopPropagation();
+renderOwnKey();
 $("layout-menu").querySelectorAll("[data-layout]").forEach((b) => (b.onclick = () => {
   S.layout = b.dataset.layout;
   $("layout-label").textContent = { force: "Force", hierarchical: "Hierarchical", radial: "Radial" }[S.layout];

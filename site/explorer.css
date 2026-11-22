@@ -37,6 +37,15 @@ code, pre { font-family: "JetBrains Mono", ui-monospace, Menlo, monospace; }
 .gx-account-note { margin: 4px 6px 10px; font-size: 12.5px; line-height: 1.5; }
 .gx-account-menu .gx-account-go { width: 100%; height: 34px; margin-bottom: 6px; text-decoration: none; }
 .gx-account-menu a.gx-menu-item { color: var(--fg); text-decoration: none; }
+/* the reader's own API key: answers in words without the service */
+.gx-ownkey-btn-set { border-color: var(--green); }
+.gx-ownkey-menu { width: 320px; }
+.gx-ownkey-form { display: flex; flex-direction: column; gap: 8px; margin: 0 6px 4px; font-size: 12.5px; }
+.gx-ownkey-form label { display: flex; flex-direction: column; gap: 3px; }
+.gx-ownkey-form input[type="password"] { padding: 6px 8px; border: 1px solid var(--line); border-radius: 6px; background: var(--bg-input);
+  color: var(--fg); font: inherit; }
+.gx-ownkey-form label.gx-ownkey-keep { flex-direction: row; align-items: center; gap: 6px; }
+.gx-ownkey-form .gx-btn { height: 32px; }
 /* Upload, curate, and explore: a toolbar button like the account's */
 .gx-curate-open { display: inline-flex; align-items: center; gap: 8px; height: 40px; padding: 0 14px; border: 1px solid var(--line);
   border-radius: 999px; background: var(--bg); cursor: pointer; font-size: 14px; flex-shrink: 0; white-space: nowrap; }
