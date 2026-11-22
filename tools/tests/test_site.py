@@ -231,10 +231,14 @@ def test_the_explorer_runs_scales_own_tools_and_sends_a_readers_key_only_to_thei
     # carried over to another provider
     assert js.count("Bearer ${ownKey}") == 1 and js.count("fetch(p.url") == 1
     assert 'url: "https://api.openai.com/v1/chat/completions"' in js and 'url: "https://openrouter.ai/api/v1/chat/completions"' in js
-    assert "(same ? ownKey : \"\")" in js
+    assert "(sameKey ? editing.key : \"\")" in js
     assert '"anthropic-dangerous-direct-browser-access": "true"' in js and 'fetch("data/query-graph.md")' in js
-    # kept in the tab unless the reader asks for this device, and forgotten on request
-    assert 'store.set("scale-own-key", ownKey, keep)' in js and 'store.set("scale-own-key", "", false)' in js
+    # the reader's keys, a list with one in use, are kept in the tab unless the reader asks for this device, and
+    # forgotten on request; a key saved before the list is moved into it and its old entries cleared
+    assert 'store.set("scale-own-keys", ownKeys.length ? JSON.stringify(ownKeys) : "", ownKeep)' in js
+    assert 'ownKeys = []; ownActive = ""' in js and 'store.set(k, "", false)' in js
+    # a key not scoped to a workspace is sent with the workspace the reader gives
+    assert '"anthropic-workspace-id": ownWorkspace' in js
     # the graph's type in its card is a link back to the graph on the canvas, as its schema is a link to the schema
     # "Upload, curate, and explore" opens Curate, a toolbar button like the account's; the Visualization is gone
     assert 'id="curate-open"' in page and "Upload, curate, and explore" in page and "viz-btn" not in page and "plotly" not in page.lower() and "Plotly" not in js

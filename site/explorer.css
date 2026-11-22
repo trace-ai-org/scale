@@ -39,7 +39,33 @@ code, pre { font-family: "JetBrains Mono", ui-monospace, Menlo, monospace; }
 .gx-account-menu a.gx-menu-item { color: var(--fg); text-decoration: none; }
 /* the reader's own API key: answers in words without the service */
 .gx-ownkey-btn-set { border-color: var(--green); }
-.gx-ownkey-menu { width: 320px; }
+.gx-ownkey-btn-unset { border-color: #f0a35c; }
+.gx-ownkey-btn-set::before, .gx-ownkey-btn-unset::before { content: ""; width: 8px; height: 8px; border-radius: 50%; flex: none; }
+.gx-ownkey-btn-set::before { background: var(--green); }
+.gx-ownkey-btn-unset::before { background: #f0a35c; }
+#ownkey-label { max-width: 200px; overflow: hidden; text-overflow: ellipsis; }
+.gx-ownkey-menu { width: 340px; max-height: calc(100vh - 120px); overflow-y: auto; }
+.gx-ownkey-status { display: flex; gap: 8px; align-items: baseline; margin: 2px 6px 10px; padding: 8px 10px; border-radius: 8px;
+  font-size: 12.5px; line-height: 1.45; }
+.gx-ownkey-status-set { background: color-mix(in srgb, var(--green) 14%, transparent); }
+.gx-ownkey-status-unset { background: color-mix(in srgb, #f0a35c 18%, transparent); }
+.gx-ownkey-dot { width: 8px; height: 8px; border-radius: 50%; flex: none; transform: translateY(-1px); }
+.gx-ownkey-status-set .gx-ownkey-dot { background: var(--green); }
+.gx-ownkey-status-unset .gx-ownkey-dot { background: #f0a35c; }
+.gx-ownkey-list { display: flex; flex-direction: column; gap: 4px; margin: 0 6px 12px; }
+.gx-ownkey-row { display: flex; align-items: center; gap: 2px; border: 1px solid var(--line); border-radius: 8px; padding: 2px 4px 2px 0; }
+.gx-ownkey-row.is-active { border-color: var(--green); }
+.gx-ownkey-use { flex: 1; min-width: 0; display: flex; gap: 8px; align-items: center; padding: 6px 8px; border: 0; background: none;
+  color: var(--fg); font: inherit; font-size: 12.5px; text-align: left; cursor: pointer; }
+.gx-ownkey-use b { display: block; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.gx-ownkey-use small { display: block; color: var(--muted); font-size: 11px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.gx-ownkey-use > span:last-child { min-width: 0; }
+.gx-ownkey-radio { width: 12px; height: 12px; border-radius: 50%; border: 1.5px solid var(--muted); flex: none; }
+.gx-ownkey-row.is-active .gx-ownkey-radio { border-color: var(--green); background: radial-gradient(var(--green) 45%, transparent 50%); }
+.gx-ownkey-act { border: 0; background: none; color: var(--link-ink); font: inherit; font-size: 11.5px; padding: 4px 5px; cursor: pointer; border-radius: 4px; }
+.gx-ownkey-act:hover { background: var(--hover); }
+.gx-ownkey-formhead { display: flex; justify-content: space-between; align-items: center; font-weight: 600; font-size: 12.5px; }
+.gx-ownkey-menu > .gx-ownkey-keep { display: flex; align-items: center; gap: 6px; margin: 4px 6px 6px; font-size: 12.5px; flex-wrap: wrap; }
 .gx-ownkey-form { display: flex; flex-direction: column; gap: 8px; margin: 0 6px 4px; font-size: 12.5px; }
 .gx-ownkey-form label { display: flex; flex-direction: column; gap: 3px; }
 .gx-ownkey-form input[type="password"], .gx-ownkey-form input[type="text"] { padding: 6px 8px; border: 1px solid var(--line); border-radius: 6px; background: var(--bg-input);

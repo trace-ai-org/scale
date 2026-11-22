@@ -1370,15 +1370,38 @@ const PROVIDERS = {
     url: "https://openrouter.ai/api/v1/chat/completions", model: "openai/gpt-5", limit: "max_tokens" },
 };
 const OWN_TURNS = 30, OWN_TOKENS = 400_000, RESULT_CHARS = 40_000;   // as the service's loop: turns, a question's tokens, a result
-let ownKey = store.get("scale-own-key"), ownProvider = store.get("scale-own-provider") || "anthropic";
-if (!PROVIDERS[ownProvider]) ownProvider = "anthropic";
-let ownModel = store.get("scale-own-model") || "";
-const fixModel = () => {                                  // a Claude model from the list; another provider's, as typed
-  if (ownProvider === "anthropic") { if (!OWN_MODELS.some(([m]) => m === ownModel)) ownModel = OWN_MODELS[0][0]; }
-  else if (!ownModel || OWN_MODELS.some(([m]) => m === ownModel)) ownModel = PROVIDERS[ownProvider].model;
-};
-fixModel();
-const modelLabel = () => ownProvider === "anthropic" ? OWN_MODELS.find(([m]) => m === ownModel)[1] : `${ownModel} via ${PROVIDERS[ownProvider].name}`;
+// The reader's keys: a list (scale-own-keys, JSON) and the one in use (scale-own-active), kept in this tab, or on this
+// device when the reader asks. Each key is {id, provider, key, model, workspace}; the one in use sets ownKey and the rest.
+const freshModel = (provider) => provider === "anthropic" ? OWN_MODELS[0][0] : PROVIDERS[provider].model;
+const goodModel = (provider, model) => provider === "anthropic" ? OWN_MODELS.some(([m]) => m === model)
+  : !!model && !OWN_MODELS.some(([m]) => m === model);
+let ownKeys = [], ownActive = "", ownKeep = false;
+try { ownKeys = JSON.parse(store.get("scale-own-keys") || "[]").filter((k) => k && PROVIDERS[k.provider] && k.key); } catch { ownKeys = []; }
+for (const k of ownKeys) if (!goodModel(k.provider, k.model)) k.model = freshModel(k.provider);
+ownActive = store.get("scale-own-active");
+ownKeep = !!inStore("localStorage", (s) => s.getItem("scale-own-keys"));
+const oldKey = store.get("scale-own-key");                // a key saved before the page kept a list
+if (oldKey && !ownKeys.length) {
+  const provider = PROVIDERS[store.get("scale-own-provider")] ? store.get("scale-own-provider") : "anthropic";
+  const model = store.get("scale-own-model");
+  ownKeep = !!inStore("localStorage", (s) => s.getItem("scale-own-key"));
+  ownKeys = [{ id: "k1", provider, key: oldKey, model: goodModel(provider, model) ? model : freshModel(provider), workspace: "" }];
+  ownActive = "k1";
+}
+for (const k of ["scale-own-key", "scale-own-provider", "scale-own-model"]) store.set(k, "", false);
+let ownKey = "", ownProvider = "anthropic", ownModel = OWN_MODELS[0][0], ownWorkspace = "";
+function useOwnKeys() {                                   // the key in use, from the list; saved where the reader chose
+  if (!ownKeys.some((k) => k.id === ownActive)) ownActive = ownKeys[0]?.id || "";
+  const a = ownKeys.find((k) => k.id === ownActive);
+  ownKey = a?.key || ""; ownProvider = a?.provider || "anthropic"; ownModel = a?.model || OWN_MODELS[0][0]; ownWorkspace = a?.workspace || "";
+  store.set("scale-own-keys", ownKeys.length ? JSON.stringify(ownKeys) : "", ownKeep);
+  store.set("scale-own-active", ownActive, ownKeep);
+  if (ownKeep) inStore("sessionStorage", (s) => { s.removeItem("scale-own-keys"); s.removeItem("scale-own-active"); });   // one copy only
+}
+useOwnKeys();
+const labelOf = (k) => k.provider === "anthropic" ? OWN_MODELS.find(([m]) => m === k.model)[1] : `${k.model} via ${PROVIDERS[k.provider].name}`;
+const modelLabel = () => labelOf({ provider: ownProvider, model: ownModel });
+const tail = (key) => `…${key.slice(-4)}`;
 let skillText = null;
 const OWN_TOOLS = [
   { name: "describe", description: "The schema: labels and edge types with their properties (scale describe).",
@@ -1399,13 +1422,14 @@ async function claude(body) {
   const fallback = !body.model.startsWith("claude-haiku");          // a declined request is answered by another model
   const r = await fetch(ANTHROPIC, { method: "POST", headers: {
     "content-type": "application/json", "x-api-key": ownKey, "anthropic-version": "2023-06-01",
-    "anthropic-dangerous-direct-browser-access": "true", ...(fallback ? { "anthropic-beta": "server-side-fallback-2026-07-01" } : {}) },
+    "anthropic-dangerous-direct-browser-access": "true", ...(ownWorkspace ? { "anthropic-workspace-id": ownWorkspace } : {}), ...(fallback ? { "anthropic-beta": "server-side-fallback-2026-07-01" } : {}) },
     body: JSON.stringify(fallback ? { ...body, fallbacks: "default" } : body) });
   const j = await r.json().catch(() => ({}));
   if (r.ok) return j;
   const why = j.error?.message || `HTTP ${r.status}`;
   if (r.status === 401) throw new Error(`Anthropic did not accept the API key (${why}). Check it under Your API key.`);
   if (r.status === 429) throw new Error(`Your API account's rate limit was reached; ask again in a minute (${why}).`);
+  if (/workspace/i.test(why)) throw new Error(`Anthropic's API answered: ${why} Under Your API key, edit the key and give its Workspace ID (Claude Console, Settings, Workspaces), or use a key created inside a workspace.`);
   throw new Error(`Anthropic's API answered: ${why}`);
 }
 // OpenAI's chat completions format, which OpenAI and OpenRouter both take: the same tools, as functions.
@@ -1513,61 +1537,89 @@ async function askChat(provider, model, question, runTool, progress, g) {
 }
 function renderOwnKey() {
   const btn = $("ownkey-btn");
-  $("ownkey-label").textContent = ownKey ? "API key set" : "Your API key";
+  $("ownkey-label").textContent = ownKey ? modelLabel() : "Set an API key";
   btn.classList.toggle("gx-ownkey-btn-set", !!ownKey);
-  btn.title = ownKey ? `Questions are answered with your API key (${modelLabel()})`
-    : "Have questions answered in words with your own API key (Anthropic, OpenAI or OpenRouter)";
-  $("search-input").placeholder = ownKey ? "Ask a question (answered with your API key)..." : "Search by asking...";
+  btn.classList.toggle("gx-ownkey-btn-unset", !ownKey);
+  btn.title = ownKey ? `Questions are answered with your ${PROVIDERS[ownProvider].name} key ${tail(ownKey)} (${modelLabel()}); click to switch or add keys`
+    : "No API key set: questions list the matching evidence. Click to add your own key (Anthropic, OpenAI or OpenRouter) and have them answered in words";
+  $("search-input").placeholder = ownKey ? `Ask a question (answered with ${modelLabel()})...` : "Search by asking...";
 }
-function ownKeyMenu(note = "", shown = ownProvider) {
-  const box = $("ownkey-menu"), kept = !!inStore("localStorage", (s) => s.getItem("scale-own-key"));
-  const p = PROVIDERS[shown], same = shown === ownProvider && !!ownKey;
-  const model = shown === ownProvider ? ownModel : (shown === "anthropic" ? OWN_MODELS[0][0] : p.model);
-  box.innerHTML = `${note ? `<p class="gx-account-note gx-err">${esc(note)}</p>` : ""}
-    <p class="gx-account-note">Have questions answered in words with your own API key. The key stays in this browser and
-      is sent only to the provider you choose (${esc(p.name)}: ${esc(p.host)}); the query plans run here. A question costs a few
-      cents to a few tens of cents on your API account.</p>
-    <p class="gx-account-note gx-subtle">Use a key with a low spend limit
-      (<a href="${p.keys}" target="_blank" rel="noopener">${esc(p.host.replace(/^api\./, ""))}</a>), and forget it here on a
-      shared computer.${shown === "anthropic" ? "" : " The query instructions were written and checked with Claude; other models may plan less well, so check the plans shown with each answer."}</p>
+// The menu: the key in use, the saved keys (click one to use it), and a form that adds a key or edits the one chosen.
+let ownForm = { editing: "", provider: "" };
+function ownKeyMenu(note = "") {
+  const box = $("ownkey-menu");
+  const editing = ownKeys.find((k) => k.id === ownForm.editing);
+  const shown = ownForm.provider || editing?.provider || (ownKeys.length ? ownProvider : "anthropic");
+  const p = PROVIDERS[shown];
+  const sameKey = editing && editing.provider === shown;
+  const model = sameKey ? editing.model : freshModel(shown);
+  const active = ownKeys.find((k) => k.id === ownActive);
+  box.innerHTML = `
+    ${active ? `<p class="gx-ownkey-status gx-ownkey-status-set"><span class="gx-ownkey-dot"></span><span>Answering with <b>${esc(labelOf(active))}</b>
+        (${esc(PROVIDERS[active.provider].name)} key ${esc(tail(active.key))})</span></p>`
+      : `<p class="gx-ownkey-status gx-ownkey-status-unset"><span class="gx-ownkey-dot"></span><span><b>No API key set.</b> Questions list the
+        matching evidence; add a key below to have them answered in words.</span></p>`}
+    ${note ? `<p class="gx-account-note gx-err">${esc(note)}</p>` : ""}
+    ${ownKeys.length ? `<div class="gx-ownkey-list" role="radiogroup" aria-label="Saved keys">${ownKeys.map((k) => `
+      <div class="gx-ownkey-row${k.id === ownActive ? " is-active" : ""}">
+        <button type="button" class="gx-ownkey-use" role="radio" aria-checked="${k.id === ownActive}" data-use="${k.id}">
+          <span class="gx-ownkey-radio"></span><span><b>${esc(labelOf(k))}</b><small>${esc(PROVIDERS[k.provider].name)} key ${esc(tail(k.key))}${k.workspace ? ` · workspace ${esc(k.workspace)}` : ""}</small></span></button>
+        <button type="button" class="gx-ownkey-act" data-edit="${k.id}" title="Change its model or replace the key">Edit</button>
+        <button type="button" class="gx-ownkey-act" data-remove="${k.id}" title="Forget this key">Remove</button>
+      </div>`).join("")}</div>` : ""}
     <form class="gx-ownkey-form" id="ownkey-form">
+      <div class="gx-ownkey-formhead">${editing ? `Edit ${esc(labelOf(editing))} <button type="button" class="gx-ownkey-act" id="ownkey-cancel">Cancel</button>` : (ownKeys.length ? "Add another key" : "Add a key")}</div>
       <label>Provider<select class="gx-select" id="ownkey-provider">${Object.entries(PROVIDERS).map(([k, v]) =>
         `<option value="${k}"${k === shown ? " selected" : ""}>${esc(v.name)}</option>`).join("")}</select></label>
       <label>API key<input type="password" id="ownkey-input" autocomplete="off" spellcheck="false"
-        placeholder="${same ? "set; paste another to replace it" : p.hint}"></label>
+        placeholder="${sameKey ? `${tail(editing.key)} kept; paste another to replace it` : p.hint}"></label>
+      ${shown === "anthropic" ? `<label>Workspace ID <span class="gx-subtle">(only for a key not scoped to a workspace)</span><input type="text"
+        id="ownkey-workspace" autocomplete="off" spellcheck="false" placeholder="wrkspc_..." value="${esc(sameKey ? editing.workspace || "" : "")}"></label>` : ""}
       <label>Model${shown === "anthropic"
         ? `<select class="gx-select" id="ownkey-model">${OWN_MODELS.map(([m, n]) => `<option value="${m}"${m === model ? " selected" : ""}>${n}</option>`).join("")}</select>`
         : `<input type="text" id="ownkey-model" autocomplete="off" spellcheck="false" value="${esc(model)}" placeholder="${esc(p.model)}">`}</label>
-      <label class="gx-ownkey-keep"><input type="checkbox" id="ownkey-keep"${kept ? " checked" : ""}>Remember on this device</label>
-      <button class="gx-btn gx-btn-primary" type="submit">Save</button>
-      ${ownKey ? `<button class="gx-menu-item" type="button" id="ownkey-forget">Forget the key</button>` : ""}
-    </form>`;
-  $("ownkey-provider").onchange = (e) => ownKeyMenu("", e.target.value);
+      <button class="gx-btn gx-btn-primary" type="submit">${editing ? "Save changes" : "Save and use this key"}</button>
+    </form>
+    <p class="gx-account-note gx-subtle">Keys stay in this browser and each is sent only to its provider's API (${esc(p.host)} for
+      ${esc(p.name)}); the query plans run here. Use keys with a low spend limit
+      (<a href="${p.keys}" target="_blank" rel="noopener">${esc(p.host.replace(/^api\./, ""))}</a>).${shown === "anthropic" ? ""
+      : " The query instructions were written and checked with Claude; other models may plan less well, so check the plans shown with each answer."}</p>
+    <label class="gx-ownkey-keep"><input type="checkbox" id="ownkey-keep"${ownKeep ? " checked" : ""}>Remember my keys on this device
+      <span class="gx-subtle">(otherwise until this tab closes)</span></label>
+    ${ownKeys.length ? `<button class="gx-menu-item" type="button" id="ownkey-forget">Forget all keys</button>` : ""}`;
+  box.querySelectorAll("[data-use]").forEach((b) => (b.onclick = () => { ownActive = b.dataset.use; useOwnKeys(); renderOwnKey(); ownKeyMenu(); }));
+  box.querySelectorAll("[data-edit]").forEach((b) => (b.onclick = () => { ownForm = { editing: b.dataset.edit, provider: "" }; ownKeyMenu(); $("ownkey-input").focus(); }));
+  box.querySelectorAll("[data-remove]").forEach((b) => (b.onclick = () => {
+    ownKeys = ownKeys.filter((k) => k.id !== b.dataset.remove);
+    if (ownForm.editing === b.dataset.remove) ownForm = { editing: "", provider: "" };
+    useOwnKeys(); renderOwnKey(); ownKeyMenu();
+  }));
+  $("ownkey-cancel")?.addEventListener("click", () => { ownForm = { editing: "", provider: "" }; ownKeyMenu(); });
+  $("ownkey-provider").onchange = (e) => { ownForm = { ...ownForm, provider: e.target.value }; ownKeyMenu(); };
+  $("ownkey-keep").onchange = (e) => { ownKeep = e.target.checked; useOwnKeys(); };
   $("ownkey-form").onsubmit = (e) => {
     e.preventDefault();
-    const key = $("ownkey-input").value.trim() || (same ? ownKey : "");   // a key is never carried to another provider
-    if (!key) { ownKeyMenu(`Paste your ${p.name} API key first.`, shown); return; }
+    const key = $("ownkey-input").value.trim() || (sameKey ? editing.key : "");   // a key is never carried to another provider
+    if (!key) { ownKeyMenu(`Paste your ${p.name} API key first.`); return; }
     const m = $("ownkey-model").value.trim();
-    if (!m) { ownKeyMenu("Give a model name.", shown); return; }
-    const keep = $("ownkey-keep").checked;
-    ownKey = key; ownProvider = shown; ownModel = m; fixModel();
-    store.set("scale-own-key", ownKey, keep);
-    store.set("scale-own-provider", ownProvider, keep);
-    store.set("scale-own-model", ownModel, keep);
-    renderOwnKey();
+    if (!goodModel(shown, m)) { ownKeyMenu("Give a model name."); return; }
+    const entry = { id: editing?.id || `k${Date.now().toString(36)}`, provider: shown, key, model: m, workspace: $("ownkey-workspace")?.value.trim() || "" };
+    ownKeys = editing ? ownKeys.map((k) => k.id === editing.id ? entry : k) : [...ownKeys.filter((k) => !(k.provider === shown && k.key === key)), entry];
+    ownActive = entry.id; ownForm = { editing: "", provider: "" };
+    useOwnKeys(); renderOwnKey();
     box.hidden = true; $("ownkey-btn").setAttribute("aria-expanded", "false");
   };
   $("ownkey-forget")?.addEventListener("click", () => {
-    ownKey = ""; store.set("scale-own-key", "", false); store.set("scale-own-provider", "", false); store.set("scale-own-model", "", false);
-    ownProvider = "anthropic"; ownModel = ""; fixModel();
-    renderOwnKey(); ownKeyMenu();
+    ownKeys = []; ownActive = ""; ownForm = { editing: "", provider: "" };
+    useOwnKeys(); renderOwnKey(); ownKeyMenu();
   });
   box.hidden = false;
   $("ownkey-btn").setAttribute("aria-expanded", "true");
-  $("ownkey-input").focus();
+  if (!ownKeys.length) $("ownkey-input").focus();
 }
 function openOwnKeyMenu() {
   for (const [, b] of menus) if (b !== $("ownkey-menu")) b.hidden = true;
+  ownForm = { editing: "", provider: "" };
   ownKeyMenu();
 }
 

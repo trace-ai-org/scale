@@ -10,7 +10,8 @@
   `describe`, `stats`, `search` and `query` calls with SCALE's own code in Pyodide, by the query-graph skill the site
   already carries. The key is kept in the tab (or on the device when the reader asks), sent only to the chosen
   provider's API (`api.anthropic.com`, `api.openai.com` or `openrouter.ai`), never carried over to another provider,
-  and forgotten on request. The query-graph skill was written and checked with Claude, so other models may plan less
+  and forgotten on request. The reader may save several keys and switch between them; the toolbar shows whether a key
+  is set and which model answers. An Anthropic key not scoped to a workspace takes the workspace's ID. The query-graph skill was written and checked with Claude, so other models may plan less
   well; the answer card lists the plans and the tokens spent on the reader's
   account. A signed-in reader is still answered by the service, which never receives a reader's key. The page's CDN
   scripts now carry integrity digests, so none can change unseen. Curating still needs the service.
