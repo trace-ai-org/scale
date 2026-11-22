@@ -211,7 +211,7 @@ def test_a_bundle_too_large_to_draw_at_once_is_drawn_a_window_at_a_time_and_sear
     assert json.loads(whole.stdout) == 19
 
 
-def test_the_explorer_runs_scales_own_tools_and_sends_a_readers_key_only_to_anthropic():
+def test_the_explorer_runs_scales_own_tools_and_sends_a_readers_key_only_to_their_provider():
     page = (REPO / "site/index.html").read_text()
     js = (REPO / "site/explorer.js").read_text()
     worker = (REPO / "site/worker.js").read_text()
@@ -227,6 +227,11 @@ def test_the_explorer_runs_scales_own_tools_and_sends_a_readers_key_only_to_anth
     assert "ownKey" not in service_call and "worker.postMessage({ id, ...msg })" in js
     # a reader's own key is sent once, in the one request to Anthropic's API, by the query-graph skill the site carries
     assert js.count('"x-api-key"') == 1 and 'const ANTHROPIC = "https://api.anthropic.com/v1/messages"' in js
+    # or, for OpenAI or OpenRouter, once as a bearer token to the chosen provider's chat completions endpoint, and never
+    # carried over to another provider
+    assert js.count("Bearer ${ownKey}") == 1 and js.count("fetch(p.url") == 1
+    assert 'url: "https://api.openai.com/v1/chat/completions"' in js and 'url: "https://openrouter.ai/api/v1/chat/completions"' in js
+    assert "(same ? ownKey : \"\")" in js
     assert '"anthropic-dangerous-direct-browser-access": "true"' in js and 'fetch("data/query-graph.md")' in js
     # kept in the tab unless the reader asks for this device, and forgotten on request
     assert 'store.set("scale-own-key", ownKey, keep)' in js and 'store.set("scale-own-key", "", false)' in js

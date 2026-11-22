@@ -42,7 +42,7 @@ code, pre { font-family: "JetBrains Mono", ui-monospace, Menlo, monospace; }
 .gx-ownkey-menu { width: 320px; }
 .gx-ownkey-form { display: flex; flex-direction: column; gap: 8px; margin: 0 6px 4px; font-size: 12.5px; }
 .gx-ownkey-form label { display: flex; flex-direction: column; gap: 3px; }
-.gx-ownkey-form input[type="password"] { padding: 6px 8px; border: 1px solid var(--line); border-radius: 6px; background: var(--bg-input);
+.gx-ownkey-form input[type="password"], .gx-ownkey-form input[type="text"] { padding: 6px 8px; border: 1px solid var(--line); border-radius: 6px; background: var(--bg-input);
   color: var(--fg); font: inherit; }
 .gx-ownkey-form label.gx-ownkey-keep { flex-direction: row; align-items: center; gap: 6px; }
 .gx-ownkey-form .gx-btn { height: 32px; }

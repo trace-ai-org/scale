@@ -2,13 +2,16 @@
 
 ## Unreleased
 
-- **The graph explorer answers questions in words with a reader's own Claude API key (site, no schema change, no
+- **The graph explorer answers questions in words with a reader's own API key (site, no schema change, no
   migration).** Until the web service runs, a question in the explorer only listed the matching evidence. Now a reader
-  may give their own key (the toolbar's *Your API key*, with Claude Opus 5.5, Sonnet 5.5 or Haiku 5.5): the page runs
-  the service's question loop itself, calling Anthropic's Messages API from the browser and running the model's
+  may give their own key (the toolbar's *Your API key*): Anthropic's, with Claude Opus 5.5, Sonnet 5.5 or Haiku 5.5, or
+  OpenAI's or OpenRouter's, with a model the reader names. The page runs the service's question loop itself, calling
+  the provider's API from the browser (Anthropic's Messages API, or the chat completions format) and running the model's
   `describe`, `stats`, `search` and `query` calls with SCALE's own code in Pyodide, by the query-graph skill the site
-  already carries. The key is kept in the tab (or on the device when the reader asks), sent only to
-  `api.anthropic.com`, and forgotten on request; the answer card lists the plans and the tokens spent on the reader's
+  already carries. The key is kept in the tab (or on the device when the reader asks), sent only to the chosen
+  provider's API (`api.anthropic.com`, `api.openai.com` or `openrouter.ai`), never carried over to another provider,
+  and forgotten on request. The query-graph skill was written and checked with Claude, so other models may plan less
+  well; the answer card lists the plans and the tokens spent on the reader's
   account. A signed-in reader is still answered by the service, which never receives a reader's key. The page's CDN
   scripts now carry integrity digests, so none can change unseen. Curating still needs the service.
 
