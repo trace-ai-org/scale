@@ -1429,7 +1429,8 @@ async function claude(body) {
   const why = j.error?.message || `HTTP ${r.status}`;
   if (r.status === 401) throw new Error(`Anthropic did not accept the API key (${why}). Check it under Your API key.`);
   if (r.status === 429) throw new Error(`Your API account's rate limit was reached; ask again in a minute (${why}).`);
-  if (/workspace/i.test(why)) throw new Error(`Anthropic's API answered: ${why} Under Your API key, edit the key and give its Workspace ID (Claude Console, Settings, Workspaces), or use a key created inside a workspace.`);
+  if (/usage limit|spend limit|credit balance/i.test(why)) throw new Error(`Anthropic's API answered: ${why} The spend limit is set in the Claude Console (Settings, Limits, or the workspace's own limits under Settings, Workspaces), or switch to another key under Your API key.`);
+  if (/anthropic-workspace-id|scoped to a workspace/i.test(why)) throw new Error(`Anthropic's API answered: ${why} Under Your API key, edit the key and give its Workspace ID (Claude Console, Settings, Workspaces), or use a key created inside a workspace.`);
   throw new Error(`Anthropic's API answered: ${why}`);
 }
 // OpenAI's chat completions format, which OpenAI and OpenRouter both take: the same tools, as functions.
