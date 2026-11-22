@@ -6,7 +6,9 @@
 #   - when a reviewer approves, the review requests still open are withdrawn and a comment says who approved; the
 #     approver merges once the checks pass;
 #   - when a push changes a pull request, every reviewer whose approval the push dismissed, or who asked for changes,
-#     is asked again (GitHub does not re-request them on its own).
+#     is asked again (GitHub does not re-request them on its own);
+#   - so does a change of the base branch (a stacked pull request retargeted to main once the one below it merges):
+#     it dismisses the approvals too, but is an `edited` event, not a push.
 # A reviewer who asks for changes blocks the merge until they approve or their review is dismissed, whoever else
 # approved. The workflow token comments, so no other workflow (@scale-agents) starts from it.
 name: reviewers
@@ -15,7 +17,7 @@ name: reviewers
   pull_request_review:
     types: [submitted]
   pull_request:
-    types: [synchronize]
+    types: [synchronize, edited]
 
 permissions:
   contents: read
@@ -25,10 +27,12 @@ concurrency:
 
 jobs:
   reviewers:
-    # a pull request from a fork gets a read-only token; bots' reviews are not approvals
+    # a pull request from a fork gets a read-only token; bots' reviews are not approvals; an edit counts only when it
+    # changed the base branch (not the title or the description)
     if: >-
       github.event.pull_request.head.repo.full_name == github.repository &&
-      (github.event_name == 'pull_request' || github.event.review.user.type != 'Bot')
+      (github.event_name == 'pull_request' || github.event.review.user.type != 'Bot') &&
+      (github.event.action != 'edited' || github.event.changes.base != null)
     runs-on: ubuntu-latest
     timeout-minutes: 5
     permissions:
@@ -53,10 +57,10 @@ jobs:
           fi
           gh pr comment "$PR" --repo "$REPO" --body "Approved by @$REVIEWER, who merges it once the checks pass.$note A reviewer who still has concerns can request changes, which blocks the merge."
 
-      - name: A push asks again the reviewers it concerns
+      - name: A push or a new base asks again the reviewers it concerns
         if: github.event_name == 'pull_request'
         run: |
-          sleep 15      # the push dismisses stale approvals; let that land first
+          sleep 15      # the push (or the base change) dismisses stale approvals; let that land first
           again=$(gh api --paginate --slurp "repos/$REPO/pulls/$PR/reviews" | jq -r --arg author "$AUTHOR" '
             add // [] | map(select(.user.type != "Bot" and .user.login != $author and .state != "COMMENTED"))
             | group_by(.user.login) | map(max_by(.submitted_at))
