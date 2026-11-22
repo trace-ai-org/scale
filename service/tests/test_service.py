@@ -109,6 +109,31 @@ def test_the_loop_stops_at_its_token_budget(tmp_path):
     assert out["stopped"].startswith("token budget reached") and out["tokens"] == 300
 
 
+def test_the_conversation_is_cached_as_it_grows_and_a_cache_read_counts_a_tenth():
+    seen = []
+
+    class Cached:
+        messages = None
+
+        def __init__(self):
+            self.messages, self.n = self, 0
+
+        def create(self, **kw):
+            seen.append([[dict(b) for b in m["content"]] if isinstance(m["content"], list) else m["content"]
+                         for m in kw["messages"]])
+            self.n += 1
+            blocks = [use("t", {}, self.n)] if self.n < 4 else [{"type": "text", "text": "done"}]
+            return SimpleNamespace(content=blocks, stop_reason="tool_use", usage=SimpleNamespace(
+                input_tokens=10, output_tokens=10, cache_creation_input_tokens=100, cache_read_input_tokens=1000))
+
+    loop = agent.Loop(Cached(), "m", "skill", [], {"t": lambda a: "rows"}, max_turns=10, max_tokens=10**6)
+    assert loop.run("q") == ("done", None)
+    last = seen[-1]                                       # q, a, r1, a, r2, a, r3: the newest two results are marked
+    marked = [i for i, m in enumerate(last) if isinstance(m, list) and any("cache_control" in b for b in m)]
+    assert marked == [4, 6] and loop.system[0]["cache_control"] == {"type": "ephemeral"}
+    assert loop.tokens == 4 * (10 + 10 + 125 + 100)       # a written token counts 1.25, a read one 0.1
+
+
 def test_a_question_is_answered_with_the_tools_own_query(tmp_path):
     svc = Service(cfg(tmp_path), repo=REPO)
     graph = load_doc(PUBLIC)
