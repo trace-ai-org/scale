@@ -2,6 +2,12 @@
 
 ## Unreleased
 
+- **The graph explorer is at `https://trace-ai-org.github.io/scale/` (documentation, no schema change, no
+  migration).** The repository moved to `trace-ai-org/scale`, and GitHub Pages does not redirect a moved repository's
+  site: `https://hlxin.github.io/scale/` answers 404. The README, `CONTRIBUTE.md`, `agents/README.md`, the
+  `first-paper` skill, the digest's review sheet, the Pages workflow and the service's README and tests name the new
+  address. A deployed web service must list `https://trace-ai-org.github.io` in `SCALE_WEB_SITE_ORIGINS`.
+
 - **curate-corpus `review-api`: a reasoning reader keeps room to answer (tooling, no schema change, no migration).** A
   reader that reasons before it answers could end a reading without a verdict: the fitted requests left it too few
   tokens to think and answer, because compact JSON runs under 3 characters a token and a curator's report could hold

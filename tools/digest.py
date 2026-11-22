@@ -269,7 +269,7 @@ def render(d: dict, limit: int = 40) -> str:
     out += ["", "The full review sheet: `scale review values <graph> --out review-values.md`. Read every claim above too: "
             "is it what the authors say?", "",
             "## Next", "",
-            "- **Look at it:** open the graph file in the [graph explorer](https://hlxin.github.io/scale/) (*open a graph file*).",
+            "- **Look at it:** open the graph file in the [graph explorer](https://trace-ai-org.github.io/scale/) (*open a graph file*).",
             "- **Ask it questions:** `scale graph query <graph> <plan>`; the plans in "
             "`examples/methanol-synthesis-public/use-cases/` are starting points.",
             "- **Share it:** when the review sheet is clear, the agent runs `scale source finish <folder> --public` and "

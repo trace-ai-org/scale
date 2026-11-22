@@ -6,7 +6,7 @@ name: pages
 # needs no secret.
 #
 # One-time setup, a human action: Settings -> Pages -> Build and deployment -> Source: GitHub Actions
-# (governance/repository-settings.md). The site is then at https://hlxin.github.io/scale/.
+# (governance/repository-settings.md). The site is then at https://trace-ai-org.github.io/scale/.
 "on":
   push:
     branches:
