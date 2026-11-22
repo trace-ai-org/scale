@@ -36,7 +36,7 @@ with a prompt for other coding agents).
 **Use it from your agent:** [`agents/`](agents/README.md) has a drop-in instruction file that tells an agent *when* to
 query SCALE (catalyst search under stated conditions, "has this been done?", negative results), and the MCP setup.
 
-**Or in the browser: [the graph explorer](https://hlxin.github.io/scale/).** Pick one of the curated graphs (or
+**Or in the browser: [the graph explorer](https://trace-ai-org.github.io/scale/).** Pick one of the curated graphs (or
 open a graph file) and see it whole, filter it by label or relationship type, open any node with its verbatim
 evidence, search the evidence, and explore its data (counts, degrees, numeric properties plotted). SCALE's own code
 runs in the browser (Pyodide), so a search or a plan gives the rows `scale graph search` and `scale graph query` give.

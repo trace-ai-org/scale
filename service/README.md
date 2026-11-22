@@ -130,7 +130,7 @@ members.
 | `SCALE_WEB_SECRET` | signs session tokens; a random string of at least 32 characters | required |
 | `GITHUB_CLIENT_ID`, `GITHUB_CLIENT_SECRET` | the GitHub OAuth app (callback `<public url>/auth/callback`) | required for sign-in |
 | `SCALE_WEB_PUBLIC_URL` | the service's own URL | required for sign-in |
-| `SCALE_WEB_SITE_ORIGINS` | the page's origin(s), e.g. `https://hlxin.github.io`; only these may call the service or receive a sign-in | required |
+| `SCALE_WEB_SITE_ORIGINS` | the page's origin(s), e.g. `https://trace-ai-org.github.io`; only these may call the service or receive a sign-in | required |
 | `SCALE_WEB_ALLOWLIST` | GitHub logins, comma-separated; `*` admits any GitHub account | empty: nobody may curate |
 | `SCALE_WEB_MODEL` | the model | `claude-opus-5-5` |
 | `SCALE_CONTACT_EMAIL` | the address Unpaywall asks for, and the page's contact for a rights holder; without it no open-access copy is looked up | empty |
