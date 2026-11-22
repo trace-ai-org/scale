@@ -39,7 +39,7 @@ public-domain sources, with full quotes). Each answer the agent gives should cit
   ([docs/integrate.md](../docs/integrate.md)).
 - **Python / GraphRAG:** `from scale.api import ScaleToolkit; ScaleToolkit().call("query", {...})`;
   `scale graph search` returns evidence quotes ranked by words and meaning, ready to pass to a retriever.
-- **Browser, nothing to install:** [the graph explorer](https://hlxin.github.io/scale/).
+- **Browser, nothing to install:** [the graph explorer](https://trace-ai-org.github.io/scale/).
 
 ## What is ready now vs. what needs setup
 

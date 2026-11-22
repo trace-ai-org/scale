@@ -35,7 +35,7 @@ then type
 The [first-paper skill](skills/first-paper/SKILL.md) asks for your GitHub login (for credit) and the PDF if the paper
 is not open access, then curates the paper and checks it. You get back:
 
-1. **your paper as a knowledge graph**, to open in the [graph explorer](https://hlxin.github.io/scale/);
+1. **your paper as a knowledge graph**, to open in the [graph explorer](https://trace-ai-org.github.io/scale/);
 2. **`digest.md`**: your paper answering SCALE's three questions: what was tested under which conditions, whether
    SCALE's graphs already report the same catalysts and reactions (and since when), and which runs failed or were
    inactive. Its claims are kept apart from the measurements;

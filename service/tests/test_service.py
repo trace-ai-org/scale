@@ -50,7 +50,7 @@ def use(name, inp, i=0):
 
 
 def cfg(tmp_path, **kw):
-    return Config(secret="s" * 40, github_client_id="cid", allowlist=["ada"], site_origins=["https://hlxin.github.io"],
+    return Config(secret="s" * 40, github_client_id="cid", allowlist=["ada"], site_origins=["https://trace-ai-org.github.io"],
                   public_url="https://scale.example", workdir=str(tmp_path / "jobs"), **kw)
 
 
@@ -138,7 +138,7 @@ def test_search_runs_without_sign_in_and_asking_needs_it(tmp_path):
 NONCE = "n0nce-of-this-tab-0123"
 
 
-def signed_in(svc, ret="https://hlxin.github.io/scale/", nonce=NONCE):
+def signed_in(svc, ret="https://trace-ai-org.github.io/scale/", nonce=NONCE):
     """Start a sign-in at /auth/login; the OAuth state GitHub would send back to /auth/callback."""
     st, _, h = svc.route("GET", "/auth/login", {"return": ret, "nonce": nonce}, {}, b"")
     assert st == 302 and h["Location"].startswith("https://github.com/login/oauth/authorize?")
@@ -159,7 +159,7 @@ def test_sign_in_admits_only_the_allowlist_and_returns_only_to_the_site(tmp_path
         monkeypatch.setattr(auth, "github_login", lambda c, code, login=login: login)
         _, _, h2 = svc.route("GET", "/auth/callback", {"code": "x", "state": state}, {}, b"")
         page, frag = answer(h2["Location"])
-        assert page == "https://hlxin.github.io/scale/" and expect in frag and frag["nonce"] == NONCE
+        assert page == "https://trace-ai-org.github.io/scale/" and expect in frag and frag["nonce"] == NONCE
     assert frag["signin"] == "not-allowed" and frag["login"] == "eve"
     token = svc.route("GET", "/auth/callback", {"code": "x", "state": "forged.mac"}, {}, b"")
     assert token[0] == 400
@@ -176,11 +176,11 @@ def test_a_sign_in_is_one_transaction_of_the_tab_that_started_it(tmp_path, monke
     svc = Service(cfg(tmp_path), repo=REPO)
     monkeypatch.setattr(auth, "github_login", lambda c, code: "ada")
     for nonce in ("", "short", "has space in it 0123456", "x" * 129):        # no nonce, no sign-in
-        assert svc.route("GET", "/auth/login", {"return": "https://hlxin.github.io/scale/", "nonce": nonce}, {}, b"")[0] == 400
-    state = signed_in(svc, ret="https://hlxin.github.io/scale/?a=1#g=methanol%2Fpre1966&token=stale&nonce=old")
+        assert svc.route("GET", "/auth/login", {"return": "https://trace-ai-org.github.io/scale/", "nonce": nonce}, {}, b"")[0] == 400
+    state = signed_in(svc, ret="https://trace-ai-org.github.io/scale/?a=1#g=methanol%2Fpre1966&token=stale&nonce=old")
     _, _, h = svc.route("GET", "/auth/callback", {"code": "x", "state": state}, {}, b"")
     page, frag = answer(h["Location"])
-    assert page == "https://hlxin.github.io/scale/?a=1"
+    assert page == "https://trace-ai-org.github.io/scale/?a=1"
     assert frag["g"] == "methanol/pre1966" and frag["nonce"] == NONCE and frag["token"] != "stale"
     assert auth.unsign(svc.cfg, frag["token"])["sub"] == "ada"
     again = svc.route("GET", "/auth/callback", {"code": "y", "state": state}, {}, b"")   # the same state twice
@@ -189,11 +189,11 @@ def test_a_sign_in_is_one_transaction_of_the_tab_that_started_it(tmp_path, monke
 
 def test_a_return_address_cannot_add_a_header(tmp_path):
     svc = Service(cfg(tmp_path), repo=REPO)
-    for ret in ("https://hlxin.github.io/scale/\r\nX-Injected: yes", "https://hlxin.github.io/scale/\nSet-Cookie: a=b",
-                "https://hlxin.github.io/sc ale/", "https://hlxin.github.io/scälé/", "javascript://hlxin.github.io/%0aalert(1)",
-                "https://hlxin.github.io.evil.example/", "https://user@hlxin.github.io/"):
+    for ret in ("https://trace-ai-org.github.io/scale/\r\nX-Injected: yes", "https://trace-ai-org.github.io/scale/\nSet-Cookie: a=b",
+                "https://trace-ai-org.github.io/sc ale/", "https://trace-ai-org.github.io/scälé/", "javascript://trace-ai-org.github.io/%0aalert(1)",
+                "https://trace-ai-org.github.io.evil.example/", "https://user@trace-ai-org.github.io/"):
         assert svc.route("GET", "/auth/login", {"return": ret, "nonce": NONCE}, {}, b"")[0] == 400, ret
-    assert auth.clean_return(svc.cfg, "https://hlxin.github.io") == "https://hlxin.github.io/"
+    assert auth.clean_return(svc.cfg, "https://trace-ai-org.github.io") == "https://trace-ai-org.github.io/"
 
 
 def test_an_allowlist_of_star_admits_any_github_account(tmp_path, monkeypatch):
@@ -311,7 +311,7 @@ def test_the_page_names_the_service_and_the_readme_links_the_page():
     assert '"/ask"' in js and js.count('"x-api-key"') == 1     # the service answers without a reader's key; a reader's own
     assert "https://api.anthropic.com/v1/messages" in js       # key, when given, goes only to its provider (test_site.py)
     assert "SCALE_SERVICE_URL" in (site / "config.js").read_text(encoding="utf-8")
-    assert "hlxin.github.io/scale" in (REPO / "README.md").read_text(encoding="utf-8")
+    assert "trace-ai-org.github.io/scale" in (REPO / "README.md").read_text(encoding="utf-8")
 
 
 class FakeGitHub:

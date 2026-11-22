@@ -100,7 +100,7 @@ Present, in this order and briefly:
 
 1. **What the paper became**: the counts, and the digest's three sections in a few lines each, quoting its tables
    rather than paraphrasing numbers. Say plainly that "not found" in section 2 means not in SCALE's graphs, not new.
-2. **How to see it**: the [graph explorer](https://hlxin.github.io/scale/) opens `<folder>/<slug>.graph.json`
+2. **How to see it**: the [graph explorer](https://trace-ai-org.github.io/scale/) opens `<folder>/<slug>.graph.json`
    (*open a graph file*); every node shows its quote.
 3. **Their job**: open `review-values.md`, check the flagged and unverifiable values against the paper, read every
    claim. List what you left `not_reported` or in `unmodeled`, and anything you were unsure of.
