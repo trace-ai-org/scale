@@ -36,8 +36,21 @@ def _tool(name: str, description: str, properties: dict | None = None, required:
             "input_schema": {"type": "object", "properties": properties or {}, "required": required or []}}
 
 
+def _mark_cache(messages: list[dict]) -> None:
+    """Cache breakpoints on the newest two user messages, so each turn reads the conversation so far from the cache
+    and writes only what is new (with the system prompt's, three of the four breakpoints allowed)."""
+    for m in messages:
+        if isinstance(m["content"], list):
+            for b in m["content"]:
+                b.pop("cache_control", None)
+    users = [m for m in messages if m["role"] == "user" and isinstance(m["content"], list) and m["content"]]
+    for m in users[-2:]:
+        m["content"][-1]["cache_control"] = {"type": "ephemeral"}
+
+
 class Loop:
-    """A tool-use loop over one conversation, with its token count and a log the page shows."""
+    """A tool-use loop over one conversation, with its token count and a log the page shows. The count is as billed,
+    at the price of an input token: a token read from the cache counts a tenth, one written to it a quarter more."""
 
     def __init__(self, client, model: str, system: str, tools: list[dict], handlers: dict[str, Callable[[dict], object]],
                  max_turns: int, max_tokens: int, log: Callable[[str], None] = lambda s: None):
@@ -50,11 +63,13 @@ class Loop:
         """Run to an answer (the model's last text) or to ``stop_tool``'s input; the reason when it ran out."""
         messages = [{"role": "user", "content": first}]
         for turn in range(self.max_turns):
+            _mark_cache(messages)
             r = self.client.messages.create(model=self.model, max_tokens=16000, system=self.system,
                                             tools=self.tools, messages=messages)
             u = getattr(r, "usage", None)
             self.tokens += (getattr(u, "input_tokens", 0) or 0) + (getattr(u, "output_tokens", 0) or 0) \
-                + (getattr(u, "cache_creation_input_tokens", 0) or 0)
+                + round(1.25 * (getattr(u, "cache_creation_input_tokens", 0) or 0)) \
+                + round(0.1 * (getattr(u, "cache_read_input_tokens", 0) or 0))
             blocks = [b if isinstance(b, dict) else b.model_dump() for b in r.content]
             messages.append({"role": "assistant", "content": blocks})
             text = "\n".join(b["text"] for b in blocks if b["type"] == "text").strip()

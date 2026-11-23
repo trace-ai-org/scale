@@ -1369,7 +1369,12 @@ const PROVIDERS = {
   openrouter: { name: "OpenRouter", host: "openrouter.ai", hint: "sk-or-...", keys: "https://openrouter.ai/settings/keys",
     url: "https://openrouter.ai/api/v1/chat/completions", model: "openai/gpt-5", limit: "max_tokens" },
 };
-const OWN_TURNS = 30, OWN_TOKENS = 400_000, RESULT_CHARS = 40_000;   // as the service's loop: turns, a question's tokens, a result
+// A question runs until the model answers: no token budget, no turn limit and no tool result cut short, so that the
+// answer rests on every row the model asked for. The reader may stop it (Answer now), and the model then answers from
+// the rows it has; the cost line says what it spent.
+const WRAP_UP = "The reader asked for the answer now. Call no more tools: write the answer from the rows returned so far, "
+  + "and say in the Limits line what was left unexplored.";
+let answerNow = false;                                    // set by the progress card's Answer now button
 // The reader's keys: a list (scale-own-keys, JSON) and the one in use (scale-own-active), kept in this tab, or on this
 // device when the reader asks. Each key is {id, provider, key, model, workspace}; the one in use sets ownKey and the rest.
 const freshModel = (provider) => provider === "anthropic" ? OWN_MODELS[0][0] : PROVIDERS[provider].model;
@@ -1415,8 +1420,16 @@ const OWN_TOOLS = [
 ];
 const WORKING_HERE = "\n\n# Working here\n\nYou answer in a web page, through the tools given (no shell). The graph is the one the user is viewing. "
   + "Write the answer in Markdown: every factual sentence from returned rows, citing record ids and evidence locators in brackets, then a "
-  + "**Limits** line. Keep your own extrapolations in a separate, labelled paragraph.";
-const clip = (obj) => { const s = typeof obj === "string" ? obj : JSON.stringify(obj); return s.length <= RESULT_CHARS ? s : `${s.slice(0, RESULT_CHARS)}\n… (${s.length - RESULT_CHARS} more characters cut)`; };
+  + "**Limits** line. Keep your own extrapolations in a separate, labelled paragraph. Tool results come back whole: "
+  + "run every plan the question needs, and base the answer on all the relevant rows they return.";
+// The cache breakpoints on the conversation: the newest two user messages, so each turn reads all that came before
+// from the cache and writes only what is new (with the system prompt's, three of the four breakpoints allowed).
+function markCache(messages) {
+  for (const m of messages) if (Array.isArray(m.content)) for (const b of m.content) delete b.cache_control;
+  messages.filter((m) => m.role === "user" && Array.isArray(m.content) && m.content.length).slice(-2)
+    .forEach((m) => { m.content[m.content.length - 1].cache_control = { type: "ephemeral" }; });
+}
+const whole = (obj) => typeof obj === "string" ? obj : JSON.stringify(obj);
 
 async function claude(body) {
   const fallback = !body.model.startsWith("claude-haiku");          // a declined request is answered by another model
@@ -1430,6 +1443,7 @@ async function claude(body) {
   if (r.status === 401) throw new Error(`Anthropic did not accept the API key (${why}). Check it under Your API key.`);
   if (r.status === 429) throw new Error(`Your API account's rate limit was reached; ask again in a minute (${why}).`);
   if (/usage limit|spend limit|credit balance/i.test(why)) throw new Error(`Anthropic's API answered: ${why} The spend limit is set in the Claude Console (Settings, Limits, or the workspace's own limits under Settings, Workspaces), or switch to another key under Your API key.`);
+  if (/prompt is too long|context window|too many tokens/i.test(why)) throw new Error(`Anthropic's API answered: ${why} The plans' rows outgrew what the model can read at once; ask a narrower question, or press Answer now earlier.`);
   if (/anthropic-workspace-id|scoped to a workspace/i.test(why)) throw new Error(`Anthropic's API answered: ${why} Under Your API key, edit the key and give its Workspace ID (Claude Console, Settings, Workspaces), or use a key created inside a workspace.`);
   throw new Error(`Anthropic's API answered: ${why}`);
 }
@@ -1462,69 +1476,86 @@ async function ownTool(name, a, plans) {
 async function askOwnKey(question) {
   leaveSchema();
   const g = G, model = ownModel, provider = ownProvider, modelName = modelLabel();
-  const progress = (line) => { if (G === g) card("Answer", `<p class="gx-meta">Answering with ${esc(modelName)} and your API key; the query plans run in this browser.</p>${line ? `<p class="gx-meta">${esc(line)}</p>` : ""}`); };
+  answerNow = false;
+  const progress = (line) => {
+    if (G !== g) return;
+    card("Answer", `<p class="gx-meta">Answering with ${esc(modelName)} and your API key; the query plans run in this browser.</p>${line ? `<p class="gx-meta">${esc(line)}</p>` : ""}
+      <button type="button" class="gx-btn gx-btn-tiny" id="answer-now"${answerNow ? " disabled" : ""} title="Stop running plans and answer from the rows returned so far">${answerNow ? "Answering from the rows so far…" : "Answer now"}</button>`);
+    const b = $("answer-now");
+    if (b) b.onclick = () => { answerNow = true; b.disabled = true; b.textContent = "Answering from the rows so far…"; };
+  };
   progress("");
   const plans = [];
-  let inTok = 0, outTok = 0, text = "", stopped = "";
+  let inTok = 0, cacheTok = 0, outTok = 0, text = "", stopped = "";
   try {
     if (skillText === null) {
       const s = await fetch("data/query-graph.md");
       if (!s.ok) throw new Error(`data/query-graph.md: HTTP ${s.status}`);
       skillText = await s.text();
     }
-    const runTool = async (name, input) => clip(await ownTool(name, input, plans));
+    const runTool = async (name, input) => whole(await ownTool(name, input, plans));
     if (provider !== "anthropic") {
-      ({ text, stopped, inTok, outTok } = await askChat(provider, model, question, runTool, progress, g));
+      ({ text, stopped, inTok, cacheTok, outTok } = await askChat(provider, model, question, runTool, progress, g));
       if (G !== g) return;
-      answerCard({ answer: text, plans, stopped }, `${inTok.toLocaleString()} input and ${outTok.toLocaleString()} output tokens on your ${PROVIDERS[provider].name} account (${model})`);
+      answerCard({ answer: text, plans, stopped }, `${tokenLine(inTok, cacheTok, outTok)} on your ${PROVIDERS[provider].name} account (${model})`);
       return;
     }
+    // The tools and the system prompt never change within a question, so they are read from the cache from the second
+    // turn on; the conversation is cached as it grows (markCache). The tools stay offered on the last turn too, since
+    // changing them or tool_choice would cost the conversation's cache: WRAP_UP asks for the answer instead.
     const system = [{ type: "text", text: skillText + WORKING_HERE, cache_control: { type: "ephemeral" } }];
     const messages = [{ role: "user", content: question }];
     for (let turn = 0; ; turn++) {
-      if (turn >= OWN_TURNS) { stopped = `turn limit reached (${OWN_TURNS} turns)`; break; }
-      const r = await claude({ model, max_tokens: 16000, system, tools: OWN_TOOLS, messages });
+      const last = !!stopped;                               // the reader asked for the answer: this turn gives it
+      markCache(messages);
+      const r = await claude({ model, max_tokens: OWN_OUTPUT, system, tools: OWN_TOOLS, messages });
       if (G !== g) return;                                  // another graph was opened meanwhile
       const u = r.usage || {};
       inTok += (u.input_tokens || 0) + (u.cache_creation_input_tokens || 0) + (u.cache_read_input_tokens || 0);
+      cacheTok += u.cache_read_input_tokens || 0;
       outTok += u.output_tokens || 0;
       const blocks = r.content || [];
       messages.push({ role: "assistant", content: blocks });   // as returned, thinking blocks included
       text = blocks.filter((b) => b.type === "text").map((b) => b.text).join("\n").trim();
       if (r.stop_reason === "refusal") { stopped = "the model declined to answer this question"; break; }
       const calls = blocks.filter((b) => b.type === "tool_use");
-      if (!calls.length) { if (r.stop_reason === "max_tokens") stopped = "the answer ran out of room"; break; }
+      if (!calls.length || last) { if (r.stop_reason === "max_tokens") stopped = stopped || "the answer ran out of room"; break; }
       progress(`Turn ${turn + 1}: ${calls.map((c) => c.name).join(", ")}`);
       const results = [];
       for (const c of calls) {
         try { results.push({ type: "tool_result", tool_use_id: c.id, content: await runTool(c.name, c.input || {}) }); }
         catch (err) { results.push({ type: "tool_result", tool_use_id: c.id, is_error: true, content: String(err.message || err) }); }
       }
+      if (answerNow) { stopped = ANSWERED_EARLY; results.push({ type: "text", text: WRAP_UP }); }
       messages.push({ role: "user", content: results });
-      if (inTok + outTok >= OWN_TOKENS) { stopped = `token limit for one question reached (${OWN_TOKENS.toLocaleString()})`; break; }
     }
-    answerCard({ answer: text, plans, stopped }, `${inTok.toLocaleString()} input and ${outTok.toLocaleString()} output tokens on your API account (${modelName})`);
+    answerCard({ answer: text, plans, stopped }, `${tokenLine(inTok, cacheTok, outTok)} on your API account (${modelName})`);
   } catch (err) {
     if (G === g) card("Answer", `<p class="gx-card-warn">${esc(err.message || err)}</p>`);
   }
 }
+const OWN_OUTPUT = 32000;                                 // the most one reply may write (the answer included)
+const ANSWERED_EARLY = "you asked for the answer before the model had finished; it answered from the rows returned so far";
+const tokenLine = (inTok, cacheTok, outTok) =>
+  `${inTok.toLocaleString()} input (${cacheTok.toLocaleString()} read from the cache) and ${outTok.toLocaleString()} output tokens`;
 // The same loop in the chat completions format: the skill as the system message, each tool call answered by a tool
-// message, the assistant's message sent back as returned (OpenRouter's reasoning details included).
+// message, the assistant's message sent back as returned (OpenRouter's reasoning details included). OpenAI caches a
+// repeated prefix by itself; the messages are only ever appended to, so each turn's prefix is the last turn's prompt.
 async function askChat(provider, model, question, runTool, progress, g) {
   const p = PROVIDERS[provider];
   const messages = [{ role: "system", content: skillText + WORKING_HERE }, { role: "user", content: question }];
-  let inTok = 0, outTok = 0, text = "", stopped = "";
+  let inTok = 0, cacheTok = 0, outTok = 0, text = "", stopped = "";
   for (let turn = 0; ; turn++) {
-    if (turn >= OWN_TURNS) { stopped = `turn limit reached (${OWN_TURNS} turns)`; break; }
-    const r = await chat(provider, { model, messages, tools: CHAT_TOOLS, [p.limit]: 16000 });
+    const last = !!stopped;
+    const r = await chat(provider, { model, messages, tools: CHAT_TOOLS, [p.limit]: OWN_OUTPUT });
     if (G !== g) break;
-    inTok += r.usage?.prompt_tokens || 0; outTok += r.usage?.completion_tokens || 0;
+    inTok += r.usage?.prompt_tokens || 0; cacheTok += r.usage?.prompt_tokens_details?.cached_tokens || 0; outTok += r.usage?.completion_tokens || 0;
     const choice = r.choices?.[0] || {}, msg = choice.message || { role: "assistant", content: "" };
     messages.push(msg);
     text = (typeof msg.content === "string" ? msg.content : (msg.content || []).map((c) => c.text || "").join("\n")).trim();
     if (msg.refusal || choice.finish_reason === "content_filter") { stopped = "the model declined to answer this question"; text = text || msg.refusal || ""; break; }
     const calls = (msg.tool_calls || []).filter((c) => c.type === "function" || c.function);
-    if (!calls.length) { if (choice.finish_reason === "length") stopped = "the answer ran out of room"; break; }
+    if (!calls.length || last) { if (choice.finish_reason === "length") stopped = stopped || "the answer ran out of room"; break; }
     progress(`Turn ${turn + 1}: ${calls.map((c) => c.function.name).join(", ")}`);
     for (const c of calls) {
       let content;
@@ -1532,9 +1563,9 @@ async function askChat(provider, model, question, runTool, progress, g) {
       catch (err) { content = `Error: ${err.message || err}`; }
       messages.push({ role: "tool", tool_call_id: c.id, content });
     }
-    if (inTok + outTok >= OWN_TOKENS) { stopped = `token limit for one question reached (${OWN_TOKENS.toLocaleString()})`; break; }
+    if (answerNow) { stopped = ANSWERED_EARLY; messages.push({ role: "user", content: WRAP_UP }); }
   }
-  return { text, stopped, inTok, outTok };
+  return { text, stopped, inTok, cacheTok, outTok };
 }
 function renderOwnKey() {
   const btn = $("ownkey-btn");
@@ -1545,83 +1576,90 @@ function renderOwnKey() {
     : "No API key set: questions list the matching evidence. Click to add your own key (Anthropic, OpenAI or OpenRouter) and have them answered in words";
   $("search-input").placeholder = ownKey ? `Ask a question (answered with ${modelLabel()})...` : "Search by asking...";
 }
-// The menu: the key in use, the saved keys (click one to use it), and a form that adds a key or edits the one chosen.
+// Saved keys show which one is in use. The shared add/edit form opens on request, or for the first key.
 let ownForm = { editing: "", provider: "" };
 function ownKeyMenu(note = "") {
   const box = $("ownkey-menu");
   const editing = ownKeys.find((k) => k.id === ownForm.editing);
+  const formOpen = !ownKeys.length || ownForm.open || !!editing;
   const shown = ownForm.provider || editing?.provider || (ownKeys.length ? ownProvider : "anthropic");
   const p = PROVIDERS[shown];
   const sameKey = editing && editing.provider === shown;
   const model = sameKey ? editing.model : freshModel(shown);
-  const active = ownKeys.find((k) => k.id === ownActive);
   box.innerHTML = `
-    ${active ? `<p class="gx-ownkey-status gx-ownkey-status-set"><span class="gx-ownkey-dot"></span><span>Answering with <b>${esc(labelOf(active))}</b>
-        (${esc(PROVIDERS[active.provider].name)} key ${esc(tail(active.key))})</span></p>`
-      : `<p class="gx-ownkey-status gx-ownkey-status-unset"><span class="gx-ownkey-dot"></span><span><b>No API key set.</b> Questions list the
-        matching evidence; add a key below to have them answered in words.</span></p>`}
-    ${note ? `<p class="gx-account-note gx-err">${esc(note)}</p>` : ""}
+    ${!ownKeys.length ? `<p class="gx-ownkey-note">Add a key to answer questions in words.</p>` : ""}
+    ${note ? `<p class="gx-account-note gx-err" role="alert">${esc(note)}</p>` : ""}
     ${ownKeys.length ? `<div class="gx-ownkey-list" role="radiogroup" aria-label="Saved keys">${ownKeys.map((k) => `
       <div class="gx-ownkey-row${k.id === ownActive ? " is-active" : ""}">
-        <button type="button" class="gx-ownkey-use" role="radio" aria-checked="${k.id === ownActive}" data-use="${k.id}">
-          <span class="gx-ownkey-radio"></span><span><b>${esc(labelOf(k))}</b><small>${esc(PROVIDERS[k.provider].name)} key ${esc(tail(k.key))}${k.workspace ? ` · workspace ${esc(k.workspace)}` : ""}</small></span></button>
-        <button type="button" class="gx-ownkey-act" data-edit="${k.id}" title="Change its model or replace the key">Edit</button>
-        <button type="button" class="gx-ownkey-act" data-remove="${k.id}" title="Forget this key">Remove</button>
+        <label class="gx-ownkey-use" title="${esc(labelOf(k))}">
+          <input type="radio" name="ownkey-active" class="gx-ownkey-radio" data-use="${esc(k.id)}"${k.id === ownActive ? " checked" : ""}>
+          <span><b>${esc(k.provider === "anthropic" ? labelOf(k) : k.model)}</b><small>${esc(PROVIDERS[k.provider].name)} key ${esc(tail(k.key))}${k.workspace ? ` · workspace ${esc(k.workspace)}` : ""}</small></span></label>
+        <button type="button" class="gx-ownkey-act" data-edit="${esc(k.id)}" aria-label="Edit ${esc(PROVIDERS[k.provider].name)} key ${esc(tail(k.key))}" title="Change its model or replace the key">Edit</button>
+        <button type="button" class="gx-ownkey-act" data-remove="${esc(k.id)}" aria-label="Remove ${esc(PROVIDERS[k.provider].name)} key ${esc(tail(k.key))}" title="Forget this key">Remove</button>
       </div>`).join("")}</div>` : ""}
-    <form class="gx-ownkey-form" id="ownkey-form">
-      <div class="gx-ownkey-formhead">${editing ? `Edit ${esc(labelOf(editing))} <button type="button" class="gx-ownkey-act" id="ownkey-cancel">Cancel</button>` : (ownKeys.length ? "Add another key" : "Add a key")}</div>
+    ${formOpen ? `<form class="gx-ownkey-form" id="ownkey-form" aria-label="${editing ? "Edit key" : "Add key"}">
+      <div class="gx-ownkey-formhead">${editing ? "Edit key" : "Add key"}${ownKeys.length ? `<button type="button" class="gx-ownkey-act" id="ownkey-cancel">Cancel</button>` : ""}</div>
       <label>Provider<select class="gx-select" id="ownkey-provider">${Object.entries(PROVIDERS).map(([k, v]) =>
         `<option value="${k}"${k === shown ? " selected" : ""}>${esc(v.name)}</option>`).join("")}</select></label>
       <label>API key<input type="password" id="ownkey-input" autocomplete="off" spellcheck="false"
         placeholder="${sameKey ? `${tail(editing.key)} kept; paste another to replace it` : p.hint}"></label>
-      ${shown === "anthropic" ? `<label>Workspace ID <span class="gx-subtle">(only for a key not scoped to a workspace)</span><input type="text"
-        id="ownkey-workspace" autocomplete="off" spellcheck="false" placeholder="wrkspc_..." value="${esc(sameKey ? editing.workspace || "" : "")}"></label>` : ""}
       <label>Model${shown === "anthropic"
         ? `<select class="gx-select" id="ownkey-model">${OWN_MODELS.map(([m, n]) => `<option value="${m}"${m === model ? " selected" : ""}>${n}</option>`).join("")}</select>`
         : `<input type="text" id="ownkey-model" autocomplete="off" spellcheck="false" value="${esc(model)}" placeholder="${esc(p.model)}">`}</label>
-      <button class="gx-btn gx-btn-primary" type="submit">${editing ? "Save changes" : "Save and use this key"}</button>
-    </form>
-    <p class="gx-account-note gx-subtle">Keys stay in this browser and each is sent only to its provider's API (${esc(p.host)} for
-      ${esc(p.name)}); the query plans run here. Use keys with a low spend limit
-      (<a href="${p.keys}" target="_blank" rel="noopener">${esc(p.host.replace(/^api\./, ""))}</a>).${shown === "anthropic" ? ""
-      : " The query instructions were written and checked with Claude; other models may plan less well, so check the plans shown with each answer."}</p>
-    <label class="gx-ownkey-keep"><input type="checkbox" id="ownkey-keep"${ownKeep ? " checked" : ""}>Remember my keys on this device
-      <span class="gx-subtle">(otherwise until this tab closes)</span></label>
-    ${ownKeys.length ? `<button class="gx-menu-item" type="button" id="ownkey-forget">Forget all keys</button>` : ""}`;
-  box.querySelectorAll("[data-use]").forEach((b) => (b.onclick = () => { ownActive = b.dataset.use; useOwnKeys(); renderOwnKey(); ownKeyMenu(); }));
+      ${shown === "anthropic" ? `<details class="gx-ownkey-advanced"${sameKey && editing.workspace ? " open" : ""}><summary>Advanced</summary>
+        <label>Workspace ID<input type="text" id="ownkey-workspace" autocomplete="off" spellcheck="false" aria-describedby="ownkey-workspace-help"
+          placeholder="wrkspc_..." value="${esc(sameKey ? editing.workspace || "" : "")}"></label>
+        <small id="ownkey-workspace-help">Only for a key not scoped to a workspace.</small></details>` : ""}
+      <button class="gx-btn gx-btn-primary" type="submit">${editing ? "Save changes" : "Save key"}</button>
+    </form>` : `<button class="gx-ownkey-act gx-ownkey-add" type="button" id="ownkey-add" aria-expanded="false">+ Add key</button>`}
+    <p class="gx-ownkey-note">Stored in this browser, sent only to ${esc(p.host)}.
+      <a href="${p.keys}" target="_blank" rel="noopener">Use a key with a spend limit.</a></p>
+    <div class="gx-ownkey-footer">
+      <label class="gx-ownkey-keep" title="Otherwise, keys are kept until this tab closes"><input type="checkbox" id="ownkey-keep"${ownKeep ? " checked" : ""}>Remember on this device</label>
+      ${ownKeys.length ? `<button class="gx-ownkey-act" type="button" id="ownkey-forget" aria-label="Forget all keys">Forget all</button>` : ""}
+    </div>`;
+  box.querySelectorAll("[data-use]").forEach((b) => (b.onchange = () => {
+    ownActive = b.dataset.use; useOwnKeys(); renderOwnKey(); ownKeyMenu(); box.querySelector("[data-use]:checked").focus();
+  }));
   box.querySelectorAll("[data-edit]").forEach((b) => (b.onclick = () => { ownForm = { editing: b.dataset.edit, provider: "" }; ownKeyMenu(); $("ownkey-input").focus(); }));
   box.querySelectorAll("[data-remove]").forEach((b) => (b.onclick = () => {
     ownKeys = ownKeys.filter((k) => k.id !== b.dataset.remove);
     if (ownForm.editing === b.dataset.remove) ownForm = { editing: "", provider: "" };
     useOwnKeys(); renderOwnKey(); ownKeyMenu();
+    (box.querySelector("[data-use]:checked") || $("ownkey-input")).focus();
   }));
-  $("ownkey-cancel")?.addEventListener("click", () => { ownForm = { editing: "", provider: "" }; ownKeyMenu(); });
-  $("ownkey-provider").onchange = (e) => { ownForm = { ...ownForm, provider: e.target.value }; ownKeyMenu(); };
+  $("ownkey-add")?.addEventListener("click", () => { ownForm = { editing: "", provider: "", open: true }; ownKeyMenu(); $("ownkey-input").focus(); });
+  $("ownkey-cancel")?.addEventListener("click", () => {
+    ownForm = { editing: "", provider: "" }; ownKeyMenu();
+    (editing ? [...box.querySelectorAll("[data-edit]")].find((b) => b.dataset.edit === editing.id) : $("ownkey-add")).focus();
+  });
+  $("ownkey-provider")?.addEventListener("change", (e) => { ownForm = { ...ownForm, provider: e.target.value }; ownKeyMenu(); $("ownkey-provider").focus(); });
   $("ownkey-keep").onchange = (e) => { ownKeep = e.target.checked; useOwnKeys(); };
-  $("ownkey-form").onsubmit = (e) => {
+  $("ownkey-form")?.addEventListener("submit", (e) => {
     e.preventDefault();
     const key = $("ownkey-input").value.trim() || (sameKey ? editing.key : "");   // a key is never carried to another provider
-    if (!key) { ownKeyMenu(`Paste your ${p.name} API key first.`); return; }
+    if (!key) { ownKeyMenu(`Paste your ${p.name} API key first.`); $("ownkey-input").focus(); return; }
     const m = $("ownkey-model").value.trim();
-    if (!goodModel(shown, m)) { ownKeyMenu("Give a model name."); return; }
+    if (!goodModel(shown, m)) { ownKeyMenu("Give a model name."); $("ownkey-model").focus(); return; }
     const entry = { id: editing?.id || `k${Date.now().toString(36)}`, provider: shown, key, model: m, workspace: $("ownkey-workspace")?.value.trim() || "" };
     ownKeys = editing ? ownKeys.map((k) => k.id === editing.id ? entry : k) : [...ownKeys.filter((k) => !(k.provider === shown && k.key === key)), entry];
     ownActive = entry.id; ownForm = { editing: "", provider: "" };
     useOwnKeys(); renderOwnKey();
     box.hidden = true; $("ownkey-btn").setAttribute("aria-expanded", "false");
-  };
+    $("ownkey-btn").focus();
+  });
   $("ownkey-forget")?.addEventListener("click", () => {
     ownKeys = []; ownActive = ""; ownForm = { editing: "", provider: "" };
-    useOwnKeys(); renderOwnKey(); ownKeyMenu();
+    useOwnKeys(); renderOwnKey(); ownKeyMenu(); $("ownkey-input").focus();
   });
   box.hidden = false;
   $("ownkey-btn").setAttribute("aria-expanded", "true");
-  if (!ownKeys.length) $("ownkey-input").focus();
 }
 function openOwnKeyMenu() {
   for (const [, b] of menus) if (b !== $("ownkey-menu")) b.hidden = true;
   ownForm = { editing: "", provider: "" };
   ownKeyMenu();
+  ($("ownkey-input") || $("ownkey-menu").querySelector("[data-use]:checked")).focus();
 }
 
 // ------------------------------------------------------------------------------------------ controls

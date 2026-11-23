@@ -2,6 +2,16 @@
 
 ## Unreleased
 
+- **A question asked with a reader's own key runs until the model has answered, and reads its conversation from the
+  cache (site and service, no schema change, no migration).** The explorer's question loop stopped at a token budget,
+  a turn limit and a tool result cut at 40,000 characters, so an answer could rest on part of the rows its plans
+  returned, or a question could stop with no answer at all. Now the explorer has none of the three: every tool result
+  goes to the model whole and the loop runs until the model answers, and the reader may press *Answer now* to have it
+  answer from the rows returned so far. Each turn moves the cache breakpoints to the newest results, so the
+  conversation so far is read from the cache (the service's loop too, whose budget now counts tokens as billed, a
+  cache read a tenth and a cache write a quarter more); the answer states how many input tokens came from the cache.
+  The *Your API key* menu is shorter: the selected key is the status, the form to add a key opens on request, the
+  workspace ID sits under *Advanced*, and one line says where the keys go.
 - **A new base branch asks the reviewers again, as a push does (governance, no schema change, no migration).** A
   stacked pull request is retargeted to `main` once the one below it merges; the change of base dismisses its
   approvals (the ruleset), but it is an `edited` event, not a push, so the reviewers workflow did not ask anyone again

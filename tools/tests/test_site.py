@@ -270,3 +270,19 @@ def test_the_site_publishes_the_leaderboard_with_how_it_scores(built):
     board = json.loads((out / "data/leaderboard.json").read_text())
     assert board["commons"] == "graphs/catal-commons" and board["with_reach"] is False
     assert set(board) >= {"contributors", "recent", "scoring", "levels"} and res["contributors"] == len(board["contributors"])
+
+
+def test_a_readers_own_key_runs_unlimited_reads_the_conversation_from_the_cache_and_may_be_asked_to_answer_now():
+    js = (REPO / "site" / "explorer.js").read_text(encoding="utf-8")
+    loop = js[js.index("async function askOwnKey("):js.index("function renderOwnKey(")]
+    # each turn moves the cache breakpoints to the newest results, so the conversation so far is read from the cache
+    assert "markCache(messages);\n      const r = await claude(" in loop and "cache_control: { type: \"ephemeral\" }" in loop
+    assert ".slice(-2)" in js[js.index("function markCache("):js.index("function markCache(") + 400]
+    assert "read from the cache" in loop and "prompt_tokens_details?.cached_tokens" in loop
+    # no token budget, no turn limit and no tool result cut short: the model sees every row it asked for
+    assert not re.search(r"OWN_TOKENS|OWN_TURNS|RESULT_CHARS|clip\(", js)
+    assert "const runTool = async (name, input) => whole(await ownTool(name, input, plans));" in loop
+    # the reader may ask for the answer now; the model then answers from the rows it has, in both formats
+    assert 'id="answer-now"' in loop and loop.count("if (answerNow) {") == 2
+    assert loop.count("results.push({ type: \"text\", text: WRAP_UP })") == 1 and "content: WRAP_UP" in loop
+    assert loop.count("!calls.length || last") == 2
