@@ -6,4 +6,4 @@ window.SCALE_SERVICE_URL = "";
 window.SCALE_REPO = "trace-ai-org/scale";
 // The GitHub sign-in (service/github-login): set, Contribute signs the reader in with GitHub and opens the pull request
 // itself, the graph attached; empty, it downloads the graph and opens GitHub's upload page instead.
-window.SCALE_GITHUB_LOGIN = "";
+window.SCALE_GITHUB_LOGIN = "https://scale-github-login.github-login.workers.dev";
