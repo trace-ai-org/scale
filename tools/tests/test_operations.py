@@ -52,8 +52,8 @@ def test_the_repository_policy_has_three_reviewers_and_no_placeholder():
 
 def test_every_reviewer_is_asked_and_one_approval_withdraws_the_other_requests(tmp_path):
     """CODEOWNERS names every reviewer on every line (scale domains check fails otherwise), so GitHub asks all of
-    them; the reviewers workflow withdraws the open requests when one approves and asks again, after a push, those
-    whose approval it dismissed or who asked for changes. It reads no text a person wrote into a shell command."""
+    them; the reviewers workflow withdraws the open requests when one approves and asks again, after a push or a
+    change of the base branch, those whose approval it dismissed or who asked for changes. It reads no text a person wrote into a shell command."""
     from scale import codeowners
     from scale.domains import Problems, _reviewers_routed
     rules = codeowners.load(REPO)
@@ -64,10 +64,12 @@ def test_every_reviewer_is_asked_and_one_approval_withdraws_the_other_requests(t
                                          "governance/review-policy.yaml: GitHub would not ask them to review"]
     wf = REPO / ".github/workflows/reviewers.yml"
     doc = load_yaml(wf)
-    assert doc["on"] == {"pull_request_review": {"types": ["submitted"]}, "pull_request": {"types": ["synchronize"]}}
+    assert doc["on"] == {"pull_request_review": {"types": ["submitted"]},
+                         "pull_request": {"types": ["synchronize", "edited"]}}
     job = doc["jobs"]["reviewers"]
     assert job["permissions"] == {"pull-requests": "write"} and doc["permissions"] == {"contents": "read"}
     assert "github.event.pull_request.head.repo.full_name == github.repository" in job["if"]
+    assert "github.event.changes.base != null" in job["if"]        # an edit asks again only for a new base
     approve, again = job["steps"]
     assert "approved" in approve["if"] and "DELETE" in approve["run"] and "requested_reviewers" in approve["run"]
     assert "CHANGES_REQUESTED" in again["run"] and "DISMISSED" in again["run"] and "POST" in again["run"]
