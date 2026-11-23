@@ -969,7 +969,11 @@ class IntakeGitHub(FakeGitHub):
 
 
 def contributed_graph(tmp_path):
-    w, res = started(tmp_path)
+    """A one-source graph curated at catal-commons' version, which stays behind the head after a schema bump until a
+    person migrates the folder (test_version_bump runs this test in a bumped copy)."""
+    commons = load_doc(REPO / "graphs" / "catal-commons" / "parts" / "header.json")["graph"]["schema_version"]
+    (tmp_path / "paper.txt").write_text(TEXT, encoding="utf-8")
+    w, res = tmp_path / "w", curate.start(tmp_path / "w", text=tmp_path / "paper.txt", version=commons, repo=REPO)
     sid = res["source_id"]
     agent.curate_folder(w, Model(curation_turns(sid, sid.replace("/source/", "/"))), "m", max_turns=10, max_tokens=10_000, repo=REPO)
     return json.dumps(load_doc(w / res["graph"]))
