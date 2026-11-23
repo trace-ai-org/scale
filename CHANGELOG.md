@@ -9,7 +9,8 @@
   Good."). Now a reading carries no sampling of its own, so the endpoint's default applies (for a served model, the
   one in its generation config), and `prepare --api-temperature/--api-top-p` or `review-api --temperature/--top-p`
   give another. Four of those sources read again with temperature 1.0 and top_p 0.95 (the run now gives both):
-  every request ended on its own (`finish_reason: stop`) after 33,000-54,000 tokens, with no repeated lines.
+  all four reached a verdict (one pass, three needs_fix), each of their six requests ending on its own
+  (`finish_reason: stop`) after 31,000-54,000 tokens, with 0-8% of lines repeated.
 - **The repository's address is `github.com/trace-ai-org/scale` (no schema change, no migration).** The repository
   moved from `hlxin/scale`. Install commands, clone commands, issue forms, the package metadata, the citation, the
   update check (`scale status`), the release manifest's source, the service's default repository and the site's links
