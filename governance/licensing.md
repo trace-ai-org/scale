@@ -119,7 +119,7 @@ data follows sections 3 and 4.
 - **The software and its vocabulary**: cite the release you used, as [`CITATION.cff`](../CITATION.cff) says
   (GitHub's "Cite this repository" renders it); tagged releases will be archived with a DOI.
 - **Attribution under CC-BY-4.0**: "SCALE contributors", the title of the material, a link to
-  `https://github.com/hlxin/scale` (or the release), the licence, and whether you changed
+  `https://github.com/trace-ai-org/scale` (or the release), the licence, and whether you changed
   it. For a schema, name its version and spec digest (`scale-catal 0.2.0`, catalysis); for a record, its id and release.
 - **The sources behind a record**: cite the publications its evidence names, not only SCALE.
 - Who is credited in releases, and authorship of publications: [credit-and-authorship.md](credit-and-authorship.md).

@@ -1,4 +1,4 @@
-# Code owners of github.com/hlxin/scale.
+# Code owners of github.com/trace-ai-org/scale.
 #
 # Every reviewer of governance/review-policy.yaml is named on every line, so that GitHub asks all of them to review
 # every pull request (`scale domains check` fails when one is missing). The main-branch ruleset requires one approving

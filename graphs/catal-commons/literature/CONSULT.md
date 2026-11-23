@@ -6,7 +6,7 @@ reviews, preprints, conference papers, theses, reports, patents and datasets) fo
 into one row per work, with title, abstract, authors (ORCID, institutions), venue, year, DOI and other identifiers,
 citations and topics. Nothing in it is downloaded. Everything lives in one SQLite file, `index.db` (12.9 GB).
 
-> **In the hlxin/scale repository** this folder holds this guide and `consult.py`, not the data. The CO2 subset of
+> **In the trace-ai-org/scale repository** this folder holds this guide and `consult.py`, not the data. The CO2 subset of
 > `index.db`, `co2-reduction-electricity.db` (23,631 sources on CO2 reduction driven by electricity,
 > [README.md](README.md)), is shared outside git: put it in this folder (or name it in `CATALYSIS_SOURCES_DB`) and
 > `consult.py` uses it by default. The counts quoted in this guide refer to the full catalog (2.3 million records,

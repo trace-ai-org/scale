@@ -84,7 +84,7 @@ def test_the_build_carries_core_kernel_domain_and_skills_with_the_one_version(tm
                                  {"name": "Raul Diaz", "github": "diazr04", "roles": ["maintainer"],
                                   "scopes": ["core", "catalysis"]}]
     assert m["excluded_domains"] == []
-    assert m["source"] == {"repository": "https://github.com/hlxin/scale", "tag": "v0.1.0"}
+    assert m["source"] == {"repository": "https://github.com/trace-ai-org/scale", "tag": "v0.1.0"}
     # the first release: nothing to compare with
     assert m["previous"] is None and m["comparison_to_previous"] is None and "predecessor" not in m
     assert "proposals" not in m and "review" not in m

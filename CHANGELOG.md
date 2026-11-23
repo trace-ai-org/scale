@@ -34,6 +34,17 @@
   signs in with GitHub and the pull request opens when they come back, with no second click. A personal graph's card
   shows the rows every graph's shows; its title line carries the Contribute button before its label, *personal*, in
   the site's green; its title is concise (the model names the graph when it calls `done`).
+- **The repository's address is `github.com/trace-ai-org/scale` (no schema change, no migration).** The repository
+  moved from `hlxin/scale`. Install commands, clone commands, issue forms, the package metadata, the citation, the
+  update check (`scale status`), the release manifest's source, the service's default repository and the site's links
+  now name the new address. GitHub redirects the old one while no new repository takes its name. Releases v0.1.0-v0.3.0
+  keep the address they were built with.
+- **The README leads with what SCALE answers (documentation only).** It opens with the three questions the graphs
+  answer and with measurements, interpretations and hypotheses kept apart, then a *Start here* table, how to use the
+  graph explorer, how to contribute a first paper (what is available now and what needs the web service) and how a
+  contribution is checked (by tools, by the contributor and by a reviewer). The table of spec digests folds away; `scale
+  schema bump` still edits its rows.
+
 - **A question asked with a reader's own key runs until the model has answered, and reads its conversation from the
   cache (site and service, no schema change, no migration).** The explorer's question loop stopped at a token budget,
   a turn limit and a tool result cut at 40,000 characters, so an answer could rest on part of the rows its plans

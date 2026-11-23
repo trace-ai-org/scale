@@ -75,7 +75,7 @@ scale-catal@0.3.0 …` a pinned one. In a checkout of this repository run `uv ru
 
 ## Working on this repository
 
-- This repository is `hlxin/scale`; its Python package is `scale-catal`, with the commands `scale` and
+- This repository is `trace-ai-org/scale`; its Python package is `scale-catal`, with the commands `scale` and
   `scale-catal`. Never write `pip install schema` or `uvx schema`: `schema` on PyPI is an unrelated library.
 - **How a change is made (any change).** Anyone suggests a change (an issue, a comment) or opens a pull request;
   agents do the work; one person approves and merges. When you are asked to make a change: work on a branch

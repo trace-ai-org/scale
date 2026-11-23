@@ -48,7 +48,7 @@ previous release, skills and digests of every copied file, it records:
   against the previous release (labels, edge types, properties and checklist items added, removed,
   changed, narrowed or loosened), classified `identical`, `additive` or `breaking`, and the files
   added, changed or removed (none for the first release);
-- `source`: `repository: https://github.com/hlxin/scale`, the repository the release was built from, and
+- `source`: `repository: https://github.com/trace-ai-org/scale`, the repository the release was built from, and
   `tag: vX.Y.Z`, the tag that will mark its commit.
 
 The manifest cannot hold the commit it is part of. The tag `vX.Y.Z` identifies the commit, and with it the
@@ -102,6 +102,6 @@ say what was wrong.
 
 ## One-time setup (human actions)
 
-- Register `hlxin/scale`, workflow `publish.yml`, environment `pypi` as a trusted publisher of the PyPI
+- Register `trace-ai-org/scale`, workflow `publish.yml`, environment `pypi` as a trusted publisher of the PyPI
   project `scale-catal` (the repository is named `scale`, the package `scale-catal`).
 - Create the `pypi` environment and the tag ruleset ([repository-settings.md](repository-settings.md)).

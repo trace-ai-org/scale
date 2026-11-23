@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """consult.py - answer questions about the catalysis catalog (index.db). Read-only, standard library only.
 
-Run from this folder (CONSULT.md explains every definition). index.db is not in the hlxin/scale repository
+Run from this folder (CONSULT.md explains every definition). index.db is not in the trace-ai-org/scale repository
 (10.9 GB): pass --db /path/to/index.db, set CATALYSIS_SOURCES_DB, or put index.db next to this file.
   python3 -I consult.py count     --concept co2-reduction --driver electro
   python3 -I consult.py breakdown --concept co2-reduction --by driver
@@ -43,7 +43,7 @@ DB_CANDIDATES = ([Path(_ENV_DB)] if _ENV_DB else []) + [
     ROOT / "co2-reduction-electricity.db", ROOT / "index.db", ROOT / "sources" / "index.db", ROOT.parent / "sources" / "index.db",
     ROOT / "papers.db", ROOT / "publications" / "papers.db", ROOT.parent / "publications" / "papers.db"]   # their earlier names
 DEFAULT_DB = next((p for p in DB_CANDIDATES if p.exists()), ROOT / "index.db")
-VOCAB_FILES = [ROOT / "vocabulary.json",                                       # catal commons (hlxin/scale layout)
+VOCAB_FILES = [ROOT / "vocabulary.json",                                       # catal commons (trace-ai-org/scale layout)
                ROOT / ".scripts" / "vocab.json",                                 # a project folder
                ROOT / ".scripts" / "vocab_custom.json"]
 CHUNK = 30000

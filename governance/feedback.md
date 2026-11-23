@@ -7,11 +7,11 @@ drafted, and how changes are decided: by an approving review of a pull request.
 
 | you want to… | do this |
 |---|---|
-| say anything | open a **[Comment or suggestion](https://github.com/hlxin/scale/issues/new?template=comment.yml)**; no schema knowledge needed |
+| say anything | open a **[Comment or suggestion](https://github.com/trace-ai-org/scale/issues/new?template=comment.yml)**; no schema knowledge needed |
 | comment on a specific record | click 💬 next to it in a record catalogue (`scale catalogue <document>` renders one; the link opens a pre-filled form) |
-| suggest a paper or dataset | **[Suggest a source](https://github.com/hlxin/scale/issues/new?template=new-source.yml)** |
-| ask what the graph should answer | **[A question the graph should answer](https://github.com/hlxin/scale/issues/new?template=competency-question.yml)** |
-| discuss an idea | **[Discussions](https://github.com/hlxin/scale/discussions)**, once they are on, or a comment issue |
+| suggest a paper or dataset | **[Suggest a source](https://github.com/trace-ai-org/scale/issues/new?template=new-source.yml)** |
+| ask what the graph should answer | **[A question the graph should answer](https://github.com/trace-ai-org/scale/issues/new?template=competency-question.yml)** |
+| discuss an idea | **[Discussions](https://github.com/trace-ai-org/scale/discussions)**, once they are on, or a comment issue |
 | comment on a proposed change | comment on the pull request, or on any line of it |
 | have a change drafted | open an issue saying what you want; @scale-agents take it up and open a pull request, which a person approves and merges |
 | find schema gaps in open-access sources | open a `gap-report` issue with a sample curated against the schema (the curate-corpus skill; short capped quotes only) |

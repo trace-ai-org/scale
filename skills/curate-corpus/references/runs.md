@@ -23,11 +23,11 @@ tools; the run only hands out the work and records what came back.
 - **Scripts keep the books; subagents read.** Never write a document, a curator's report, a second reading or a state
   line yourself, and never fix a subagent's document by hand. Hand it back with `next --role fix`.
 - **Nothing is deleted.** Every report and prompt stays in the run folder.
-- **People decide.** Agents never commit documents to hlxin/scale, push to `main`, approve or merge. A contribution is
+- **People decide.** Agents never commit documents to trace-ai-org/scale, push to `main`, approve or merge. A contribution is
   `scale graph contribute --write` on an `agent/…` branch, then a pull request that a person approves.
 - A bare `curate_run.py` means `python3 -I ${CLAUDE_SKILL_DIR}/scripts/curate_run.py`. Each script prints JSON. The
   SCALE command is `scale` by default; give another with `--scale "<command>"` at `prepare`, for example `--scale
-  "uv run --project <checkout of hlxin/scale> scale"`. The run remembers it.
+  "uv run --project <checkout of trace-ai-org/scale> scale"`. The run remembers it.
 
 ## Procedure
 
@@ -103,7 +103,7 @@ tools; the run only hands out the work and records what came back.
    follow query-graph for questions, map-coverage for a coverage map, scan-conflicts for sources that disagree, and
    export-graph for an export.
 8. **Contribute**, only when a person asks: `curate_run.py contribute --run <dir> --to <checkout of
-   hlxin/scale>/graphs/catal-commons`. This is a dry run of `scale graph contribute` for each passed document; it
+   trace-ai-org/scale>/graphs/catal-commons`. This is a dry run of `scale graph contribute` for each passed document; it
    reports what would change, or why SCALE refuses (the same source already there, another schema version). Show the
    report. Writing (`--write`) happens on an `agent/…` branch after the person's review, and a pull request follows.
    graphs/ holds no quoted text of a source in copyright (its `rights.yaml` sets the limits to 0), and every record is
