@@ -360,7 +360,7 @@ async function pdfText(file) {                            // "[page N]" and the 
   }
   return { text, pages: pdf.numPages, chars };
 }
-let curating = false, finishNow = false;
+let curating = false, finishNow = false, commonsVersion = "";   // the schema catal-commons pins: curated under it
 const FINISH_UP = "The reader asked you to finish now. Write no more new records: run check, fix what it reports, then call done "
   + "saying what was curated and what was left out.";
 // Where a curation is, and about how long it has left. Four stages; the model's stage advances with the pages it has
@@ -501,7 +501,7 @@ async function curateOwnKey() {
     st.pages = src.pages;
     st.go("prepare", `${src.pages} pages of text read. Preparing SCALE in your browser (the first time, up to a minute)`);
     const stem = f.name.replace(/\.pdf$/i, "").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "").slice(0, 60) || "source";
-    const s = await rpc({ op: "curate_start", text: src.text, name: `${stem}.txt` });
+    const s = await rpc({ op: "curate_start", text: src.text, name: `${stem}.txt`, version: commonsVersion });
     $("curate-schema").textContent = `Curated under SCALE Catalysis, schema scale-catal v${s.started.schema_version}, in this browser.`;
     st.go("curate", `Read 0 of ${st.pages} pages · waiting for the model`);
     const r = await modelLoop({ system: s.system, tools: s.tools, first: s.first, stop: "done",
@@ -780,7 +780,10 @@ async function start() {
   if (own) own.kept = true;
   readSignIn();
   renderAccount();
-  try { manifest = (await (await fetch("data/graphs.json")).json()).graphs || []; } catch { manifest = []; }
+  try {
+    const m = await (await fetch("data/graphs.json")).json();
+    manifest = m.graphs || []; commonsVersion = m.commons_schema_version || "";
+  } catch { manifest = []; }
   renderGraphs();
   window.onhashchange = () => openFromHash();
   $("graph-file").onchange = async (e) => {

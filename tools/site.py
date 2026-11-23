@@ -21,6 +21,7 @@ from __future__ import annotations
 
 import fnmatch
 import hashlib
+import json
 import re
 import shutil
 import zipfile
@@ -140,7 +141,11 @@ def build(repo: Path, out: Path) -> dict:
     for gid, origin, doc in graphs(repo):
         write_canonical(out / "data" / "graphs" / f"{gid}.json", doc)
         entries.append(_entry(doc, gid, origin))
-    write_canonical(out / "data" / "graphs.json", {"graphs": entries})
+    # the schema version catal-commons pins: a source curated in the page is curated under it, so that it folds in
+    # (catal-commons stays behind a schema bump until a person migrates it)
+    header = repo / layout.GRAPHS / "catal-commons" / "parts" / "header.json"
+    commons_version = json.loads(header.read_text(encoding="utf-8"))["graph"]["schema_version"] if header.is_file() else None
+    write_canonical(out / "data" / "graphs.json", {"graphs": entries, "commons_schema_version": commons_version})
     (out / "data" / "query-graph.md").write_text(_skill_body(repo, "query-graph"), encoding="utf-8")
     boards = commons.boards(repo / layout.GRAPHS / "catal-commons")
     board = boards["contributors"]

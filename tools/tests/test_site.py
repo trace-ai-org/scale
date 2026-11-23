@@ -330,6 +330,8 @@ def test_a_readers_own_key_curates_a_pdf_in_the_browser_with_the_services_tools(
     gh = js[js.index("async function contributeOnGitHub("):js.index("async function contribute(")]
     assert "/upload/main/graphs/catal-commons/incoming" in gh and 'op: "contribution"' in gh and "download(file" in gh
     assert '"quote_chars": 0' in worker
+    # a source is curated under the schema catal-commons pins, written by the build, so that it folds in after a bump
+    assert "version: commonsVersion" in js and 'version=a.get("version") or None' in worker
     # with the reader's GitHub token (connected once, sent only to api.github.com), the page opens the pull request
     # itself, the graph attached: fork, branch, the file under incoming/, the pull request; without one, it asks for it,
     # and the reader may still do it by hand
@@ -355,3 +357,9 @@ def test_the_built_pages_load_scripts_and_the_package_stamped_with_the_builds_di
     assert f'src="explorer.js?v={stamp}"' in page and f'href="explorer.css?v={stamp}"' in page
     assert f'new Worker("worker.js?v={stamp}")' in js and f'"./bundle.js?v={stamp}"' in js
     assert f'fetch("py/scale-py.zip?v={stamp}")' in worker
+
+
+def test_the_build_names_the_schema_version_catal_commons_pins(built):
+    out, _ = built
+    header = json.loads((REPO / "graphs/catal-commons/parts/header.json").read_text())
+    assert json.loads((out / "data/graphs.json").read_text())["commons_schema_version"] == header["graph"]["schema_version"]
