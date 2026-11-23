@@ -12,10 +12,12 @@
   the fold pull request with the bot's token (`SCALE_COMMONS_TOKEN`, so the checks run on it) crediting the
   contributor, and closes theirs; without the token it comments what folding would add. catal-commons, which held no
   source yet, now pins schema 0.8.2 (its two records unchanged), so graphs curated under the current schema fold in.
-  With the reader's GitHub token, connected once (a token with the `public_repo` scope, kept in the browser like the
-  model key and sent only to `api.github.com`), *Contribute* is one click: the page forks the repository, adds the
-  graph under `incoming/` on a new branch of the fork and opens the pull request, titled and described, under the
-  reader's login; without a token, the reader may still upload the downloaded file by hand.
+  With the GitHub sign-in (`service/github-login`: a small worker that trades GitHub's sign-in code for a token, the
+  one step that needs the OAuth app's secret, and keeps nothing; `window.SCALE_GITHUB_LOGIN`), *Contribute* is one
+  click: a GitHub sign-in window opens, the page forks the repository, adds the graph under `incoming/` on a new
+  branch of the fork and opens the pull request, titled and described, under the reader's login, and the same window
+  then shows it; the token lives in the page's memory for that click and is never saved. Without the sign-in set up,
+  the graph downloads and GitHub's upload page opens.
 - **Curate a paper with your own API key, in the browser, with any of the three providers (site and package, no schema
   change, no migration).** Curating needed the web service. Now, with a key set under *Your API key* (Anthropic's,
   OpenAI's or OpenRouter's), *Curate* runs in the page: pdf.js reads the PDF's text, `scale source start` runs in

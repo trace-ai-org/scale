@@ -332,19 +332,21 @@ def test_a_readers_own_key_curates_a_pdf_in_the_browser_with_the_services_tools(
     assert '"quote_chars": 0' in worker
     # a source is curated under the schema catal-commons pins, written by the build, so that it folds in after a bump
     assert "version: commonsVersion" in js and 'version=a.get("version") or None' in worker
-    # with the reader's GitHub token (connected once, sent only to api.github.com), the page opens the pull request
-    # itself, the graph attached: fork, branch, the file under incoming/, the pull request; without one, it asks for it,
-    # and the reader may still do it by hand
+    # with the GitHub sign-in (service/github-login), one click: a sign-in window, then the page opens the pull request
+    # itself, the graph attached (fork, branch, the file under incoming/, the pull request), and that window shows it;
+    # the token lives in memory for that one contribution, never in the browser's storage; without the sign-in, the
+    # graph downloads and GitHub's upload page opens
     tok = js[js.index("async function contributeWithToken("):js.index("async function contribute(")]
     assert all(x in tok for x in ("/forks", "/merge-upstream", "/git/refs", "/contents/graphs/catal-commons/incoming/", "/pulls"))
     assert 'const GH_API = "https://api.github.com"' in js and js.count("fetch(GH_API") == 1
-    assert "if (!SERVICE) return ghTok() ? contributeWithToken() : openGhConnect();" in js
-    assert 'id="gh-dialog"' in page and "scopes=public_repo" in page and 'id="gh-manual"' in page
+    assert "if (!SERVICE) return GH_LOGIN ? contributeSignedIn() : contributeOnGitHub();" in js
+    assert "scale-github-token" not in js and 'id="gh-dialog"' not in page and "win.location = pr.html_url" in tok
+    assert "e.origin !== from" in js and "e.data.nonce !== nonce" in js
     assert "curated-download" not in js and "contrib-box" not in js and '["Visibility", mine ? "Private"' in js
     # once a pull request to catal-commons exists, the label reads catal-commons and links it; the by-hand route
     # changes nothing, since only GitHub knows whether the file was uploaded
     assert ">catal-commons</a>" in rows and "sentToCommons()" in rows
-    gh = js[js.index("async function contributeOnGitHub("):js.index("// With the reader's GitHub token")]
+    gh = js[js.index("async function contributeOnGitHub("):js.index("// With a GitHub sign-in")]
     assert "contributed(" not in gh and "download(file" in gh
     # a curated graph gets a concise title: the model's (done's title), else its source's, else the PDF's name
     assert "graphTitle(r.stopInput?.title, doc, f.name)" in js

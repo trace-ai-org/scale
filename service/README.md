@@ -148,6 +148,7 @@ members.
 | `SCALE_WEB_CONCURRENT_JOBS` | jobs run at once | 2 |
 | `SCALE_WEB_MAX_UPLOAD_MB` | the largest PDF | 40 |
 | `SCALE_WEB_WORKDIR` | where job folders live while they run | a temporary directory |
+| `SCALE_GITHUB_LOGIN` (in `site/config.js`, not the service's) | the GitHub sign-in worker ([`github-login/`](github-login/README.md)): set, the explorer's Contribute signs the reader in with GitHub and opens the pull request itself, the graph attached | empty: Contribute downloads the graph and opens GitHub's upload page |
 | `SCALE_COMMONS_TOKEN` (a repository secret, not the service's) | the bot's token the commons intake (`.github/workflows/commons-intake.yml`, `scaleweb/intake.py`) opens fold pull requests with, so that the checks run on them: contents and pull requests write | unset: the intake only comments what folding would add |
 | `SCALE_WEB_GITHUB_TOKEN` | the bot's token for contributions: a bot account's fine-grained token (or a GitHub App's installation token) that may write contents and pull requests of the repository | empty: contributions off |
 | `SCALE_WEB_REPO`, `SCALE_WEB_COMMONS` | the repository and the commons folder | `trace-ai-org/scale`, `graphs/catal-commons` |

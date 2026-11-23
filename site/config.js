@@ -4,3 +4,6 @@ window.SCALE_SERVICE_URL = "";
 // The repository a graph is contributed to: without the service, Contribute opens GitHub's upload page for its
 // graphs/catal-commons/incoming/ folder, and the commons intake (.github/workflows/commons-intake.yml) folds it in.
 window.SCALE_REPO = "trace-ai-org/scale";
+// The GitHub sign-in (service/github-login): set, Contribute signs the reader in with GitHub and opens the pull request
+// itself, the graph attached; empty, it downloads the graph and opens GitHub's upload page instead.
+window.SCALE_GITHUB_LOGIN = "";

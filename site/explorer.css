@@ -390,12 +390,5 @@ button.gx-add-graph { width: 100%; font: inherit; color: inherit; cursor: pointe
 .gx-graph-contrib:hover { filter: brightness(1.05); }
 .gx-graph-contrib[aria-disabled="true"] { background: transparent; color: var(--muted); border-color: var(--line); cursor: default; filter: none; }
 .gx-graph-contrib.is-done { background: transparent; color: var(--green); }
-/* connecting GitHub once, to contribute */
-.gx-ghconnect { max-width: 520px; }
-.gx-gh-steps { margin: 10px 0; padding-left: 20px; font-size: 13px; line-height: 1.6; }
-.gx-gh-steps label { display: flex; flex-direction: column; gap: 4px; }
-.gx-gh-steps input { padding: 7px 9px; border: 1px solid var(--line); border-radius: 6px; background: var(--bg-input); color: var(--fg); font: inherit; }
-.gx-ghconnect menu { display: flex; gap: 8px; justify-content: flex-end; align-items: center; }
-.gx-ghconnect #gh-manual { margin-right: auto; border: 0; background: none; color: var(--link-ink); padding: 0; }
 .gx-graph-sent { text-decoration: none; }
 .gx-graph-sent:hover { background: color-mix(in oklab, var(--dot) 12%, transparent); }
