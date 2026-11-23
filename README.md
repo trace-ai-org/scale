@@ -41,8 +41,9 @@ open a graph file) and see it whole, filter it by label or relationship type, op
 evidence, search the evidence, and explore its data (counts, degrees, numeric properties plotted). SCALE's own code
 runs in the browser (Pyodide), so a search or a plan gives the rows `scale graph search` and `scale graph query` give.
 **Ask in plain language with your own API key** (the toolbar's *Your API key*: Anthropic, OpenAI or OpenRouter): the
-page calls that provider's API itself, sending the key nowhere else, and runs the model's query plans in the browser, at a few cents a question on
-your own account. With the web service ([`service/`](service/README.md)), signed in with GitHub and with no API key of your own:
+page calls that provider's API itself, sending the key nowhere else, and runs the model's query plans in the browser, on
+your own account. With the same key, **Curate** a paper's PDF in the browser: the page reads it, the model fills its graph
+with SCALE's curation tools run here, and the graph opens on the canvas, private to you. With the web service ([`service/`](service/README.md)), signed in with GitHub and with no API key of your own:
 **Curate** a paper (a PDF or a DOI) into a graph, ask questions in plain language, and contribute a graph to
 catal-commons in one click (a pull request a person reviews). Contributors are credited on a leaderboard. The page is
 built by `scale site build` and published by GitHub Pages ([`site/`](site/)).

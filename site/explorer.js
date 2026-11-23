@@ -52,7 +52,7 @@ const status = (t) => { $("status").textContent = t; };
 const ready = () => "Search, queries and answers run in this browser.";
 
 // ------------------------------------------------------------------------------------------ the graphs rail
-const SCOPE = { service: ["new", "var(--select)"], graphs: ["curated", "var(--green)"], examples: ["example", "var(--blue)"], domain: ["synthetic", "var(--violet)"] };
+const SCOPE = { "own-key": ["yours", "var(--select)"], service: ["new", "var(--select)"], graphs: ["curated", "var(--green)"], examples: ["example", "var(--blue)"], domain: ["synthetic", "var(--violet)"] };
 const scopeOf = (e) => SCOPE[(e.from || "").split("/")[0]] || ["file", "var(--subtle)"];
 const CARET = `<svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6 L15 12 L9 18"/></svg>`;
 
@@ -154,11 +154,34 @@ async function call(method, path, body, headers = {}) {
   if (!r.ok) throw Object.assign(new Error(data.error || `the service answered ${r.status}`), { status: r.status });
   return data;
 }
+// Who curates: the reader's own key, in this browser, when one is set (as questions are answered); else the service,
+// with a GitHub sign-in. The dialog's terms say which, for the provider and model that will read the source.
+const SERVICE_TERMS = $("curate-terms").innerHTML, SERVICE_DOI_HINT = $("curate-doi-hint").textContent;
+const curateMode = () => ownKey ? "own" : SERVICE ? "service" : "";
+function curateTerms() {
+  const own = curateMode() === "own", p = PROVIDERS[ownProvider];
+  $("curate-terms").innerHTML = own ? `
+    <li><b>Your key.</b> ${esc(modelLabel())} curates it with your ${esc(p.name)} key ${esc(tail(ownKey))}, on your account.</li>
+    <li><b>In this browser.</b> The PDF is read here and its text goes only to ${esc(p.host)}; no SCALE server sees it.</li>
+    <li><b>Private.</b> The graph opens here, for you to explore and download; nothing is kept.</li>` : SERVICE_TERMS;
+  $("curate-details").hidden = own;
+  $("curate-doi-hint").textContent = own ? "(optional: its title, year and licence come from Crossref)" : SERVICE_DOI_HINT;
+}
 async function curateAccount(note = "") {
   const el = $("curate-account");
   const warn = note ? `<span class="gx-err">${esc(note)}</span>` : "";
+  curateTerms();
+  if (curateMode() === "own") {
+    el.innerHTML = `<span>Curating with <b>${esc(modelLabel())}</b></span><span class="gx-subtle">· ${esc(PROVIDERS[ownProvider].name)} key ${esc(tail(ownKey))}</span>
+      <button type="button" class="gx-btn gx-btn-tiny" id="curate-key">Change</button>${warn}`;
+    $("curate-key").onclick = () => { $("curate-dialog").close(); openOwnKeyMenu(); };
+    $("curate-start").disabled = curating;
+    return;
+  }
   if (!SERVICE) {
-    el.innerHTML = `<span class="gx-warn">The curation service is not deployed yet.</span>`;
+    el.innerHTML = `<span class="gx-warn">Set your API key (Anthropic, OpenAI or OpenRouter) to curate in this browser.</span>
+      <button type="button" class="gx-btn gx-btn-tiny gx-btn-primary" id="curate-key">Set an API key</button>${warn}`;
+    $("curate-key").onclick = () => { $("curate-dialog").close(); openOwnKeyMenu(); };
     $("curate-start").disabled = true;
     return;
   }
@@ -181,7 +204,7 @@ async function curateAccount(note = "") {
 async function openCurate() {
   if (!$("curate-dialog").open) $("curate-dialog").showModal();
   curateAccount();
-  if (!SERVICE) { $("curate-schema").textContent = ""; return; }
+  if (curateMode() !== "service") { $("curate-schema").textContent = ""; return; }
   try {
     const h = await call("GET", "/health");
     $("curate-schema").textContent = `Curated under SCALE Catalysis, schema scale-catal v${h.schema_version} (scale-catal ${h.scale_catal}).`;
@@ -279,6 +302,7 @@ $("curate-drop").addEventListener("drop", (e) => {
   if (f) { const dt = new DataTransfer(); dt.items.add(f); $("curate-pdf").files = dt.files; pdfName(); }
 });
 async function startCuration(again = false) {
+  if (curateMode() === "own") return curateOwnKey();
   const job = $("curate-job");
   job.hidden = false;
   try {
@@ -302,6 +326,89 @@ async function startCuration(again = false) {
   $("curate-start").disabled = !token;
 }
 $("curate-start").onclick = () => startCuration();
+// Curating with the reader's own key, all in this browser: pdf.js reads the PDF's text layer page by page, SCALE starts
+// the source's folder in Pyodide (scale source start, Crossref for a DOI's metadata), and the model fills the graph by
+// the curate-corpus skill with scale.curation_tools (the service's own tools), through modelLoop, until it calls done.
+// The graph then opens on the canvas, as one the service curated would, without a receipt: it is the reader's.
+const PDFJS = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/";
+const PDFJS_SRI = { "pdf.min.js": "sha384-/1qUCSGwTur9vjf/z9lmu/eCUYbpOTgSjmpbMQZ1/CtX2v/WcAIKqRv+U1DUCG6e",
+  "pdf.worker.min.js": "sha384-SnzOobpRMLXZ52iJvZm/C0fYw0OQemTXzTjIsdsfMcrCtCEe9qgzxTd3RSklO5x2" };
+let pdfjs = null;
+function loadPdfjs() {                                     // loaded when first needed, each file checked against its digest
+  pdfjs ||= new Promise((resolve, reject) => {
+    const el = Object.assign(document.createElement("script"), { src: PDFJS + "pdf.min.js", integrity: PDFJS_SRI["pdf.min.js"], crossOrigin: "anonymous" });
+    el.onload = async () => {
+      try {
+        const w = await fetch(PDFJS + "pdf.worker.min.js", { integrity: PDFJS_SRI["pdf.worker.min.js"] });
+        window.pdfjsLib.GlobalWorkerOptions.workerSrc = URL.createObjectURL(new Blob([await w.text()], { type: "text/javascript" }));
+        resolve(window.pdfjsLib);
+      } catch (err) { reject(err); }
+    };
+    el.onerror = () => reject(new Error("pdf.js could not be loaded"));
+    document.head.append(el);
+  });
+  pdfjs.catch(() => { pdfjs = null; });
+  return pdfjs;
+}
+async function pdfText(file) {                            // "[page N]" and the page's text, as scale source start writes it
+  const lib = await loadPdfjs();
+  const pdf = await lib.getDocument({ data: new Uint8Array(await file.arrayBuffer()) }).promise;
+  let text = "", chars = 0;
+  for (let i = 1; i <= pdf.numPages; i++) {
+    const c = await (await pdf.getPage(i)).getTextContent();
+    const page = c.items.map((it) => it.str + (it.hasEOL ? "\n" : "")).join("").replace(/[ \t]+\n/g, "\n").trim();
+    chars += page.length;
+    text += `[page ${i}]\n${page}\n\n`;
+  }
+  return { text, pages: pdf.numPages, chars };
+}
+let curating = false, finishNow = false;
+const FINISH_UP = "The reader asked you to finish now. Write no more new records: run check, fix what it reports, then call done "
+  + "saying what was curated and what was left out.";
+async function curateOwnKey() {
+  const job = $("curate-job"), log = [];
+  job.hidden = false;
+  const show = (line, err = "") => {
+    if (line) log.push(line);
+    job.innerHTML = `<div class="gx-state">${err ? "failed" : curating ? "curating" : "done"}</div><ol>${log.slice(-12).map((l) => `<li>${esc(l)}</li>`).join("")}</ol>`
+      + (err ? `<div class="gx-err">${esc(err)}</div>` : "")
+      + (curating ? `<button type="button" class="gx-btn gx-btn-tiny" id="curate-finish"${finishNow ? " disabled" : ""} title="Write no more records: check, fix and finish">${finishNow ? "Finishing…" : "Finish now"}</button>` : "");
+    const b = $("curate-finish");
+    if (b) b.onclick = () => { finishNow = true; show(""); };
+  };
+  try {
+    const f = $("curate-pdf").files[0], doi = $("curate-doi").value.trim();
+    if (!f) throw new Error(doi ? "with your own key, give the source's PDF; the DOI alone needs the SCALE service" : "give the source's PDF");
+    if (!$("curate-attest").checked) throw new Error("tick the statement that you have lawful access to this PDF");
+    curating = true; finishNow = false; $("curate-start").disabled = true;
+    show(`Reading ${f.name}…`);
+    const src = await pdfText(f);
+    if (src.chars < 200) throw new Error("the PDF has no text layer to read (a scan?); curating it needs text, which OCR would give");
+    show(`${src.pages} pages of text read. Starting the source's graph…`);
+    const stem = f.name.replace(/\.pdf$/i, "").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "").slice(0, 60) || "source";
+    const s = await rpc({ op: "curate_start", text: src.text, name: `${stem}.txt`, doi });
+    $("curate-schema").textContent = `Curated under SCALE Catalysis, schema scale-catal v${s.started.schema_version}, in this browser.`;
+    show(`Rights: ${s.started.rights_class}. ${modelLabel()} is curating…`);
+    const r = await modelLoop({ system: s.system, tools: s.tools, first: s.first, stop: "done",
+      run: (tool, args) => rpc({ op: "curate_call", tool, args }), wrapUp: FINISH_UP, stopNow: () => finishNow,
+      progress: (line) => show(line), alive: () => true });
+    const check = JSON.parse(await rpc({ op: "curate_call", tool: "check", args: {} }));
+    const doc = await rpc({ op: "curate_graph" });
+    curating = false;
+    const n = check.records || {};
+    show(`${check.ok ? "Checked: no errors" : `${check.errors.length}${check.errors_not_shown ? "+" : ""} errors left`} · ${n.nodes} records and ${n.links} links, ${n.with_evidence} with evidence`);
+    job.innerHTML += `<div>${esc(r.stopInput?.summary || r.text || "")}</div>`
+      + (r.stopped ? `<div class="gx-card-warn">Stopped: ${esc(r.stopped)}.</div>` : "")
+      + (check.ok ? "" : `<details><summary>What the check still reports</summary><ul>${check.errors.slice(0, 20).map((e) => `<li>${esc(typeof e === "string" ? e : JSON.stringify(e))}</li>`).join("")}</ul></details>`)
+      + `<div class="gx-subtle">${esc(accountLine(r))}. The graph is open on the canvas; its card on the left downloads it.</div>`;
+    const title = doc.graph?.title || f.name;
+    await openOwn({ id: `curated-${stem}`, title, from: "own-key" }, JSON.stringify(doc), null, doc);
+  } catch (e) {
+    curating = false;
+    show("", e.message || String(e));
+  }
+  $("curate-start").disabled = false;
+}
 // The commons holds the source already, or an open contribution adds it: nothing was curated and nothing spent.
 function showKnown(k) {
   const commons = manifest.find((e) => e.id === "catal-commons");
@@ -1443,12 +1550,11 @@ async function claude(body) {
   if (r.status === 401) throw new Error(`Anthropic did not accept the API key (${why}). Check it under Your API key.`);
   if (r.status === 429) throw new Error(`Your API account's rate limit was reached; ask again in a minute (${why}).`);
   if (/usage limit|spend limit|credit balance/i.test(why)) throw new Error(`Anthropic's API answered: ${why} The spend limit is set in the Claude Console (Settings, Limits, or the workspace's own limits under Settings, Workspaces), or switch to another key under Your API key.`);
-  if (/prompt is too long|context window|too many tokens/i.test(why)) throw new Error(`Anthropic's API answered: ${why} The plans' rows outgrew what the model can read at once; ask a narrower question, or press Answer now earlier.`);
+  if (/prompt is too long|context window|too many tokens/i.test(why)) throw new Error(`Anthropic's API answered: ${why} The work so far outgrew what the model can read at once: ask a narrower question, or press Answer now (or Finish now) earlier.`);
   if (/anthropic-workspace-id|scoped to a workspace/i.test(why)) throw new Error(`Anthropic's API answered: ${why} Under Your API key, edit the key and give its Workspace ID (Claude Console, Settings, Workspaces), or use a key created inside a workspace.`);
   throw new Error(`Anthropic's API answered: ${why}`);
 }
 // OpenAI's chat completions format, which OpenAI and OpenRouter both take: the same tools, as functions.
-const CHAT_TOOLS = OWN_TOOLS.map((t) => ({ type: "function", function: { name: t.name, description: t.description, parameters: t.input_schema } }));
 async function chat(provider, body) {
   const p = PROVIDERS[provider];
   const r = await fetch(p.url, { method: "POST", headers: { "content-type": "application/json", "Authorization": `Bearer ${ownKey}` },
@@ -1473,9 +1579,83 @@ async function ownTool(name, a, plans) {
   }
   throw new Error(`unknown tool ${name}`);
 }
+// One tool-use loop for every provider and every task (a question, a curation): the model runs the tools until it
+// writes its answer, or calls the stop tool (curation's done), or the reader asks it to finish (stopNow), when wrapUp
+// is said to it beside the last results and its next reply ends the loop. No token budget, no turn limit and no tool
+// result cut short. In Anthropic's format the conversation is cached as it grows (markCache), the tools and the
+// system prompt staying the same throughout (the last turn keeps the tools, so the cache holds); in the chat
+// completions format (OpenAI, OpenRouter) the provider caches the repeated prefix itself.
+async function modelLoop({ system, tools, first, run, stop = "", wrapUp, stopNow, progress, alive }) {
+  const provider = ownProvider, model = ownModel;
+  const out = { text: "", stopInput: null, stopped: "", inTok: 0, cacheTok: 0, outTok: 0 };
+  const chatTools = tools.map((t) => ({ type: "function", function: { name: t.name, description: t.description, parameters: t.input_schema } }));
+  const messages = provider === "anthropic" ? [{ role: "user", content: first }]
+    : [{ role: "system", content: system }, { role: "user", content: first }];
+  const sys = [{ type: "text", text: system, cache_control: { type: "ephemeral" } }];
+  for (let turn = 0; ; turn++) {
+    const last = !!out.stopped;                             // the reader asked to finish: this reply ends the loop
+    let calls, cut;                                         // [{id, name, input}], and whether the reply ran out of room
+    if (provider === "anthropic") {
+      markCache(messages);
+      const r = await claude({ model, max_tokens: OWN_OUTPUT, system: sys, tools, messages });
+      if (!alive()) return null;
+      const u = r.usage || {};
+      out.inTok += (u.input_tokens || 0) + (u.cache_creation_input_tokens || 0) + (u.cache_read_input_tokens || 0);
+      out.cacheTok += u.cache_read_input_tokens || 0; out.outTok += u.output_tokens || 0;
+      const blocks = r.content || [];
+      messages.push({ role: "assistant", content: blocks });   // as returned, thinking blocks included
+      out.text = blocks.filter((b) => b.type === "text").map((b) => b.text).join("\n").trim();
+      if (r.stop_reason === "refusal") { out.stopped = "the model declined"; return out; }
+      calls = blocks.filter((b) => b.type === "tool_use").map((c) => ({ id: c.id, name: c.name, input: c.input || {} }));
+      cut = r.stop_reason === "max_tokens";
+    } else {
+      const r = await chat(provider, { model, messages, tools: chatTools, [PROVIDERS[provider].limit]: OWN_OUTPUT });
+      if (!alive()) return null;
+      out.inTok += r.usage?.prompt_tokens || 0; out.cacheTok += r.usage?.prompt_tokens_details?.cached_tokens || 0;
+      out.outTok += r.usage?.completion_tokens || 0;
+      const choice = r.choices?.[0] || {}, msg = choice.message || { role: "assistant", content: "" };
+      messages.push(msg);                                   // as returned (OpenRouter's reasoning details included)
+      out.text = (typeof msg.content === "string" ? msg.content : (msg.content || []).map((c) => c.text || "").join("\n")).trim();
+      if (msg.refusal || choice.finish_reason === "content_filter") { out.stopped = "the model declined"; out.text ||= msg.refusal || ""; return out; }
+      calls = (msg.tool_calls || []).filter((c) => c.type === "function" || c.function).map((c) => {
+        let input = {}; try { input = JSON.parse(c.function.arguments || "{}"); } catch { /* answered as an error below */ input = null; }
+        return { id: c.id, name: c.function.name, input };
+      });
+      cut = choice.finish_reason === "length";
+    }
+    const ending = stop && calls.find((c) => c.name === stop);
+    if (ending) { out.stopInput = ending.input || {}; return out; }
+    if (!calls.length || last) { if (cut) out.stopped ||= "the reply ran out of room"; return out; }
+    progress(`Turn ${turn + 1}: ${calls.map((c) => c.name).join(", ")}`);
+    const results = [];
+    for (const c of calls) {
+      let content, error = false;
+      try {
+        if (c.input === null) throw new Error("the tool call's arguments were not valid JSON");
+        content = whole(await run(c.name, c.input));
+      } catch (err) { content = `Error: ${err.message || err}`; error = true; }
+      if (!alive()) return null;
+      results.push(provider === "anthropic" ? { type: "tool_result", tool_use_id: c.id, content, ...(error ? { is_error: true } : {}) }
+        : { role: "tool", tool_call_id: c.id, content });
+    }
+    if (stopNow()) out.stopped = "finished early, on request";
+    if (provider === "anthropic") {
+      if (out.stopped) results.push({ type: "text", text: wrapUp });
+      messages.push({ role: "user", content: results });
+    } else {
+      messages.push(...results);
+      if (out.stopped) messages.push({ role: "user", content: wrapUp });
+    }
+  }
+}
+const OWN_OUTPUT = 32000;                                 // the most one reply may write (the answer included)
+const tokenLine = (inTok, cacheTok, outTok) =>
+  `${inTok.toLocaleString()} input (${cacheTok.toLocaleString()} read from the cache) and ${outTok.toLocaleString()} output tokens`;
+const accountLine = (r) => `${tokenLine(r.inTok, r.cacheTok, r.outTok)} on your ${PROVIDERS[ownProvider].name} account (${modelLabel()})`;
+// A question, by the query-graph skill, over the graph on the canvas.
 async function askOwnKey(question) {
   leaveSchema();
-  const g = G, model = ownModel, provider = ownProvider, modelName = modelLabel();
+  const g = G, modelName = modelLabel();
   answerNow = false;
   const progress = (line) => {
     if (G !== g) return;
@@ -1486,87 +1666,22 @@ async function askOwnKey(question) {
   };
   progress("");
   const plans = [];
-  let inTok = 0, cacheTok = 0, outTok = 0, text = "", stopped = "";
   try {
     if (skillText === null) {
       const s = await fetch("data/query-graph.md");
       if (!s.ok) throw new Error(`data/query-graph.md: HTTP ${s.status}`);
       skillText = await s.text();
     }
-    const runTool = async (name, input) => whole(await ownTool(name, input, plans));
-    if (provider !== "anthropic") {
-      ({ text, stopped, inTok, cacheTok, outTok } = await askChat(provider, model, question, runTool, progress, g));
-      if (G !== g) return;
-      answerCard({ answer: text, plans, stopped }, `${tokenLine(inTok, cacheTok, outTok)} on your ${PROVIDERS[provider].name} account (${model})`);
-      return;
-    }
-    // The tools and the system prompt never change within a question, so they are read from the cache from the second
-    // turn on; the conversation is cached as it grows (markCache). The tools stay offered on the last turn too, since
-    // changing them or tool_choice would cost the conversation's cache: WRAP_UP asks for the answer instead.
-    const system = [{ type: "text", text: skillText + WORKING_HERE, cache_control: { type: "ephemeral" } }];
-    const messages = [{ role: "user", content: question }];
-    for (let turn = 0; ; turn++) {
-      const last = !!stopped;                               // the reader asked for the answer: this turn gives it
-      markCache(messages);
-      const r = await claude({ model, max_tokens: OWN_OUTPUT, system, tools: OWN_TOOLS, messages });
-      if (G !== g) return;                                  // another graph was opened meanwhile
-      const u = r.usage || {};
-      inTok += (u.input_tokens || 0) + (u.cache_creation_input_tokens || 0) + (u.cache_read_input_tokens || 0);
-      cacheTok += u.cache_read_input_tokens || 0;
-      outTok += u.output_tokens || 0;
-      const blocks = r.content || [];
-      messages.push({ role: "assistant", content: blocks });   // as returned, thinking blocks included
-      text = blocks.filter((b) => b.type === "text").map((b) => b.text).join("\n").trim();
-      if (r.stop_reason === "refusal") { stopped = "the model declined to answer this question"; break; }
-      const calls = blocks.filter((b) => b.type === "tool_use");
-      if (!calls.length || last) { if (r.stop_reason === "max_tokens") stopped = stopped || "the answer ran out of room"; break; }
-      progress(`Turn ${turn + 1}: ${calls.map((c) => c.name).join(", ")}`);
-      const results = [];
-      for (const c of calls) {
-        try { results.push({ type: "tool_result", tool_use_id: c.id, content: await runTool(c.name, c.input || {}) }); }
-        catch (err) { results.push({ type: "tool_result", tool_use_id: c.id, is_error: true, content: String(err.message || err) }); }
-      }
-      if (answerNow) { stopped = ANSWERED_EARLY; results.push({ type: "text", text: WRAP_UP }); }
-      messages.push({ role: "user", content: results });
-    }
-    answerCard({ answer: text, plans, stopped }, `${tokenLine(inTok, cacheTok, outTok)} on your API account (${modelName})`);
+    const r = await modelLoop({ system: skillText + WORKING_HERE, tools: OWN_TOOLS, first: question,
+      run: (name, input) => ownTool(name, input, plans), wrapUp: WRAP_UP, stopNow: () => answerNow, progress, alive: () => G === g });
+    if (!r) return;                                         // another graph was opened meanwhile
+    const stopped = r.stopped === "finished early, on request" ? ANSWERED_EARLY : r.stopped;
+    answerCard({ answer: r.text, plans, stopped }, accountLine(r));
   } catch (err) {
     if (G === g) card("Answer", `<p class="gx-card-warn">${esc(err.message || err)}</p>`);
   }
 }
-const OWN_OUTPUT = 32000;                                 // the most one reply may write (the answer included)
 const ANSWERED_EARLY = "you asked for the answer before the model had finished; it answered from the rows returned so far";
-const tokenLine = (inTok, cacheTok, outTok) =>
-  `${inTok.toLocaleString()} input (${cacheTok.toLocaleString()} read from the cache) and ${outTok.toLocaleString()} output tokens`;
-// The same loop in the chat completions format: the skill as the system message, each tool call answered by a tool
-// message, the assistant's message sent back as returned (OpenRouter's reasoning details included). OpenAI caches a
-// repeated prefix by itself; the messages are only ever appended to, so each turn's prefix is the last turn's prompt.
-async function askChat(provider, model, question, runTool, progress, g) {
-  const p = PROVIDERS[provider];
-  const messages = [{ role: "system", content: skillText + WORKING_HERE }, { role: "user", content: question }];
-  let inTok = 0, cacheTok = 0, outTok = 0, text = "", stopped = "";
-  for (let turn = 0; ; turn++) {
-    const last = !!stopped;
-    const r = await chat(provider, { model, messages, tools: CHAT_TOOLS, [p.limit]: OWN_OUTPUT });
-    if (G !== g) break;
-    inTok += r.usage?.prompt_tokens || 0; cacheTok += r.usage?.prompt_tokens_details?.cached_tokens || 0; outTok += r.usage?.completion_tokens || 0;
-    const choice = r.choices?.[0] || {}, msg = choice.message || { role: "assistant", content: "" };
-    messages.push(msg);
-    text = (typeof msg.content === "string" ? msg.content : (msg.content || []).map((c) => c.text || "").join("\n")).trim();
-    if (msg.refusal || choice.finish_reason === "content_filter") { stopped = "the model declined to answer this question"; text = text || msg.refusal || ""; break; }
-    const calls = (msg.tool_calls || []).filter((c) => c.type === "function" || c.function);
-    if (!calls.length || last) { if (choice.finish_reason === "length") stopped = stopped || "the answer ran out of room"; break; }
-    progress(`Turn ${turn + 1}: ${calls.map((c) => c.function.name).join(", ")}`);
-    for (const c of calls) {
-      let content;
-      try { content = await runTool(c.function.name, JSON.parse(c.function.arguments || "{}")); }
-      catch (err) { content = `Error: ${err.message || err}`; }
-      messages.push({ role: "tool", tool_call_id: c.id, content });
-    }
-    if (answerNow) { stopped = ANSWERED_EARLY; messages.push({ role: "user", content: WRAP_UP }); }
-  }
-  return { text, stopped, inTok, cacheTok, outTok };
-}
 function renderOwnKey() {
   const btn = $("ownkey-btn");
   $("ownkey-label").textContent = ownKey ? modelLabel() : "Set an API key";

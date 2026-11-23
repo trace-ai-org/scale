@@ -187,17 +187,17 @@
       <input type="file" id="curate-pdf" accept="application/pdf,.pdf">
       <span id="curate-pdf-name">Drop a PDF here, or choose one</span>
     </label>
-    <label>DOI <span class="gx-subtle">(optional with a PDF; alone, open-access sources only)</span>
+    <label>DOI <span class="gx-subtle" id="curate-doi-hint">(optional with a PDF; alone, open-access sources only)</span>
       <input type="text" id="curate-doi" placeholder="10.1038/s41467-022-29926-w" autocomplete="off"></label>
     <section class="gx-share" aria-label="What happens to the source">
-      <ul>
+      <ul id="curate-terms">
         <li><b>Free.</b> No API key. Signing in with GitHub gives the service only your login.</li>
         <li><b>Private.</b> The graph comes back to you only. It is published only if you click Contribute, for a person
           to review.</li>
-        <li><b>Read by Claude.</b> The source's text goes to the SCALE service and Anthropic's Claude API.</li>
+        <li><b>Read by a model.</b> The source's text goes to the SCALE service and the model provider it runs on.</li>
         <li><b>Deleted after the job,</b> unless it is openly licensed or you tick Keep below.</li>
       </ul>
-      <details>
+      <details id="curate-details">
         <summary>More details</summary>
         <ul>
           <li>A kept copy is private to the service, used only to curate the source again when SCALE's schema changes.

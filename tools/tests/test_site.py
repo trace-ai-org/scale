@@ -274,15 +274,33 @@ def test_the_site_publishes_the_leaderboard_with_how_it_scores(built):
 
 def test_a_readers_own_key_runs_unlimited_reads_the_conversation_from_the_cache_and_may_be_asked_to_answer_now():
     js = (REPO / "site" / "explorer.js").read_text(encoding="utf-8")
-    loop = js[js.index("async function askOwnKey("):js.index("function renderOwnKey(")]
-    # each turn moves the cache breakpoints to the newest results, so the conversation so far is read from the cache
+    loop = js[js.index("async function modelLoop("):js.index("const OWN_OUTPUT")]
+    ask = js[js.index("async function askOwnKey("):js.index("const ANSWERED_EARLY")]
+    # one loop for every provider and task; each turn moves the cache breakpoints to the newest results
     assert "markCache(messages);\n      const r = await claude(" in loop and "cache_control: { type: \"ephemeral\" }" in loop
     assert ".slice(-2)" in js[js.index("function markCache("):js.index("function markCache(") + 400]
-    assert "read from the cache" in loop and "prompt_tokens_details?.cached_tokens" in loop
+    assert "read from the cache" in js and "prompt_tokens_details?.cached_tokens" in loop
     # no token budget, no turn limit and no tool result cut short: the model sees every row it asked for
     assert not re.search(r"OWN_TOKENS|OWN_TURNS|RESULT_CHARS|clip\(", js)
-    assert "const runTool = async (name, input) => whole(await ownTool(name, input, plans));" in loop
-    # the reader may ask for the answer now; the model then answers from the rows it has, in both formats
-    assert 'id="answer-now"' in loop and loop.count("if (answerNow) {") == 2
-    assert loop.count("results.push({ type: \"text\", text: WRAP_UP })") == 1 and "content: WRAP_UP" in loop
-    assert loop.count("!calls.length || last") == 2
+    assert "content = whole(await run(c.name, c.input));" in loop
+    # the reader may ask to finish; the model is told so beside the last results, in both formats
+    assert loop.count("if (out.stopped) results.push({ type: \"text\", text: wrapUp });") == 1
+    assert "messages.push({ role: \"user\", content: wrapUp })" in loop and loop.count("!calls.length || last") == 1
+    assert 'id="answer-now"' in ask and "stopNow: () => answerNow" in ask and "await modelLoop(" in ask
+
+
+def test_a_readers_own_key_curates_a_pdf_in_the_browser_with_the_services_tools():
+    js = (REPO / "site" / "explorer.js").read_text(encoding="utf-8")
+    worker = (REPO / "site" / "worker.js").read_text(encoding="utf-8")
+    page = (REPO / "site" / "index.html").read_text(encoding="utf-8")
+    own = js[js.index("async function curateOwnKey("):js.index("// The commons holds the source already")]
+    # with a key set, Curate runs here; the service is used only without one
+    assert 'if (curateMode() === "own") return curateOwnKey();' in js and 'ownKey ? "own" : SERVICE ? "service" : ""' in js
+    # the PDF is read here by pdf.js, loaded only when needed and checked against its digests
+    assert 'pdf.js/3.11.174/' in js and js.count("sha384-") >= 2 and "integrity: PDFJS_SRI[" in js
+    # the model fills the graph with scale.curation_tools in Pyodide, by the same loop as questions, until done
+    assert 'stop: "done"' in own and 'rpc({ op: "curate_call", tool, args })' in own and "await modelLoop(" in own
+    assert "from scale.curation_tools import CurationTools, as_json" in worker and "curate.start(" in worker
+    # the dialog names no single provider: its terms say whose key, which model and which host read the source
+    assert "Read by Claude" not in page and 'id="curate-terms"' in page
+    assert "${esc(p.host)}" in js[js.index("function curateTerms("):js.index("async function curateAccount(")]
