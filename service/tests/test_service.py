@@ -954,7 +954,7 @@ class IntakeGitHub(FakeGitHub):
     def __call__(self, method, url, token, body=None, raw=False):
         if url.startswith("https://raw.githubusercontent.com/reader/scale/head-sha/"):
             return self.text
-        path = url.split("/repos/hlxin/scale", 1)[-1]
+        path = url.split("/repos/trace-ai-org/scale", 1)[-1]
         if method == "GET" and path == "/pulls/7":
             return {"number": 7, "user": {"login": "reader"}, "head": {"sha": "head-sha", "repo": {"full_name": "reader/scale"}}}
         if method == "GET" and path == "/pulls/7/files?per_page=100":
@@ -982,10 +982,10 @@ def test_a_graph_contributed_by_pull_request_is_folded_by_the_bots_pull_request_
     from scaleweb import intake
     text = contributed_graph(tmp_path)
     gh = IntakeGitHub(text)
-    out = intake.intake(7, "hlxin/scale", "read-token", "", repo_root=REPO, request=gh, today="2026-11-23")
+    out = intake.intake(7, "trace-ai-org/scale", "read-token", "", repo_root=REPO, request=gh, today="2026-11-23")
     assert out["state"] == "commented" and not gh.pulls and not gh.closed and "would add" in gh.comments[-1][1]
     gh = IntakeGitHub(text)
-    out = intake.intake(7, "hlxin/scale", "read-token", "bot-token", repo_root=REPO, request=gh, today="2026-11-23")
+    out = intake.intake(7, "trace-ai-org/scale", "read-token", "bot-token", repo_root=REPO, request=gh, today="2026-11-23")
     assert out["state"] == "folded" and gh.closed and len(gh.pulls) == 1
     pr = gh.pulls[0]
     assert pr["head"]["ref"].startswith("contrib/") and pr["title"].startswith("catal-commons: add ")
@@ -1001,5 +1001,5 @@ def test_the_intake_refuses_anything_but_a_graph_under_incoming(tmp_path):
     for text, path in (("{}", "graphs/catal-commons/incoming/x.json"), (contributed_graph(tmp_path), "tools/evil.py"),
                        ("not json", "graphs/catal-commons/incoming/y.json")):
         gh = IntakeGitHub(text, path)
-        out = intake.intake(7, "hlxin/scale", "read-token", "bot-token", repo_root=REPO, request=gh)
+        out = intake.intake(7, "trace-ai-org/scale", "read-token", "bot-token", repo_root=REPO, request=gh)
         assert out["state"] == "refused" and not gh.pulls and not gh.closed and "Not folded" in gh.comments[-1][1]
