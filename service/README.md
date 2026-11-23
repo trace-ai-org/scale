@@ -149,7 +149,7 @@ members.
 | `SCALE_WEB_MAX_UPLOAD_MB` | the largest PDF | 40 |
 | `SCALE_WEB_WORKDIR` | where job folders live while they run | a temporary directory |
 | `SCALE_WEB_GITHUB_TOKEN` | the bot's token for contributions: a bot account's fine-grained token (or a GitHub App's installation token) that may write contents and pull requests of the repository | empty: contributions off |
-| `SCALE_WEB_REPO`, `SCALE_WEB_COMMONS` | the repository and the commons folder | `hlxin/scale`, `graphs/catal-commons` |
+| `SCALE_WEB_REPO`, `SCALE_WEB_COMMONS` | the repository and the commons folder | `trace-ai-org/scale`, `graphs/catal-commons` |
 | `SCALE_WEB_REVIEWERS` | GitHub logins asked to review each contribution, comma-separated | empty |
 | `SCALE_WEB_CONTRIBUTIONS_PER_USER` | contributions per user a day | 5 |
 | `SCALE_WEB_ARCHIVE` | a persistent, private folder for kept sources (a mounted volume) | empty: nothing is kept |

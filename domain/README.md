@@ -220,7 +220,7 @@ It runs at the repository root only, as part of `scale check`.
 
 ## How to contribute
 
-- **Comment** without Git: the [comment form](https://github.com/hlxin/scale/issues/new?template=comment.yml),
+- **Comment** without Git: the [comment form](https://github.com/trace-ai-org/scale/issues/new?template=comment.yml),
   or 💬 next to a record in a catalogue (`scale catalogue <document>`).
 - **Curate a source** into an example, following `skills/curate-corpus/SKILL.md` (public, open-access
   sources and short, capped quotes only).

@@ -14,7 +14,7 @@ Needs only [uv](https://docs.astral.sh/uv/) (`curl -LsSf https://astral.sh/uv/in
 
 ```bash
 # 1. the knowledge base: the graphs and worked query plans
-git clone --depth 1 https://github.com/hlxin/scale && cd scale
+git clone --depth 1 https://github.com/trace-ai-org/scale && cd scale
 
 # 2. the tools, for your agent (Claude Code shown; or copy agents/mcp.json into .mcp.json)
 claude mcp add scale -- uvx scale-catal mcp

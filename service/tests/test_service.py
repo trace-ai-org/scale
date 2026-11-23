@@ -243,7 +243,7 @@ def test_a_doi_the_commons_holds_is_not_curated_again(tmp_path):
     h = {"authorization": f"Bearer {auth.session_for(svc.cfg, 'ada')}", "content-type": "application/json"}
     st, body, _ = svc.route("POST", "/jobs", {}, h, json.dumps({"doi": "https://doi.org/10.1246/NIKKASHI1898.60.166"}).encode())
     assert st == 200 and body["known"]["in_commons"][0]["by"] == ["doi"]
-    assert body["known"]["in_commons"][0]["url"].startswith("https://github.com/hlxin/scale/blob/main/graphs/")
+    assert body["known"]["in_commons"][0]["url"].startswith("https://github.com/trace-ai-org/scale/blob/main/graphs/")
     st, body, _ = svc.route("POST", "/jobs", {}, h, json.dumps({"doi": "10.1246/nikkashi1898.60.166"}).encode())
     assert st == 200 and "known" in body                         # still free: the day's one job is not used
     svc.jobs.submit = lambda user, **kw: "j-again"
@@ -355,7 +355,7 @@ class FakeGitHub:
             sha, path = url.split("/", 6)[5], url.split("/", 6)[6]
             files = self.files if sha == "main-sha" else self.trees[sha]
             return files[path]
-        path = url.split("/repos/hlxin/scale", 1)[1]
+        path = url.split("/repos/trace-ai-org/scale", 1)[1]
         if path == "/git/ref/heads/main":
             return {"object": {"sha": "main-sha"}}
         if path.startswith("/git/trees/main-sha"):
@@ -375,9 +375,9 @@ class FakeGitHub:
             return {}
         if path == "/pulls" and method == "POST":
             n = 100 + len(self.pulls)
-            self.pulls.append({"number": n, "html_url": f"https://github.com/hlxin/scale/pull/{n}", "title": body["title"],
+            self.pulls.append({"number": n, "html_url": f"https://github.com/trace-ai-org/scale/pull/{n}", "title": body["title"],
                                "body": body["body"], "head": {"ref": body["head"], "sha": "new-commit"}})
-            return {"number": n, "html_url": f"https://github.com/hlxin/scale/pull/{n}"}
+            return {"number": n, "html_url": f"https://github.com/trace-ai-org/scale/pull/{n}"}
         if path.startswith("/pulls?state=open"):
             return self.pulls
         if path.startswith("/pulls/") and path.endswith("/files?per_page=100"):
@@ -417,7 +417,7 @@ def test_a_curated_graph_is_contributed_by_a_pull_request_once(tmp_path, monkeyp
     assert st == 200 and body["new"]["source"] == "scale:commons/source/10.9999-paper.1" and body["new"]["quotes"]["kept"] == 0
     assert not any(m == "POST" for m, _ in gh.calls)                          # a check writes nothing
     st, body, _ = req("/contribute")
-    assert st == 201 and body["pull_request"]["url"] == "https://github.com/hlxin/scale/pull/100"
+    assert st == 201 and body["pull_request"]["url"] == "https://github.com/trace-ai-org/scale/pull/100"
     assert gh.refs == {"refs/heads/contrib/10.9999-paper.1": "new-commit"} and gh.reviewers == ["mutianyou2013", "diazr04"]
     assert {t["path"] for t in gh.tree_body["tree"]} == {"graphs/catal-commons/parts/sources/10.9999-paper.1.json",
                                                         "graphs/catal-commons/parts/shared.json",
@@ -627,7 +627,7 @@ def test_the_runner_curates_with_claude_code_and_the_graph_comes_back_to_its_own
     st, body, _ = req("/contribute/check")
     assert st == 200 and body["new"]["source"] == "scale:commons/source/10.9999-paper.1" and not gh.pulls
     st, body, _ = req("/contribute")                                               # the separate click
-    assert st == 201 and body["pull_request"]["url"] == "https://github.com/hlxin/scale/pull/100"
+    assert st == 201 and body["pull_request"]["url"] == "https://github.com/trace-ai-org/scale/pull/100"
     assert gh.refs == {"refs/heads/contrib/10.9999-paper.1": "new-commit"} and gh.reviewers == ["diazr04"]
     assert "Contributed by @ada" in gh.pulls[0]["body"]
 

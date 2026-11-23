@@ -1,5 +1,5 @@
 """The topic vocabulary is the domain's, not the skill's: a path given, $INDEX_SOURCES_VOCAB, the project's
-.scripts/vocab.json, else SCALE's catalysis vocabulary in graphs/catal-commons/literature/ (a checkout of hlxin/scale).
+.scripts/vocab.json, else SCALE's catalysis vocabulary in graphs/catal-commons/literature/ (a checkout of trace-ai-org/scale).
 
     python -m pytest skills/index-sources/tests
 """

@@ -1,6 +1,6 @@
 # Credit and authorship
 
-This page says how credit is recorded in this repository (`hlxin/scale`): consent, agents, citation and
+This page says how credit is recorded in this repository (`trace-ai-org/scale`): consent, agents, citation and
 publications.
 
 ## Where credit is recorded
@@ -58,7 +58,7 @@ down they move to `contributors`; their name stays in every earlier release mani
   `gh api users/<username> --jq .id` gives the numeric `ID`. The no-reply form links the commit to
   the account without publishing an e-mail address.
 - **Submissions through an issue.** People who do not use Git can submit content with the
-  [contribution form](https://github.com/hlxin/scale/issues/new?template=contribution.yml),
+  [contribution form](https://github.com/trace-ai-org/scale/issues/new?template=contribution.yml),
   which asks how they want to be credited. The maintainer who turns the submission into a pull request:
   1. adds a `Co-authored-by` trailer for the submitter (no-reply form) if they have a GitHub
      account and agreed;

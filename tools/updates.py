@@ -18,7 +18,7 @@ from pathlib import Path
 
 from . import __version__
 
-REMOTE_URL = "https://github.com/hlxin/scale.git"
+REMOTE_URL = "https://github.com/trace-ai-org/scale.git"
 CHECK_TTL = _dt.timedelta(days=1)
 
 

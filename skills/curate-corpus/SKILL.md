@@ -400,7 +400,7 @@ curates one source of a run follows this file; the prompt the run gives it says 
   counts as reviewed. Skipping the second reading is the user's choice, never yours, and always advised against.
 - **Scripts keep the books; subagents read.** Never write a document, a report, a second reading or a state line
   yourself, and never fix a subagent's document by hand.
-- **People decide.** Documents stay in the run folder. Agents never commit them to hlxin/scale, push to `main`, approve
+- **People decide.** Documents stay in the run folder. Agents never commit them to trace-ai-org/scale, push to `main`, approve
   or merge; a contribution is `scale graph contribute --write` on an `agent/…` branch, then a pull request a person
   approves.
 

@@ -44,7 +44,7 @@ TRACE_AI = f"{DOMAIN}/reporting/trace-ai.yaml"   # the TRACE-AI checklist read o
                                                  # docs/trace-ai.md)
 DOMAIN_TEMPLATE = "tools/tests/fixtures/domain-template"   # what the tests' new_domain() copies (a test fixture)
 CODEOWNERS = ".github/CODEOWNERS"
-REPOSITORY_URL = "https://github.com/hlxin/scale"   # recorded as `source` in release manifests
+REPOSITORY_URL = "https://github.com/trace-ai-org/scale"   # recorded as `source` in release manifests
 TOOLS = "tools"
 SKILLS = "skills"
 GOVERNANCE = "governance"

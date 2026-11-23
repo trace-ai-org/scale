@@ -1,8 +1,8 @@
 # Contributing to SCALE
 
 SCALE (Shared Concepts, Attributes, and Links with Evidence) is one shared framework for evidence-backed
-scientific knowledge graphs across domains. It is developed here, in `hlxin/scale`, the personal repository of its
-owner, Hongliang Xin. You can extend the science kernel or the catalysis domain, or add sources, examples,
+scientific knowledge graphs across domains. It is developed here, in `trace-ai-org/scale` (formerly `hlxin/scale`),
+maintained by Hongliang Xin. You can extend the science kernel or the catalysis domain, or add sources, examples,
 questions, tools or documentation. Provisional concepts are welcome if their status and scope are clear. This
 contribution model does not change the rights the licences grant.
 
@@ -51,10 +51,10 @@ CI checks this with `scale schema check`.
 
 ## Getting started as a collaborator
 
-1. **Accept the invitation** to `hlxin/scale` (Write access). Once you agree, the owner adds you as a reviewer in
+1. **Accept the invitation** to `trace-ai-org/scale` (Write access). Once you agree, the owner adds you as a reviewer in
    [governance/review-policy.yaml](governance/review-policy.yaml) and [.github/CODEOWNERS](.github/CODEOWNERS), by
    a pull request, with your name and GitHub handle.
-2. **Set up:** `git clone https://github.com/hlxin/scale && cd scale && uv run --extra dev scale check`. This
+2. **Set up:** `git clone https://github.com/trace-ai-org/scale && cd scale && uv run --extra dev scale check`. This
    creates the environment and runs every check CI runs. Without [uv](https://docs.astral.sh/uv/), use
    `pip install -e ".[dev]" && scale check`. Reading PDFs also needs `--extra pdf` and the `tesseract` command.
 3. **Keep data in its place.** Commit only public documents. Source PDFs, page texts and anything not cleared for
@@ -66,16 +66,16 @@ Use `<github-handle>/<topic>` for your own work, one topic per pull request. The
 
 ## Suggesting without Git
 
-- Open a **[comment or suggestion](https://github.com/hlxin/scale/issues/new?template=comment.yml)**, or use a
-  form for a [missing concept](https://github.com/hlxin/scale/issues/new?template=missing-concept.yml), an
-  [extraction error](https://github.com/hlxin/scale/issues/new?template=extraction-error.yml), missing or ambiguous
-  [source information](https://github.com/hlxin/scale/issues/new?template=source-information.yml), a
-  [new source](https://github.com/hlxin/scale/issues/new?template=new-source.yml), a
-  [competency question](https://github.com/hlxin/scale/issues/new?template=competency-question.yml) or a
-  [science-kernel change](https://github.com/hlxin/scale/issues/new?template=core-change.yml).
+- Open a **[comment or suggestion](https://github.com/trace-ai-org/scale/issues/new?template=comment.yml)**, or use a
+  form for a [missing concept](https://github.com/trace-ai-org/scale/issues/new?template=missing-concept.yml), an
+  [extraction error](https://github.com/trace-ai-org/scale/issues/new?template=extraction-error.yml), missing or ambiguous
+  [source information](https://github.com/trace-ai-org/scale/issues/new?template=source-information.yml), a
+  [new source](https://github.com/trace-ai-org/scale/issues/new?template=new-source.yml), a
+  [competency question](https://github.com/trace-ai-org/scale/issues/new?template=competency-question.yml) or a
+  [science-kernel change](https://github.com/trace-ai-org/scale/issues/new?template=core-change.yml).
   `scale gap issue GAP.json` writes such an issue from a gap report.
 - Send content (a curation, data, a correction, a competency question) with the
-  **[contribution form](https://github.com/hlxin/scale/issues/new?template=contribution.yml)** and say how you
+  **[contribution form](https://github.com/trace-ai-org/scale/issues/new?template=contribution.yml)** and say how you
   want to be credited. The pull request that carries it names you as co-author with a `Co-authored-by:` line.
 - Comment on any pull request or line. Each week, feedback is grouped by topic into a feedback digest issue
   ([governance/feedback.md](governance/feedback.md)).

@@ -23,7 +23,7 @@ Copyright is handled for you: for a paper in copyright the shared record keeps n
 In Claude Code, in a clone of this repository:
 
 ```bash
-git clone --depth 1 https://github.com/hlxin/scale && cd scale && claude
+git clone --depth 1 https://github.com/trace-ai-org/scale && cd scale && claude
 ```
 
 then type
@@ -60,7 +60,7 @@ Open your coding agent in an empty folder, paste this, and fill in the first lin
 repository's head, which has `review values` and `source digest`; once a release includes it, `uvx scale-catal@<version>` works too.)
 
 ```text
-Contribute one paper to the SCALE catalysis knowledge base (github.com/hlxin/scale).
+Contribute one paper to the SCALE catalysis knowledge base (github.com/trace-ai-org/scale).
 Paper: <DOI, or path to the PDF>
 Also read (optional): <paths to the SI, data files and their column dictionaries>
 My GitHub login, for credit: <login>
@@ -68,7 +68,7 @@ My GitHub login, for credit: <login>
 Work in this order and stop where I say stop.
 
 1. Setup. Below, SCALE means the command
-   `uvx --from "scale-catal[pdf,search] @ git+https://github.com/hlxin/scale" scale-catal`.
+   `uvx --from "scale-catal[pdf,search] @ git+https://github.com/trace-ai-org/scale" scale-catal`.
    Run `SCALE call status`. Then read the curation procedure, `SCALE call skills '{"name": "curate-corpus"}'`,
    and follow it exactly for everything below.
 2. Start. `SCALE source start --doi <DOI>` (or `--pdf <file>`). Work only in the folder it creates.
