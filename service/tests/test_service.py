@@ -449,6 +449,27 @@ def test_only_the_graph_the_service_curated_for_the_user_can_be_contributed(tmp_
     assert not gh.calls
 
 
+def test_a_graph_curated_in_the_readers_browser_is_contributed_with_their_login_and_no_quote(tmp_path, monkeypatch):
+    """A reader who curated a PDF in the explorer with their own key contributes it signed in with GitHub: the service
+    never read the source, so it takes it as in copyright, keeps no quote, and the pull request says how it was made."""
+    gh = FakeGitHub()
+    svc, h, job = finished_job(tmp_path, monkeypatch, gh)
+    mine = json.loads(json.dumps(job["graph"]))
+    mine["nodes"][0]["props"]["name"] = "curated in a browser"           # not the graph any receipt signs
+    req = lambda path, headers=h, **kw: svc.route("POST", path, {}, headers, json.dumps({"graph": mine, **kw}).encode())
+    assert req("/contribute")[0] == 403                                   # without saying how it was made: refused
+    assert req("/contribute", headers={"content-type": "application/json"}, curated_in_browser=True)[0] == 401
+    st, body, _ = req("/contribute/check", curated_in_browser=True)
+    assert st == 200 and body["new"]["class"] == "in_copyright" and body["new"]["quotes"]["kept"] == 0
+    st, body, _ = req("/contribute", curated_in_browser=True)
+    assert st == 201 and body["pull_request"]["url"].endswith("/pull/100")
+    ledger = next(t for t in gh.tree_body["tree"] if t["path"].endswith("contributors.yaml"))
+    assert "github: ada" in ledger["content"]                             # the reader's login is the credit
+    pr = gh.pulls[0]["body"]
+    assert "Contributed by @ada, who curated it in their own browser" in pr and "never read the source" in pr
+    assert "not verified by the service" in pr
+
+
 def test_a_papers_text_is_kept_only_by_its_licence_or_the_users_agreement_and_can_be_withdrawn(tmp_path, monkeypatch):
     """The archive keeps a paper in copyright (the uploaded PDF and its page texts) only when its contributor agreed;
     the agreement is listed to them, and withdrawing it removes the paper. A kept paper is curated again from its PDF

@@ -303,8 +303,13 @@ def test_a_readers_own_key_curates_a_pdf_in_the_browser_with_the_services_tools(
     assert "from scale.curation_tools import CurationTools, as_json" in worker and "curate.start(" in worker
     # the dialog names no single provider or model
     assert "Read by Claude" not in page and 'id="curate-terms"' in page
-    # a PDF only; the statement of access is about sharing derived knowledge, never the PDF; with a key the dialog
+    # a PDF only; the statement of access is about sharing the knowledge derived from it; with a key the dialog
     # names no model or provider and says only what stays private
-    assert 'id="curate-doi"' not in page and "text mining" not in page and "never the PDF itself" in page
+    assert 'id="curate-doi"' not in page and "text mining" not in page and "share the knowledge it reports" in page
     terms = js[js.index("function curateTerms("):js.index("async function curateAccount(")]
+    # Curate is grey until a PDF is given and the statement ticked
+    sync = js[js.index("function syncCurate("):js.index("const pdfName")]
+    assert '!$("curate-pdf").files[0]' in sync and '!$("curate-attest").checked' in sync
+    # a graph curated here is contributed through the service, signed in with GitHub for the credit
+    assert 'data-signin="contribute"' in js and "curated_in_browser: true" in js and 'e.from === "own-key"' in js
     assert "<b>Private.</b>" in terms and "modelLabel" not in terms and "PROVIDERS" not in terms

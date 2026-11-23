@@ -58,6 +58,10 @@ When a job is done, the page offers **Contribute to the commons**:
 - **Only the service's own graphs.** The service signs a receipt for the graph it curated for the user, covering its
   digest and the source's rights entry. Only that graph, unchanged and sent by that user, can be contributed, so a
   contribution cannot raise a source's rights class or carry text the service did not check.
+- **A graph curated in the reader's browser** (the explorer, with the reader's own model key) has no receipt. The
+  page sends it with `"curated_in_browser": true`, signed in with GitHub, whose login is the contributor's credit.
+  The service never read its source, so it takes it as in copyright (`BROWSER_RIGHTS`: no quote kept, each as sha256
+  and length), and the pull request says how it was made, for the reviewer to check its values against the source.
 - **The check** (`POST /contribute/check`). The service reads `graphs/catal-commons` from main and the open pull
   requests from `contrib/` branches. It answers that the source is already in the commons, or already proposed, or
   else what adding it would change. The matching is `scale graph contribute`'s (`tools/commons.py`): the same DOI,

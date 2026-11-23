@@ -161,8 +161,7 @@ const curateMode = () => ownKey ? "own" : SERVICE ? "service" : "";
 function curateTerms() {
   const own = curateMode() === "own";
   $("curate-terms").innerHTML = own ? `
-    <li><b>Private.</b> The PDF is read in your browser and never uploaded to SCALE. The graph opens here for you alone,
-      to explore and download; nothing is kept.</li>` : SERVICE_TERMS;
+    <li><b>Private.</b> The PDF is read in your browser, and the graph opens here for you alone.</li>` : SERVICE_TERMS;
   $("curate-details").hidden = own;
 }
 async function curateAccount(note = "") {
@@ -170,23 +169,21 @@ async function curateAccount(note = "") {
   const warn = note ? `<span class="gx-err">${esc(note)}</span>` : "";
   curateTerms();
   if (curateMode() === "own") {
-    el.innerHTML = `<span class="gx-subtle">Uses your API key</span>
-      <button type="button" class="gx-btn gx-btn-tiny" id="curate-key">Change</button>${warn}`;
-    $("curate-key").onclick = () => { $("curate-dialog").close(); openOwnKeyMenu(); };
-    $("curate-start").disabled = curating;
+    el.innerHTML = warn;                                  // the key is the toolbar's: nothing to say about it here
+    syncCurate();
     return;
   }
   if (!SERVICE) {
     el.innerHTML = `<span class="gx-warn">Set your API key to curate in this browser.</span>
       <button type="button" class="gx-btn gx-btn-tiny gx-btn-primary" id="curate-key">Set an API key</button>${warn}`;
     $("curate-key").onclick = () => { $("curate-dialog").close(); openOwnKeyMenu(); };
-    $("curate-start").disabled = true;
+    syncCurate();
     return;
   }
   if (!token) {
     el.innerHTML = `<a class="gx-btn gx-btn-primary" id="curate-signin" href="#" role="button" data-signin="curate">Sign in with GitHub</a>
       <span class="gx-subtle">Free; the service needs only your login.</span>${warn}`;
-    $("curate-start").disabled = true;
+    syncCurate();
     return;
   }
   try {
@@ -196,7 +193,7 @@ async function curateAccount(note = "") {
       + `${me.tokens_left_today === 0 ? `<span class="gx-err">· the service's budget for today is spent</span>` : ""}`
       + `<button type="button" class="gx-btn gx-btn-tiny" id="curate-signout">Sign out</button>${warn}`;
     $("curate-signout").onclick = signOut;
-    $("curate-start").disabled = false;
+    syncCurate();
   } catch { /* curateAccount ran again on 401 */ }
 }
 async function openCurate() {
@@ -290,7 +287,15 @@ async function showInbox() {
   } catch { $("curate-inbox").innerHTML = ""; }
 }
 // One drop zone: the source's PDF.
-const pdfName = () => { const f = $("curate-pdf").files[0]; $("curate-pdf-name").textContent = f ? f.name : "Drop a PDF here, or choose one"; $("curate-drop").classList.toggle("has-file", !!f); $("curate-attest-row").hidden = !f; };
+// Curate is grey until there is something to curate: a PDF, the statement ticked, a key (or a service sign-in), and
+// no curation under way.
+function syncCurate() {
+  const mode = curateMode();
+  $("curate-start").disabled = curating || !$("curate-pdf").files[0] || !$("curate-attest").checked
+    || !mode || (mode === "service" && !token);
+}
+$("curate-attest").addEventListener("change", syncCurate);
+const pdfName = () => { const f = $("curate-pdf").files[0]; $("curate-pdf-name").textContent = f ? f.name : "Drop a PDF here, or choose one"; $("curate-drop").classList.toggle("has-file", !!f); $("curate-attest-row").hidden = !f; syncCurate(); };
 $("curate-pdf").onchange = pdfName;
 for (const ev of ["dragenter", "dragover"]) $("curate-drop").addEventListener(ev, (e) => { e.preventDefault(); $("curate-drop").classList.add("over"); });
 for (const ev of ["dragleave", "drop"]) $("curate-drop").addEventListener(ev, () => $("curate-drop").classList.remove("over"));
@@ -312,10 +317,10 @@ async function startCuration(again = false) {
     const q = new URLSearchParams({ ...(again ? { again: "1" } : {}), ...(keep ? { keep: "1" } : {}), filename: f.name, attest: "1" });
     const res = await call("POST", `/jobs?${q}`, f, { "Content-Type": "application/pdf" });
     if (res.known) { showKnown(res.known); return; }
-    $("curate-start").disabled = true;
+    curating = true; syncCurate();
     await followJob(res.job, !!res.inbox);
   } catch (e) { job.innerHTML = `<span class="gx-err">${esc(e.message)}</span>`; }
-  $("curate-start").disabled = !token;
+  curating = false; syncCurate();
 }
 $("curate-start").onclick = () => startCuration();
 // Curating with the reader's own key, all in this browser: pdf.js reads the PDF's text layer page by page, SCALE starts
@@ -372,7 +377,7 @@ async function curateOwnKey() {
     const f = $("curate-pdf").files[0];
     if (!f) throw new Error("give the source's PDF");
     if (!$("curate-attest").checked) throw new Error("tick the statement that you have lawful access to this PDF");
-    curating = true; finishNow = false; $("curate-start").disabled = true;
+    curating = true; finishNow = false; syncCurate();
     show(`Reading ${f.name}…`);
     const src = await pdfText(f);
     if (src.chars < 200) throw new Error("the PDF has no text layer to read (a scan?); curating it needs text, which OCR would give");
@@ -392,14 +397,14 @@ async function curateOwnKey() {
     job.innerHTML += `<div>${esc(r.stopInput?.summary || r.text || "")}</div>`
       + (r.stopped ? `<div class="gx-card-warn">Stopped: ${esc(r.stopped)}.</div>` : "")
       + (check.ok ? "" : `<details><summary>What the check still reports</summary><ul>${check.errors.slice(0, 20).map((e) => `<li>${esc(typeof e === "string" ? e : JSON.stringify(e))}</li>`).join("")}</ul></details>`)
-      + `<div class="gx-subtle">${esc(accountLine(r))}. The graph is open on the canvas; its card on the left downloads it.</div>`;
+      + `<div class="gx-subtle">${esc(accountLine(r))}. The graph is open on the canvas; its card on the left downloads it or contributes it to catal-commons.</div>`;
     const title = doc.graph?.title || f.name;
     await openOwn({ id: `curated-${stem}`, title, from: "own-key" }, JSON.stringify(doc), null, doc);
   } catch (e) {
     curating = false;
     show("", e.message || String(e));
   }
-  $("curate-start").disabled = false;
+  syncCurate();
 }
 // The commons holds the source already, or an open contribution adds it: nothing was curated and nothing spent.
 function showKnown(k) {
@@ -480,10 +485,10 @@ async function openOwn(entry, text, receipt = null, doc = null) {
 async function showOwn() {
   await openGraph(own.entry, own.text, own.doc);
   G.receipt = own.receipt;
-  G.contrib = own.receipt ? `<span class="gx-subtle">Checking catal-commons…</span>` : "";
+  G.contrib = contribStart();
   renderGraphs();
   if (!own.kept && !own.entry.windowed) status("This graph is too large to keep in this tab: download it before you sign in or reload.");
-  if (own.receipt) checkContribution();
+  if (own.receipt || (own.entry.from === "own-key" && SERVICE && token)) checkContribution();
 }
 // A graph the service just curated, with its receipt, which alone lets it be contributed (only that graph, unchanged,
 // by the user it was curated for).
@@ -500,12 +505,23 @@ function downloadGraph() {
 // Contributing: what it would add is checked as soon as the graph arrives, so one click opens the pull request. What
 // becomes public is said next to the button, before it is pressed.
 function contribHtml() { return G?.contrib || ""; }
+// A graph the reader curated in this browser is contributed through the service too, signed in with GitHub: the login
+// is the contributor's credit on the leaderboard.
+function contribStart() {
+  if (own.receipt) return `<span class="gx-subtle">Checking catal-commons…</span>`;
+  if (own.entry.from !== "own-key") return "";
+  if (!SERVICE) return `<span class="gx-subtle">Contributing to catal-commons opens once the SCALE service runs; download the graph to keep it until then.</span>`;
+  if (!token) return `<a class="gx-btn gx-btn-tiny gx-btn-primary" href="#" role="button" data-signin="contribute">Sign in with GitHub to contribute</a>
+    <div class="gx-subtle">Contribute it to catal-commons; your GitHub login is your credit on the leaderboard.</div>`;
+  return `<span class="gx-subtle">Checking catal-commons…</span>`;
+}
+const contribBody = (B) => ({ graph: B.doc, ...(B.receipt ? { receipt: B.receipt } : { curated_in_browser: true }) });
 function setContrib(html) { const B = G.base || G; B.contrib = html; const box = $("contrib-box"); if (box) { box.innerHTML = html; wireContrib(); } }
 function wireContrib() { $("contrib-go")?.addEventListener("click", contribute); }
 async function checkContribution() {
   const B = G.base || G;
   try {
-    const r = await call("POST", "/contribute/check", { graph: B.doc, receipt: B.receipt });
+    const r = await call("POST", "/contribute/check", contribBody(B));
     if (r.already) {
       setContrib(`Already in catal-commons: ${r.already.map((h) => `<a href="${esc(h.url)}" target="_blank" rel="noopener">${esc(h.source)}</a> (the same ${esc(h.by.join(", "))})`).join("; ")}.`);
       return;
@@ -526,7 +542,7 @@ async function contribute() {
   const B = G.base || G;
   $("contrib-go").disabled = true;
   try {
-    const o = await call("POST", "/contribute", { graph: B.doc, receipt: B.receipt });
+    const o = await call("POST", "/contribute", contribBody(B));
     B.receipt = null;
     if (own && own.entry === B.entry) { own.receipt = null; store.set(OWN, JSON.stringify(own)); }
     setContrib(o.pull_request ? `Opened <a href="${esc(o.pull_request.url)}" target="_blank" rel="noopener">pull request #${esc(o.pull_request.number)}</a>. Thank you.`
@@ -594,22 +610,22 @@ function renderGraphs() {
 }
 function details() {
   const B = G.base || G;                          // in the schema view, the facts are still the graph's
-  const g = B.doc.graph || {}, e = B.entry, [scope] = scopeOf(e);
+  const g = B.doc.graph || {}, e = B.entry, [scope] = scopeOf(e), mine = e.from === "service" || e.from === "own-key";
   const facts = [
     ["Type", `<a href="#" id="graph-show" title="Show the graph on the canvas">Knowledge graph</a>${G.base ? "" : ` <span class="gx-subtle">(shown)</span>`}${scope === "synthetic" ? ` <span class="gx-warn">synthetic example</span>` : ""}`],
     ["Size", `${B.doc.nodes.length.toLocaleString()} nodes · ${B.doc.links.length.toLocaleString()} rels · ${B.props.toLocaleString()} props`],
     g.version ? ["Release", esc(g.version)] : null,
-    ["Visibility", e.from === "service" ? "Private to you, until you contribute it" : esc(((g.stewardship || {}).access || "public").replace(/^./, (c) => c.toUpperCase()))],
+    ["Visibility", mine ? "Private to you, until you contribute it" : esc(((g.stewardship || {}).access || "public").replace(/^./, (c) => c.toUpperCase()))],
     g.created || g.date ? ["Created", esc(g.created || g.date)] : null,
     e.windowed ? null : ["Checksum", B.sha ? `<span class="gx-sha" title="sha256 ${esc(B.sha)}">${esc(B.sha.slice(0, 12))}…</span>` : "…"],
     ...windowRows(e),
-    ["Source", e.from === "service" ? "curated by the service just now" : e.from ? `<a href="https://github.com/hlxin/scale/tree/main/${esc(e.from)}">${esc(e.from)}</a>` : "a file on this computer"],
+    ["Source", e.from === "service" ? "curated by the service just now" : e.from === "own-key" ? "curated by you, in this browser" : e.from ? `<a href="https://github.com/hlxin/scale/tree/main/${esc(e.from)}">${esc(e.from)}</a>` : "a file on this computer"],
     ["Schema", `<a href="#" id="schema-toggle" title="${G.base ? "Back to the graph" : "Show the schema on the canvas"}">${esc(g.schema || "scale-catal")} v${esc(g.schema_version || "?")}</a>${G.base ? ` <span class="gx-subtle">(shown)</span>` : ""}<br>
       ${B.labels.size} labels · ${B.rels.size} rel types · ${schemaPropCount(B).toLocaleString()} props`],
-    e.from === "service" ? ["Graph", `<a href="#" id="curated-download">Download</a>`] : null,
+    mine ? ["Graph", `<a href="#" id="curated-download">Download</a>`] : null,
   ].filter(Boolean);
   return `<div class="gx-graph-detail"><dl class="gx-facts">${facts.map(([k, v]) => `<dt>${k}</dt><dd>${v}</dd>`).join("")}</dl>`
-    + (e.from === "service" ? `<div class="gx-contrib" id="contrib-box">${B.contrib || ""}</div>` : "") + `</div>`;
+    + (mine ? `<div class="gx-contrib" id="contrib-box">${B.contrib || ""}</div>` : "") + `</div>`;
 }
 
 // A bundle with more records than the explorer draws at once is drawn a window at a time (bundle.js): its sources in
