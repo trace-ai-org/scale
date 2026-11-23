@@ -397,3 +397,5 @@ button.gx-add-graph { width: 100%; font: inherit; color: inherit; cursor: pointe
 .gx-gh-steps input { padding: 7px 9px; border: 1px solid var(--line); border-radius: 6px; background: var(--bg-input); color: var(--fg); font: inherit; }
 .gx-ghconnect menu { display: flex; gap: 8px; justify-content: flex-end; align-items: center; }
 .gx-ghconnect #gh-manual { margin-right: auto; border: 0; background: none; color: var(--link-ink); padding: 0; }
+.gx-graph-sent { text-decoration: none; }
+.gx-graph-sent:hover { background: color-mix(in oklab, var(--dot) 12%, transparent); }

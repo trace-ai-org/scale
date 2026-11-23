@@ -341,6 +341,11 @@ def test_a_readers_own_key_curates_a_pdf_in_the_browser_with_the_services_tools(
     assert "if (!SERVICE) return ghTok() ? contributeWithToken() : openGhConnect();" in js
     assert 'id="gh-dialog"' in page and "scopes=public_repo" in page and 'id="gh-manual"' in page
     assert "curated-download" not in js and "contrib-box" not in js and '["Visibility", mine ? "Private"' in js
+    # once a pull request to catal-commons exists, the label reads catal-commons and links it; the by-hand route
+    # changes nothing, since only GitHub knows whether the file was uploaded
+    assert ">catal-commons</a>" in rows and "sentToCommons()" in rows
+    gh = js[js.index("async function contributeOnGitHub("):js.index("// With the reader's GitHub token")]
+    assert "contributed(" not in gh and "download(file" in gh
     # a curated graph gets a concise title: the model's (done's title), else its source's, else the PDF's name
     assert "graphTitle(r.stopInput?.title, doc, f.name)" in js
     # when it is done, the dialog shows what was curated in a few numbers and what to do next

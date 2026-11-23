@@ -604,6 +604,7 @@ async function openOwn(entry, text, receipt = null, doc = null) {
   await showOwn();
 }
 async function showOwn() {
+  if (own.prUrl && /\/upload\//.test(own.prUrl)) { own.contributed = null; own.prUrl = ""; }   // by hand: GitHub alone knows
   // a graph curated before titles were concise carries its file's slug: give it its source's title
   if (own.entry.from === "own-key" && !/\s/.test(own.entry.title)) own.entry.title = graphTitle("", own.doc || JSON.parse(own.text), own.entry.title);
   await openGraph(own.entry, own.text, own.doc);
@@ -626,12 +627,12 @@ async function openCurated(doc, receipt) {
 // review. A graph the service curated carries its receipt; one curated in this browser says so (curated_in_browser).
 const CONTRIB_PENDING = "scale-contrib-pending";
 let contribBusy = false;
+// Contributed: a pull request to catal-commons exists (opened by the page or the service). The by-hand route says
+// nothing about it, since only GitHub knows whether the reader uploaded the file.
+const sentToCommons = () => !!(own?.contributed && own.prUrl && !/\/upload\//.test(own.prUrl));
 function contribButton() {                       // on a personal graph's title line, before its label
   if (!own || (own.entry.from !== "own-key" && !own.receipt && !own.contributed)) return "";
-  if (own.contributed) {
-    const onGitHub = /\/upload\//.test(own.prUrl || "");      // the GitHub route: the reader finishes it there
-    return `<button type="button" class="gx-graph-contrib is-done" id="contrib-go" title="${onGitHub ? "Finish on GitHub: drop the downloaded file, then propose it" : "Sent to catal-commons, for review"}">${onGitHub ? "On GitHub" : "Contributed"}</button>`;
-  }
+  if (sentToCommons()) return "";                // its label says catal-commons now, linking the pull request
   if (!SERVICE) return `<button type="button" class="gx-graph-contrib" id="contrib-go"${contribBusy ? ' aria-disabled="true"' : ""}
     title="${ghTok() ? "One click: a pull request to catal-commons, your graph attached, under your GitHub login (your credit)" : "Connect GitHub once; then one click opens a pull request to catal-commons, your graph attached, under your GitHub login (your credit)"}">${contribBusy ? "Contributing…" : "Contribute"}</button>`;
   return `<button type="button" class="gx-graph-contrib" id="contrib-go"${contribBusy ? ' aria-disabled="true"' : ""}
@@ -670,10 +671,9 @@ async function contributeOnGitHub() {
     const c = await rpc({ op: "contribution", text: JSON.stringify(B.doc) });
     const file = `${c.slug}.json`;
     download(file, new Blob([JSON.stringify(c.doc, null, 1)], { type: "application/json" }));
-    contributed(`On GitHub: drop <b>${esc(file)}</b> (just downloaded) on the <a href="https://github.com/${esc(REPO)}/upload/main/graphs/catal-commons/incoming" target="_blank" rel="noopener">upload page</a>,
-      then Propose changes and Create pull request. The commons intake folds it in, crediting you; a person reviews it.`,
-      `https://github.com/${REPO}/upload/main/graphs/catal-commons/incoming`);
-    if (!tab) status("Your browser blocked the GitHub tab: open the upload page from the graph's card.");
+    contribBusy = false; renderGraphs();
+    status(tab ? `On the GitHub tab: drop ${file} (just downloaded), then Propose changes and Create pull request.`
+      : `Your browser blocked the GitHub tab: open github.com/${REPO}/upload/main/graphs/catal-commons/incoming and drop ${file} there.`);
   } catch (e) { contribBusy = false; renderGraphs(); status(`Contributing failed: ${e.message}`); }
 }
 // With the reader's GitHub token (connected once, kept in this browser like their model key, sent only to
@@ -811,11 +811,13 @@ function renderGraphs() {
   const list = own ? [own.entry, ...manifest] : manifest;
   $("graphs").innerHTML = list.map((e) => {
     const [scope, c] = scopeOf(e), active = G && G.entry === e, open = active && !folded;
-    const action = own && e === own.entry ? contribButton() : "";
+    const mineRow = own && e === own.entry, sent = mineRow && sentToCommons();
+    const action = mineRow ? (sent ? `<a class="gx-graph-scope gx-graph-sent" href="${esc(own.prUrl)}" target="_blank" rel="noopener"
+        title="Contributed to catal-commons: its pull request, for a person to review">catal-commons</a>` : contribButton() + `<span class="gx-graph-scope">${scope}</span>`) : "";
     return `<div role="listitem" class="gx-graph-row${action ? " has-action" : ""}" style="--dot:${c}"><button class="gx-graph-item${active ? " is-active" : ""}" type="button" data-id="${esc(e.id)}" title="${esc(e.title)}"
         aria-expanded="${open}"><span class="gx-graph-caret">${CARET}</span><span class="gx-graph-dot"></span>
         <span class="gx-graph-title">${esc(e.title)}</span>${action ? "" : `<span class="gx-graph-scope">${scope}</span>`}</button>`
-      + (action ? `<span class="gx-graph-actions">${action}<span class="gx-graph-scope">${scope}</span></span>` : "")
+      + (action ? `<span class="gx-graph-actions">${action}</span>` : "")
       + `${open ? details() : ""}</div>`;
   }).join("") || `<p class="gx-muted">No graphs are listed: open a file.</p>`;
   // the title gives way to the actions laid over its row's right end, by their measured width
