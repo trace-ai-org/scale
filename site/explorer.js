@@ -362,47 +362,117 @@ async function pdfText(file) {                            // "[page N]" and the 
 let curating = false, finishNow = false;
 const FINISH_UP = "The reader asked you to finish now. Write no more new records: run check, fix what it reports, then call done "
   + "saying what was curated and what was left out.";
-async function curateOwnKey() {
-  const job = $("curate-job"), log = [];
+// Where a curation is, and about how long it has left. Four stages; the model's stage advances with the pages it has
+// read (most of the work), then with each check it runs; the time left is the elapsed time scaled by what is left,
+// a rough estimate from the page count until enough is done to measure.
+const STAGES = [["read", "Read the PDF"], ["prepare", "Prepare SCALE in your browser"], ["curate", "Curate: read every page and write records"],
+  ["check", "Check every quote against the PDF and fix"]];
+const mmss = (s) => `${Math.floor(s / 60)}:${String(Math.floor(s % 60)).padStart(2, "0")}`;
+function curateProgress(job) {
+  const st = { stage: "read", detail: "", pages: 0, seen: new Set(), records: 0, checks: 0, errors: null, t0: Date.now(), log: [], frac: 0 };
   job.hidden = false;
-  const show = (line, err = "") => {
-    if (line) log.push(line);
-    job.innerHTML = `<div class="gx-state">${err ? "failed" : curating ? "curating" : "done"}</div><ol>${log.slice(-12).map((l) => `<li>${esc(l)}</li>`).join("")}</ol>`
-      + (err ? `<div class="gx-err">${esc(err)}</div>` : "")
-      + (curating ? `<button type="button" class="gx-btn gx-btn-tiny" id="curate-finish"${finishNow ? " disabled" : ""} title="Write no more records: check, fix and finish">${finishNow ? "Finishing…" : "Finish now"}</button>` : "");
-    const b = $("curate-finish");
-    if (b) b.onclick = () => { finishNow = true; show(""); };
+  job.innerHTML = `<div class="gx-cj-head"><b id="cj-title">Curating</b><span class="gx-subtle" id="cj-time"></span></div>
+    <div class="gx-cj-bar"><span id="cj-bar"></span></div>
+    <ol class="gx-cj-steps" id="cj-steps"></ol>
+    <div class="gx-cj-detail" id="cj-detail"></div>
+    <details class="gx-cj-log"><summary id="cj-logsum">Activity</summary><ol id="cj-log"></ol></details>
+    <div id="cj-end"></div>
+    <button type="button" class="gx-btn gx-btn-tiny" id="curate-finish" title="Write no more records: check, fix and finish" hidden>Finish now</button>`;
+  $("curate-finish").onclick = (e) => { finishNow = true; e.target.disabled = true; e.target.textContent = "Finishing…"; st.note("Asked the model to check, fix and finish"); };
+  const order = STAGES.map(([k]) => k);
+  st.frac = () => {
+    if (st.stage === "read") return 0.02;
+    if (st.stage === "prepare") return 0.06;
+    if (st.stage === "curate") return 0.1 + 0.6 * (st.pages ? st.seen.size / st.pages : 0);
+    if (st.stage === "check") return Math.min(0.97, 0.75 + 0.2 * (1 - 0.6 ** st.checks));
+    return 1;
   };
+  st.render = () => {
+    const i = order.indexOf(st.stage), f = st.frac(), el = (Date.now() - st.t0) / 1000;
+    $("cj-steps").innerHTML = STAGES.map(([k, label], j) =>
+      `<li class="${j < i || st.stage === "done" ? "done" : j === i ? "now" : ""}">${esc(label)}</li>`).join("");
+    $("cj-bar").style.width = `${Math.round(f * 100)}%`;
+    let left = "";
+    if (st.stage === "done" || st.stage === "failed") left = "";
+    else if (f > 0.15 && el > 30) left = ` · about ${Math.max(1, Math.round(el * (1 - f) / f / 60))} min left`;
+    else if (st.pages) left = ` · usually ${Math.max(2, Math.round(st.pages * 0.7))}–${Math.max(5, Math.round(st.pages * 2))} min for ${st.pages} pages`;
+    $("cj-time").textContent = `${mmss(el)} elapsed${left}`;
+    $("cj-detail").textContent = st.detail;
+  };
+  st.note = (line) => { st.log.push(`${mmss((Date.now() - st.t0) / 1000)} ${line}`); $("cj-log").innerHTML = st.log.map((l) => `<li>${esc(l)}</li>`).join(""); $("cj-logsum").textContent = `Activity (${st.log.length})`; };
+  st.go = (stage, detail) => {
+    st.stage = stage; st.detail = detail; st.note(detail); st.render();
+    if (stage === "curate" && $("curate-finish")) $("curate-finish").hidden = false;   // the model's stages only
+  };
+  st.timer = setInterval(st.render, 1000);
+  st.end = (title, html) => {
+    clearInterval(st.timer);
+    $("cj-title").textContent = title;
+    $("curate-finish")?.remove();
+    $("cj-end").innerHTML = html;
+    st.render();
+  };
+  // what each tool the model calls says about where it is
+  st.tool = (tool, args, result) => {
+    if (tool === "read_pages") {
+      for (let n = Number(args.first); n <= Math.min(Number(args.last), st.pages); n++) st.seen.add(n);
+      st.detail = `Read ${st.seen.size} of ${st.pages} pages · ${st.records} records written`;
+    } else if (tool === "upsert") {
+      try { const r = JSON.parse(result); st.records = r.nodes + r.links; } catch { /* an error, said to the model */ }
+      st.detail = `Read ${st.seen.size} of ${st.pages} pages · ${st.records} records written`;
+    } else if (tool === "check") {
+      st.checks++; st.stage = "check";
+      try { const r = JSON.parse(result); st.errors = r.errors.length + (r.errors_not_shown || 0); } catch { /* as above */ }
+      st.detail = st.errors ? `Check ${st.checks}: ${st.errors} problems to fix · ${st.records} records` : `Check ${st.checks}: no errors · ${st.records} records`;
+    } else if (tool === "describe") st.detail = "Reading the schema";
+    else if (tool === "remove") st.detail = `Removing records · ${st.records} records`;
+    st.note(st.detail);
+    st.render();
+  };
+  return st;
+}
+async function curateOwnKey() {
+  const job = $("curate-job");
+  let st = null;
   try {
     const f = $("curate-pdf").files[0];
     if (!f) throw new Error("give the source's PDF");
     if (!$("curate-attest").checked) throw new Error("tick the statement that you have lawful access to this PDF");
     curating = true; finishNow = false; syncCurate();
-    show(`Reading ${f.name}…`);
+    st = curateProgress(job);
+    st.go("read", `Reading ${f.name}`);
     const src = await pdfText(f);
     if (src.chars < 200) throw new Error("the PDF has no text layer to read (a scan?); curating it needs text, which OCR would give");
-    show(`${src.pages} pages of text read. Starting the source's graph…`);
+    st.pages = src.pages;
+    st.go("prepare", `${src.pages} pages of text read. Preparing SCALE in your browser (the first time, up to a minute)`);
     const stem = f.name.replace(/\.pdf$/i, "").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "").slice(0, 60) || "source";
     const s = await rpc({ op: "curate_start", text: src.text, name: `${stem}.txt` });
     $("curate-schema").textContent = `Curated under SCALE Catalysis, schema scale-catal v${s.started.schema_version}, in this browser.`;
-    show(`Rights: ${s.started.rights_class}. Curating…`);
+    st.go("curate", `Read 0 of ${st.pages} pages · waiting for the model`);
     const r = await modelLoop({ system: s.system, tools: s.tools, first: s.first, stop: "done",
-      run: (tool, args) => rpc({ op: "curate_call", tool, args }), wrapUp: FINISH_UP, stopNow: () => finishNow,
-      progress: (line) => show(line), alive: () => true });
+      run: async (tool, args) => {
+        const out = await rpc({ op: "curate_call", tool, args });
+        st.tool(tool, args, out);
+        return out;
+      },
+      wrapUp: FINISH_UP, stopNow: () => finishNow, progress: () => {}, alive: () => true });
+    st.go("check", "Final check");
     const check = JSON.parse(await rpc({ op: "curate_call", tool: "check", args: {} }));
     const doc = await rpc({ op: "curate_graph" });
     curating = false;
     const n = check.records || {};
-    show(`${check.ok ? "Checked: no errors" : `${check.errors.length}${check.errors_not_shown ? "+" : ""} errors left`} · ${n.nodes} records and ${n.links} links, ${n.with_evidence} with evidence`);
-    job.innerHTML += `<div>${esc(r.stopInput?.summary || r.text || "")}</div>`
+    st.stage = "done";
+    st.detail = `${check.ok ? "No errors" : `${check.errors.length}${check.errors_not_shown ? "+" : ""} problems left`} · ${n.nodes} records and ${n.links} links, ${n.with_evidence} with evidence`;
+    st.end(check.ok ? "Curated" : "Curated, with problems left", `<div>${esc(r.stopInput?.summary || r.text || "")}</div>`
       + (r.stopped ? `<div class="gx-card-warn">Stopped: ${esc(r.stopped)}.</div>` : "")
       + (check.ok ? "" : `<details><summary>What the check still reports</summary><ul>${check.errors.slice(0, 20).map((e) => `<li>${esc(typeof e === "string" ? e : JSON.stringify(e))}</li>`).join("")}</ul></details>`)
-      + `<div class="gx-subtle">${esc(accountLine(r))}. The graph is open on the canvas; its card on the left downloads it or contributes it to catal-commons.</div>`;
+      + `<div class="gx-subtle">${esc(accountLine(r))}. The graph is open on the canvas; its card on the left downloads it or contributes it to catal-commons.</div>`);
     const title = doc.graph?.title || f.name;
     await openOwn({ id: `curated-${stem}`, title, from: "own-key" }, JSON.stringify(doc), null, doc);
   } catch (e) {
     curating = false;
-    show("", e.message || String(e));
+    if (st) { st.stage = "failed"; st.end("Failed", `<div class="gx-err">${esc(e.message || String(e))}</div>`); }
+    else { job.hidden = false; job.innerHTML = `<div class="gx-err">${esc(e.message || String(e))}</div>`; }
   }
   syncCurate();
 }

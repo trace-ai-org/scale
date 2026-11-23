@@ -307,9 +307,22 @@ def test_a_readers_own_key_curates_a_pdf_in_the_browser_with_the_services_tools(
     # names no model or provider and says only what stays private
     assert 'id="curate-doi"' not in page and "text mining" not in page and "share the knowledge it reports" in page
     terms = js[js.index("function curateTerms("):js.index("async function curateAccount(")]
+    # a curation says where it is (four stages, a bar) and about how long it has left
+    prog = js[js.index("function curateProgress("):js.index("async function curateOwnKey(")]
+    assert "min left" in prog and "elapsed" in prog and 'id="cj-bar"' in prog and "st.tool = (tool, args, result)" in prog
     # Curate is grey until a PDF is given and the statement ticked
     sync = js[js.index("function syncCurate("):js.index("const pdfName")]
     assert '!$("curate-pdf").files[0]' in sync and '!$("curate-attest").checked' in sync
     # a graph curated here is contributed through the service, signed in with GitHub for the credit
     assert 'data-signin="contribute"' in js and "curated_in_browser: true" in js and 'e.from === "own-key"' in js
     assert "<b>Private.</b>" in terms and "modelLabel" not in terms and "PROVIDERS" not in terms
+
+
+def test_the_built_pages_load_scripts_and_the_package_stamped_with_the_builds_digest(built):
+    out, res = built
+    stamp = res["stamp"]
+    assert re.fullmatch(r"[0-9a-f]{12}", stamp)
+    page, js, worker = ((out / n).read_text() for n in ("index.html", "explorer.js", "worker.js"))
+    assert f'src="explorer.js?v={stamp}"' in page and f'href="explorer.css?v={stamp}"' in page
+    assert f'new Worker("worker.js?v={stamp}")' in js and f'"./bundle.js?v={stamp}"' in js
+    assert f'fetch("py/scale-py.zip?v={stamp}")' in worker

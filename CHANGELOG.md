@@ -14,7 +14,10 @@
   ticked. A graph curated in the browser can be contributed to catal-commons through the web service, signed in with
   GitHub, whose login is the credit: the service accepts it without a receipt (`curated_in_browser`), takes its source
   as in copyright (no quote kept) and says in the pull request how it was made; a person reviews it as every
-  contribution.
+  contribution. While it runs, the dialog shows where the curation is (read the PDF, prepare SCALE, curate page by
+  page, check and fix), a progress bar, the time elapsed and about how long is left. `scale site build` stamps every
+  script, stylesheet and the package a page loads with the build's digest (`?v=`), so a browser never runs a page of
+  one build with a worker it kept from another.
 - **A question asked with a reader's own key runs until the model has answered, and reads its conversation from the
   cache (site and service, no schema change, no migration).** The explorer's question loop stopped at a token budget,
   a turn limit and a tool result cut at 40,000 characters, so an answer could rest on part of the rows its plans

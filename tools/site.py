@@ -20,13 +20,14 @@ Nothing in DIR is committed; the pages workflow (.github/workflows/pages.yml) bu
 from __future__ import annotations
 
 import fnmatch
+import hashlib
 import re
 import shutil
 import zipfile
 from pathlib import Path
 
 from . import commons, graphparts, layout
-from .util import write_canonical
+from .util import ScaleError, write_canonical
 
 SITE = "site"
 PAGES = ("index.html", "explorer.css", "explorer.js", "bundle.js", "layout.js", "worker.js", "publication.html", "app.js", "config.js", "style.css")
@@ -100,6 +101,33 @@ def _skill_body(repo: Path, name: str) -> str:
     return re.sub(r"\A---\n.*?\n---\n", "", text, flags=re.S)
 
 
+# Each reference a page makes to a script, a stylesheet or the package, stamped with the build's digest (?v=…), so a
+# browser never runs a page of one build with a worker or package of another it kept in its cache.
+STAMPED = {
+    "index.html": ['href="explorer.css"', 'src="explorer.js"'],
+    "explorer.js": ['"./bundle.js"', 'new Worker("worker.js")', 'new Worker("layout.js")', 'fetch("data/query-graph.md")'],
+    "worker.js": ['fetch("py/scale-py.zip")'],
+    "publication.html": ['href="style.css"', 'src="app.js"'],
+}
+
+
+def _stamp(out: Path) -> str:
+    """Stamp the built pages' references (``STAMPED``) with the digest of what they load; returns the stamp."""
+    h = hashlib.sha256()
+    for name in sorted(PAGES) + [PACKAGE_ZIP, "data/query-graph.md"]:
+        h.update(name.encode() + b"\0" + (out / name).read_bytes())
+    stamp = h.hexdigest()[:12]
+    for name, refs in STAMPED.items():
+        text = (out / name).read_text(encoding="utf-8")
+        for ref in refs:
+            if text.count(ref) != 1:
+                raise ScaleError(f"site/{name}: expected one {ref}, found {text.count(ref)}")
+            q = ref.rindex('"')
+            text = text.replace(ref, f"{ref[:q]}?v={stamp}{ref[q:]}")
+        (out / name).write_text(text, encoding="utf-8")
+    return stamp
+
+
 def build(repo: Path, out: Path) -> dict:
     """Write the site into ``out`` (emptied first); returns what was written."""
     repo, out = Path(repo), Path(out)
@@ -118,8 +146,9 @@ def build(repo: Path, out: Path) -> dict:
     board = boards["contributors"]
     write_canonical(out / "data" / "leaderboard.json", {"commons": f"{layout.GRAPHS}/catal-commons", **boards})
     files = package_zip(repo, out / PACKAGE_ZIP)
+    stamp = _stamp(out)
     (out / ".nojekyll").write_text("")
     return {"out": str(out), "graphs": [e["id"] for e in entries], "contributors": len(board), "package_files": files,
-            "package_bytes": (out / PACKAGE_ZIP).stat().st_size}
+            "package_bytes": (out / PACKAGE_ZIP).stat().st_size, "stamp": stamp}
 
 

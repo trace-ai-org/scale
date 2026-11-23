@@ -305,9 +305,23 @@ button.gx-add-graph { width: 100%; font: inherit; color: inherit; cursor: pointe
 .gx-kept { font-size: 12px; color: var(--muted); }
 .gx-kept ul { margin: 6px 0 0; padding-left: 16px; }
 .gx-kept li { margin: 3px 0; }
-.gx-curate-job { margin-top: 12px; padding: 10px 12px; border-radius: 8px; background: var(--bg-input); font-size: 12px; max-height: 220px; overflow: auto; }
+.gx-curate-job { margin-top: 12px; padding: 10px 12px; border-radius: 8px; background: var(--bg-input); font-size: 12px; max-height: 360px; overflow: auto; }
 .gx-curate-job ol { margin: 6px 0 0; padding-left: 18px; }
 .gx-curate-job .gx-state { font-weight: 600; text-transform: capitalize; }
+.gx-cj-head { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; font-size: 12.5px; }
+.gx-cj-bar { height: 6px; margin: 8px 0; border-radius: 3px; background: var(--line); overflow: hidden; }
+.gx-cj-bar span { display: block; height: 100%; width: 0; background: var(--green); transition: width 0.6s ease; }
+.gx-cj-steps { list-style: none; margin: 4px 0; padding: 0; }
+.gx-cj-steps li { position: relative; padding: 2px 0 2px 20px; color: var(--muted); }
+.gx-cj-steps li::before { content: ""; position: absolute; left: 3px; top: 6px; width: 8px; height: 8px; border-radius: 50%; border: 1.5px solid var(--muted); }
+.gx-cj-steps li.done { color: var(--fg); }
+.gx-cj-steps li.done::before { background: var(--green); border-color: var(--green); }
+.gx-cj-steps li.now { color: var(--fg); font-weight: 600; }
+.gx-cj-steps li.now::before { border-color: var(--green); animation: gx-cj-pulse 1.2s ease-in-out infinite; }
+@keyframes gx-cj-pulse { 50% { background: var(--green); } }
+.gx-cj-detail { margin: 4px 0 6px; }
+.gx-cj-log summary { cursor: pointer; color: var(--muted); }
+.gx-curate-job #curate-finish { margin-top: 6px; }
 .gx-err { color: #d9534f; }
 .gx-contrib { margin-top: 6px; font-size: 12px; }
 .gx-link-btn { display: block; margin: 0 0 6px; padding: 0; border: 0; background: none; color: var(--link-ink); font-size: 12px; cursor: pointer; }
