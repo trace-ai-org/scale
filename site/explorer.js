@@ -197,6 +197,7 @@ async function curateAccount(note = "") {
   } catch { /* curateAccount ran again on 401 */ }
 }
 async function openCurate() {
+  if (!curating && $("curate-dialog").classList.contains("is-done")) curateReset();
   if (!$("curate-dialog").open) $("curate-dialog").showModal();
   curateAccount();
   if (curateMode() !== "service") { $("curate-schema").textContent = ""; return; }
@@ -431,6 +432,49 @@ function curateProgress(job) {
   };
   return st;
 }
+// Done: the form gives way to what was curated, in a few numbers, and what to do next: explore the graph (it is open
+// on the canvas, and questions now go to it), contribute it to catal-commons, or curate another source.
+function curateDone({ doc, check, r, pages, secs, title, log }) {
+  const by = {};
+  for (const n of doc.nodes) by[n.label] = (by[n.label] || 0) + 1;
+  const skip = new Set(["Source", "Institution", "Project", "Person"]);
+  const kinds = Object.entries(by).filter(([l]) => !skip.has(l)).sort((x, y) => y[1] - x[1]).slice(0, 8);
+  const evidenced = [...doc.nodes, ...doc.links].filter((x) => (x.props?.evidence || []).length).length;
+  const problems = check.ok ? 0 : check.errors.length + (check.errors_not_shown || 0);
+  const tile = (n, label) => `<div><b>${Number(n).toLocaleString()}</b><span>${esc(label)}</span></div>`;
+  $("curate-dialog").classList.add("is-done");
+  $("curate-job").hidden = false;
+  $("curate-job").innerHTML = `<div class="gx-done-head"><span class="gx-done-mark">✓</span><div><b>Curated</b><div class="gx-subtle">${esc(title)}</div></div></div>
+    <div class="gx-done-stats">${tile(doc.nodes.length, "records")}${tile(doc.links.length, "links")}${tile(evidenced, "with evidence")}${tile(pages, "pages read")}</div>
+    <div class="gx-done-kinds">${kinds.map(([l, n]) => `<span class="gx-chip">${esc(l)} <b>${n}</b></span>`).join("")}</div>
+    <p class="${problems ? "gx-card-warn" : "gx-subtle"}">${problems ? `${problems} problems the check still reports: the graph is open, and a reviewer sees them.` : "The check passes: every quote was found in the PDF."}
+      Took ${mmss(secs)}${r.stopped ? `; ${esc(r.stopped)}` : ""}.</p>
+    <details><summary>What the model curated</summary><div class="gx-done-summary">${idLinks(md(r.stopInput?.summary || r.text || ""))}</div>
+      ${problems ? `<p><b>Problems left</b></p><ul>${check.errors.slice(0, 20).map((e) => `<li>${esc(typeof e === "string" ? e : (e.record ? `${e.record}: ` : "") + (e.message || JSON.stringify(e)))}</li>`).join("")}</ul>` : ""}
+      <p class="gx-subtle">${esc(accountLine(r))}.</p></details>
+    <details><summary>Activity (${log.length})</summary><ol>${log.map((l) => `<li>${esc(l)}</li>`).join("")}</ol></details>
+    <div class="gx-done-next">
+      <button type="button" class="gx-btn gx-btn-primary" id="done-explore">Explore the graph</button>
+      <button type="button" class="gx-btn" id="done-contrib"${SERVICE ? "" : ` disabled title="Opens once the SCALE service runs"`}>Contribute to catal-commons</button>
+      <button type="button" class="gx-btn" id="done-again">Curate another</button>
+    </div>`;
+  $("done-explore").onclick = () => {
+    $("curate-dialog").close();
+    $("search-input").placeholder = "Ask a question about this graph...";
+    $("search-input").focus();
+  };
+  $("done-contrib").onclick = () => { $("curate-dialog").close(); contribute(); };
+  $("done-again").onclick = () => curateReset();
+  $("done-explore").focus();
+}
+function curateReset() {                         // the form again, empty
+  $("curate-dialog").classList.remove("is-done");
+  $("curate-pdf").value = "";
+  $("curate-attest").checked = false;
+  $("curate-job").hidden = true;
+  $("curate-job").innerHTML = "";
+  pdfName();
+}
 async function curateOwnKey() {
   const job = $("curate-job");
   let st = null;
@@ -460,15 +504,10 @@ async function curateOwnKey() {
     const check = JSON.parse(await rpc({ op: "curate_call", tool: "check", args: {} }));
     const doc = await rpc({ op: "curate_graph" });
     curating = false;
-    const n = check.records || {};
-    st.stage = "done";
-    st.detail = `${check.ok ? "No errors" : `${check.errors.length}${check.errors_not_shown ? "+" : ""} problems left`} · ${n.nodes} records and ${n.links} links, ${n.with_evidence} with evidence`;
-    st.end(check.ok ? "Curated" : "Curated, with problems left", `<div>${esc(r.stopInput?.summary || r.text || "")}</div>`
-      + (r.stopped ? `<div class="gx-card-warn">Stopped: ${esc(r.stopped)}.</div>` : "")
-      + (check.ok ? "" : `<details><summary>What the check still reports</summary><ul>${check.errors.slice(0, 20).map((e) => `<li>${esc(typeof e === "string" ? e : JSON.stringify(e))}</li>`).join("")}</ul></details>`)
-      + `<div class="gx-subtle">${esc(accountLine(r))}. The graph is open on the canvas; its card on the left downloads it or contributes it to catal-commons.</div>`);
+    clearInterval(st.timer);
     const title = doc.graph?.title || f.name;
     await openOwn({ id: `curated-${stem}`, title, from: "own-key" }, JSON.stringify(doc), null, doc);
+    curateDone({ doc, check, r, pages: st.pages, secs: (Date.now() - st.t0) / 1000, title, log: st.log });
   } catch (e) {
     curating = false;
     if (st) { st.stage = "failed"; st.end("Failed", `<div class="gx-err">${esc(e.message || String(e))}</div>`); }
@@ -558,7 +597,7 @@ async function showOwn() {
   G.contrib = contribStart();
   renderGraphs();
   if (!own.kept && !own.entry.windowed) status("This graph is too large to keep in this tab: download it before you sign in or reload.");
-  if (own.receipt || (own.entry.from === "own-key" && SERVICE && token)) checkContribution();
+  if (token && store.take(CONTRIB_PENDING) === own.entry.id) contribute();   // back from the sign-in a click asked for
 }
 // A graph the service just curated, with its receipt, which alone lets it be contributed (only that graph, unchanged,
 // by the user it was curated for).
@@ -572,52 +611,44 @@ function downloadGraph() {
   const B = G.base || G;
   download(`${B.entry.id}.json`, new Blob([JSON.stringify(B.doc, null, 1)], { type: "application/json" }));
 }
-// Contributing: what it would add is checked as soon as the graph arrives, so one click opens the pull request. What
-// becomes public is said next to the button, before it is pressed.
+// Contributing: one click. Signed out, the click signs the reader in with GitHub (their login is their credit) and the
+// contribution goes on by itself when they come back; signed in, the service is asked whether catal-commons holds the
+// source already (or an open pull request proposes it) and, if not, the pull request opens at once, for a person to
+// review. A graph the service curated carries its receipt; one curated in this browser says so (curated_in_browser).
+const CONTRIB_PENDING = "scale-contrib-pending";
 function contribHtml() { return G?.contrib || ""; }
-// A graph the reader curated in this browser is contributed through the service too, signed in with GitHub: the login
-// is the contributor's credit on the leaderboard.
 function contribStart() {
-  if (own.receipt) return `<span class="gx-subtle">Checking catal-commons…</span>`;
-  if (own.entry.from !== "own-key") return "";
-  if (!SERVICE) return `<span class="gx-subtle">Contributing to catal-commons opens once the SCALE service runs; download the graph to keep it until then.</span>`;
-  if (!token) return `<a class="gx-btn gx-btn-tiny gx-btn-primary" href="#" role="button" data-signin="contribute">Sign in with GitHub to contribute</a>
-    <div class="gx-subtle">Contribute it to catal-commons; your GitHub login is your credit on the leaderboard.</div>`;
-  return `<span class="gx-subtle">Checking catal-commons…</span>`;
+  if (own.entry.from !== "own-key" && !own.receipt) return "";
+  if (own.contributed) return own.contributed;
+  return `<button type="button" class="gx-btn gx-btn-primary gx-contrib-go" id="contrib-go"${SERVICE ? "" : " disabled"}>Contribute to catal-commons</button>
+    <div class="gx-subtle">${SERVICE ? (token ? "One click opens a pull request under your GitHub login, for a person to review."
+      : "One click: sign in with GitHub (your credit on the leaderboard), and a pull request opens for a person to review.")
+      : "Opens once the SCALE service runs; download the graph to keep it until then."}</div>`;
 }
 const contribBody = (B) => ({ graph: B.doc, ...(B.receipt ? { receipt: B.receipt } : { curated_in_browser: true }) });
 function setContrib(html) { const B = G.base || G; B.contrib = html; const box = $("contrib-box"); if (box) { box.innerHTML = html; wireContrib(); } }
 function wireContrib() { $("contrib-go")?.addEventListener("click", contribute); }
-async function checkContribution() {
-  const B = G.base || G;
-  try {
-    const r = await call("POST", "/contribute/check", contribBody(B));
-    if (r.already) {
-      setContrib(`Already in catal-commons: ${r.already.map((h) => `<a href="${esc(h.url)}" target="_blank" rel="noopener">${esc(h.source)}</a> (the same ${esc(h.by.join(", "))})`).join("; ")}.`);
-      return;
-    }
-    if (r.proposed) {
-      setContrib(`Already proposed: <a href="${esc(r.proposed.url)}" target="_blank" rel="noopener">#${esc(r.proposed.number)} ${esc(r.proposed.title)}</a>.`);
-      return;
-    }
-    const p = r.new;
-    setContrib(`<button type="button" class="gx-btn gx-btn-tiny gx-btn-primary" id="contrib-go">Contribute to catal-commons</button>
-      <ul class="gx-contrib-terms"><li>Adds ${Number(p.records.triples).toLocaleString()} new triples (${esc(p.records.nodes)} records, ${esc(p.records.links)} links), your credit on the leaderboard</li>
-        ${p.repeats && (p.repeats.records.length + p.repeats.links + p.repeats.values) ? `<li>${esc(p.repeats.records.length + p.repeats.links + p.repeats.values)} repeats of what catal-commons holds are discarded and not counted</li>` : ""}
-        ${p.conflicts && p.conflicts.length ? `<li>${esc(p.conflicts.length)} values differ from catal-commons' records; the reviewer decides</li>` : ""}<li>A public pull request on GitHub, naming you</li>
-        <li>Shared under CC BY 4.0; ${esc(p.quotes.kept)} quotes kept, ${esc(p.quotes.withheld)} withheld for the source's rights</li><li>Reviewed by a person before it is merged</li></ul>`);
-  } catch (e) { setContrib(`<span class="gx-err">${esc(e.message)}</span>`); }
+function contributed(html) {                      // the outcome stays on the graph's card, a reload or sign-in included
+  if (own) { own.contributed = html; store.set(OWN, JSON.stringify({ entry: own.entry, text: own.text, receipt: own.receipt, contributed: html })); }
+  setContrib(html);
 }
 async function contribute() {
   const B = G.base || G;
-  $("contrib-go").disabled = true;
+  if (!SERVICE) return;
+  if (!token) { store.set(CONTRIB_PENDING, B.entry.id); signIn("contribute"); return; }
+  setContrib(`<span class="gx-subtle">Checking catal-commons and opening a pull request…</span>`);
   try {
+    const r = await call("POST", "/contribute/check", contribBody(B));
+    if (r.already) return contributed(`Already in catal-commons: ${r.already.map((h) => `<a href="${esc(h.url)}" target="_blank" rel="noopener">${esc(h.source)}</a> (the same ${esc(h.by.join(", "))})`).join("; ")}.`);
+    if (r.proposed) return contributed(`Already proposed: <a href="${esc(r.proposed.url)}" target="_blank" rel="noopener">#${esc(r.proposed.number)} ${esc(r.proposed.title)}</a>.`);
     const o = await call("POST", "/contribute", contribBody(B));
+    const p = o.new || r.new;
     B.receipt = null;
-    if (own && own.entry === B.entry) { own.receipt = null; store.set(OWN, JSON.stringify(own)); }
-    setContrib(o.pull_request ? `Opened <a href="${esc(o.pull_request.url)}" target="_blank" rel="noopener">pull request #${esc(o.pull_request.number)}</a>. Thank you.`
+    if (own) own.receipt = null;
+    contributed(o.pull_request ? `<b>Contributed.</b> <a href="${esc(o.pull_request.url)}" target="_blank" rel="noopener">Pull request #${esc(o.pull_request.number)}</a>
+      adds ${Number(p.records.triples).toLocaleString()} triples to catal-commons under your GitHub login; a person reviews it before it is merged. Thank you.`
       : "It is in catal-commons already, or proposed.");
-  } catch (e) { $("contrib-go").disabled = false; setContrib(contribHtml() + `<div class="gx-err">${esc(e.message)}</div>`); }
+  } catch (e) { setContrib(contribStart() + `<div class="gx-err">${esc(e.message)}</div>`); }
 }
 
 async function start() {
@@ -685,7 +716,7 @@ function details() {
     ["Type", `<a href="#" id="graph-show" title="Show the graph on the canvas">Knowledge graph</a>${G.base ? "" : ` <span class="gx-subtle">(shown)</span>`}${scope === "synthetic" ? ` <span class="gx-warn">synthetic example</span>` : ""}`],
     ["Size", `${B.doc.nodes.length.toLocaleString()} nodes · ${B.doc.links.length.toLocaleString()} rels · ${B.props.toLocaleString()} props`],
     g.version ? ["Release", esc(g.version)] : null,
-    ["Visibility", mine ? "Private to you, until you contribute it" : esc(((g.stewardship || {}).access || "public").replace(/^./, (c) => c.toUpperCase()))],
+    ["Visibility", mine ? (own?.contributed ? "Sent to catal-commons, for review" : "Private to you, until you contribute it") : esc(((g.stewardship || {}).access || "public").replace(/^./, (c) => c.toUpperCase()))],
     g.created || g.date ? ["Created", esc(g.created || g.date)] : null,
     e.windowed ? null : ["Checksum", B.sha ? `<span class="gx-sha" title="sha256 ${esc(B.sha)}">${esc(B.sha.slice(0, 12))}…</span>` : "…"],
     ...windowRows(e),
@@ -694,8 +725,8 @@ function details() {
       ${B.labels.size} labels · ${B.rels.size} rel types · ${schemaPropCount(B).toLocaleString()} props`],
     mine ? ["Graph", `<a href="#" id="curated-download">Download</a>`] : null,
   ].filter(Boolean);
-  return `<div class="gx-graph-detail"><dl class="gx-facts">${facts.map(([k, v]) => `<dt>${k}</dt><dd>${v}</dd>`).join("")}</dl>`
-    + (mine ? `<div class="gx-contrib" id="contrib-box">${B.contrib || ""}</div>` : "") + `</div>`;
+  return `<div class="gx-graph-detail">${mine ? `<div class="gx-contrib" id="contrib-box">${B.contrib || ""}</div>` : ""}`
+    + `<dl class="gx-facts">${facts.map(([k, v]) => `<dt>${k}</dt><dd>${v}</dd>`).join("")}</dl></div>`;
 }
 
 // A bundle with more records than the explorer draws at once is drawn a window at a time (bundle.js): its sources in
