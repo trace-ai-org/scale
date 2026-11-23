@@ -12,6 +12,12 @@
   cache read a tenth and a cache write a quarter more); the answer states how many input tokens came from the cache.
   The *Your API key* menu is shorter: the selected key is the status, the form to add a key opens on request, the
   workspace ID sits under *Advanced*, and one line says where the keys go.
+- **A new base branch asks the reviewers again, as a push does (governance, no schema change, no migration).** A
+  stacked pull request is retargeted to `main` once the one below it merges; the change of base dismisses its
+  approvals (the ruleset), but it is an `edited` event, not a push, so the reviewers workflow did not ask anyone again
+  and the pull request waited with no approval and no request (#127). The workflow now also runs on `edited` when the
+  base branch changed (an edit of the title or the description asks nobody), and asks again every reviewer whose
+  approval was dismissed or who asked for changes. The last pusher still cannot give the approval.
 - **The graph explorer answers questions in words with a reader's own API key (site, no schema change, no
   migration).** Until the web service runs, a question in the explorer only listed the matching evidence. Now a reader
   may give their own key (the toolbar's *Your API key*): Anthropic's, with Claude Opus 5.5, Sonnet 5.5 or Haiku 5.5, or

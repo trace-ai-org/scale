@@ -80,7 +80,8 @@ reviews:
 - **A request for changes blocks.** A reviewer who asks for changes blocks the merge until they approve or their
   review is dismissed, whoever else approved. The agents push the fixes to the same branch.
 - **A push asks again.** A push dismisses earlier approvals (the ruleset); the workflow asks again every reviewer
-  whose approval it dismissed or who asked for changes. The last pusher cannot give the approval.
+  whose approval it dismissed or who asked for changes. So does a change of the base branch, as when a stacked pull
+  request is retargeted to `main` once the one below it merges. The last pusher cannot give the approval.
 
 ### No bypass
 
