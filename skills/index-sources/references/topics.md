@@ -21,7 +21,7 @@ Topics belong to the source, not to the index topic: a source in two indexes has
 ## The vocabulary
 
 The vocabulary belongs to the domain, not to this skill. The first of these is used: a path given to the script,
-`$INDEX_SOURCES_VOCAB`, the project's `.scripts/vocab.json`, or, when the skill runs from a checkout of hlxin/scale,
+`$INDEX_SOURCES_VOCAB`, the project's `.scripts/vocab.json`, or, when the skill runs from a checkout of trace-ai-org/scale,
 SCALE's catalysis vocabulary, `graphs/catal-commons/literature/vocabulary.json` (copy it to `.scripts/vocab.json` in a
 project that installed the skill elsewhere).
 

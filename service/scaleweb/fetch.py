@@ -14,7 +14,7 @@ import urllib.parse
 import urllib.request
 
 DOI_RE = re.compile(r"\b(10\.\d{4,9}/[^\s\"<>#?]+)", re.I)
-UA = "scale-catal web (https://github.com/hlxin/scale)"
+UA = "scale-catal web (https://github.com/trace-ai-org/scale)"
 
 
 class FetchError(Exception):

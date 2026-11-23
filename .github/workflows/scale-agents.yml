@@ -6,7 +6,7 @@ name: scale-agents
 #   - someone comments on an issue or a pull request,
 #   - a review is submitted on a pull request (except an approval with no text),
 #   - or a person with write access runs it by hand (Actions > scale-agents > Run workflow, or
-#       gh workflow run scale-agents.yml --repo hlxin/scale -f prompt="add a property for the reactor volume" ).
+#       gh workflow run scale-agents.yml --repo trace-ai-org/scale -f prompt="add a property for the reactor volume" ).
 # Events from bots (the agents' own comments included) are skipped, so the team never answers itself.
 #
 # The discovery strategist frames the use case, decides what it needs (an answer, a question back, a change, or
@@ -22,7 +22,7 @@ name: scale-agents
 # (~/.claude/agents/), with AGENTS.md and the skills in skills/. Not in the checkout's .claude/: on an event about a
 # pull request the action restores .claude/ from main (the head is untrusted), and main has none. The App's token cannot change workflow files, so the agents cannot edit .github/workflows/.
 #
-# Human setup: install the Claude GitHub App on hlxin/scale and set the repository secret CLAUDE_CODE_OAUTH_TOKEN
+# Human setup: install the Claude GitHub App on trace-ai-org/scale and set the repository secret CLAUDE_CODE_OAUTH_TOKEN
 # (a Claude subscription's token from `claude setup-token`; its runs draw on that subscription) or, instead,
 # ANTHROPIC_API_KEY (API billing) (governance/repository-settings.md, "The agents"). No other secret is used. The agents' commands run with the
 # action's subprocess secret scrub off (CLAUDE_CODE_SUBPROCESS_ENV_SCRUB: "0"): it would strip the GitHub token their

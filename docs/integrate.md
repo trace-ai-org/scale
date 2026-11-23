@@ -17,7 +17,7 @@ exits 0 on success and 1 when the result is an error (which is still printed as 
   or register the command `uvx scale-catal mcp` in your host's MCP settings.
 - **Install once instead:** `pip install scale-catal`, then call `scale call …` directly.
 - **From a checkout or a fork:** `uvx --from /path/to/scale scale-catal call status`,
-  or `uvx --from git+https://github.com/hlxin/scale scale-catal call status`.
+  or `uvx --from git+https://github.com/trace-ai-org/scale scale-catal call status`.
 
 Register the command as a tool in your system (a shell or command tool, a subprocess call, a CI
 step, or a notebook cell). The agent can then discover everything else:

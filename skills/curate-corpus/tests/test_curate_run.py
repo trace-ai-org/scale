@@ -1,7 +1,7 @@
 """curate_run.py against SCALE's own tools, offline: a corpus of one source (a generated PDF and an SI text file)
 goes through prepare, the hand-outs and every state, with the subagents' reports written by the test.
 
-Run from a checkout of hlxin/scale with the package installed (pip install -e ".[pdf]"):
+Run from a checkout of trace-ai-org/scale with the package installed (pip install -e ".[pdf]"):
     python -m pytest skills/curate-corpus/tests
 SCALE_CMD overrides the scale command (default: this Python's `-m scale.cli --repo <checkout>`).
 """

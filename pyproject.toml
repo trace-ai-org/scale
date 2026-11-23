@@ -21,7 +21,7 @@ classifiers = [
 ]
 
 [project.urls]
-Repository = "https://github.com/hlxin/scale"
+Repository = "https://github.com/trace-ai-org/scale"
 
 [project.optional-dependencies]
 dev = ["pytest>=7", "numpy>=1.24", "reuse[charset-normalizer]>=5"]   # reuse: the licence check of scale check

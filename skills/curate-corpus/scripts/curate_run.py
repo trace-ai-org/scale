@@ -421,7 +421,7 @@ def cmd_prepare(a):
                 *(["--project", a.project] if a.project else []), *(["--version", a.version] if a.version else [])]
         rc, out, err = scale(cmd, *args)
         if rc != 0 and "invalid choice: 'source'" in err:
-            die("this SCALE has no `scale source` (it came after release v0.2.0): use a checkout of hlxin/scale, "
+            die("this SCALE has no `scale source` (it came after release v0.2.0): use a checkout of trace-ai-org/scale, "
                 'e.g. --scale "uv run --project <checkout> scale"')
         if rc != 0 and s.get("doi"):            # one more try after a pause: this is often a network blip
             time.sleep(5)
@@ -1054,7 +1054,7 @@ def main():
     p.add_argument("--title", help="the graph's title (at most 40 characters)")
     p = sub.add_parser("contribute")
     p.add_argument("--run", required=True)
-    p.add_argument("--to", required=True, help="a graph kept as parts, e.g. <hlxin/scale checkout>/graphs/catal-commons")
+    p.add_argument("--to", required=True, help="a graph kept as parts, e.g. <trace-ai-org/scale checkout>/graphs/catal-commons")
     a = ap.parse_args()
     {"prepare": cmd_prepare, "next": cmd_next, "review-api": cmd_review_api, "status": cmd_status, "finish": cmd_finish,
      "assemble": cmd_assemble, "contribute": cmd_contribute}[a.cmd](a)

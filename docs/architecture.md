@@ -21,7 +21,7 @@ SCALE links three activities. Each can expose limitations in the others.
 
 ## Repository layout
 
-One repository, `hlxin/scale`, holds the science kernel, the catalysis domain, the tools (the Python package
+One repository, `trace-ai-org/scale`, holds the science kernel, the catalysis domain, the tools (the Python package
 `scale-catal`) and the releases ([decision record 0001](decisions/0001-scale-0.1.0.md)). SCALE is a general
 framework: the specification has **two layers, the science kernel and the domains**. A domain builds on the
 kernel through its graph schema manifest; catalysis is the first domain and, for now, the only one, so its
