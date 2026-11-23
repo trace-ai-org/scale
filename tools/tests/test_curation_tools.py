@@ -19,6 +19,7 @@ def test_the_tools_are_defined_once_with_done_last_and_the_skill_as_the_system_p
     names = [t["name"] for t in ct.definitions()]
     assert names == ["read_pages", "describe", "graph_summary", "get_records", "upsert", "remove", "check", STOP]
     assert all(t["input_schema"]["type"] == "object" for t in ct.definitions())
+    assert "title" in ct.definitions()[-1]["input_schema"]["properties"]          # done names the graph concisely
     assert "You curate in a test" in ct.system() and "curate" in ct.system().lower()
     assert ct.first().endswith("The source has 2 pages of text.")
 

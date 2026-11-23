@@ -19,8 +19,10 @@
   script, stylesheet and the package a page loads with the build's digest (`?v=`), so a browser never runs a page of
   one build with a worker it kept from another. When it is done, the dialog gives way to what was curated (records,
   links, records with evidence, pages read, the kinds of records) and what to do next: explore the graph, contribute
-  it, or curate another. Contributing is one click, on the graph's card or in the dialog: a reader signed out signs in
-  with GitHub and the pull request opens when they come back, with no second click.
+  it, or curate another. Contributing is one click, on the graph's title line or in the dialog: a reader signed out
+  signs in with GitHub and the pull request opens when they come back, with no second click. A personal graph's card
+  shows the rows every graph's shows; its title line carries the Contribute button before its label, *personal*, in
+  the site's green; its title is concise (the model names the graph when it calls `done`).
 - **A question asked with a reader's own key runs until the model has answered, and reads its conversation from the
   cache (site and service, no schema change, no migration).** The explorer's question loop stopped at a token budget,
   a turn limit and a tool result cut at 40,000 characters, so an answer could rest on part of the rows its plans

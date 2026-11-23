@@ -129,7 +129,9 @@ class CurationTools:
             _tool("check", "scale source check --derive-links: the graph valid under its schema, every quote found in "
                   "the page texts, conformance, gaps and the copyright cap. Run it after writing and fix every error."),
             _tool(STOP, "Finish: the graph checks without error and holds what the source reports. Say what was "
-                  "curated, what was left out and why.", {"summary": {"type": "string"}}, ["summary"]),
+                  "curated, what was left out and why, and give the graph a concise title (a few words naming the "
+                  "system and what the source shows, at most 60 characters).",
+                  {"summary": {"type": "string"}, "title": {"type": "string"}}, ["summary"]),
         ]
 
     def call(self, name: str, a: dict):

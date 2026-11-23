@@ -320,6 +320,14 @@ def test_a_readers_own_key_curates_a_pdf_in_the_browser_with_the_services_tools(
     assert "curated_in_browser: true" in js and 'e.from === "own-key"' in js
     assert 'store.set(CONTRIB_PENDING, B.entry.id); signIn("contribute")' in contrib and 'call("POST", "/contribute", contribBody(B))' in contrib
     assert "store.take(CONTRIB_PENDING) === own.entry.id) contribute()" in js
+    # a personal graph's card has the rows every graph's has; its Contribute button sits on its title line, before
+    # its label (personal, in the site's green); without the service it says it is to come
+    rows = js[js.index("function renderGraphs("):js.index("function details(")]
+    assert "contribButton()" in rows and 'class="gx-graph-actions"' in rows
+    assert '"own-key": ["personal", "var(--green)"]' in js and 'title="To be implemented soon!"' in js
+    assert "curated-download" not in js and "contrib-box" not in js
+    # a curated graph gets a concise title: the model's (done's title), else its source's, else the PDF's name
+    assert "graphTitle(r.stopInput?.title, doc, f.name)" in js
     # when it is done, the dialog shows what was curated in a few numbers and what to do next
     done = js[js.index("function curateDone("):js.index("function curateReset(")]
     assert all(f'id="done-{k}"' in done for k in ("explore", "contrib", "again")) and "gx-done-stats" in done
