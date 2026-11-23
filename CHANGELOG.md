@@ -2,6 +2,14 @@
 
 ## Unreleased
 
+- **An API reader samples as its endpoint does, not greedily (curate-corpus, no schema change, no migration).**
+  `review-api` asked for `temperature: 0`. A reasoning reader decoded greedily falls into loops: on a CO2RR run
+  (DeepSeek-V4.1-Flash on vLLM, high reasoning), 897 of 1,257 readings ended with no verdict, each after about 150,000
+  tokens of thinking in which 88% of the lines repeated others ("Now, check the document's links for species/el-mg…
+  Good."). Now a reading carries no sampling of its own, so the endpoint's default applies (for a served model, the
+  one in its generation config), and `prepare --api-temperature/--api-top-p` or `review-api --temperature/--top-p`
+  give another. Four of those sources read again with temperature 1.0 and top_p 0.95 (the run now gives both):
+  every request ended on its own (`finish_reason: stop`) after 33,000-54,000 tokens, with no repeated lines.
 - **The repository's address is `github.com/trace-ai-org/scale` (no schema change, no migration).** The repository
   moved from `hlxin/scale`. Install commands, clone commands, issue forms, the package metadata, the citation, the
   update check (`scale status`), the release manifest's source, the service's default repository and the site's links

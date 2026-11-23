@@ -64,6 +64,10 @@ three hours unless its report arrives first. A subagent that stopped without rep
   `work/review.json`. A stream that ends without `finish_reason` or `[DONE]` (cut off by the endpoint) is a failure and is sent
   again like a 5xx. A failed call leaves the source `curated`, to be read again; what the reader returned (`content`,
   and `reasoning_content` if present) is kept in `work/review-raw-<n>.json`, so that its work is not lost.
+- The reading asks for no sampling of its own: the endpoint's default applies, which for a served model is the one in
+  its generation config. Give it only when the model's makers recommend another (`prepare --api-temperature
+  --api-top-p`, or `review-api --temperature --top-p`). Never 0 for a reasoning reader: greedy decoding sends it into
+  loops (the same lines over and over) until the window is full, and the reading ends with no verdict.
 - Each reading is fitted to the reader's context window, given at prepare (`--api-context-tokens`) or to `review-api`
   (`--context-tokens`): 2.5 characters a token (compact JSON runs under 3; a character
   outside ASCII, such as CJK text, counts as 3), and `--answer-tokens` (64,000) kept for the answer, thinking included.
