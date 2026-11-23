@@ -6,7 +6,7 @@
 //                                                    repository and open the pull request under the reader's login)
 //   GET /callback?code=…&state=…                 ->  a page that hands the token to the window that opened it (the
 //                                                    explorer, by postMessage to its origin only); the explorer then
-//                                                    shows the pull request it opened in this same window
+//                                                    shows GitHub's pull request page in this same window
 //
 // Settings: GITHUB_CLIENT_ID and GITHUB_CLIENT_SECRET (the OAuth app's; its callback URL is <this worker>/callback) and
 // ALLOWED_ORIGINS (the explorer's origins, comma-separated: only they may start a sign-in or receive a token).
@@ -20,7 +20,7 @@ const allowed = (env) => (env.ALLOWED_ORIGINS || "").split(",").map((o) => o.tri
 function handBack(msg, origin) {
   const data = JSON.stringify(msg).replace(/</g, "\\u003c"), to = JSON.stringify(origin).replace(/</g, "\\u003c");
   return new Response(`<!doctype html><meta charset="utf-8"><title>SCALE: GitHub sign-in</title>
-<p style="font:14px system-ui;margin:2em">${msg.token ? "Signed in. Opening your pull request…" : "The sign-in did not finish. You can close this window."}</p>
+<p style="font:14px system-ui;margin:2em">${msg.token ? "Signed in. Preparing your pull request…" : "The sign-in did not finish. You can close this window."}</p>
 <script>if (window.opener) window.opener.postMessage(${data}, ${to});</script>`, {
     headers: { "content-type": "text/html; charset=utf-8", "cache-control": "no-store", "referrer-policy": "no-referrer" } });
 }

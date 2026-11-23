@@ -679,7 +679,8 @@ async function contributeOnGitHub() {
 // With a GitHub sign-in (service/github-login: a window opens on GitHub, and its token comes back to this page only,
 // kept in memory for this one contribution and never saved), the page opens the pull request itself, the graph
 // attached: it forks the repository (or brings the reader's fork up to date), adds the graph on a new branch of the
-// fork, and opens the pull request against main, titled and described, under the reader's login.
+// fork, and opens GitHub's pull request page for it, the graph attached and the title and description filled in, for
+// the reader to review and create under their login.
 const GH_API = "https://api.github.com";
 const GH_LOGIN = (window.SCALE_GITHUB_LOGIN || "").replace(/\/$/, "");
 let ghToken = "";                                // this contribution's token, forgotten when it ends
@@ -713,7 +714,7 @@ const base64 = (text) => {
   for (let i = 0; i < bytes.length; i += 0x8000) s += String.fromCharCode(...bytes.subarray(i, i + 0x8000));
   return btoa(s);
 };
-async function contributeWithToken(win = null) {   // win: the sign-in window, which then shows the pull request
+async function contributeWithToken(win = null) {   // win: the sign-in window, which then shows GitHub's pull request page
   const B = G.base || G;
   contribBusy = true; renderGraphs();
   const step = (t) => status(`Contributing to catal-commons: ${t}…`);
@@ -738,23 +739,43 @@ async function contributeWithToken(win = null) {   // win: the sign-in window, w
     step("adding your graph");
     await gh("PUT", `/repos/${fork.full_name}/contents/graphs/catal-commons/incoming/${encodeURIComponent(c.slug)}.json`,
       { message: `catal-commons: contribute ${title}`, content: base64(JSON.stringify(c.doc, null, 1)), branch });
-    step("opening the pull request");
+    // GitHub's "Open a pull request" page, the graph attached as its diff and the title and description filled in: the
+    // reader reviews it and clicks Create pull request; the page watches for that pull request and marks the graph
     const evidenced = [...c.doc.nodes, ...c.doc.links].filter((x) => (x.props?.evidence || []).length).length;
-    const pr = await gh("POST", `/repos/${REPO}/pulls`, { title: `catal-commons: contribute ${title}`, head: `${me.login}:${branch}`,
-      base: "main", maintainer_can_modify: true, body: [
-        `Contributes **${title}** to catal-commons: \`graphs/catal-commons/incoming/${c.slug}.json\`, ${c.doc.nodes.length} records and ${c.doc.links.length} links, ${evidenced} with evidence.`,
-        "", "Curated in the SCALE graph explorer by the curate-corpus skill, `scale source check` run in the browser against the source's text. "
-          + `Every quote is withheld (${c.withheld}, kept as sha256 and length): the repository keeps no text of a source in copyright.`,
-        "", "The commons intake folds it into catal-commons and opens the fold pull request crediting the contributor, for a person to review.",
-        "", "Opened from the SCALE graph explorer."].join("\n") });
-    status(ready());
+    const prTitle = `catal-commons: contribute ${title}`;
+    const prBody = [
+      `Contributes **${title}** to catal-commons: \`graphs/catal-commons/incoming/${c.slug}.json\`, ${c.doc.nodes.length} records and ${c.doc.links.length} links, ${evidenced} with evidence.`,
+      "", "Curated in the SCALE graph explorer by the curate-corpus skill, `scale source check` run in the browser against the source's text. "
+        + `Every quote is withheld (${c.withheld}, kept as sha256 and length): the repository keeps no text of a source in copyright.`,
+      "", "The commons intake folds it into catal-commons and opens the fold pull request crediting the contributor, for a person to review."].join("\n");
+    const compare = `https://github.com/${REPO}/compare/main...${encodeURIComponent(me.login)}:${encodeURIComponent(branch)}?expand=1`
+      + `&title=${encodeURIComponent(prTitle)}&body=${encodeURIComponent(prBody)}`;
     ghToken = "";
-    contributed(`Sent to catal-commons: <a href="${esc(pr.html_url)}" target="_blank" rel="noopener">pull request #${esc(pr.number)}</a> under @${esc(me.login)}; the commons intake folds it in, for a person to review`, pr.html_url);
-    if (win && !win.closed) win.location = pr.html_url;    // the window the reader signed in with shows the pull request
+    if (win && !win.closed) win.location = compare; else window.open(compare, "_blank");
+    status("On GitHub: review your pull request, then Create pull request.");
+    contribBusy = false; renderGraphs();
+    watchForPullRequest(`${me.login}:${branch}`, compare);
   } catch (e) {
     if (win && !win.closed) win.close();
     ghToken = ""; contribBusy = false; renderGraphs();
     status(`Contributing failed: ${e.message}`);
+  }
+}
+// The pull request the reader creates on GitHub's page, looked for every few seconds for half an hour (GitHub's public
+// API, no token): once it exists, the graph's label reads catal-commons and links it.
+async function watchForPullRequest(head, compare) {
+  const entry = own?.entry;
+  for (let i = 0; i < 360 && own?.entry === entry && !sentToCommons(); i++) {
+    await new Promise((r) => setTimeout(r, 5000));
+    try {
+      const r = await fetch(`${GH_API}/repos/${REPO}/pulls?state=all&head=${encodeURIComponent(head)}`, { headers: { Accept: "application/vnd.github+json" } });
+      const prs = r.ok ? await r.json() : [];
+      if (prs.length && own?.entry === entry) {
+        contributed(`Sent to catal-commons: <a href="${esc(prs[0].html_url)}" target="_blank" rel="noopener">pull request #${esc(prs[0].number)}</a>`, prs[0].html_url);
+        status(ready());
+        return;
+      }
+    } catch { /* offline a moment: look again */ }
   }
 }
 async function contributeSignedIn() {

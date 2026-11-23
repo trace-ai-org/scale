@@ -14,10 +14,11 @@
   source yet, now pins schema 0.8.2 (its two records unchanged), so graphs curated under the current schema fold in.
   With the GitHub sign-in (`service/github-login`: a small worker that trades GitHub's sign-in code for a token, the
   one step that needs the OAuth app's secret, and keeps nothing; `window.SCALE_GITHUB_LOGIN`), *Contribute* is one
-  click: a GitHub sign-in window opens, the page forks the repository, adds the graph under `incoming/` on a new
-  branch of the fork and opens the pull request, titled and described, under the reader's login, and the same window
-  then shows it; the token lives in the page's memory for that click and is never saved. Without the sign-in set up,
-  the graph downloads and GitHub's upload page opens.
+  click: a GitHub sign-in window opens, the page forks the repository and adds the graph under `incoming/` on a new
+  branch of the fork, and the same window shows GitHub's *Open a pull request* page, the graph attached and the title
+  and description filled in, for the reader to review and create under their login; the page then marks the graph once
+  that pull request exists. The token lives in the page's memory for that click and is never saved. Without the
+  sign-in set up, the graph downloads and GitHub's upload page opens.
 - **Curate a paper with your own API key, in the browser, with any of the three providers (site and package, no schema
   change, no migration).** Curating needed the web service. Now, with a key set under *Your API key* (Anthropic's,
   OpenAI's or OpenRouter's), *Curate* runs in the page: pdf.js reads the PDF's text, `scale source start` runs in

@@ -340,7 +340,10 @@ def test_a_readers_own_key_curates_a_pdf_in_the_browser_with_the_services_tools(
     assert all(x in tok for x in ("/forks", "/merge-upstream", "/git/refs", "/contents/graphs/catal-commons/incoming/", "/pulls"))
     assert 'const GH_API = "https://api.github.com"' in js and js.count("fetch(GH_API") == 1
     assert "if (!SERVICE) return GH_LOGIN ? contributeSignedIn() : contributeOnGitHub();" in js
-    assert "scale-github-token" not in js and 'id="gh-dialog"' not in page and "win.location = pr.html_url" in tok
+    assert "scale-github-token" not in js and 'id="gh-dialog"' not in page
+    # the reader reviews the pull request on GitHub's page, the graph attached, and creates it; the page then marks it
+    assert "/compare/main...${encodeURIComponent(me.login)}:${encodeURIComponent(branch)}?expand=1" in tok
+    assert "win.location = compare" in tok and 'gh("POST", `/repos/${REPO}/pulls`' not in tok and "watchForPullRequest(" in tok
     assert "e.origin !== from" in js and "e.data.nonce !== nonce" in js
     assert "curated-download" not in js and "contrib-box" not in js and '["Visibility", mine ? "Private"' in js
     # once a pull request to catal-commons exists, the label reads catal-commons and links it; the by-hand route
