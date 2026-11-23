@@ -73,7 +73,7 @@ def test_the_digest_decides_nothing_and_points_to_pull_requests(queue):
     request, or a comment that @scale-agents take up); there is no /decide command and nothing is written to the
     decision log."""
     props, _ = intake.merge_proposals(queue, None)
-    body = intake.render_digest(queue, props, "hlxin/scale", None, [])
+    body = intake.render_digest(queue, props, "trace-ai-org/scale", None, [])
     assert body.startswith("# SCALE feedback digest") and "## T12" in body and "scale-triage-state" in body
     assert "/decide" not in body and "/defer" not in body and "an approving review" in body
     assert "open a pull request" in body and "@scale-agents open a pull request" in body
@@ -83,7 +83,7 @@ def test_the_digest_decides_nothing_and_points_to_pull_requests(queue):
 
 def test_cli_end_to_end_offline(tmp_path, capsys):
     out = tmp_path / "run"
-    assert main(["--repo", str(REPO), "triage", "ingest", "--from-file", str(RAW), "--out", str(out), "--github-repo", "hlxin/scale"]) == 0
+    assert main(["--repo", str(REPO), "triage", "ingest", "--from-file", str(RAW), "--out", str(out), "--github-repo", "trace-ai-org/scale"]) == 0
     assert main(["--repo", str(REPO), "triage", "propose", str(out)]) == 0
     assert (out / "digest.md").exists() and (out / "proposals.json").exists()
     capsys.readouterr()
@@ -93,7 +93,7 @@ def test_cli_end_to_end_offline(tmp_path, capsys):
 
 def test_agent_command_hook(tmp_path):
     out = tmp_path / "run"
-    main(["--repo", str(REPO), "triage", "ingest", "--from-file", str(RAW), "--out", str(out), "--github-repo", "hlxin/scale"])
+    main(["--repo", str(REPO), "triage", "ingest", "--from-file", str(RAW), "--out", str(out), "--github-repo", "trace-ai-org/scale"])
     agent = tmp_path / "agent.py"
     agent.write_text("import json,sys\nq=json.load(open(sys.argv[1]))\n"
                      "json.dump({'proposals':[{'cluster_id':c['cluster_id'],'category':c['category'],'summary':c['title'],"
@@ -107,9 +107,9 @@ def test_agent_command_hook(tmp_path):
 
 def test_catalogue_and_suggest_links(tmp_path):
     doc = load_doc(REPO / "domain/examples/scale-catal/driving-force-examples/electro.json")
-    md = intake.catalogue_markdown(doc, "hlxin/scale")
+    md = intake.catalogue_markdown(doc, "trace-ai-org/scale")
     assert "## CatalyticTest" in md and "ex:df-electro/test/m03" in md and "template=comment.yml" in md
     assert "current_density -120 mA/cm2" in md                       # values as reported, with units
     assert "faradaic_efficiency 92 % (NH3)" in md                 # list-valued results are shown, per target
-    url = intake.suggest_url("hlxin/scale", "ex:df-electro/test/m03", "E vs RHE?")
-    assert url.startswith("https://github.com/hlxin/scale/issues/new?") and "record=ex%3Adf-electro" in url
+    url = intake.suggest_url("trace-ai-org/scale", "ex:df-electro/test/m03", "E vs RHE?")
+    assert url.startswith("https://github.com/trace-ai-org/scale/issues/new?") and "record=ex%3Adf-electro" in url

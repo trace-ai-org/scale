@@ -2,7 +2,7 @@
 
 The vocabulary is the domain's, not the skill's (vocab_path: a path given, $INDEX_SOURCES_VOCAB, the project's
 .scripts/vocab.json, else SCALE's catalysis vocabulary in graphs/catal-commons/literature/vocabulary.json when the
-skill runs from a checkout of hlxin/scale). A project can add or override terms in .scripts/vocab_custom.json (same shape: {"terms": [{"id", "label", "name", "facet", "synonyms", "related", "weight"}]}).
+skill runs from a checkout of trace-ai-org/scale). A project can add or override terms in .scripts/vocab_custom.json (same shape: {"terms": [{"id", "label", "name", "facet", "synonyms", "related", "weight"}]}).
 
 Deterministic assignment (no model): synonyms are matched on word tokens of the title (x3), keywords (x2) and abstract
 (x1); a longer synonym consumes its words so "electrochemical ammonia synthesis" counts for NRR, not for thermal

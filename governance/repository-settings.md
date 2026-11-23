@@ -1,7 +1,7 @@
 # Repository settings
 
-The GitHub settings that make the rules in [GOVERNANCE.md](GOVERNANCE.md) hold for `hlxin/scale`, a personal
-repository of its owner, Hongliang Xin. **Every step on this page is a human action** by the owner. Agents do
+The GitHub settings that make the rules in [GOVERNANCE.md](GOVERNANCE.md) hold for `trace-ai-org/scale`
+(formerly `hlxin/scale`), maintained by Hongliang Xin. **Every step on this page is a human action** by the owner. Agents do
 not apply them. Run the commands in bash, from a checkout of this repository with an authenticated `gh` and
 `jq`. In zsh, the macOS default shell, start `bash` first: pasted into zsh, every `#` comment line is run as a
 command.
@@ -28,7 +28,10 @@ What GitHub does and does not enforce:
 
 This repository replaced the earlier contents of github.com/hlxin/scale (its own scale-graph numbering 0.1.0-0.8.0,
 package scale-catalysis); versions here restart at 0.1.0 and are a separate line. The update check (`scale status`)
-reads the newest `v*` tag of `github.com/hlxin/scale`, so the address carries this release line's tags only.
+reads the newest `v*` tag of `github.com/trace-ai-org/scale`, so the address carries this release line's tags only.
+The repository moved from `hlxin/scale` to `trace-ai-org/scale`; GitHub redirects the old address (clones, `pip install
+git+...` and links) for as long as no new repository takes the name `hlxin/scale`. Releases v0.1.0-v0.3.0 record
+the old address as their source and are left as built.
 
 ## 1. The repository
 
@@ -101,7 +104,7 @@ scale-agents → Run workflow); events from bots, the agents' own comments inclu
 needed. Every run draws on the subscription (or the API key), so once the repository is public and anyone can open issues, decide whether to
 keep this for everyone or limit it to collaborators (a condition on `author_association` in the job). To use it,
 install the
-**Claude GitHub App** (https://github.com/apps/claude) on `hlxin/scale` (contents, issues and pull requests,
+**Claude GitHub App** (https://github.com/apps/claude) on `trace-ai-org/scale` (contents, issues and pull requests,
 read and write) and set one secret. With a Claude subscription (Pro, Max, Team or Enterprise), run
 `claude setup-token` in a terminal, sign in, copy the token it prints (`sk-ant-oat…`, valid for a year, tied to the
 person who made it, whose usage limits the runs draw on) and save it:
@@ -155,7 +158,7 @@ gh api -X POST repos/$OWNER/$REPO/rulesets --input governance/github/ruleset-mai
 To change it later, edit the JSON by pull request, then
 `ID=$(gh api repos/$OWNER/$REPO/rulesets --jq '.[] | select(.name == "main") | .id')` and
 `gh api -X PUT repos/$OWNER/$REPO/rulesets/$ID --input governance/github/ruleset-main.json` (the `main` ruleset's
-id is 24803060: `gh api -X PUT repos/hlxin/scale/rulesets/24803060 --input governance/github/ruleset-main.json`).
+id is 24803060: `gh api -X PUT repos/trace-ai-org/scale/rulesets/24803060 --input governance/github/ruleset-main.json`).
 Re-apply it after a pull request that changes the JSON merges, for example the one that dropped the
 `proposal-check` required check.
 

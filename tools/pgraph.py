@@ -174,7 +174,7 @@ def load_spec(path: Path) -> dict:
 
 
 # ------------------------------------------------------------------ spec documents: one digest per version
-# the numbering a spec document belongs to: this repository's (github.com/hlxin/scale), counted from 0.1.0 on
+# the numbering a spec document belongs to: this repository's (github.com/trace-ai-org/scale), counted from 0.1.0 on
 # 2026-10-08. Earlier repositories numbered other schemas with the same numbers; the digest tells them apart
 SPEC_LINEAGE = "scale"
 # where and in what state this repository holds a version (and the extension-prefix registry, which is

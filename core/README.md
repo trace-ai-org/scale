@@ -64,7 +64,7 @@ kernel identifier; `scale domains check` reports both.
 
 ## Changing the core
 
-1. Open a [science-kernel issue](https://github.com/hlxin/scale/issues/new?template=core-change.yml) for anything
+1. Open a [science-kernel issue](https://github.com/trace-ai-org/scale/issues/new?template=core-change.yml) for anything
    larger than a fix.
    @scale-agents take it up and make the change.
 2. The change edits `graph/kernel.yaml` directly, adds a fixture that uses what it adds, raises the one version

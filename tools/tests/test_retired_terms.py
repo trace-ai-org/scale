@@ -1,5 +1,5 @@
 """Names: SCALE is "Shared Concepts, Attributes, and Links with Evidence", one shared framework for evidence-backed
-scientific knowledge graphs across domains (catalysis first), developed at github.com/hlxin/scale. Its Python
+scientific knowledge graphs across domains (catalysis first), developed at github.com/trace-ai-org/scale. Its Python
 distribution is scale-catal, with the commands scale and scale-catal.
 
 Two rules hold in every live file. No file tells a reader to install the unrelated PyPI package schema (R1). And the
@@ -72,9 +72,9 @@ def test_the_names_and_the_rules():
     from scale import layout as lay, updates, versions
     from scale.pgraph import SPEC_LINEAGE
     assert versions.DISTRIBUTION == "scale-catal" and SPEC_LINEAGE == "scale"
-    assert lay.REPOSITORY_URL == "https://github.com/hlxin/scale"
-    assert updates.REMOTE_URL == "https://github.com/hlxin/scale.git"
-    assert "github_repo: hlxin/scale\n" in (REPO / ".github/scale-project.yml").read_text()
+    assert lay.REPOSITORY_URL == "https://github.com/trace-ai-org/scale"
+    assert updates.REMOTE_URL == "https://github.com/trace-ai-org/scale.git"
+    assert "github_repo: trace-ai-org/scale\n" in (REPO / ".github/scale-project.yml").read_text()
     text = (REPO / "pyproject.toml").read_text()
     assert 'name = "scale-catal"' in text and 'scale-catal = "scale.cli:main"' in text
     assert "Shared Concepts, Attributes, and Links with Evidence" in text
@@ -88,7 +88,7 @@ def test_the_names_and_the_rules():
         assert R1.search(refused), refused
     for fine in ("Shared Concepts, Attributes, and Links with Evidence", "uvx scale-catal call status",
                  "pip install scale-catal", "the catalysis domain", "access consortium", "the SCALE science kernel",
-                 "follows_domains", "--domain catalysis", "https://github.com/hlxin/scale", "the schema's version",
+                 "follows_domains", "--domain catalysis", "https://github.com/trace-ai-org/scale", "the schema's version",
                  "scale:project/methanol-synthesis-pre1966", "examples/methanol-synthesis-pre1966/README.md"):
         assert not R1.search(fine) and not R2.search(fine), fine
     assert _hits("docs/commands.md", "set SCALE_RESTRICTED_DATA") and not _hits("tools/layout.py", "SCALE_RESTRICTED_DATA")

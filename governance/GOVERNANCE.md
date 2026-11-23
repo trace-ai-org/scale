@@ -4,8 +4,8 @@ This page holds the rules of this repository: the review rule and its bootstrap,
 versions, the catalysis domain, project data and releases.
 
 SCALE (Shared Concepts, Attributes, and Links with Evidence) is one shared framework for evidence-backed
-scientific knowledge graphs across domains. It is developed in [hlxin/scale](https://github.com/hlxin/scale),
-a personal repository of its owner, Hongliang Xin (`@hlxin`); its Python package is `scale-catal`. The
+scientific knowledge graphs across domains. It is developed in [trace-ai-org/scale](https://github.com/trace-ai-org/scale)
+(formerly `hlxin/scale`), maintained by Hongliang Xin (`@hlxin`); its Python package is `scale-catal`. The
 repository starts private and is shared with collaborators; the rules are the same before and after it
 becomes public ([decision record 0001](../docs/decisions/0001-scale-0.1.0.md)).
 
@@ -155,7 +155,7 @@ second rebases and bumps again after the first merges. The procedure is
 ## The community path
 
 - **Anyone** comments and opens issues (plain-language forms). People who do not use Git submit content
-  through the [contribution form](https://github.com/hlxin/scale/issues/new?template=contribution.yml); the pull
+  through the [contribution form](https://github.com/trace-ai-org/scale/issues/new?template=contribution.yml); the pull
   request that carries it credits them ([credit-and-authorship.md](credit-and-authorship.md)).
 - **Weekly digest.** A workflow groups the week's feedback into topics with options and opens a feedback
   digest issue. It decides nothing; a person acts on a topic by handing it to the agent or opening a pull request

@@ -7,7 +7,7 @@
 version = 1
 SPDX-PackageName = "scale-catal"
 SPDX-PackageSupplier = "SCALE contributors"
-SPDX-PackageDownloadLocation = "https://github.com/hlxin/scale"
+SPDX-PackageDownloadLocation = "https://github.com/trace-ai-org/scale"
 
 # 1. Default: code and everything not named below (tools/, setup.py, conftest.py, pyproject.toml, MANIFEST.in,
 #    .github/, the tests and their fixtures under tools/tests/).

@@ -113,7 +113,7 @@ Then **stop** and wait. Corrections they give are applied, checked again (step 3
 scale source finish <folder> --public
 ```
 
-In a clone of github.com/hlxin/scale, show the dry run:
+In a clone of github.com/trace-ai-org/scale, show the dry run:
 
 ```bash
 scale graph contribute <folder>/<slug>.public.graph.json --to graphs/catal-commons --by <login>
@@ -122,7 +122,7 @@ scale graph contribute <folder>/<slug>.public.graph.json --to graphs/catal-commo
 It refuses a paper already in the commons and says what it would add. Ask once more before `--write`, a branch, a
 push or a pull request. The pull request is opened under the agent's own GitHub identity, never the person's, and a
 SCALE reviewer approves it ([governance/review-policy.yaml](../../governance/review-policy.yaml)). If they would
-rather not use git, the [contribution form](https://github.com/hlxin/scale/issues/new?template=contribution.yml)
+rather not use git, the [contribution form](https://github.com/trace-ai-org/scale/issues/new?template=contribution.yml)
 takes the public graph file.
 
 ## What must never happen

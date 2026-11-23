@@ -1,6 +1,6 @@
 """precedents.py and check_quotes.py against SCALE's own tools, in this process, on the public synthesis examples.
 
-Run from a checkout of hlxin/scale with the package installed:
+Run from a checkout of trace-ai-org/scale with the package installed:
     python -m pytest skills/query-graph/tests
 """
 import json
