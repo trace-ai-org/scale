@@ -156,30 +156,28 @@ async function call(method, path, body, headers = {}) {
 }
 // Who curates: the reader's own key, in this browser, when one is set (as questions are answered); else the service,
 // with a GitHub sign-in. The dialog's terms say which, for the provider and model that will read the source.
-const SERVICE_TERMS = $("curate-terms").innerHTML, SERVICE_DOI_HINT = $("curate-doi-hint").textContent;
+const SERVICE_TERMS = $("curate-terms").innerHTML;
 const curateMode = () => ownKey ? "own" : SERVICE ? "service" : "";
 function curateTerms() {
-  const own = curateMode() === "own", p = PROVIDERS[ownProvider];
+  const own = curateMode() === "own";
   $("curate-terms").innerHTML = own ? `
-    <li><b>Your key.</b> ${esc(modelLabel())} curates it with your ${esc(p.name)} key ${esc(tail(ownKey))}, on your account.</li>
-    <li><b>In this browser.</b> The PDF is read here and its text goes only to ${esc(p.host)}; no SCALE server sees it.</li>
-    <li><b>Private.</b> The graph opens here, for you to explore and download; nothing is kept.</li>` : SERVICE_TERMS;
+    <li><b>Private.</b> The PDF is read in your browser and never uploaded to SCALE. The graph opens here for you alone,
+      to explore and download; nothing is kept.</li>` : SERVICE_TERMS;
   $("curate-details").hidden = own;
-  $("curate-doi-hint").textContent = own ? "(optional: its title, year and licence come from Crossref)" : SERVICE_DOI_HINT;
 }
 async function curateAccount(note = "") {
   const el = $("curate-account");
   const warn = note ? `<span class="gx-err">${esc(note)}</span>` : "";
   curateTerms();
   if (curateMode() === "own") {
-    el.innerHTML = `<span>Curating with <b>${esc(modelLabel())}</b></span><span class="gx-subtle">· ${esc(PROVIDERS[ownProvider].name)} key ${esc(tail(ownKey))}</span>
+    el.innerHTML = `<span class="gx-subtle">Uses your API key</span>
       <button type="button" class="gx-btn gx-btn-tiny" id="curate-key">Change</button>${warn}`;
     $("curate-key").onclick = () => { $("curate-dialog").close(); openOwnKeyMenu(); };
     $("curate-start").disabled = curating;
     return;
   }
   if (!SERVICE) {
-    el.innerHTML = `<span class="gx-warn">Set your API key (Anthropic, OpenAI or OpenRouter) to curate in this browser.</span>
+    el.innerHTML = `<span class="gx-warn">Set your API key to curate in this browser.</span>
       <button type="button" class="gx-btn gx-btn-tiny gx-btn-primary" id="curate-key">Set an API key</button>${warn}`;
     $("curate-key").onclick = () => { $("curate-dialog").close(); openOwnKeyMenu(); };
     $("curate-start").disabled = true;
@@ -291,7 +289,7 @@ async function showInbox() {
     $("curate-inbox").querySelectorAll("[data-follow]").forEach((b) => (b.onclick = () => { $("curate-job").hidden = false; followJob(b.dataset.follow, true); }));
   } catch { $("curate-inbox").innerHTML = ""; }
 }
-// One drop zone and one DOI field: a PDF (with or without its DOI), or a DOI alone.
+// One drop zone: the source's PDF.
 const pdfName = () => { const f = $("curate-pdf").files[0]; $("curate-pdf-name").textContent = f ? f.name : "Drop a PDF here, or choose one"; $("curate-drop").classList.toggle("has-file", !!f); $("curate-attest-row").hidden = !f; };
 $("curate-pdf").onchange = pdfName;
 for (const ev of ["dragenter", "dragover"]) $("curate-drop").addEventListener(ev, (e) => { e.preventDefault(); $("curate-drop").classList.add("over"); });
@@ -307,18 +305,12 @@ async function startCuration(again = false) {
   job.hidden = false;
   try {
     if (!token) throw new Error("sign in with GitHub first");
-    const f = $("curate-pdf").files[0], doi = $("curate-doi").value.trim();
-    if (!f && !doi) throw new Error("give a PDF, a DOI, or both");
-    if (f && !$("curate-attest").checked) throw new Error("tick the statement that you have lawful access to this PDF");
+    const f = $("curate-pdf").files[0];
+    if (!f) throw new Error("give the source's PDF");
+    if (!$("curate-attest").checked) throw new Error("tick the statement that you have lawful access to this PDF");
     const keep = !$("curate-keep-row").hidden && $("curate-keep").checked;
-    const q = new URLSearchParams({ ...(again ? { again: "1" } : {}), ...(keep ? { keep: "1" } : {}) });
-    let res;
-    if (f) {
-      q.set("filename", f.name);
-      q.set("attest", "1");
-      if (doi) q.set("doi", doi);
-      res = await call("POST", `/jobs?${q}`, f, { "Content-Type": "application/pdf" });
-    } else res = await call("POST", `/jobs${again ? "?again=1" : ""}`, { doi, keep_text: keep });
+    const q = new URLSearchParams({ ...(again ? { again: "1" } : {}), ...(keep ? { keep: "1" } : {}), filename: f.name, attest: "1" });
+    const res = await call("POST", `/jobs?${q}`, f, { "Content-Type": "application/pdf" });
     if (res.known) { showKnown(res.known); return; }
     $("curate-start").disabled = true;
     await followJob(res.job, !!res.inbox);
@@ -327,7 +319,7 @@ async function startCuration(again = false) {
 }
 $("curate-start").onclick = () => startCuration();
 // Curating with the reader's own key, all in this browser: pdf.js reads the PDF's text layer page by page, SCALE starts
-// the source's folder in Pyodide (scale source start, Crossref for a DOI's metadata), and the model fills the graph by
+// the source's folder in Pyodide (scale source start), and the model fills the graph by
 // the curate-corpus skill with scale.curation_tools (the service's own tools), through modelLoop, until it calls done.
 // The graph then opens on the canvas, as one the service curated would, without a receipt: it is the reader's.
 const PDFJS = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/";
@@ -377,8 +369,8 @@ async function curateOwnKey() {
     if (b) b.onclick = () => { finishNow = true; show(""); };
   };
   try {
-    const f = $("curate-pdf").files[0], doi = $("curate-doi").value.trim();
-    if (!f) throw new Error(doi ? "with your own key, give the source's PDF; the DOI alone needs the SCALE service" : "give the source's PDF");
+    const f = $("curate-pdf").files[0];
+    if (!f) throw new Error("give the source's PDF");
     if (!$("curate-attest").checked) throw new Error("tick the statement that you have lawful access to this PDF");
     curating = true; finishNow = false; $("curate-start").disabled = true;
     show(`Reading ${f.name}…`);
@@ -386,9 +378,9 @@ async function curateOwnKey() {
     if (src.chars < 200) throw new Error("the PDF has no text layer to read (a scan?); curating it needs text, which OCR would give");
     show(`${src.pages} pages of text read. Starting the source's graph…`);
     const stem = f.name.replace(/\.pdf$/i, "").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "").slice(0, 60) || "source";
-    const s = await rpc({ op: "curate_start", text: src.text, name: `${stem}.txt`, doi });
+    const s = await rpc({ op: "curate_start", text: src.text, name: `${stem}.txt` });
     $("curate-schema").textContent = `Curated under SCALE Catalysis, schema scale-catal v${s.started.schema_version}, in this browser.`;
-    show(`Rights: ${s.started.rights_class}. ${modelLabel()} is curating…`);
+    show(`Rights: ${s.started.rights_class}. Curating…`);
     const r = await modelLoop({ system: s.system, tools: s.tools, first: s.first, stop: "done",
       run: (tool, args) => rpc({ op: "curate_call", tool, args }), wrapUp: FINISH_UP, stopNow: () => finishNow,
       progress: (line) => show(line), alive: () => true });
@@ -1651,7 +1643,7 @@ async function modelLoop({ system, tools, first, run, stop = "", wrapUp, stopNow
 const OWN_OUTPUT = 32000;                                 // the most one reply may write (the answer included)
 const tokenLine = (inTok, cacheTok, outTok) =>
   `${inTok.toLocaleString()} input (${cacheTok.toLocaleString()} read from the cache) and ${outTok.toLocaleString()} output tokens`;
-const accountLine = (r) => `${tokenLine(r.inTok, r.cacheTok, r.outTok)} on your ${PROVIDERS[ownProvider].name} account (${modelLabel()})`;
+const accountLine = (r) => `${tokenLine(r.inTok, r.cacheTok, r.outTok)} on your API account`;
 // A question, by the query-graph skill, over the graph on the canvas.
 async function askOwnKey(question) {
   leaveSchema();
@@ -1689,7 +1681,7 @@ function renderOwnKey() {
   btn.classList.toggle("gx-ownkey-btn-unset", !ownKey);
   btn.title = ownKey ? `Questions are answered with your ${PROVIDERS[ownProvider].name} key ${tail(ownKey)} (${modelLabel()}); click to switch or add keys`
     : "No API key set: questions list the matching evidence. Click to add your own key (Anthropic, OpenAI or OpenRouter) and have them answered in words";
-  $("search-input").placeholder = ownKey ? `Ask a question (answered with ${modelLabel()})...` : "Search by asking...";
+  $("search-input").placeholder = ownKey ? "Ask a question..." : "Search by asking...";
 }
 // Saved keys show which one is in use. The shared add/edit form opens on request, or for the first key.
 let ownForm = { editing: "", provider: "" };

@@ -1,7 +1,7 @@
 // SCALE in the browser: Pyodide runs the scale package (py/scale-py.zip, built by `scale site build`), so a search, a
 // query plan or a description here is the code of `scale graph search`, `scale graph query` and `scale describe`.
 // Messages: {id, op: "put", name, text} stores a graph; {id, op: "call", tool, args} runs a tool on it. Curating with a
-// reader's own key: {id, op: "curate_start", text, name, doi} starts a source folder from its page texts (scale source
+// reader's own key: {id, op: "curate_start", text, name} starts a source folder from its page texts (scale source
 // start), {id, op: "curate_call", tool, args} runs one of scale.curation_tools on it, {id, op: "curate_graph"} returns
 // the graph.
 const PYODIDE = "https://cdn.jsdelivr.net/pyodide/v0.26.4/full/";
@@ -32,10 +32,6 @@ from scale.curation_tools import CurationTools, as_json
 
 _cur = None
 
-def _get(url, headers):                      # Crossref's metadata for a DOI, by a synchronous request (a worker may)
-    from pyodide.http import open_url
-    return open_url(url).read().encode("utf-8")
-
 def curate_start(args_json):
     global _cur
     a = json.loads(args_json)
@@ -43,7 +39,7 @@ def curate_start(args_json):
     shutil.rmtree(base, ignore_errors=True)
     base.mkdir()
     (base / a["name"]).write_text(a["text"], encoding="utf-8")
-    started = curate.start(base / "source", doi=a.get("doi") or None, text=base / a["name"], get=_get)
+    started = curate.start(base / "source", text=base / a["name"])
     _cur = CurationTools(base / "source", where="a web page, in the reader's browser")
     return json.dumps({"started": started, "source": _cur.info, "system": _cur.system(), "first": _cur.first(),
                        "tools": _cur.definitions()}, default=str)
@@ -77,7 +73,7 @@ onmessage = async (e) => {
     } else if (op === "call") {
       postMessage({ id, ok: true, result: JSON.parse(call(e.data.tool, JSON.stringify(e.data.args || {}))) });
     } else if (op === "curate_start") {
-      postMessage({ id, ok: true, result: JSON.parse(self.curate.start(JSON.stringify({ text: e.data.text, name: e.data.name, doi: e.data.doi || "" }))) });
+      postMessage({ id, ok: true, result: JSON.parse(self.curate.start(JSON.stringify({ text: e.data.text, name: e.data.name }))) });
     } else if (op === "curate_call") {
       postMessage({ id, ok: true, result: self.curate.call(e.data.tool, JSON.stringify(e.data.args || {})) });
     } else if (op === "curate_graph") {

@@ -301,6 +301,10 @@ def test_a_readers_own_key_curates_a_pdf_in_the_browser_with_the_services_tools(
     # the model fills the graph with scale.curation_tools in Pyodide, by the same loop as questions, until done
     assert 'stop: "done"' in own and 'rpc({ op: "curate_call", tool, args })' in own and "await modelLoop(" in own
     assert "from scale.curation_tools import CurationTools, as_json" in worker and "curate.start(" in worker
-    # the dialog names no single provider: its terms say whose key, which model and which host read the source
+    # the dialog names no single provider or model
     assert "Read by Claude" not in page and 'id="curate-terms"' in page
-    assert "${esc(p.host)}" in js[js.index("function curateTerms("):js.index("async function curateAccount(")]
+    # a PDF only; the statement of access is about sharing derived knowledge, never the PDF; with a key the dialog
+    # names no model or provider and says only what stays private
+    assert 'id="curate-doi"' not in page and "text mining" not in page and "never the PDF itself" in page
+    terms = js[js.index("function curateTerms("):js.index("async function curateAccount(")]
+    assert "<b>Private.</b>" in terms and "modelLabel" not in terms and "PROVIDERS" not in terms

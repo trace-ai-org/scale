@@ -5,11 +5,13 @@
 - **Curate a paper with your own API key, in the browser, with any of the three providers (site and package, no schema
   change, no migration).** Curating needed the web service. Now, with a key set under *Your API key* (Anthropic's,
   OpenAI's or OpenRouter's), *Curate* runs in the page: pdf.js reads the PDF's text, `scale source start` runs in
-  Pyodide (Crossref gives a DOI's metadata), and the model fills the graph by the curate-corpus skill with the new
+  Pyodide, and the model fills the graph by the curate-corpus skill with the new
   `scale.curation_tools`, the same tools the service's curation loop now uses, until `check` passes and it calls
   `done`; *Finish now* asks it to check, fix and finish. The graph opens on the canvas, private to the reader. Questions
   and curation share one tool-use loop for every provider. The Curate dialog names the key, model and host that will
-  read the source instead of one provider.
+  read the source instead of one provider; with a key it says only what stays private. The dialog takes a PDF only (no
+  DOI field), and its statement of lawful access says the source is curated to share the knowledge derived from it,
+  never the PDF.
 - **A question asked with a reader's own key runs until the model has answered, and reads its conversation from the
   cache (site and service, no schema change, no migration).** The explorer's question loop stopped at a token budget,
   a turn limit and a tool result cut at 40,000 characters, so an answer could rest on part of the rows its plans
