@@ -329,7 +329,15 @@ def test_a_readers_own_key_curates_a_pdf_in_the_browser_with_the_services_tools(
     # catal-commons/incoming/, where the reader proposes it under their own login; the repository's intake folds it in
     gh = js[js.index("async function contributeOnGitHub("):js.index("async function contribute(")]
     assert "/upload/main/graphs/catal-commons/incoming" in gh and 'op: "contribution"' in gh and "download(file" in gh
-    assert "if (!SERVICE) return contributeOnGitHub();" in js and '"quote_chars": 0' in worker
+    assert '"quote_chars": 0' in worker
+    # with the reader's GitHub token (connected once, sent only to api.github.com), the page opens the pull request
+    # itself, the graph attached: fork, branch, the file under incoming/, the pull request; without one, it asks for it,
+    # and the reader may still do it by hand
+    tok = js[js.index("async function contributeWithToken("):js.index("async function contribute(")]
+    assert all(x in tok for x in ("/forks", "/merge-upstream", "/git/refs", "/contents/graphs/catal-commons/incoming/", "/pulls"))
+    assert 'const GH_API = "https://api.github.com"' in js and js.count("fetch(GH_API") == 1
+    assert "if (!SERVICE) return ghTok() ? contributeWithToken() : openGhConnect();" in js
+    assert 'id="gh-dialog"' in page and "scopes=public_repo" in page and 'id="gh-manual"' in page
     assert "curated-download" not in js and "contrib-box" not in js
     # a curated graph gets a concise title: the model's (done's title), else its source's, else the PDF's name
     assert "graphTitle(r.stopInput?.title, doc, f.name)" in js

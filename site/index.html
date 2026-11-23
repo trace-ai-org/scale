@@ -224,6 +224,23 @@
     <menu><button class="gx-btn" value="cancel">Close</button><button type="button" class="gx-btn gx-btn-primary" id="curate-start">Curate</button></menu>
   </form>
 </dialog>
+<dialog class="gx-dialog gx-ghconnect" id="gh-dialog">
+  <form method="dialog">
+    <h2>Contribute to catal-commons</h2>
+    <p class="gx-muted">SCALE opens the pull request for you, with your graph attached, under your GitHub login: your
+      credit on the leaderboard. Connect GitHub once:</p>
+    <ol class="gx-gh-steps">
+      <li><a href="https://github.com/settings/tokens/new?scopes=public_repo&amp;description=SCALE%20contributions" target="_blank"
+        rel="noopener">Create a GitHub token</a> (the scope it needs, <code>public_repo</code>, is chosen already) and copy it.</li>
+      <li><label>Paste it here <input type="password" id="gh-token" placeholder="ghp_..." autocomplete="off" spellcheck="false"></label></li>
+    </ol>
+    <p class="gx-subtle">The token stays in this browser, like your API key, and is sent only to api.github.com: it lets this
+      page fork the repository, add your graph and open the pull request.</p>
+    <p class="gx-err" id="gh-note" hidden></p>
+    <menu><button type="button" class="gx-btn gx-btn-link" id="gh-manual">Do it by hand instead</button><button class="gx-btn" value="cancel">Cancel</button><button type="button" class="gx-btn gx-btn-primary" id="gh-go">Connect and contribute</button></menu>
+  </form>
+</dialog>
+
 <dialog class="gx-dialog gx-board" id="board-dialog">
   <form method="dialog">
     <h2>Contributors to catal-commons</h2>

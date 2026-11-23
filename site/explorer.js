@@ -633,7 +633,7 @@ function contribButton() {                       // on a personal graph's title 
     return `<button type="button" class="gx-graph-contrib is-done" id="contrib-go" title="${onGitHub ? "Finish on GitHub: drop the downloaded file, then propose it" : "Sent to catal-commons, for review"}">${onGitHub ? "On GitHub" : "Contributed"}</button>`;
   }
   if (!SERVICE) return `<button type="button" class="gx-graph-contrib" id="contrib-go"${contribBusy ? ' aria-disabled="true"' : ""}
-    title="Contribute it to catal-commons: GitHub opens, you drop the downloaded file and propose it, under your GitHub login (your credit)">${contribBusy ? "Preparing…" : "Contribute"}</button>`;
+    title="${ghTok() ? "One click: a pull request to catal-commons, your graph attached, under your GitHub login (your credit)" : "Connect GitHub once; then one click opens a pull request to catal-commons, your graph attached, under your GitHub login (your credit)"}">${contribBusy ? "Contributing…" : "Contribute"}</button>`;
   return `<button type="button" class="gx-graph-contrib" id="contrib-go"${contribBusy ? ' aria-disabled="true"' : ""}
     title="${token ? "Contribute it to catal-commons: a pull request under your GitHub login, for a person to review" : "Contribute it to catal-commons: sign in with GitHub (your credit), and a pull request opens for a person to review"}">${contribBusy ? "Contributing…" : "Contribute"}</button>`;
 }
@@ -676,10 +676,88 @@ async function contributeOnGitHub() {
     if (!tab) status("Your browser blocked the GitHub tab: open the upload page from the graph's card.");
   } catch (e) { contribBusy = false; renderGraphs(); status(`Contributing failed: ${e.message}`); }
 }
+// With the reader's GitHub token (connected once, kept in this browser like their model key, sent only to
+// api.github.com), the page opens the pull request itself, the graph attached: it forks the repository (or finds the
+// reader's fork, brought up to date), adds the graph on a new branch of the fork, and opens the pull request against
+// main, titled and described, under the reader's login.
+const GH_API = "https://api.github.com";
+let ghToken = null;                              // read from the store when first needed (it is defined below)
+const ghTok = () => (ghToken ??= store.get("scale-github-token") || "");
+async function gh(method, path, body) {
+  const r = await fetch(GH_API + path, { method, body: body ? JSON.stringify(body) : undefined, headers: {
+    Authorization: `Bearer ${ghTok()}`, Accept: "application/vnd.github+json", "X-GitHub-Api-Version": "2022-11-28",
+    ...(body ? { "Content-Type": "application/json" } : {}) } });
+  const j = await r.json().catch(() => ({}));
+  if (!r.ok) throw Object.assign(new Error(j.message || `GitHub answered ${r.status}`), { status: r.status });
+  return j;
+}
+const base64 = (text) => {
+  const bytes = new TextEncoder().encode(text);
+  let s = "";
+  for (let i = 0; i < bytes.length; i += 0x8000) s += String.fromCharCode(...bytes.subarray(i, i + 0x8000));
+  return btoa(s);
+};
+function openGhConnect(note = "") {
+  $("gh-note").hidden = !note; $("gh-note").textContent = note;
+  $("gh-token").value = "";
+  if (!$("gh-dialog").open) $("gh-dialog").showModal();
+  $("gh-token").focus();
+}
+$("gh-go").onclick = () => {
+  const t = $("gh-token").value.trim();
+  if (!t) { $("gh-note").hidden = false; $("gh-note").textContent = "Paste your GitHub token first."; return; }
+  ghToken = t; store.set("scale-github-token", t, ownKeep);
+  $("gh-dialog").close();
+  contributeWithToken();
+};
+$("gh-manual").onclick = () => { $("gh-dialog").close(); contributeOnGitHub(); };
+async function contributeWithToken() {
+  const B = G.base || G;
+  contribBusy = true; renderGraphs();
+  const step = (t) => status(`Contributing to catal-commons: ${t}…`);
+  try {
+    step("preparing the graph");
+    const c = await rpc({ op: "contribution", text: JSON.stringify(B.doc) });
+    const title = B.doc.graph?.title || c.slug;
+    step("checking your GitHub token");
+    const me = await gh("GET", "/user");
+    step("forking the repository");
+    const fork = await gh("POST", `/repos/${REPO}/forks`, { default_branch_only: true });
+    for (let i = 0; ; i++) {                       // a new fork takes a few seconds to be ready
+      try { await gh("GET", `/repos/${fork.full_name}/git/ref/heads/main`); break; } catch (e) {
+        if (i >= 30) throw new Error("GitHub is still making your fork; press Contribute again in a minute");
+        await new Promise((r) => setTimeout(r, 2000));
+      }
+    }
+    try { await gh("POST", `/repos/${fork.full_name}/merge-upstream`, { branch: "main" }); } catch { /* up to date, or it cannot: the branch still works */ }
+    const head = await gh("GET", `/repos/${fork.full_name}/git/ref/heads/main`);
+    const branch = `scale-contribute-${c.slug}-${Date.now().toString(36)}`.slice(0, 90);
+    await gh("POST", `/repos/${fork.full_name}/git/refs`, { ref: `refs/heads/${branch}`, sha: head.object.sha });
+    step("adding your graph");
+    await gh("PUT", `/repos/${fork.full_name}/contents/graphs/catal-commons/incoming/${encodeURIComponent(c.slug)}.json`,
+      { message: `catal-commons: contribute ${title}`, content: base64(JSON.stringify(c.doc, null, 1)), branch });
+    step("opening the pull request");
+    const evidenced = [...c.doc.nodes, ...c.doc.links].filter((x) => (x.props?.evidence || []).length).length;
+    const pr = await gh("POST", `/repos/${REPO}/pulls`, { title: `catal-commons: contribute ${title}`, head: `${me.login}:${branch}`,
+      base: "main", maintainer_can_modify: true, body: [
+        `Contributes **${title}** to catal-commons: \`graphs/catal-commons/incoming/${c.slug}.json\`, ${c.doc.nodes.length} records and ${c.doc.links.length} links, ${evidenced} with evidence.`,
+        "", "Curated in the SCALE graph explorer by the curate-corpus skill, `scale source check` run in the browser against the source's text. "
+          + `Every quote is withheld (${c.withheld}, kept as sha256 and length): the repository keeps no text of a source in copyright.`,
+        "", "The commons intake folds it into catal-commons and opens the fold pull request crediting the contributor, for a person to review.",
+        "", "Opened from the SCALE graph explorer."].join("\n") });
+    status(ready());
+    contributed(`Sent to catal-commons: <a href="${esc(pr.html_url)}" target="_blank" rel="noopener">pull request #${esc(pr.number)}</a> under @${esc(me.login)}; the commons intake folds it in, for a person to review`, pr.html_url);
+  } catch (e) {
+    contribBusy = false; renderGraphs(); status(ready());
+    if (e.status === 401) { ghToken = ""; store.set("scale-github-token", "", false); openGhConnect("GitHub did not accept the token: create a new one and paste it."); }
+    else if (e.status === 403 || e.status === 404) openGhConnect(`GitHub refused (${e.message}): the token needs the public_repo scope.`);
+    else status(`Contributing failed: ${e.message}`);
+  }
+}
 async function contribute() {
   const B = G.base || G;
   if (contribBusy) return;
-  if (!SERVICE) return contributeOnGitHub();
+  if (!SERVICE) return ghTok() ? contributeWithToken() : openGhConnect();
   if (!token) { store.set(CONTRIB_PENDING, B.entry.id); signIn("contribute"); return; }
   contribBusy = true; renderGraphs();
   status("Contributing to catal-commons…");
@@ -1922,6 +2000,7 @@ function ownKeyMenu(note = "") {
   });
   $("ownkey-forget")?.addEventListener("click", () => {
     ownKeys = []; ownActive = ""; ownForm = { editing: "", provider: "" };
+    ghToken = ""; store.set("scale-github-token", "", false);          // the GitHub token, connected to contribute, too
     useOwnKeys(); renderOwnKey(); ownKeyMenu(); $("ownkey-input").focus();
   });
   box.hidden = false;

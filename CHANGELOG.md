@@ -5,14 +5,17 @@
 - **Contribute without a server: a pull request under the reader's own GitHub login, folded in by the repository
   (site, service, catal-commons; no schema change, no migration of documents).** With no web service running, the
   explorer's *Contribute* downloads the graph with every quote withheld and opens GitHub's upload page for
-  `graphs/catal-commons/incoming/`: the reader drops the file and proposes it, and GitHub opens the pull request
-  under their login, their credit. The commons intake (`.github/workflows/commons-intake.yml`, on
-  `pull_request_target`, running the base branch's code and reading the contribution through the API, as data;
-  `service/scaleweb/intake.py`) folds it into catal-commons with `scale graph contribute`, the source taken as in
-  copyright (no quote kept), opens the fold pull request with the bot's token (`SCALE_COMMONS_TOKEN`, so the checks run
-  on it) crediting the contributor, and closes theirs; without the token it comments what folding would add.
-  catal-commons, which held no source yet, now pins schema 0.8.2 (its two records unchanged), so graphs curated
-  under the current schema fold in.
+  `graphs/catal-commons/incoming/`: the reader drops the file and proposes it, and GitHub opens the pull request under
+  their login, their credit. The commons intake (`.github/workflows/commons-intake.yml`, on `pull_request_target`,
+  running the base branch's code and reading the contribution through the API, as data; `service/scaleweb/intake.py`)
+  folds it into catal-commons with `scale graph contribute`, the source taken as in copyright (no quote kept), opens
+  the fold pull request with the bot's token (`SCALE_COMMONS_TOKEN`, so the checks run on it) crediting the
+  contributor, and closes theirs; without the token it comments what folding would add. catal-commons, which held no
+  source yet, now pins schema 0.8.2 (its two records unchanged), so graphs curated under the current schema fold in.
+  With the reader's GitHub token, connected once (a token with the `public_repo` scope, kept in the browser like the
+  model key and sent only to `api.github.com`), *Contribute* is one click: the page forks the repository, adds the
+  graph under `incoming/` on a new branch of the fork and opens the pull request, titled and described, under the
+  reader's login; without a token, the reader may still upload the downloaded file by hand.
 - **Curate a paper with your own API key, in the browser, with any of the three providers (site and package, no schema
   change, no migration).** Curating needed the web service. Now, with a key set under *Your API key* (Anthropic's,
   OpenAI's or OpenRouter's), *Curate* runs in the page: pdf.js reads the PDF's text, `scale source start` runs in
