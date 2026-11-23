@@ -324,7 +324,12 @@ def test_a_readers_own_key_curates_a_pdf_in_the_browser_with_the_services_tools(
     # its label (personal, in the site's green); without the service it says it is to come
     rows = js[js.index("function renderGraphs("):js.index("function details(")]
     assert "contribButton()" in rows and 'class="gx-graph-actions"' in rows
-    assert '"own-key": ["personal", "var(--green)"]' in js and 'title="To be implemented soon!"' in js
+    assert '"own-key": ["personal", "var(--green)"]' in js
+    # without the service, Contribute downloads the graph with every quote withheld and opens GitHub's upload page for
+    # catal-commons/incoming/, where the reader proposes it under their own login; the repository's intake folds it in
+    gh = js[js.index("async function contributeOnGitHub("):js.index("async function contribute(")]
+    assert "/upload/main/graphs/catal-commons/incoming" in gh and 'op: "contribution"' in gh and "download(file" in gh
+    assert "if (!SERVICE) return contributeOnGitHub();" in js and '"quote_chars": 0' in worker
     assert "curated-download" not in js and "contrib-box" not in js
     # a curated graph gets a concise title: the model's (done's title), else its source's, else the PDF's name
     assert "graphTitle(r.stopInput?.title, doc, f.name)" in js

@@ -455,7 +455,7 @@ function curateDone({ doc, check, r, pages, secs, title, log }) {
     <details><summary>Activity (${log.length})</summary><ol>${log.map((l) => `<li>${esc(l)}</li>`).join("")}</ol></details>
     <div class="gx-done-next">
       <button type="button" class="gx-btn gx-btn-primary" id="done-explore">Explore the graph</button>
-      <button type="button" class="gx-btn" id="done-contrib"${SERVICE ? "" : ` aria-disabled="true" title="To be implemented soon!"`}>Contribute to catal-commons</button>
+      <button type="button" class="gx-btn" id="done-contrib">Contribute to catal-commons</button>
       <button type="button" class="gx-btn" id="done-again">Curate another</button>
     </div>`;
   $("done-explore").onclick = () => {
@@ -463,7 +463,7 @@ function curateDone({ doc, check, r, pages, secs, title, log }) {
     $("search-input").placeholder = "Ask a question about this graph...";
     $("search-input").focus();
   };
-  $("done-contrib").onclick = () => { if (SERVICE) { $("curate-dialog").close(); contribute(); } };
+  $("done-contrib").onclick = () => { $("curate-dialog").close(); contribute(); };
   $("done-again").onclick = () => curateReset();
   $("done-explore").focus();
 }
@@ -628,8 +628,12 @@ const CONTRIB_PENDING = "scale-contrib-pending";
 let contribBusy = false;
 function contribButton() {                       // on a personal graph's title line, before its label
   if (!own || (own.entry.from !== "own-key" && !own.receipt && !own.contributed)) return "";
-  if (own.contributed) return `<button type="button" class="gx-graph-contrib is-done" id="contrib-go" title="Sent to catal-commons, for review">Contributed</button>`;
-  if (!SERVICE) return `<button type="button" class="gx-graph-contrib" id="contrib-go" aria-disabled="true" title="To be implemented soon!">Contribute</button>`;
+  if (own.contributed) {
+    const onGitHub = /\/upload\//.test(own.prUrl || "");      // the GitHub route: the reader finishes it there
+    return `<button type="button" class="gx-graph-contrib is-done" id="contrib-go" title="${onGitHub ? "Finish on GitHub: drop the downloaded file, then propose it" : "Sent to catal-commons, for review"}">${onGitHub ? "On GitHub" : "Contributed"}</button>`;
+  }
+  if (!SERVICE) return `<button type="button" class="gx-graph-contrib" id="contrib-go"${contribBusy ? ' aria-disabled="true"' : ""}
+    title="Contribute it to catal-commons: GitHub opens, you drop the downloaded file and propose it, under your GitHub login (your credit)">${contribBusy ? "Preparing…" : "Contribute"}</button>`;
   return `<button type="button" class="gx-graph-contrib" id="contrib-go"${contribBusy ? ' aria-disabled="true"' : ""}
     title="${token ? "Contribute it to catal-commons: a pull request under your GitHub login, for a person to review" : "Contribute it to catal-commons: sign in with GitHub (your credit), and a pull request opens for a person to review"}">${contribBusy ? "Contributing…" : "Contribute"}</button>`;
 }
@@ -651,9 +655,31 @@ function contributed(html, url = "") {           // the outcome, the card's Visi
   contribBusy = false;
   renderGraphs();
 }
+// Without the service, a contribution is a pull request the reader opens on GitHub: the page downloads the graph with
+// every quote withheld (the repository keeps no text of a source in copyright) and opens GitHub's upload page for
+// graphs/catal-commons/incoming/; GitHub forks the repository and opens the pull request under the reader's login,
+// their credit. The commons intake (.github/workflows/commons-intake.yml) folds it into catal-commons and opens the
+// fold pull request for a person to review.
+const REPO = window.SCALE_REPO || "trace-ai-org/scale";
+async function contributeOnGitHub() {
+  const B = G.base || G;
+  const tab = window.open(`https://github.com/${REPO}/upload/main/graphs/catal-commons/incoming`, "_blank");   // in the click, so no
+  if (tab) tab.opener = null;                                                                             // blocker stops it
+  contribBusy = true; renderGraphs();
+  try {
+    const c = await rpc({ op: "contribution", text: JSON.stringify(B.doc) });
+    const file = `${c.slug}.json`;
+    download(file, new Blob([JSON.stringify(c.doc, null, 1)], { type: "application/json" }));
+    contributed(`On GitHub: drop <b>${esc(file)}</b> (just downloaded) on the <a href="https://github.com/${esc(REPO)}/upload/main/graphs/catal-commons/incoming" target="_blank" rel="noopener">upload page</a>,
+      then Propose changes and Create pull request. The commons intake folds it in, crediting you; a person reviews it.`,
+      `https://github.com/${REPO}/upload/main/graphs/catal-commons/incoming`);
+    if (!tab) status("Your browser blocked the GitHub tab: open the upload page from the graph's card.");
+  } catch (e) { contribBusy = false; renderGraphs(); status(`Contributing failed: ${e.message}`); }
+}
 async function contribute() {
   const B = G.base || G;
-  if (!SERVICE || contribBusy) return;
+  if (contribBusy) return;
+  if (!SERVICE) return contributeOnGitHub();
   if (!token) { store.set(CONTRIB_PENDING, B.entry.id); signIn("contribute"); return; }
   contribBusy = true; renderGraphs();
   status("Contributing to catal-commons…");

@@ -942,3 +942,64 @@ def test_crossref_too_many_requests_is_waited_out_and_dois_are_asked_one_at_a_ti
     done = runner.run(c, repo=REPO, claude=fake_claude(), request=no_github)
     assert {j["state"] for j in done} == {"done"}, [j.get("error") for j in done]
     assert calls.count("10.9999/paper.1") == 2                                  # the 429, then the record
+
+
+class IntakeGitHub(FakeGitHub):
+    """FakeGitHub with a contributor's pull request #7, from their fork, adding one file under incoming/."""
+
+    def __init__(self, text, path="graphs/catal-commons/incoming/paper.json"):
+        super().__init__()
+        self.text, self.path, self.comments, self.closed = text, path, [], False
+
+    def __call__(self, method, url, token, body=None, raw=False):
+        if url.startswith("https://raw.githubusercontent.com/reader/scale/head-sha/"):
+            return self.text
+        path = url.split("/repos/hlxin/scale", 1)[-1]
+        if method == "GET" and path == "/pulls/7":
+            return {"number": 7, "user": {"login": "reader"}, "head": {"sha": "head-sha", "repo": {"full_name": "reader/scale"}}}
+        if method == "GET" and path == "/pulls/7/files?per_page=100":
+            return [{"filename": self.path, "status": "added"}]
+        if method == "POST" and path == "/issues/7/comments":
+            self.comments.append((token, body["body"]))
+            return {}
+        if method == "PATCH" and path == "/pulls/7":
+            self.closed = body["state"] == "closed"
+            return {}
+        return super().__call__(method, url, "bot-token", body, raw)
+
+
+def contributed_graph(tmp_path):
+    w, res = started(tmp_path)
+    sid = res["source_id"]
+    agent.curate_folder(w, Model(curation_turns(sid, sid.replace("/source/", "/"))), "m", max_turns=10, max_tokens=10_000, repo=REPO)
+    return json.dumps(load_doc(w / res["graph"]))
+
+
+def test_a_graph_contributed_by_pull_request_is_folded_by_the_bots_pull_request_crediting_its_author(tmp_path):
+    """The explorer's Contribute opens a pull request under the reader's login that adds incoming/<name>.json; the
+    intake folds it into catal-commons (no quote kept), opens the fold pull request crediting the reader, and closes
+    theirs. Without the bot's token it only says what folding would add."""
+    from scaleweb import intake
+    text = contributed_graph(tmp_path)
+    gh = IntakeGitHub(text)
+    out = intake.intake(7, "hlxin/scale", "read-token", "", repo_root=REPO, request=gh, today="2026-11-23")
+    assert out["state"] == "commented" and not gh.pulls and not gh.closed and "would add" in gh.comments[-1][1]
+    gh = IntakeGitHub(text)
+    out = intake.intake(7, "hlxin/scale", "read-token", "bot-token", repo_root=REPO, request=gh, today="2026-11-23")
+    assert out["state"] == "folded" and gh.closed and len(gh.pulls) == 1
+    pr = gh.pulls[0]
+    assert pr["head"]["ref"].startswith("contrib/") and pr["title"].startswith("catal-commons: add ")
+    assert "Contributed by @reader in #7" in pr["body"] and "Closes #7" in pr["body"] and "none kept" in pr["body"]
+    written = {t["path"]: t["content"] for t in gh.tree_body["tree"]}
+    assert "github: reader" in written["graphs/catal-commons/contributors.yaml"]          # the leaderboard's credit
+    assert not any("copper is the active phase" in t for t in written.values())           # no quote of the source kept
+    assert "folded into #100" in gh.comments[-1][1] and gh.comments[-1][0] == "bot-token"
+
+
+def test_the_intake_refuses_anything_but_a_graph_under_incoming(tmp_path):
+    from scaleweb import intake
+    for text, path in (("{}", "graphs/catal-commons/incoming/x.json"), (contributed_graph(tmp_path), "tools/evil.py"),
+                       ("not json", "graphs/catal-commons/incoming/y.json")):
+        gh = IntakeGitHub(text, path)
+        out = intake.intake(7, "hlxin/scale", "read-token", "bot-token", repo_root=REPO, request=gh)
+        assert out["state"] == "refused" and not gh.pulls and not gh.closed and "Not folded" in gh.comments[-1][1]
