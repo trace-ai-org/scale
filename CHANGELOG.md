@@ -2,6 +2,13 @@
 
 ## Unreleased
 
+- **An approved pull request merges by itself (governance; no schema change).** The reviewers workflow's new `merge`
+  job runs on a reviewer's approval, waits for the required checks, merges the head the approval was given on and
+  publishes the site from `main` (a merge by the workflow token starts no push workflow). A failing check stops it
+  with a comment; a push dismisses the approval, and the next approval merges. The main ruleset still decides: one
+  approval, the required checks, no request for changes. It is the only workflow job that writes the repository.
+  Review policy 5; the governance text, AGENTS.md and the skills say "approves; it merges once the checks pass".
+
 - **A halogen source as a synthesis function (schema 0.8.3, additive, provisional; no migration).**
   `HAS_INPUT.synthesis_function` gains `halogen_source`, beside `carbon_source`, `nitrogen_source`, `sulfur_source` and
   `phosphorus_source`: an input that supplies a halogen (F, Cl, Br or I) incorporated into the material (HCl leaving

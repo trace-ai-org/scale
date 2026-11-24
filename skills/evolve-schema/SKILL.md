@@ -26,7 +26,7 @@ validation:
   - Fixtures include at least one counterexample that fails for a stated reason
   - Every competency question whose answer changes is updated in the same pull request and said so
 human-review:
-  - Always. One person approves and merges the pull request (governance/review-policy.yaml); new concepts enter as provisional whatever the kind of change
+  - Always. One person approves the pull request, which then merges once the checks pass (governance/review-policy.yaml); new concepts enter as provisional whatever the kind of change
   - Say plainly in the pull request when the change is breaking or changes what a value means
 ---
 
@@ -74,7 +74,7 @@ other: it edits the schema files directly, and CI checks that it carries what it
    and `scale check --fast` until both pass.
 7. **Open the pull request** (an agent opens it under its own GitHub identity, never a person's). Its description
    names the gaps or request it answers, the themes and their decisions, the existing concepts considered, the
-   summary `scale schema check` prints, and what it did not do. One person approves and merges it. If another
+   summary `scale schema check` prints, and what it did not do. One person approves it, and it merges once the checks pass. If another
    schema change merges first, rebase, and run `scale schema bump` again on the new base.
 
 ## Writing a change

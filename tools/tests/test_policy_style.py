@@ -14,7 +14,7 @@ POLICY = load_policy(REPO)
 def test_every_change_needs_one_approval():
     """One approval for every pull request; the kinds of change are information for the reviewer, not approval
     classes, and there is no comment period, stage or committee."""
-    assert POLICY["policy_version"] == 4
+    assert POLICY["policy_version"] == 5
     assert not {"committee", "provisional_approvers", "stage", "stages", "area_review", "objections"} & set(POLICY)
     assert POLICY["approvals"] == {"required": 1}
     assert all(set(t) <= {"name", "examples", "needs"} for t in POLICY["tiers"].values())

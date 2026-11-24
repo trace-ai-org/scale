@@ -12,7 +12,7 @@ The [code of conduct](CODE_OF_CONDUCT.md) applies to everyone; the rules are in
 ## How a change is made
 
 Every change is one pull request. Anyone, a person or an agent, can suggest a change or open a pull request.
-Agents do most of the work. One person approves and merges.
+Agents do most of the work. One person approves; the pull request merges once the checks pass.
 
 ```
 a suggestion in an issue or a comment                 or a pull request opened directly
@@ -24,7 +24,7 @@ the agents make the change on a branch, check it and open a pull request
 CI runs the checks (and, for a schema change, writes a summary for the reviewer)
         │
         ▼
-ONE reviewer approves and merges (the person who suggested it may be that reviewer)
+ONE reviewer approves, then it merges once the checks pass (the person who suggested it may be that reviewer)
 ```
 
 - **Suggest.** Open an issue (see [Suggesting without Git](#suggesting-without-git)) or comment on one, in plain

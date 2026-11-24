@@ -3,7 +3,7 @@ pull request.
 
 The service writes with its own token (``SCALE_WEB_GITHUB_TOKEN``: a bot account's fine-grained token, or a GitHub
 App's installation token, allowed to write contents and pull requests of the repository), never with the user's: the
-pull request is the bot's, it credits the contributor by GitHub login, and a reviewer approves and merges it. Branches
+pull request is the bot's, it credits the contributor by GitHub login, and a reviewer approves it, and it merges once the checks pass. Branches
 are ``contrib/<slug>``; main is never written.
 """
 

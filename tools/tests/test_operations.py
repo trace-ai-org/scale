@@ -140,9 +140,16 @@ def test_who_may_start_the_agents_and_what_workflows_may_write():
     assert "OUTCOME: blocked" in (REPO / ".github/scale-agents/instructions.md").read_text()
     assert not (REPO / ".github/workflows/scale-agent.yml").exists()
     assert not (REPO / ".github/workflows/apply-proposals.yml").exists()
+    # no workflow token writes the repository, but the job that merges an approved pull request (the merge is a
+    # write); it runs only on a reviewer's approval, and the main ruleset still decides whether the merge may happen
     for f in sorted((REPO / ".github/workflows").glob("*.yml")):
-        perms = [load_yaml(f).get("permissions") or {}] + [j.get("permissions") or {} for j in load_yaml(f)["jobs"].values()]
-        assert all(p.get("contents") != "write" for p in perms), f.name
+        jobs = load_yaml(f)["jobs"]
+        assert (load_yaml(f).get("permissions") or {}).get("contents") != "write", f.name
+        writers = [n for n, j in jobs.items() if (j.get("permissions") or {}).get("contents") == "write"]
+        assert writers == (["merge"] if f.name == "reviewers.yml" else []), f.name
+    merge = load_yaml(REPO / ".github/workflows/reviewers.yml")["jobs"]["merge"]
+    assert "github.event.review.state == 'approved'" in merge["if"] and "author_association" in merge["if"]
+    assert "--match-head-commit" in merge["steps"][0]["run"]          # only the head the approval was given on
 
 
 def load_yaml_front(path):
