@@ -596,7 +596,8 @@ an aim, a shape or a mechanism is never inferred from the chemical or from a typ
   metal_precursor, support, support_precursor, promoter_precursor, dopant_source, solvent, reducing_agent,
   oxidizing_agent, precipitating_agent, ph_modifier, chelating_agent, stabilizer, capping_agent, surfactant,
   shape_directing_agent, structure_directing_agent, template, porogen, mineralizer, seed, linker, modulator, fuel,
-  carbon_source, nitrogen_source, sulfur_source, phosphorus_source, etchant, co_reactant, carrier_gas, binder,
+  carbon_source, nitrogen_source, sulfur_source, phosphorus_source, halogen_source (0.8.3; a halogen kept in the
+  material: HCl, NH4F, KBr; not a precursor's counter-ion), etchant, co_reactant, carrier_gas, binder,
   substrate, ligand, ligand_removal_agent (0.7.7), other. One input may serve several (ethylene glycol: `solvent`, `reducing_agent`; PVP:
   `capping_agent`, `stabilizer`); give only those the source names or plainly describes ("ascorbic acid as the
   reductant"). A sacrificial electron donor of a photodeposition is a `reducing_agent`, its role in the `note`.
