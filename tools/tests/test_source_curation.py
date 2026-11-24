@@ -59,7 +59,7 @@ def test_start_writes_a_folder_whose_graph_validates(tmp_path):
     doc = load_doc(w / res["graph"])
     g = doc["graph"]
     assert g["schema_version"] == pgraph.load_spec(pgraph.spec_for(REPO, None))["version"]
-    assert g["follows_domains"] == ["catalysis"] and len(g["title"]) <= 40 and DOI.lower() in g["description"]
+    assert g["follows_domains"] == ["catalysis"] and g["title"] == "Copper catalysts for methanol & more" and DOI.lower() in g["description"]
     src = next(n for n in doc["nodes"] if n["label"] == "Source")
     assert src["id"] == f"ex:pub/source/{slug}" and src["props"]["title"] == "Copper catalysts for methanol & more"
     assert curate.check(w, REPO)["ok"]                                     # the skeleton is valid as written
@@ -152,5 +152,34 @@ def test_a_pdf_is_read_into_page_texts(tmp_path):
     res = curate.start(tmp_path / "w", pdf=tmp_path / "Paper One.pdf", repo=REPO)
     assert res["pages"] == 2 and res["pdf"] == "pdfs/paper-one.pdf"
     src = load_doc(tmp_path / "w" / res["graph"])["nodes"][0]["props"]
-    assert len(src["text_sha256"]) == 64 and src["retrieved_from"] == "Paper One.pdf"
+    assert len(src["text_sha256"]) == 64 and src["retrieved_from"] == res["pdf"]
     assert "[page 2]\nWe conclude" in (tmp_path / "w/work/texts/paper-one.txt").read_text()
+
+
+def test_check_counts_the_gaps_and_warns_of_symbols_the_text_layer_lost(tmp_path):
+    from scale.util import write_canonical
+    (tmp_path / "paper.txt").write_text("[page 1]\nReduced at 250 \x04C and \x03 0.8 V for a long title.\n", encoding="utf-8")
+    title = "A title much longer than forty characters, which the working folder keeps whole"
+    res = curate.start(tmp_path / "w", text=tmp_path / "paper.txt", repo=REPO, project=None)
+    g = tmp_path / "w" / res["graph"]
+    doc = load_doc(g)
+    doc["graph"]["title"] = title
+    src = doc["nodes"][0]
+    src["props"]["unmodeled"] = ["a halogen source's role in the synthesis"]
+    src["props"]["evidence"] = [{"source": src["id"], "locator": "p. 1", "kind": "text", "quote": "250 \x04C"}]
+    write_canonical(g, doc)
+    (tmp_path / "w/work/gaps").mkdir(parents=True)
+    (tmp_path / "w/work/gaps/GAP-1.json").write_text("{}")
+    out = curate.check(tmp_path / "w", REPO)
+    assert out["gaps"] == 2 and out["gaps_by_kind"] == {"files": 1, "unmodeled": 1, "on_records": 0}
+    assert len(out["text_symbols"]) == 2 and "control characters" in out["text_symbols"][0]
+
+
+def test_start_keeps_a_long_title_whole(tmp_path, monkeypatch):
+    long = "Chloride-promoted copper catalysts for the electroreduction of carbon dioxide to multicarbon products"
+    monkeypatch.setitem(CROSSREF["message"], "title", [long])
+    (tmp_path / "paper.txt").write_text(TEXT, encoding="utf-8")
+    res = curate.start(tmp_path / "w", doi=DOI, text=tmp_path / "paper.txt", repo=REPO, get=fake())
+    doc = load_doc(tmp_path / "w" / res["graph"])
+    project = next(n for n in doc["nodes"] if n["label"] == "Project")
+    assert doc["graph"]["title"] == long and project["props"]["name"] == f"Study of {long}"

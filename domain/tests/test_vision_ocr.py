@@ -267,6 +267,32 @@ def test_render_and_region_read_a_pdf(tmp_path):
         pagereading.render(other, SRC, pages)
 
 
+def test_render_without_tesseract_warns_and_keeps_the_text_layer_words(tmp_path, monkeypatch):
+    """Without Tesseract (or with --no-ocr) the pages are rendered with a warning, not a failure: images and the text
+    layer's words, marked as written without OCR; a region is read from the text layer and nothing is cached; a later
+    render with OCR fills the words in (needs pymupdf)."""
+    from scale import sourcetext
+    fitz = pytest.importorskip("pymupdf")
+    pdf = tmp_path / "s1.pdf"
+    d = fitz.open()
+    d.new_page().insert_text((72, 72), "Faradaic efficiency 18.9 % at -0.8 V", fontsize=12)
+    d.save(pdf)
+    pages = tmp_path / "pages"
+    assert "warning" not in pagereading.render(pdf, SRC, pages, ocr=False)       # chosen: no warning
+    monkeypatch.setattr(sourcetext.shutil, "which", lambda exe: None)
+    got = pagereading.render(pdf, SRC, pages, only=[1])
+    assert got["ocr"] is False and "apt install tesseract-ocr" in got["warning"]
+    words = json.loads((pages / "s1/p1.words.json").read_text())
+    assert words["ocr"] == [] and words["ocr_engine"] == pagereading.NO_OCR
+    assert "18.9" in [w["text"] for w in words["text_layer"]]
+    res = pagereading.region(pages, SRC, 1, [0, 0, 1, 0.2], transcription="18.9")
+    assert "18.9" in res["ocr_text"] and not (pages / "s1/regions").exists()
+    monkeypatch.undo()
+    if shutil.which("tesseract"):
+        pagereading.render(pdf, SRC, pages)
+        assert json.loads((pages / "s1/p1.words.json").read_text())["ocr_engine"].startswith("tesseract")
+
+
 def test_every_record_of_one_pdf_is_compared_with_its_digest(tmp_path):
     """Two sources' records name one PDF: once it has been read for the first (whose digest it has), the second, which
     records another digest, is still refused; the digest is cached, the comparison is not."""

@@ -102,6 +102,12 @@ def version_text_warnings(repo: Path) -> list[str]:
     return stale_version_texts(texts, versions)
 
 
+def _parallel() -> list[str]:
+    """pytest-xdist's options when it is installed (the dev extra installs it): the tests on every core."""
+    import importlib.util
+    return ["-n", "auto"] if importlib.util.find_spec("xdist") else []
+
+
 def check_steps(repo: Path, fast: bool = False) -> list[dict]:
     """The checks, in CI order. An ``expect_errors`` step passes when every command exits 1 (invalid, not
     a tool error) and reports the stated error; a ``warning`` step prints what it finds and never fails."""
@@ -111,7 +117,7 @@ def check_steps(repo: Path, fast: bool = False) -> list[dict]:
         {"name": "reviewers: the review policy lists no placeholder", "cmds": [], "warning": reviewer_warnings},
         {"name": "the documentation names the current schema version", "cmds": [], "warning": version_text_warnings},
         {"name": "numeric values are backed by their quotes (advisory)", "cmds": [], "warning": value_warnings},
-        {"name": "unit tests", "cmds": [[sys.executable, "-m", "pytest", "-q"]], "slow": True},
+        {"name": "unit tests", "cmds": [[sys.executable, "-m", "pytest", "-q", *_parallel()]], "slow": True},
         {"name": "releases are unchanged (digests)", "cmds": [scale + ["release", "verify"]]},
         {"name": "scale-catal schemas load (head and frozen)", "cmds": [scale + ["graph", "verify"]]},
         {"name": "domain and core manifests are complete, compatible and do not redefine identifiers",

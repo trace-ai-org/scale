@@ -217,5 +217,7 @@ def check_document(doc: dict, spec: dict, rep) -> None:
                 continue
             for keys in repeated(list(entries(v))):
                 rep.add("warning", n["id"], f"{', '.join(f'{prop}.{k}' for k in keys)}: {len(keys)} entries for one "
-                                            "product that nothing tells apart (producer, phase, stream, basis, "
-                                            "normalization): an ambiguous repetition, never averaged")
+                                            "product that nothing tells apart (variable, producer, phase, stream, "
+                                            "basis, definition, normalization): an ambiguous repetition, never "
+                                            "averaged; a reflection or a peak each value is read from goes in its "
+                                            "definition (\"(002) reflection\")")

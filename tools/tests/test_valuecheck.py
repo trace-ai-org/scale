@@ -42,7 +42,41 @@ def test_a_mistyped_value_is_flagged_against_its_own_printed_text():
 def test_printed_forms_are_read_as_print_has_them():
     for value, printed in [(3560, "3, 560"), (-28085, "−28,085"), (390, "39O°C"), (250, "Two hundred and fifty cc"),
                            (125000000, "125,000,000 cubic feet/day"), (2.07e-5, "2.07 × 10⁻⁵")]:
-        assert any(vc._close(abs(value), r) for r in vc.readings(printed)), printed
+        assert any(vc._close(value, r) for r in vc.readings(printed)), printed
+
+
+def test_a_sign_is_kept_and_a_range_or_a_name_is_no_sign():
+    assert -0.5 in vc.readings("at -0.5 V vs RHE") and 0.5 not in vc.readings("at -0.5 V vs RHE")
+    assert -23.5 in vc.readings("boiled at —23.5° C.")                   # OCR's em dash for a minus
+    assert {10.0, 20.0} <= set(vc.readings("10-20 °C")) and 323.0 in vc.readings("Cu-HCl(323)")
+    ev = [{"source": "s", "locator": "p. 3", "kind": "text", "quote": "the onset potential was 0.5 V vs RHE"}]
+    lost = vc.check_value({"status": "present", "value": -0.5, "unit": "V"}, ev)
+    assert lost["outcome"] == "flag" and lost["checks_failed"] == ["value_vs_evidence"]
+
+
+def test_a_value_is_backed_only_by_the_evidence_its_evidence_ids_name():
+    ev = [{"id": "e1", "source": "s", "locator": "p. 2", "kind": "text", "quote": "in 0.1 M KHCO3"},
+          {"id": "e2", "source": "s", "locator": "Fig. 3b", "kind": "figure", "transcription": "CO 18.9"}]
+    fe = vc.check_value({"status": "present", "value": 0.1, "unit": "%", "evidence_ids": ["e2"]}, ev)
+    assert fe["outcome"] == "unverifiable" and "figure" in fe["notes"][0]      # not backed by the electrolyte's 0.1
+    conc = vc.check_value({"status": "present", "value": 0.1, "unit": "M", "evidence_ids": ["e1"]}, ev)
+    assert conc["outcome"] == "ok"
+
+
+def test_a_figure_reading_is_never_printed_text_and_as_reported_does_not_hide_it():
+    ev = [{"source": "s", "locator": "Fig. 2a", "kind": "figure", "reading": "vision", "region": [0, 0, 1, 1],
+           "transcription": "Cu-HCl(323): 18.9"}]
+    read = vc.check_value({"status": "present", "value": 18.9, "unit": "%"}, ev)
+    named = vc.check_value({"status": "present", "value": 18.9, "unit": "%", "as_reported": "Cu-HCl(323) 18.9"}, ev)
+    assert read["outcome"] == named["outcome"] == "unverifiable"
+
+
+def test_the_sheet_shows_the_evidence_the_value_cites():
+    doc = _doc({"conversion": {"status": "present", "value": 42, "unit": "%", "evidence_ids": ["t2"]}})
+    doc["nodes"][0]["props"]["evidence"].append(
+        {"id": "t2", "source": "ex:t/source/s", "locator": "p. 5, Table II", "kind": "table", "quote": "42 per cent"})
+    row = vc.check_document(doc)["rows"][0]
+    assert row["outcome"] == "ok" and row["locator"] == "p. 5, Table II" and row["quote"] == "42 per cent"
 
 
 def test_what_no_tool_can_check_goes_to_a_person():

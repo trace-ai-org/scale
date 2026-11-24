@@ -121,9 +121,15 @@ def pdf_of(pages: str | Path, source_id: str) -> Path:
     return pdf
 
 
-def render(pdf: str | Path, source_id: str, pages: str | Path, dpi: int = PAGE_DPI, only: list[int] | None = None) -> dict:
+NO_OCR = "none (OCR not run)"          # the engine of words written without OCR: OCR fills them in once it is there
+
+
+def render(pdf: str | Path, source_id: str, pages: str | Path, dpi: int = PAGE_DPI, only: list[int] | None = None,
+           ocr: bool = True) -> dict:
     """Page images for the curator's eyes (``dpi``, PNG) and positioned words for the check: the text layer's words
-    and Tesseract's words with confidences (300 dpi), per page, with the OCR engine. Existing files are kept."""
+    and Tesseract's words with confidences (300 dpi), per page, with the OCR engine. Existing files are kept. Without
+    OCR (``ocr`` false, or Tesseract not installed: a warning, not a failure) the pages are rendered with the text
+    layer's words alone, marked ``NO_OCR``; a later render with OCR adds its words to them."""
     pdf = Path(pdf)
     if not pdf.is_file():
         raise ScaleError(f"{pdf}: no PDF there")
@@ -143,17 +149,23 @@ def render(pdf: str | Path, source_id: str, pages: str | Path, dpi: int = PAGE_D
                              f"not {source_id} from {pdf}")
     rec_file.write_text(dump_canonical({"source": source_id, "pdf": str(pdf.resolve()), "sha256": digest, "pages": n}),
                         encoding="utf-8")
+    use_ocr = ocr and sourcetext.has_ocr()
     engine = None
     for pg in nums:
         png, words = d / f"p{pg}.png", d / f"p{pg}.words.json"
         if not png.exists():
             png.write_bytes(sourcetext.render_page(pdf, pg, dpi))
-        if not words.exists():
-            engine = engine or ocr_engine()
+        stale = words.exists() and use_ocr and json.loads(words.read_text(encoding="utf-8")).get("ocr_engine") == NO_OCR
+        if not words.exists() or stale:
+            engine = engine or (ocr_engine() if use_ocr else NO_OCR)
+            found = sourcetext.ocr_words(sourcetext.render_page(pdf, pg, WORDS_DPI)) if use_ocr else []
             words.write_text(dump_canonical({"page": pg, "text_layer": sourcetext.text_layer_words(pdf, pg),
-                                             "ocr": sourcetext.ocr_words(sourcetext.render_page(pdf, pg, WORDS_DPI)),
-                                             "ocr_engine": engine}), encoding="utf-8")
-    return {"source": source_id, "folder": str(d), "pages": len(nums), "of": n}
+                                             "ocr": found, "ocr_engine": engine}), encoding="utf-8")
+    out = {"source": source_id, "folder": str(d), "pages": len(nums), "of": n, "ocr": use_ocr}
+    if ocr and not use_ocr:
+        out["warning"] = (f"pages rendered without OCR: {sourcetext.NO_TESSERACT}. Readings are checked against the "
+                          "text layer alone (no_ocr where it has none); render again once Tesseract is installed")
+    return out
 
 
 def page_words(pages: str | Path, source_id: str, page: int) -> dict:
@@ -175,6 +187,8 @@ def region_reading(pages: str | Path, source_id: str, page: int, region: list[fl
     if cache.exists():
         got = json.loads(cache.read_text(encoding="utf-8"))
         crop, crop_engine = (got, None) if isinstance(got, list) else (got["words"], got.get("ocr_engine"))
+    elif not sourcetext.has_ocr():          # no OCR here: the region's text-layer words alone, nothing cached
+        crop, crop_engine = [], NO_OCR
     else:
         x0, y0, x1, y1 = region
         raw = sourcetext.ocr_words(sourcetext.render_page(pdf_of(pages, source_id), page, REGION_DPI, tuple(region)), psm="6")

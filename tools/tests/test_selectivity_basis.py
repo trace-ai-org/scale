@@ -280,3 +280,19 @@ def test_a_term_never_reads_a_negation_or_another_word_as_a_statement(context, t
     opposite or as a carbon count; the unambiguous phrases are read."""
     qc = quantities.contracts(pgraph.load_spec(GRAPH_MANIFEST))
     assert qc.statements_in_text(context, text, None) == expected
+
+
+def test_two_reflections_are_told_apart_by_their_definition_and_the_warning_says_so(doc):
+    """Expected: two values of one result that differ only in their definition (a reflection each is read from) raise
+    no warning; without it the warning names the definition as the field that tells them apart."""
+    for second, repeated in (("(111) reflection", False), (None, True)):
+        d = copy.deepcopy(doc)
+        t = next(n for n in d["nodes"] if n["id"] == f"{P}/test/within-pool")
+        a = {k: v for k, v in _value(d, "c5_olefins_in_olefins").items() if k != "definition"}
+        b = {**a, "id": "r111", "value": 71}
+        if second:
+            a, b = {**a, "definition": "(002) reflection"}, {**b, "definition": second}
+        t["props"]["result_values"] += [{**a, "id": "r002"}, b]
+        warned = [w for w in _warnings(d) if "ambiguous repetition" in w and "r111" in w]
+        assert bool(warned) is repeated, second
+        assert all("definition" in w for w in warned)

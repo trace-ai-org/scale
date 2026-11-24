@@ -9,6 +9,27 @@
   approval, the required checks, no request for changes. It is the only workflow job that writes the repository.
   Review policy 5; the governance text, AGENTS.md and the skills say "approves; it merges once the checks pass".
 
+- **The review step after a first curation (tools, curate-corpus; no schema change, no migration).** From the first
+  paper contributed to catal-commons:
+  - `scale review values` backs a value only with the evidence its `evidence_ids` name (else its own, else its
+    record's), never counts a `kind: figure` transcription as printed text (such a value goes to a person as read
+    from a figure, whatever its `as_reported` says), keeps signs (a minus at the start or after a space, `=`, `(`
+    and the like; an em dash only at the start or after a space; never inside a range or a name), and shows the
+    locator and quote of the item that prints the value.
+  - `scale source digest` lists list-valued results (`faradaic_efficiency`, `result_values`) by kind and product
+    ("FE CO 18.9 %"), and their upper bounds and zeros as negative results.
+  - `scale pages render` renders without Tesseract, with a warning and the text layer's words alone (`--no-ocr`
+    chooses it); a later render with OCR adds its words. The install hint names each platform.
+  - `scale source check` counts the gaps (the files under `work/gaps/`, the records' `unmodeled` entries and
+    `gaps`) and warns where the page texts encode symbols as control characters (−, °, ~), naming the records
+    whose quotes carry them.
+  - `scale source start` records the PDF's copy (`pdfs/<slug>.pdf`) as `retrieved_from` and keeps the title whole.
+  - Conformance lists a should item a record declares `not_reported` under `declared_not_reported`, not
+    `missing_recommended` (neither counts as filled).
+  - `scale check` runs the tests on every core (pytest-xdist, in the dev extra), and so does the test that runs the
+    whole suite again on a copy of the repository after a version bump, which took most of its time.
+  - The ambiguous-repetition messages name the `definition` among what tells two values apart: a reflection or a
+    peak a value is read from goes there (no schema change).
 - **A halogen source as a synthesis function (schema 0.8.3, additive, provisional; no migration).**
   `HAS_INPUT.synthesis_function` gains `halogen_source`, beside `carbon_source`, `nitrogen_source`, `sulfur_source` and
   `phosphorus_source`: an input that supplies a halogen (F, Cl, Br or I) incorporated into the material (HCl leaving
