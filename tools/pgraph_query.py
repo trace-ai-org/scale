@@ -1477,7 +1477,7 @@ def _run(doc: dict, spec: dict, plan: dict, evidence_index=None, graph: Graph | 
                         others = [results.pointer(prop, k, by_key[k]) for k in twins.get(key, []) if k != key]
                         if others and cmp.scientific:            # two results nothing tells apart: never compared
                             step_sink(None, f"ambiguous_repetition ({erec['_entry']['path']} and {', '.join(others)}: one "
-                                            "variable, target, producer, phase, stream, basis and normalization)", handle)
+                                            "variable, target, producer, phase, stream, basis, definition and normalization)", handle)
                             continue
                         ntags = {}
                         nbound: dict = {}
@@ -2025,8 +2025,8 @@ def _run(doc: dict, spec: dict, plan: dict, evidence_index=None, graph: Graph | 
         lim.append(f"order_by {o} sorted values in several units as bare numbers; read each with its unit.")
     if ambiguous_rows:
         lim.append(f"{ambiguous_rows} row{'s bind' if ambiguous_rows != 1 else ' binds'} a result that nothing tells apart from "
-                   "another of its record (ambiguous_repetition: one variable, target, producer, phase, stream, basis and "
-                   "normalization): two results, never averaged; say so when stating either, and a scientific comparison "
+                   "another of its record (ambiguous_repetition: one variable, target, producer, phase, stream, basis, "
+                   "definition and normalization): two results, never averaged; say so when stating either, and a scientific comparison "
                    "leaves them out until each names its assay (produced_by).")
     twins_out = reasons["ambiguous_repetition"] + in_steps["ambiguous_repetition"]
     if twins_out:

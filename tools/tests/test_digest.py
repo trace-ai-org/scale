@@ -66,3 +66,22 @@ def test_the_command(one, tmp_path):
                           "--against", str(FULL), "--format", "json"], capture_output=True, text=True)
     assert run.returncode == 0, run.stderr
     assert json.loads(run.stdout)["references"] == ["methanol-synthesis-pre1966"]
+
+
+def test_list_valued_results_are_listed_by_product_and_their_bounds_are_negative_results():
+    # an electrochemical test keeps its results in lists (faradaic_efficiency, result_values), one entry per product
+    t = {"id": "ex:e/test/1", "label": "CatalyticTest", "props": {
+        "name": "eCO2R at -1.0 V", "electrode_potential": {"status": "present", "value": -1.0, "unit": "V"},
+        "faradaic_efficiency": [
+            {"status": "present", "value": 18.9, "unit": "%", "target": "ex:e/species/co"},
+            {"status": "present", "value": 0.5, "unit": "%", "bound": "upper", "target": "ex:e/species/ch4"},
+            {"status": "present", "value": 0, "unit": "%", "target": "ex:e/species/c2h4"}],
+        "result_values": [{"status": "present", "kind": "partial_current_density", "value": 3.2, "unit": "mA/cm2",
+                           "target": "ex:e/species/co"}]}}
+    species = [{"id": f"ex:e/species/{f.lower()}", "label": "ChemicalSpecies", "props": {"name": f, "formula": f}}
+               for f in ("CO", "CH4", "C2H4")]
+    d = digest({"graph": {"title": "e"}, "nodes": [t, *species], "links": []}, [])
+    row = d["conditions_and_outcomes"][0]
+    assert row["conditions"] == ["electrode_potential -1.0 V"]
+    assert row["results"] == ["FE CO 18.9 %", "FE CH4 ≤ 0.5 %", "FE C2H4 0 %", "partial j CO 3.2 mA/cm2"]
+    assert d["negative_results"][0]["why"] == ["FE CH4 ≤ 0.5 %", "FE C2H4 0 %"]

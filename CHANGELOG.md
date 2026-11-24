@@ -2,6 +2,24 @@
 
 ## Unreleased
 
+- **The review step after a first curation (tools, curate-corpus; no schema change, no migration).** From the first
+  paper contributed to catal-commons:
+  - `scale review values` backs a value only with the evidence its `evidence_ids` name (else its own, else its
+    record's), never counts a `kind: figure` transcription as printed text (such a value goes to a person as read
+    from a figure, whatever its `as_reported` says), keeps signs (a minus at the start or after a space, `=`, `(`
+    and the like; an em dash only at the start or after a space; never inside a range or a name), and shows the
+    locator and quote of the item that prints the value.
+  - `scale source digest` lists list-valued results (`faradaic_efficiency`, `result_values`) by kind and product
+    ("FE CO 18.9 %"), and their upper bounds and zeros as negative results.
+  - `scale pages render` renders without Tesseract, with a warning and the text layer's words alone (`--no-ocr`
+    chooses it); a later render with OCR adds its words. The install hint names each platform.
+  - `scale source check` counts the gaps (the files under `work/gaps/`, the records' `unmodeled` entries and
+    `gaps`) and warns where the page texts encode symbols as control characters (−, °, ~), naming the records
+    whose quotes carry them.
+  - `scale source start` records the PDF's copy (`pdfs/<slug>.pdf`) as `retrieved_from` and keeps the title whole.
+  - Conformance lists a should item a record declares `not_reported` under `declared_not_reported`, not
+    `missing_recommended` (neither counts as filled).
+
 - **catal-commons holds its first source (graphs only; no schema change).** Cl-promoted Cu catalysts for CO2
   electroreduction (10.1016/j.xcrp.2023.101294), curated under scale-catal 0.8.2 and added with
   `scale graph contribute`. The tests that took catal-commons to be empty (`test_commons.py`'s folder fixture, the

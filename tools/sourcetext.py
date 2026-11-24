@@ -29,6 +29,16 @@ def _fitz():
     return pymupdf
 
 
+# the install hint for any platform
+NO_TESSERACT = ("tesseract is not installed: install Tesseract OCR (Debian/Ubuntu `apt install tesseract-ocr`, macOS "
+                "`brew install tesseract`, conda `conda install -c conda-forge tesseract`, Windows: "
+                "https://github.com/UB-Mannheim/tesseract/wiki)")
+
+
+def has_ocr() -> bool:
+    return shutil.which("tesseract") is not None
+
+
 def tesseract_version() -> str | None:
     exe = shutil.which("tesseract")
     if not exe:
@@ -40,7 +50,7 @@ def tesseract_version() -> str | None:
 def _tesseract(png: bytes, lang: str, psm: str) -> str:
     exe = shutil.which("tesseract")
     if not exe:
-        raise ScaleError("this page has no text layer and tesseract is not installed (brew install tesseract)")
+        raise ScaleError(f"this page has no text layer and {NO_TESSERACT}")
     out = subprocess.run([exe, "stdin", "stdout", "-l", lang, "--psm", psm], input=png, capture_output=True)
     if out.returncode:
         raise ScaleError(f"tesseract failed: {out.stderr.decode(errors='replace')[:200]}")
@@ -147,7 +157,7 @@ def ocr_words(png: bytes, lang: str = "eng", psm: str = "3") -> list[dict]:
     """Tesseract words of an image: {text, conf (0-100), box (x0, y0, x1, y1) as fractions of the image}."""
     exe = shutil.which("tesseract")
     if not exe:
-        raise ScaleError("tesseract is not installed (brew install tesseract)")
+        raise ScaleError(NO_TESSERACT)
     out = subprocess.run([exe, "stdin", "stdout", "-l", lang, "--psm", psm, "tsv"], input=png, capture_output=True)
     if out.returncode:
         raise ScaleError(f"tesseract failed: {out.stderr.decode(errors='replace')[:200]}")

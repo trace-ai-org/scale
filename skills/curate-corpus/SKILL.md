@@ -280,6 +280,9 @@ Never record `± 0`: keep the printed text in `as_reported` and leave `uncertain
   checklist looks for them there, and an efficiency kept only in `result_values` leaves its item unfilled. Every other
   per-product result (a yield, a selectivity, a conversion, a production rate, an amount, a balance) goes in
   `result_values`. A result is recorded once, never in both.
+  Two values of one record that differ only in what they are read from (two reflections of one phase, two peaks of
+  one spectrum) say it in their `definition` ("(002) reflection", "Cu 2p3/2"): otherwise nothing tells them apart and
+  validation warns of an ambiguous repetition.
 - **Driving forces and readings** (scale-catal 0.5.0 on). List every driving force of a test; one that lists none has
   unknown applicability and is never complete. Record what the source reads a test as showing in `interpretations`
   (`intrinsic_kinetics`, `system_performance`, `photothermal_effect`, `nonthermal_light_effect`,
