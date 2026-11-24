@@ -274,15 +274,102 @@ def test_the_site_publishes_the_leaderboard_with_how_it_scores(built):
 
 def test_a_readers_own_key_runs_unlimited_reads_the_conversation_from_the_cache_and_may_be_asked_to_answer_now():
     js = (REPO / "site" / "explorer.js").read_text(encoding="utf-8")
-    loop = js[js.index("async function askOwnKey("):js.index("function renderOwnKey(")]
-    # each turn moves the cache breakpoints to the newest results, so the conversation so far is read from the cache
+    loop = js[js.index("async function modelLoop("):js.index("const OWN_OUTPUT")]
+    ask = js[js.index("async function askOwnKey("):js.index("const ANSWERED_EARLY")]
+    # one loop for every provider and task; each turn moves the cache breakpoints to the newest results
     assert "markCache(messages);\n      const r = await claude(" in loop and "cache_control: { type: \"ephemeral\" }" in loop
     assert ".slice(-2)" in js[js.index("function markCache("):js.index("function markCache(") + 400]
-    assert "read from the cache" in loop and "prompt_tokens_details?.cached_tokens" in loop
+    assert "read from the cache" in js and "prompt_tokens_details?.cached_tokens" in loop
     # no token budget, no turn limit and no tool result cut short: the model sees every row it asked for
     assert not re.search(r"OWN_TOKENS|OWN_TURNS|RESULT_CHARS|clip\(", js)
-    assert "const runTool = async (name, input) => whole(await ownTool(name, input, plans));" in loop
-    # the reader may ask for the answer now; the model then answers from the rows it has, in both formats
-    assert 'id="answer-now"' in loop and loop.count("if (answerNow) {") == 2
-    assert loop.count("results.push({ type: \"text\", text: WRAP_UP })") == 1 and "content: WRAP_UP" in loop
-    assert loop.count("!calls.length || last") == 2
+    assert "content = whole(await run(c.name, c.input));" in loop
+    # the reader may ask to finish; the model is told so beside the last results, in both formats
+    assert loop.count("if (out.stopped) results.push({ type: \"text\", text: wrapUp });") == 1
+    assert "messages.push({ role: \"user\", content: wrapUp })" in loop and loop.count("!calls.length || last") == 1
+    assert 'id="answer-now"' in ask and "stopNow: () => answerNow" in ask and "await modelLoop(" in ask
+
+
+def test_a_readers_own_key_curates_a_pdf_in_the_browser_with_the_services_tools():
+    js = (REPO / "site" / "explorer.js").read_text(encoding="utf-8")
+    worker = (REPO / "site" / "worker.js").read_text(encoding="utf-8")
+    page = (REPO / "site" / "index.html").read_text(encoding="utf-8")
+    own = js[js.index("async function curateOwnKey("):js.index("// The commons holds the source already")]
+    # with a key set, Curate runs here; the service is used only without one
+    assert 'if (curateMode() === "own") return curateOwnKey();' in js and 'ownKey ? "own" : SERVICE ? "service" : ""' in js
+    # the PDF is read here by pdf.js, loaded only when needed and checked against its digests
+    assert 'pdf.js/3.11.174/' in js and js.count("sha384-") >= 2 and "integrity: PDFJS_SRI[" in js
+    # the model fills the graph with scale.curation_tools in Pyodide, by the same loop as questions, until done
+    assert 'stop: "done"' in own and 'rpc({ op: "curate_call", tool, args })' in own and "await modelLoop(" in own
+    assert "from scale.curation_tools import CurationTools, as_json" in worker and "curate.start(" in worker
+    # the dialog names no single provider or model
+    assert "Read by Claude" not in page and 'id="curate-terms"' in page
+    # a PDF only; the statement of access is about sharing the knowledge derived from it; with a key the dialog
+    # names no model or provider and says only what stays private
+    assert 'id="curate-doi"' not in page and "text mining" not in page and "share the knowledge it reports" in page
+    terms = js[js.index("function curateTerms("):js.index("async function curateAccount(")]
+    # a curation says where it is (four stages, a bar) and about how long it has left
+    prog = js[js.index("function curateProgress("):js.index("async function curateOwnKey(")]
+    assert "min left" in prog and "elapsed" in prog and 'id="cj-bar"' in prog and "st.tool = (tool, args, result)" in prog
+    # Curate is grey until a PDF is given and the statement ticked
+    sync = js[js.index("function syncCurate("):js.index("const pdfName")]
+    assert '!$("curate-pdf").files[0]' in sync and '!$("curate-attest").checked' in sync
+    # a graph curated here is contributed through the service, signed in with GitHub for the credit, in one click: a
+    # reader signed out is signed in and the contribution goes on by itself when they come back; the pull request opens
+    # with no second click
+    contrib = js[js.index("async function contribute("):js.index("async function start(")]
+    assert "curated_in_browser: true" in js and 'e.from === "own-key"' in js
+    assert 'store.set(CONTRIB_PENDING, B.entry.id); signIn("contribute")' in contrib and 'call("POST", "/contribute", contribBody(B))' in contrib
+    assert "store.take(CONTRIB_PENDING) === own.entry.id) contribute()" in js
+    # a personal graph's card has the rows every graph's has; its Contribute button sits on its title line, before
+    # its label (personal, in the site's green); without the service it says it is to come
+    rows = js[js.index("function renderGraphs("):js.index("function details(")]
+    assert "contribButton()" in rows and 'class="gx-graph-actions"' in rows
+    assert '"own-key": ["personal", "var(--green)"]' in js
+    # without the service, Contribute downloads the graph with every quote withheld and opens GitHub's upload page for
+    # catal-commons/incoming/, where the reader proposes it under their own login; the repository's intake folds it in
+    gh = js[js.index("async function contributeOnGitHub("):js.index("async function contribute(")]
+    assert "/upload/main/graphs/catal-commons/incoming" in gh and 'op: "contribution"' in gh and "download(file" in gh
+    assert '"quote_chars": 0' in worker
+    # a source is curated under the schema catal-commons pins, written by the build, so that it folds in after a bump
+    assert "version: commonsVersion" in js and 'version=a.get("version") or None' in worker
+    # with the GitHub sign-in (service/github-login), one click: a sign-in window, then the page opens the pull request
+    # itself, the graph attached (fork, branch, the file under incoming/, the pull request), and that window shows it;
+    # the token lives in memory for that one contribution, never in the browser's storage; without the sign-in, the
+    # graph downloads and GitHub's upload page opens
+    tok = js[js.index("async function contributeWithToken("):js.index("async function contribute(")]
+    assert all(x in tok for x in ("/forks", "/merge-upstream", "/git/refs", "/contents/graphs/catal-commons/incoming/", "/pulls"))
+    assert 'const GH_API = "https://api.github.com"' in js and js.count("fetch(GH_API") == 1
+    assert "if (!SERVICE) return GH_LOGIN ? contributeSignedIn() : contributeOnGitHub();" in js
+    assert "scale-github-token" not in js and 'id="gh-dialog"' not in page
+    # the reader reviews the pull request on GitHub's page, the graph attached, and creates it; the page then marks it
+    assert "/compare/main...${encodeURIComponent(me.login)}:${encodeURIComponent(branch)}?expand=1" in tok
+    assert "win.location = compare" in tok and 'gh("POST", `/repos/${REPO}/pulls`' not in tok and "watchForPullRequest(" in tok
+    assert "e.origin !== from" in js and "e.data.nonce !== nonce" in js
+    assert "curated-download" not in js and "contrib-box" not in js and '["Visibility", mine ? "Private"' in js
+    # once a pull request to catal-commons exists, the label reads catal-commons and links it; the by-hand route
+    # changes nothing, since only GitHub knows whether the file was uploaded
+    assert ">catal-commons</a>" in rows and "sentToCommons()" in rows
+    gh = js[js.index("async function contributeOnGitHub("):js.index("// With a GitHub sign-in")]
+    assert "contributed(" not in gh and "download(file" in gh
+    # a curated graph gets a concise title: the model's (done's title), else its source's, else the PDF's name
+    assert "graphTitle(r.stopInput?.title, doc, f.name)" in js
+    # when it is done, the dialog shows what was curated in a few numbers and what to do next
+    done = js[js.index("function curateDone("):js.index("function curateReset(")]
+    assert all(f'id="done-{k}"' in done for k in ("explore", "contrib", "again")) and "gx-done-stats" in done
+    assert "<b>Private.</b>" in terms and "modelLabel" not in terms and "PROVIDERS" not in terms
+
+
+def test_the_built_pages_load_scripts_and_the_package_stamped_with_the_builds_digest(built):
+    out, res = built
+    stamp = res["stamp"]
+    assert re.fullmatch(r"[0-9a-f]{12}", stamp)
+    page, js, worker = ((out / n).read_text() for n in ("index.html", "explorer.js", "worker.js"))
+    assert f'src="explorer.js?v={stamp}"' in page and f'href="explorer.css?v={stamp}"' in page
+    assert f'new Worker("worker.js?v={stamp}")' in js and f'"./bundle.js?v={stamp}"' in js
+    assert f'fetch("py/scale-py.zip?v={stamp}")' in worker
+
+
+def test_the_build_names_the_schema_version_catal_commons_pins(built):
+    out, _ = built
+    header = json.loads((REPO / "graphs/catal-commons/parts/header.json").read_text())
+    assert json.loads((out / "data/graphs.json").read_text())["commons_schema_version"] == header["graph"]["schema_version"]

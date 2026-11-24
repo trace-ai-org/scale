@@ -11,6 +11,44 @@
   give another. Four of those sources read again with temperature 1.0 and top_p 0.95 (the run now gives both):
   all four reached a verdict (one pass, three needs_fix), each of their six requests ending on its own
   (`finish_reason: stop`) after 31,000-54,000 tokens, with 0-8% of lines repeated.
+- **Contribute without a server: a pull request under the reader's own GitHub login, folded in by the repository
+  (site, service, catal-commons; no schema change, no migration of documents).** With no web service running, the
+  explorer's *Contribute* downloads the graph with every quote withheld and opens GitHub's upload page for
+  `graphs/catal-commons/incoming/`: the reader drops the file and proposes it, and GitHub opens the pull request under
+  their login, their credit. The commons intake (`.github/workflows/commons-intake.yml`, on `pull_request_target`,
+  running the base branch's code and reading the contribution through the API, as data; `service/scaleweb/intake.py`)
+  folds it into catal-commons with `scale graph contribute`, the source taken as in copyright (no quote kept), opens
+  the fold pull request with the bot's token (`SCALE_COMMONS_TOKEN`, so the checks run on it) crediting the
+  contributor, and closes theirs; without the token it comments what folding would add. catal-commons, which held no
+  source yet, now pins schema 0.8.2 (its two records unchanged), so graphs curated under the current schema fold in.
+  With the GitHub sign-in (`service/github-login`: a small worker that trades GitHub's sign-in code for a token, the
+  one step that needs the OAuth app's secret, and keeps nothing; `window.SCALE_GITHUB_LOGIN`), *Contribute* is one
+  click: a GitHub sign-in window opens, the page forks the repository and adds the graph under `incoming/` on a new
+  branch of the fork, and the same window shows GitHub's *Open a pull request* page, the graph attached and the title
+  and description filled in, for the reader to review and create under their login; the page then marks the graph once
+  that pull request exists. The token lives in the page's memory for that click and is never saved. Without the
+  sign-in set up, the graph downloads and GitHub's upload page opens.
+- **Curate a paper with your own API key, in the browser, with any of the three providers (site and package, no schema
+  change, no migration).** Curating needed the web service. Now, with a key set under *Your API key* (Anthropic's,
+  OpenAI's or OpenRouter's), *Curate* runs in the page: pdf.js reads the PDF's text, `scale source start` runs in
+  Pyodide, and the model fills the graph by the curate-corpus skill with the new `scale.curation_tools`, the same
+  tools the service's curation loop now uses, until `check` passes and it calls `done`; *Finish now* asks it to check,
+  fix and finish. The graph opens on the canvas, private to the reader. Questions and curation share one tool-use loop
+  for every provider. The Curate dialog names no provider or model; with a key it says only what stays private. The
+  dialog takes a PDF only (no DOI field), and its statement of lawful access says the source is curated to share the
+  knowledge derived from it with the research community. *Curate* stays grey until a PDF is given and the statement
+  ticked. A graph curated in the browser can be contributed to catal-commons through the web service, signed in with
+  GitHub, whose login is the credit: the service accepts it without a receipt (`curated_in_browser`), takes its source
+  as in copyright (no quote kept) and says in the pull request how it was made; a person reviews it as every
+  contribution. While it runs, the dialog shows where the curation is (read the PDF, prepare SCALE, curate page by
+  page, check and fix), a progress bar, the time elapsed and about how long is left. `scale site build` stamps every
+  script, stylesheet and the package a page loads with the build's digest (`?v=`), so a browser never runs a page of
+  one build with a worker it kept from another. When it is done, the dialog gives way to what was curated (records,
+  links, records with evidence, pages read, the kinds of records) and what to do next: explore the graph, contribute
+  it, or curate another. Contributing is one click, on the graph's title line or in the dialog: a reader signed out
+  signs in with GitHub and the pull request opens when they come back, with no second click. A personal graph's card
+  shows the rows every graph's shows; its title line carries the Contribute button before its label, *personal*, in
+  the site's green; its title is concise (the model names the graph when it calls `done`).
 - **The repository's address is `github.com/trace-ai-org/scale` (no schema change, no migration).** The repository
   moved from `hlxin/scale`. Install commands, clone commands, issue forms, the package metadata, the citation, the
   update check (`scale status`), the release manifest's source, the service's default repository and the site's links

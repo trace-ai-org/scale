@@ -10,20 +10,18 @@ prompts, so the procedure is the one an agent follows anywhere else. Each loop s
 from __future__ import annotations
 
 import json
-import re
 from pathlib import Path
 from typing import Callable
 
 from scale import curate, pgraph
+from scale.curation_tools import STOP, CurationTools, short_check, skill
 from scale.api import ScaleToolkit
-from scale.util import find_repo_root, load_doc, write_canonical
+from scale.util import find_repo_root, load_doc
 
 RESULT_CHARS = 40_000          # the longest tool result handed back to the model
 
 
-def _skill(repo: Path, name: str) -> str:
-    text = (repo / "skills" / name / "SKILL.md").read_text(encoding="utf-8")
-    return re.sub(r"\A---\n.*?\n---\n", "", text, flags=re.S)         # the procedure, without its front matter
+_skill = skill                 # a skill's procedure, without its front matter (runner.py too)
 
 
 def _clip(obj) -> str:
@@ -96,112 +94,18 @@ class Loop:
 # ------------------------------------------------------------------------------------------------- curation
 
 
-def _upsert(path: Path, nodes: list[dict], links: list[dict]) -> dict:
-    doc = load_doc(path)
-    for key, recs in (("nodes", nodes), ("links", links)):
-        have = {r["id"]: i for i, r in enumerate(doc[key])}
-        for r in recs or []:
-            if not isinstance(r, dict) or not r.get("id"):
-                raise ValueError(f"every {key[:-1]} needs an id")
-            if r["id"] in have:
-                doc[key][have[r["id"]]] = r
-            else:
-                have[r["id"]] = len(doc[key])
-                doc[key].append(r)
-    write_canonical(path, doc)
-    return {"nodes": len(doc["nodes"]), "links": len(doc["links"])}
-
-
-def _remove(path: Path, ids: list[str], keep: set[str]) -> dict:
-    doc = load_doc(path)
-    gone = set(ids) - keep
-    doc["nodes"] = [n for n in doc["nodes"] if n["id"] not in gone]
-    doc["links"] = [e for e in doc["links"] if e["id"] not in gone and e["source"] not in gone and e["target"] not in gone]
-    write_canonical(path, doc)
-    return {"removed": sorted(gone), "kept": sorted(set(ids) & keep), "nodes": len(doc["nodes"]), "links": len(doc["links"])}
-
-
-def _summary(path: Path) -> dict:
-    doc = load_doc(path)
-    by: dict[str, list[str]] = {}
-    for n in doc["nodes"]:
-        by.setdefault(n["label"], []).append(n["id"])
-    types: dict[str, int] = {}
-    for e in doc["links"]:
-        types[e["type"]] = types.get(e["type"], 0) + 1
-    return {"graph": doc["graph"], "nodes_by_label": by, "links_by_type": types}
-
-
-def _pages(folder: Path, first: int, last: int) -> str:
-    texts = sorted((folder / "work" / "texts").glob("*.txt"))
-    if not texts:
-        return "no page texts: the source had no readable text"
-    text = texts[0].read_text(encoding="utf-8")
-    chunks = re.split(r"^\[page (\d+)\]\n", text, flags=re.M)[1:]
-    pages = {int(chunks[i]): chunks[i + 1] for i in range(0, len(chunks), 2)}
-    keep = [f"[page {p}]\n{pages[p]}" for p in sorted(pages) if first <= p <= last]
-    return "".join(keep) or f"no pages {first}-{last}; the source has pages {min(pages)}-{max(pages)}"
-
-
 def curate_folder(folder: Path, client, model: str, max_turns: int, max_tokens: int,
                   log: Callable[[str], None] = lambda s: None, repo: Path | None = None) -> dict:
     """Fill the graph of a ``scale source start`` folder by the curate-corpus skill until ``scale source check``
-    passes (or the loop runs out); returns the check, the model's summary and the tokens spent."""
-    repo = Path(repo) if repo else find_repo_root()
-    info = load_doc(folder / "source.json")
-    gpath = folder / f"{info['slug']}.graph.json"
-    fixed = {n["id"] for n in load_doc(gpath)["nodes"]}          # the Source, steward and project the folder starts with
-    kit = ScaleToolkit(workspace=folder, repo=repo)
-    npages = info.get("read", {}).get("pages") or len(re.findall(r"^\[page \d+\]$", _pages(folder, 0, 10**6), re.M))
-    tools = [
-        _tool("read_pages", "The source's page texts, pages first to last (inclusive). Quote evidence verbatim from them.",
-              {"first": {"type": "integer"}, "last": {"type": "integer"}}, ["first", "last"]),
-        _tool("describe", "The schema: labels and edge types with their properties and the catalysis checklist "
-              "(scale describe). No names: an overview of every label and edge type.",
-              {"names": {"type": "array", "items": {"type": "string"}}}),
-        _tool("graph_summary", "The working graph's header, its node ids by label and its link counts by type."),
-        _tool("get_records", "Records of the working graph by id, in full.",
-              {"ids": {"type": "array", "items": {"type": "string"}}}, ["ids"]),
-        _tool("upsert", "Add records to the working graph, or replace those with the same id. Nodes are "
-              "{id, label, props}; links are {id, type, source, target, props}. Ids start with the source's prefix "
-              f"({info['source_id'].replace('/source/', '/')}/…) unless they are shared records.",
-              {"nodes": {"type": "array", "items": {"type": "object"}},
-               "links": {"type": "array", "items": {"type": "object"}}}),
-        _tool("remove", "Remove records (and the links touching them) by id. The Source, steward and project stay.",
-              {"ids": {"type": "array", "items": {"type": "string"}}}, ["ids"]),
-        _tool("check", "scale source check --derive-links: the graph valid under its schema, every quote found in "
-              "the page texts, conformance, gaps and the copyright cap. Run it after writing and fix every error."),
-        _tool("done", "Finish: the graph checks without error and holds what the source reports. Say what was curated, "
-              "what was left out and why.", {"summary": {"type": "string"}}, ["summary"]),
-    ]
-    handlers = {
-        "read_pages": lambda a: _pages(folder, int(a["first"]), int(a["last"])),
-        "describe": lambda a: kit.call("describe", {"names": a.get("names") or [], "domain": "catalysis"}),
-        "graph_summary": lambda a: _summary(gpath),
-        "get_records": lambda a: [r for r in load_doc(gpath)["nodes"] + load_doc(gpath)["links"] if r["id"] in set(a["ids"])],
-        "upsert": lambda a: _upsert(gpath, a.get("nodes") or [], a.get("links") or []),
-        "remove": lambda a: _remove(gpath, a["ids"], fixed),
-        "check": lambda a: _short_check(curate.check(folder, repo, derive_links=True)),
-    }
-    system = (_skill(repo, "curate-corpus") + "\n\n# Working here\n\nYou curate in a web service, through the tools "
-              "given (no shell; the scale commands named above are run for you: `check` is `scale source check "
-              "--derive-links`). Read every page before you finish. Write records with `upsert`, run `check` and "
-              "fix what it reports, then call `done`.")
-    first = (folder / "BRIEF.md").read_text(encoding="utf-8") + f"\n\nThe source has {npages} pages of text."
-    loop = Loop(client, model, system, tools, handlers, max_turns, max_tokens, log)
-    text, stop = loop.run(first, stop_tool="done")
-    final = curate.check(folder, repo, derive_links=True)
-    return {"check": _short_check(final), "summary": (stop or {}).get("summary") or text,
+    passes (or the loop runs out); returns the check, the model's summary and the tokens spent. The tools are
+    ``scale.curation_tools``, the ones the graph explorer gives a model with a reader's own key."""
+    ct = CurationTools(folder, repo)
+    handlers = {t["name"]: (lambda a, n=t["name"]: ct.call(n, a)) for t in ct.definitions() if t["name"] != STOP}
+    loop = Loop(client, model, ct.system(), ct.definitions(), handlers, max_turns, max_tokens, log)
+    text, stop = loop.run(ct.first(), stop_tool=STOP)
+    final = curate.check(folder, ct.repo, derive_links=True)
+    return {"check": short_check(final), "summary": (stop or {}).get("summary") or text,
             "stopped": (stop or {}).get("stopped"), "tokens": loop.tokens}
-
-
-def _short_check(res: dict) -> dict:
-    out = {k: res[k] for k in ("ok", "records", "quotes_checked_against_text", "gaps", "cap") if k in res}
-    out["errors"] = res.get("errors", [])[:40]
-    out["warnings"] = res.get("warnings", [])[:20]
-    if len(res.get("errors", [])) > 40:
-        out["errors_not_shown"] = len(res["errors"]) - 40
-    return out
 
 
 # ------------------------------------------------------------------------------------------------- questions

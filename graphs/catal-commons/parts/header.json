@@ -11,7 +11,7 @@
     ],
     "graph_id": "scale:commons/graph/catal-commons",
     "schema": "scale-catal",
-    "schema_version": "0.2.0",
+    "schema_version": "0.8.2",
     "stewardship": {
       "access": "public",
       "contributed_by": [

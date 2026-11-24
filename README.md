@@ -47,8 +47,12 @@ with its source, its reported unit, a short verbatim quote and its uncertainty, 
    the query plans behind it, and a **Limits** line says what the graph could not answer. The model's own
    extrapolations, if any, are in a separate, labelled paragraph.
 
+6. **Curate a paper's PDF with the same key.** With a key set, **Curate** runs in your browser: the page reads the
+   PDF, the model fills its graph with SCALE's curation tools run in the page, and the graph opens on the canvas,
+   private to you.
+
 With the SCALE web service ([`service/`](service/README.md), not yet public), signed-in readers can also curate a
-paper on the page and contribute it in one click.
+paper on the page with no API key of their own, and contribute a graph in one click.
 
 ## Contribute your first paper
 
@@ -59,7 +63,8 @@ prompt to copy, is [CONTRIBUTE.md](CONTRIBUTE.md).
 |---|---|---|
 | `/first-paper <DOI>` in Claude Code, in a clone of this repository | Claude Code and [uv](https://docs.astral.sh/uv/) | now |
 | [the copy-paste prompt](CONTRIBUTE.md#path-b-the-prompt) in Codex, Cursor or another coding agent | a coding agent that can run commands, and uv | now |
-| *Curate* and *Contribute to the commons* on the web page | a GitHub account | once the web service runs |
+| *Curate* on the web page, with your own API key | an Anthropic, OpenAI or OpenRouter key | now |
+| *Contribute to the commons* on the web page | a GitHub account | once the web service runs |
 
 A chatbot that cannot run commands cannot run the checks, so use one of the first two paths. Each runs the same
 steps: extract the paper into a graph, check it, and show you the result. You get your paper as a graph (open it in

@@ -58,6 +58,10 @@ When a job is done, the page offers **Contribute to the commons**:
 - **Only the service's own graphs.** The service signs a receipt for the graph it curated for the user, covering its
   digest and the source's rights entry. Only that graph, unchanged and sent by that user, can be contributed, so a
   contribution cannot raise a source's rights class or carry text the service did not check.
+- **A graph curated in the reader's browser** (the explorer, with the reader's own model key) has no receipt. The
+  page sends it with `"curated_in_browser": true`, signed in with GitHub, whose login is the contributor's credit.
+  The service never read its source, so it takes it as in copyright (`BROWSER_RIGHTS`: no quote kept, each as sha256
+  and length), and the pull request says how it was made, for the reviewer to check its values against the source.
 - **The check** (`POST /contribute/check`). The service reads `graphs/catal-commons` from main and the open pull
   requests from `contrib/` branches. It answers that the source is already in the commons, or already proposed, or
   else what adding it would change. The matching is `scale graph contribute`'s (`tools/commons.py`): the same DOI,
@@ -144,6 +148,8 @@ members.
 | `SCALE_WEB_CONCURRENT_JOBS` | jobs run at once | 2 |
 | `SCALE_WEB_MAX_UPLOAD_MB` | the largest PDF | 40 |
 | `SCALE_WEB_WORKDIR` | where job folders live while they run | a temporary directory |
+| `SCALE_GITHUB_LOGIN` (in `site/config.js`, not the service's) | the GitHub sign-in worker ([`github-login/`](github-login/README.md)): set, the explorer's Contribute signs the reader in with GitHub and opens the pull request itself, the graph attached | empty: Contribute downloads the graph and opens GitHub's upload page |
+| `SCALE_COMMONS_TOKEN` (a repository secret, not the service's) | the bot's token the commons intake (`.github/workflows/commons-intake.yml`, `scaleweb/intake.py`) opens fold pull requests with, so that the checks run on them: contents and pull requests write | unset: the intake only comments what folding would add |
 | `SCALE_WEB_GITHUB_TOKEN` | the bot's token for contributions: a bot account's fine-grained token (or a GitHub App's installation token) that may write contents and pull requests of the repository | empty: contributions off |
 | `SCALE_WEB_REPO`, `SCALE_WEB_COMMONS` | the repository and the commons folder | `trace-ai-org/scale`, `graphs/catal-commons` |
 | `SCALE_WEB_REVIEWERS` | GitHub logins asked to review each contribution, comma-separated | empty |
