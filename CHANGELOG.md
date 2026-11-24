@@ -2,6 +2,11 @@
 
 ## Unreleased
 
+- **catal-commons holds its first source (graphs only; no schema change).** Cl-promoted Cu catalysts for CO2
+  electroreduction (10.1016/j.xcrp.2023.101294), curated under scale-catal 0.8.2 and added with
+  `scale graph contribute`. The tests that took catal-commons to be empty (`test_commons.py`'s folder fixture, the
+  site's list of graphs) now start from the commons as it began, or list every graph folder with a source.
+
 - **Contribute without a server: a pull request under the reader's own GitHub login, folded in by the repository
   (site, service, catal-commons; no schema change, no migration of documents).** With no web service running, the
   explorer's *Contribute* downloads the graph with every quote withheld and opens GitHub's upload page for
