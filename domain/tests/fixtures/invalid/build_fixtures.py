@@ -45,6 +45,7 @@ SELECTIVITY = REPO / "domain/examples/scale-catal/product-measurement-examples/s
 SALT = REPO / "domain/examples/scale-catal/synthesis-examples/salt-matrix-anneal.json"
 CHAIN = REPO / "domain/examples/scale-catal/product-measurement-examples/chain-growth-probability.json"
 FTS = REPO / "domain/examples/scale-catal/fts-examples/fts-conditions.json"
+HALOGEN = REPO / "domain/examples/scale-catal/synthesis-examples/halogen-source.json"
 
 
 def test_node(doc: dict) -> dict:
@@ -462,6 +463,14 @@ def main() -> None:
     # a chain-growth probability (#108) is a dimensionless probability, never a quantity of another dimension
     defect("chain-growth-probability-in-kelvin", "a chain-growth probability whose unit is a temperature",
            lambda d: fts_test(d, "weight-fit")["result_values"][0].__setitem__("unit", "K"), base=load_doc(CHAIN))
+
+    # a halogen source (0.8.3) is named by the listed value, never by another spelling of it
+    def halide_source(d: dict) -> None:
+        e = next(e for e in d["links"] if e["type"] == "HAS_INPUT" and e["source"] == "ex:hal/step/cl-cu-dissolve"
+                 and e["target"] == "ex:hal/species/hcl")
+        e["props"]["synthesis_function"] = ["halide_source", "ph_modifier"]
+    defect("halogen-source-not-in-vocabulary", "an input that supplies a halogen, its function misspelt halide_source",
+           halide_source, base=load_doc(HALOGEN))
 
 
 if __name__ == "__main__":

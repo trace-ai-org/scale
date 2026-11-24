@@ -42,6 +42,7 @@ STEPS: dict[str, tuple[str, str]] = {
     "0.7.9": ("0.8.0", 'breaking: a selectivity is compared by what it counts (selectivity_count: carbon atoms, mole, mass) and what it is a share of (selectivity_whole: converted reactant, products without CO2, a pool named by the new value field relative_to); a value that states neither is compared only with such values (provisional)'),
     "0.8.0": ("0.8.1", 'additive change'),
     "0.8.1": ("0.8.2", 'additive change'),
+    "0.8.2": ("0.8.3", 'HAS_INPUT.synthesis_function gains halogen_source (an input that supplies a halogen incorporated into the material); nothing to rewrite'),
 }
 
 

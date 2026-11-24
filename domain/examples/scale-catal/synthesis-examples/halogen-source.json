@@ -1,0 +1,1032 @@
+{
+  "nodes": [
+    {
+      "id": "ex:hal/source/cl-cu",
+      "label": "Source",
+      "props": {
+        "name": "Invented paper: Chloride retained in copper catalysts for CO2 electroreduction",
+        "kind": "article",
+        "origin": "synthetic",
+        "title": "Chloride retained in copper catalysts for CO2 electroreduction (invented)",
+        "year": 2026
+      }
+    },
+    {
+      "id": "ex:hal/material/cu-fcc",
+      "label": "Material",
+      "props": {
+        "name": "fcc copper",
+        "crystallinity": "crystalline",
+        "evidence": [
+          {
+            "kind": "text",
+            "locator": "Results, XRD",
+            "source": "ex:hal/source/cl-cu"
+          }
+        ],
+        "formula": "Cu",
+        "material_family": "metal",
+        "origin": "synthetic",
+        "structure_type": "fcc"
+      }
+    },
+    {
+      "id": "ex:hal/species/cuno3",
+      "label": "ChemicalSpecies",
+      "props": {
+        "name": "copper(II) nitrate",
+        "elemental_composition": {
+          "Cu": 1,
+          "N": 2,
+          "O": 6
+        },
+        "formula": "Cu(NO3)2",
+        "origin": "synthetic"
+      }
+    },
+    {
+      "id": "ex:hal/species/cucl2",
+      "label": "ChemicalSpecies",
+      "props": {
+        "name": "copper(II) chloride",
+        "elemental_composition": {
+          "Cl": 2,
+          "Cu": 1
+        },
+        "formula": "CuCl2",
+        "origin": "synthetic"
+      }
+    },
+    {
+      "id": "ex:hal/species/hcl",
+      "label": "ChemicalSpecies",
+      "props": {
+        "name": "hydrochloric acid",
+        "elemental_composition": {
+          "Cl": 1,
+          "H": 1
+        },
+        "formula": "HCl",
+        "origin": "synthetic"
+      }
+    },
+    {
+      "id": "ex:hal/species/nabh4",
+      "label": "ChemicalSpecies",
+      "props": {
+        "name": "sodium borohydride",
+        "elemental_composition": {
+          "B": 1,
+          "H": 4,
+          "Na": 1
+        },
+        "formula": "NaBH4",
+        "origin": "synthetic"
+      }
+    },
+    {
+      "id": "ex:hal/species/water",
+      "label": "ChemicalSpecies",
+      "props": {
+        "name": "water",
+        "elemental_composition": {
+          "H": 2,
+          "O": 1
+        },
+        "formula": "H2O",
+        "origin": "synthetic"
+      }
+    },
+    {
+      "id": "ex:hal/catalyst/cl-cu",
+      "label": "Catalyst",
+      "props": {
+        "name": "Cl-modified Cu",
+        "catalyst_family": "metal",
+        "evidence": [
+          {
+            "kind": "text",
+            "locator": "Experimental, Synthesis",
+            "source": "ex:hal/source/cl-cu"
+          }
+        ],
+        "nominal_formula": "Cu",
+        "origin": "synthetic"
+      }
+    },
+    {
+      "id": "ex:hal/sample/cl-cu",
+      "label": "CatalystSample",
+      "props": {
+        "name": "Cl-modified Cu, as prepared",
+        "evidence": [
+          {
+            "kind": "text",
+            "locator": "Experimental, Synthesis",
+            "source": "ex:hal/source/cl-cu"
+          }
+        ],
+        "origin": "synthetic",
+        "preparation_status": "prepared",
+        "sample_kind": "powder"
+      }
+    },
+    {
+      "id": "ex:hal/preparation/cl-cu",
+      "label": "Preparation",
+      "props": {
+        "name": "Cl-modified Cu by borohydride reduction with HCl",
+        "design_aims": [
+          "composition"
+        ],
+        "evidence": [
+          {
+            "kind": "text",
+            "locator": "Experimental, Synthesis",
+            "source": "ex:hal/source/cl-cu"
+          }
+        ],
+        "method": "Cu(NO3)2 reduced by NaBH4 in water containing HCl, washed and dried",
+        "origin": "synthetic",
+        "preparation_methods": [
+          "other"
+        ]
+      }
+    },
+    {
+      "id": "ex:hal/step/cl-cu-dissolve",
+      "label": "ProcedureStep",
+      "props": {
+        "name": "Dissolve Cu(NO3)2 in water and add HCl",
+        "action": "dissolve",
+        "evidence": [
+          {
+            "kind": "text",
+            "locator": "Experimental, Synthesis",
+            "source": "ex:hal/source/cl-cu"
+          }
+        ],
+        "origin": "synthetic"
+      }
+    },
+    {
+      "id": "ex:hal/step/cl-cu-reduce",
+      "label": "ProcedureStep",
+      "props": {
+        "name": "Add NaBH4 dropwise",
+        "action": "add",
+        "evidence": [
+          {
+            "kind": "text",
+            "locator": "Experimental, Synthesis",
+            "source": "ex:hal/source/cl-cu"
+          }
+        ],
+        "origin": "synthetic"
+      }
+    },
+    {
+      "id": "ex:hal/step/cl-cu-wash",
+      "label": "ProcedureStep",
+      "props": {
+        "name": "Wash with water and dry",
+        "action": "wash",
+        "evidence": [
+          {
+            "kind": "text",
+            "locator": "Experimental, Synthesis",
+            "source": "ex:hal/source/cl-cu"
+          }
+        ],
+        "origin": "synthetic"
+      }
+    },
+    {
+      "id": "ex:hal/characterization/cl-cu-xps",
+      "label": "Characterization",
+      "props": {
+        "name": "XPS of the Cl-modified Cu",
+        "evidence": [
+          {
+            "kind": "figure",
+            "locator": "Figure 2",
+            "source": "ex:hal/source/cl-cu"
+          }
+        ],
+        "experiment_kind": "physical",
+        "information_depth": "surface",
+        "origin": "synthetic",
+        "sampling": "ensemble",
+        "technique": "X-ray photoelectron spectroscopy"
+      }
+    },
+    {
+      "id": "ex:hal/state/cl-cu",
+      "label": "CatalystState",
+      "props": {
+        "name": "Cl-modified Cu as prepared, chloride at the surface",
+        "architecture": [
+          "nanoparticles",
+          "unsupported"
+        ],
+        "evidence": [
+          {
+            "kind": "figure",
+            "locator": "Figure 2",
+            "source": "ex:hal/source/cl-cu"
+          }
+        ],
+        "origin": "synthetic",
+        "state_kind": "as_prepared"
+      }
+    },
+    {
+      "id": "ex:hal/claim/cl-retained",
+      "label": "Claim",
+      "props": {
+        "name": "The chloride from HCl remains in the copper catalyst after w",
+        "claim_kind": "finding",
+        "claim_status": "proposed",
+        "evidence": [
+          {
+            "kind": "text",
+            "locator": "Results, XPS",
+            "source": "ex:hal/source/cl-cu"
+          }
+        ],
+        "origin": "synthetic",
+        "statement": "The chloride from HCl remains in the copper catalyst after washing."
+      }
+    },
+    {
+      "id": "ex:hal/catalyst/cu-from-cucl2",
+      "label": "Catalyst",
+      "props": {
+        "name": "Cu from CuCl2",
+        "catalyst_family": "metal",
+        "evidence": [
+          {
+            "kind": "text",
+            "locator": "Experimental, Synthesis",
+            "source": "ex:hal/source/cl-cu"
+          }
+        ],
+        "nominal_formula": "Cu",
+        "origin": "synthetic"
+      }
+    },
+    {
+      "id": "ex:hal/sample/cu-from-cucl2",
+      "label": "CatalystSample",
+      "props": {
+        "name": "Cu from CuCl2, as prepared",
+        "evidence": [
+          {
+            "kind": "text",
+            "locator": "Experimental, Synthesis",
+            "source": "ex:hal/source/cl-cu"
+          }
+        ],
+        "origin": "synthetic",
+        "preparation_status": "prepared",
+        "sample_kind": "powder"
+      }
+    },
+    {
+      "id": "ex:hal/preparation/cu-from-cucl2",
+      "label": "Preparation",
+      "props": {
+        "name": "Cu by borohydride reduction of CuCl2",
+        "evidence": [
+          {
+            "kind": "text",
+            "locator": "Experimental, Synthesis",
+            "source": "ex:hal/source/cl-cu"
+          }
+        ],
+        "method": "CuCl2 reduced by NaBH4 in water, washed free of chloride and dried",
+        "origin": "synthetic",
+        "preparation_methods": [
+          "other"
+        ]
+      }
+    },
+    {
+      "id": "ex:hal/step/cucl2-dissolve",
+      "label": "ProcedureStep",
+      "props": {
+        "name": "Dissolve CuCl2 in water",
+        "action": "dissolve",
+        "evidence": [
+          {
+            "kind": "text",
+            "locator": "Experimental, Synthesis",
+            "source": "ex:hal/source/cl-cu"
+          }
+        ],
+        "origin": "synthetic"
+      }
+    },
+    {
+      "id": "ex:hal/step/cucl2-reduce",
+      "label": "ProcedureStep",
+      "props": {
+        "name": "Add NaBH4 dropwise",
+        "action": "add",
+        "evidence": [
+          {
+            "kind": "text",
+            "locator": "Experimental, Synthesis",
+            "source": "ex:hal/source/cl-cu"
+          }
+        ],
+        "origin": "synthetic"
+      }
+    },
+    {
+      "id": "ex:hal/step/cucl2-wash",
+      "label": "ProcedureStep",
+      "props": {
+        "name": "Wash with water until free of chloride and dry",
+        "action": "wash",
+        "evidence": [
+          {
+            "kind": "text",
+            "locator": "Experimental, Synthesis",
+            "source": "ex:hal/source/cl-cu"
+          }
+        ],
+        "origin": "synthetic"
+      }
+    }
+  ],
+  "links": [
+    {
+      "id": "ex:hal/link/1",
+      "type": "HAS_COMPONENT",
+      "props": {
+        "evidence": [
+          {
+            "kind": "text",
+            "locator": "Experimental, Synthesis",
+            "source": "ex:hal/source/cl-cu"
+          }
+        ],
+        "origin": "synthetic",
+        "role": "active_phase"
+      },
+      "source": "ex:hal/catalyst/cl-cu",
+      "target": "ex:hal/material/cu-fcc"
+    },
+    {
+      "id": "ex:hal/link/2",
+      "type": "HAS_FORMULATION",
+      "props": {
+        "origin": "synthetic"
+      },
+      "source": "ex:hal/sample/cl-cu",
+      "target": "ex:hal/catalyst/cl-cu"
+    },
+    {
+      "id": "ex:hal/link/3",
+      "type": "HAS_OUTPUT",
+      "props": {
+        "origin": "synthetic"
+      },
+      "source": "ex:hal/preparation/cl-cu",
+      "target": "ex:hal/sample/cl-cu"
+    },
+    {
+      "id": "ex:hal/link/4",
+      "type": "PART_OF",
+      "props": {
+        "order": 1,
+        "origin": "synthetic"
+      },
+      "source": "ex:hal/step/cl-cu-dissolve",
+      "target": "ex:hal/preparation/cl-cu"
+    },
+    {
+      "id": "ex:hal/link/5",
+      "type": "HAS_INPUT",
+      "props": {
+        "amount": {
+          "status": "present",
+          "unit": "mmol",
+          "value": 1.0
+        },
+        "evidence": [
+          {
+            "kind": "text",
+            "locator": "Experimental, Synthesis",
+            "source": "ex:hal/source/cl-cu"
+          }
+        ],
+        "origin": "synthetic",
+        "role": "reagent",
+        "synthesis_function": [
+          "metal_precursor"
+        ]
+      },
+      "source": "ex:hal/step/cl-cu-dissolve",
+      "target": "ex:hal/species/cuno3"
+    },
+    {
+      "id": "ex:hal/link/6",
+      "type": "HAS_INPUT",
+      "props": {
+        "amount": {
+          "status": "present",
+          "unit": "mmol",
+          "value": 0.5
+        },
+        "evidence": [
+          {
+            "kind": "text",
+            "locator": "Experimental, Synthesis",
+            "source": "ex:hal/source/cl-cu"
+          }
+        ],
+        "origin": "synthetic",
+        "role": "reagent",
+        "synthesis_function": [
+          "halogen_source",
+          "ph_modifier"
+        ]
+      },
+      "source": "ex:hal/step/cl-cu-dissolve",
+      "target": "ex:hal/species/hcl"
+    },
+    {
+      "id": "ex:hal/link/7",
+      "type": "HAS_INPUT",
+      "props": {
+        "amount": {
+          "status": "present",
+          "unit": "mL",
+          "value": 50
+        },
+        "evidence": [
+          {
+            "kind": "text",
+            "locator": "Experimental, Synthesis",
+            "source": "ex:hal/source/cl-cu"
+          }
+        ],
+        "origin": "synthetic",
+        "role": "material",
+        "synthesis_function": [
+          "solvent"
+        ]
+      },
+      "source": "ex:hal/step/cl-cu-dissolve",
+      "target": "ex:hal/species/water"
+    },
+    {
+      "id": "ex:hal/link/8",
+      "type": "PART_OF",
+      "props": {
+        "order": 2,
+        "origin": "synthetic"
+      },
+      "source": "ex:hal/step/cl-cu-reduce",
+      "target": "ex:hal/preparation/cl-cu"
+    },
+    {
+      "id": "ex:hal/link/9",
+      "type": "HAS_INPUT",
+      "props": {
+        "addition_mode": "dropwise",
+        "amount": {
+          "status": "present",
+          "unit": "mmol",
+          "value": 4.0
+        },
+        "evidence": [
+          {
+            "kind": "text",
+            "locator": "Experimental, Synthesis",
+            "source": "ex:hal/source/cl-cu"
+          }
+        ],
+        "origin": "synthetic",
+        "role": "reagent",
+        "synthesis_function": [
+          "reducing_agent"
+        ]
+      },
+      "source": "ex:hal/step/cl-cu-reduce",
+      "target": "ex:hal/species/nabh4"
+    },
+    {
+      "id": "ex:hal/link/10",
+      "type": "PART_OF",
+      "props": {
+        "order": 3,
+        "origin": "synthetic"
+      },
+      "source": "ex:hal/step/cl-cu-wash",
+      "target": "ex:hal/preparation/cl-cu"
+    },
+    {
+      "id": "ex:hal/link/11",
+      "type": "HAS_INPUT",
+      "props": {
+        "amount": {
+          "status": "present",
+          "unit": "mL",
+          "value": 100
+        },
+        "evidence": [
+          {
+            "kind": "text",
+            "locator": "Experimental, Synthesis",
+            "source": "ex:hal/source/cl-cu"
+          }
+        ],
+        "origin": "synthetic",
+        "role": "material",
+        "synthesis_function": [
+          "solvent"
+        ]
+      },
+      "source": "ex:hal/step/cl-cu-wash",
+      "target": "ex:hal/species/water"
+    },
+    {
+      "id": "ex:hal/link/12",
+      "type": "HAS_OUTPUT",
+      "props": {
+        "origin": "synthetic"
+      },
+      "source": "ex:hal/step/cl-cu-wash",
+      "target": "ex:hal/sample/cl-cu"
+    },
+    {
+      "id": "ex:hal/link/13",
+      "type": "CHARACTERIZES",
+      "props": {
+        "origin": "synthetic",
+        "state": "as_prepared"
+      },
+      "source": "ex:hal/characterization/cl-cu-xps",
+      "target": "ex:hal/sample/cl-cu"
+    },
+    {
+      "id": "ex:hal/link/14",
+      "type": "STATE_OF",
+      "props": {
+        "origin": "synthetic"
+      },
+      "source": "ex:hal/state/cl-cu",
+      "target": "ex:hal/sample/cl-cu"
+    },
+    {
+      "id": "ex:hal/link/15",
+      "type": "REACHED_BY",
+      "props": {
+        "origin": "synthetic",
+        "timing": "after"
+      },
+      "source": "ex:hal/state/cl-cu",
+      "target": "ex:hal/preparation/cl-cu"
+    },
+    {
+      "id": "ex:hal/link/16",
+      "type": "DETERMINED_BY",
+      "props": {
+        "origin": "synthetic"
+      },
+      "source": "ex:hal/state/cl-cu",
+      "target": "ex:hal/characterization/cl-cu-xps"
+    },
+    {
+      "id": "ex:hal/link/17",
+      "type": "ABOUT",
+      "props": {
+        "origin": "synthetic",
+        "role": "preparation"
+      },
+      "source": "ex:hal/claim/cl-retained",
+      "target": "ex:hal/preparation/cl-cu"
+    },
+    {
+      "id": "ex:hal/link/18",
+      "type": "ABOUT",
+      "props": {
+        "origin": "synthetic",
+        "role": "sample"
+      },
+      "source": "ex:hal/claim/cl-retained",
+      "target": "ex:hal/sample/cl-cu"
+    },
+    {
+      "id": "ex:hal/link/19",
+      "type": "ABOUT",
+      "props": {
+        "origin": "synthetic",
+        "role": "agent"
+      },
+      "source": "ex:hal/claim/cl-retained",
+      "target": "ex:hal/species/hcl"
+    },
+    {
+      "id": "ex:hal/link/20",
+      "type": "SUPPORTS",
+      "props": {
+        "evidence": [
+          {
+            "kind": "text",
+            "locator": "Results, XPS",
+            "source": "ex:hal/source/cl-cu"
+          }
+        ],
+        "origin": "synthetic"
+      },
+      "source": "ex:hal/characterization/cl-cu-xps",
+      "target": "ex:hal/claim/cl-retained"
+    },
+    {
+      "id": "ex:hal/link/21",
+      "type": "HAS_COMPONENT",
+      "props": {
+        "evidence": [
+          {
+            "kind": "text",
+            "locator": "Experimental, Synthesis",
+            "source": "ex:hal/source/cl-cu"
+          }
+        ],
+        "origin": "synthetic",
+        "role": "active_phase"
+      },
+      "source": "ex:hal/catalyst/cu-from-cucl2",
+      "target": "ex:hal/material/cu-fcc"
+    },
+    {
+      "id": "ex:hal/link/22",
+      "type": "HAS_FORMULATION",
+      "props": {
+        "origin": "synthetic"
+      },
+      "source": "ex:hal/sample/cu-from-cucl2",
+      "target": "ex:hal/catalyst/cu-from-cucl2"
+    },
+    {
+      "id": "ex:hal/link/23",
+      "type": "HAS_OUTPUT",
+      "props": {
+        "origin": "synthetic"
+      },
+      "source": "ex:hal/preparation/cu-from-cucl2",
+      "target": "ex:hal/sample/cu-from-cucl2"
+    },
+    {
+      "id": "ex:hal/link/24",
+      "type": "PART_OF",
+      "props": {
+        "order": 1,
+        "origin": "synthetic"
+      },
+      "source": "ex:hal/step/cucl2-dissolve",
+      "target": "ex:hal/preparation/cu-from-cucl2"
+    },
+    {
+      "id": "ex:hal/link/25",
+      "type": "HAS_INPUT",
+      "props": {
+        "amount": {
+          "status": "present",
+          "unit": "mmol",
+          "value": 1.0
+        },
+        "evidence": [
+          {
+            "kind": "text",
+            "locator": "Experimental, Synthesis",
+            "source": "ex:hal/source/cl-cu"
+          }
+        ],
+        "origin": "synthetic",
+        "role": "reagent",
+        "synthesis_function": [
+          "metal_precursor"
+        ]
+      },
+      "source": "ex:hal/step/cucl2-dissolve",
+      "target": "ex:hal/species/cucl2"
+    },
+    {
+      "id": "ex:hal/link/26",
+      "type": "HAS_INPUT",
+      "props": {
+        "amount": {
+          "status": "present",
+          "unit": "mL",
+          "value": 50
+        },
+        "evidence": [
+          {
+            "kind": "text",
+            "locator": "Experimental, Synthesis",
+            "source": "ex:hal/source/cl-cu"
+          }
+        ],
+        "origin": "synthetic",
+        "role": "material",
+        "synthesis_function": [
+          "solvent"
+        ]
+      },
+      "source": "ex:hal/step/cucl2-dissolve",
+      "target": "ex:hal/species/water"
+    },
+    {
+      "id": "ex:hal/link/27",
+      "type": "PART_OF",
+      "props": {
+        "order": 2,
+        "origin": "synthetic"
+      },
+      "source": "ex:hal/step/cucl2-reduce",
+      "target": "ex:hal/preparation/cu-from-cucl2"
+    },
+    {
+      "id": "ex:hal/link/28",
+      "type": "HAS_INPUT",
+      "props": {
+        "addition_mode": "dropwise",
+        "amount": {
+          "status": "present",
+          "unit": "mmol",
+          "value": 4.0
+        },
+        "evidence": [
+          {
+            "kind": "text",
+            "locator": "Experimental, Synthesis",
+            "source": "ex:hal/source/cl-cu"
+          }
+        ],
+        "origin": "synthetic",
+        "role": "reagent",
+        "synthesis_function": [
+          "reducing_agent"
+        ]
+      },
+      "source": "ex:hal/step/cucl2-reduce",
+      "target": "ex:hal/species/nabh4"
+    },
+    {
+      "id": "ex:hal/link/29",
+      "type": "PART_OF",
+      "props": {
+        "order": 3,
+        "origin": "synthetic"
+      },
+      "source": "ex:hal/step/cucl2-wash",
+      "target": "ex:hal/preparation/cu-from-cucl2"
+    },
+    {
+      "id": "ex:hal/link/30",
+      "type": "HAS_INPUT",
+      "props": {
+        "amount": {
+          "status": "present",
+          "unit": "mL",
+          "value": 200
+        },
+        "evidence": [
+          {
+            "kind": "text",
+            "locator": "Experimental, Synthesis",
+            "source": "ex:hal/source/cl-cu"
+          }
+        ],
+        "origin": "synthetic",
+        "role": "material",
+        "synthesis_function": [
+          "solvent"
+        ]
+      },
+      "source": "ex:hal/step/cucl2-wash",
+      "target": "ex:hal/species/water"
+    },
+    {
+      "id": "ex:hal/link/31",
+      "type": "HAS_OUTPUT",
+      "props": {
+        "origin": "synthetic"
+      },
+      "source": "ex:hal/step/cucl2-wash",
+      "target": "ex:hal/sample/cu-from-cucl2"
+    },
+    {
+      "id": "ex:hal/catalyst/cl-cu/reported-in/cl-cu",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "Experimental, Synthesis"
+        ],
+        "origin": "synthetic"
+      },
+      "source": "ex:hal/catalyst/cl-cu",
+      "target": "ex:hal/source/cl-cu"
+    },
+    {
+      "id": "ex:hal/catalyst/cu-from-cucl2/reported-in/cl-cu",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "Experimental, Synthesis"
+        ],
+        "origin": "synthetic"
+      },
+      "source": "ex:hal/catalyst/cu-from-cucl2",
+      "target": "ex:hal/source/cl-cu"
+    },
+    {
+      "id": "ex:hal/characterization/cl-cu-xps/reported-in/cl-cu",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "Figure 2"
+        ],
+        "origin": "synthetic"
+      },
+      "source": "ex:hal/characterization/cl-cu-xps",
+      "target": "ex:hal/source/cl-cu"
+    },
+    {
+      "id": "ex:hal/claim/cl-retained/reported-in/cl-cu",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "Results, XPS"
+        ],
+        "origin": "synthetic"
+      },
+      "source": "ex:hal/claim/cl-retained",
+      "target": "ex:hal/source/cl-cu"
+    },
+    {
+      "id": "ex:hal/material/cu-fcc/reported-in/cl-cu",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "Results, XRD"
+        ],
+        "origin": "synthetic"
+      },
+      "source": "ex:hal/material/cu-fcc",
+      "target": "ex:hal/source/cl-cu"
+    },
+    {
+      "id": "ex:hal/preparation/cl-cu/reported-in/cl-cu",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "Experimental, Synthesis"
+        ],
+        "origin": "synthetic"
+      },
+      "source": "ex:hal/preparation/cl-cu",
+      "target": "ex:hal/source/cl-cu"
+    },
+    {
+      "id": "ex:hal/preparation/cu-from-cucl2/reported-in/cl-cu",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "Experimental, Synthesis"
+        ],
+        "origin": "synthetic"
+      },
+      "source": "ex:hal/preparation/cu-from-cucl2",
+      "target": "ex:hal/source/cl-cu"
+    },
+    {
+      "id": "ex:hal/sample/cl-cu/reported-in/cl-cu",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "Experimental, Synthesis"
+        ],
+        "origin": "synthetic"
+      },
+      "source": "ex:hal/sample/cl-cu",
+      "target": "ex:hal/source/cl-cu"
+    },
+    {
+      "id": "ex:hal/sample/cu-from-cucl2/reported-in/cl-cu",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "Experimental, Synthesis"
+        ],
+        "origin": "synthetic"
+      },
+      "source": "ex:hal/sample/cu-from-cucl2",
+      "target": "ex:hal/source/cl-cu"
+    },
+    {
+      "id": "ex:hal/state/cl-cu/reported-in/cl-cu",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "Figure 2"
+        ],
+        "origin": "synthetic"
+      },
+      "source": "ex:hal/state/cl-cu",
+      "target": "ex:hal/source/cl-cu"
+    },
+    {
+      "id": "ex:hal/step/cl-cu-dissolve/reported-in/cl-cu",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "Experimental, Synthesis"
+        ],
+        "origin": "synthetic"
+      },
+      "source": "ex:hal/step/cl-cu-dissolve",
+      "target": "ex:hal/source/cl-cu"
+    },
+    {
+      "id": "ex:hal/step/cl-cu-reduce/reported-in/cl-cu",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "Experimental, Synthesis"
+        ],
+        "origin": "synthetic"
+      },
+      "source": "ex:hal/step/cl-cu-reduce",
+      "target": "ex:hal/source/cl-cu"
+    },
+    {
+      "id": "ex:hal/step/cl-cu-wash/reported-in/cl-cu",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "Experimental, Synthesis"
+        ],
+        "origin": "synthetic"
+      },
+      "source": "ex:hal/step/cl-cu-wash",
+      "target": "ex:hal/source/cl-cu"
+    },
+    {
+      "id": "ex:hal/step/cucl2-dissolve/reported-in/cl-cu",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "Experimental, Synthesis"
+        ],
+        "origin": "synthetic"
+      },
+      "source": "ex:hal/step/cucl2-dissolve",
+      "target": "ex:hal/source/cl-cu"
+    },
+    {
+      "id": "ex:hal/step/cucl2-reduce/reported-in/cl-cu",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "Experimental, Synthesis"
+        ],
+        "origin": "synthetic"
+      },
+      "source": "ex:hal/step/cucl2-reduce",
+      "target": "ex:hal/source/cl-cu"
+    },
+    {
+      "id": "ex:hal/step/cucl2-wash/reported-in/cl-cu",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "Experimental, Synthesis"
+        ],
+        "origin": "synthetic"
+      },
+      "source": "ex:hal/step/cucl2-wash",
+      "target": "ex:hal/source/cl-cu"
+    }
+  ],
+  "directed": true,
+  "graph": {
+    "data_status": "synthetic_example",
+    "follows_domains": [
+      "catalysis"
+    ],
+    "graph_id": "ex:hal/graph",
+    "schema": "scale-catal",
+    "schema_version": "0.8.3",
+    "stewardship": {
+      "access": "public"
+    },
+    "title": "Copper catalysts with and without retained chloride: a halogen source and a counter-ion (synthetic)"
+  },
+  "multigraph": true
+}
