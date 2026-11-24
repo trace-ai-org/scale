@@ -1,0 +1,45 @@
+# The commons intake: a pull request that adds a graph to graphs/catal-commons/incoming/ (the graph explorer's
+# Contribute, under the reader's own GitHub login) is folded into catal-commons by service/scaleweb/intake.py, which
+# opens the fold pull request crediting the contributor and closes theirs.
+#
+# pull_request_target, so that a contribution from a fork can be answered: the job runs this workflow and the tools as
+# they are on the base branch, never the pull request's code; it reads the contributed files through the API, as
+# data. The fold pull request is opened with the bot's token (secret SCALE_COMMONS_TOKEN: a bot account's or a GitHub
+# App's, with contents and pull requests write), so the checks run on it; without the secret the intake only comments
+# what folding would add.
+name: commons-intake
+
+"on":
+  pull_request_target:
+    types: [opened, reopened, synchronize]
+    paths:
+      - "graphs/catal-commons/incoming/**"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: commons-intake-${{ github.event.pull_request.number }}
+
+jobs:
+  intake:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: read
+      pull-requests: write
+      issues: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: astral-sh/setup-uv@v5
+      - name: Install the tools
+        run: uv sync
+      - name: Fold the contribution into catal-commons
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          SCALE_COMMONS_TOKEN: ${{ secrets.SCALE_COMMONS_TOKEN }}
+          PR: ${{ github.event.pull_request.number }}
+          REPO: ${{ github.repository }}
+        run: uv run env PYTHONPATH=service python -m scaleweb.intake --pr "$PR" --repo "$REPO"

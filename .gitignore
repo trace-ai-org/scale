@@ -36,3 +36,6 @@ demo-output/
 graphs/catal-commons/literature/*.db
 graphs/catal-commons/literature/*.db.gz
 _site/
+
+# Cloudflare wrangler's local cache (service/github-login)
+.wrangler/

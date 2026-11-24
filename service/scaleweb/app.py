@@ -26,7 +26,9 @@
 * ``POST /search``                 ``{"graph": doc, "query": text, "k": n}``: ``scale search``, no sign-in
 * ``POST /ask``                    ``{"graph": doc, "question": text}``: the question loop; signed in
   (a signed-in query, search or question credits the catal-commons sources its answer uses: usage.py)
-* ``POST /contribute/check``       ``{"graph": doc, "receipt": r}``: is its source in catal-commons on main, or in an
+* ``POST /contribute/check``       ``{"graph": doc, "receipt": r}`` (or ``"curated_in_browser": true`` for a graph the
+                                   reader curated in the explorer with their own key, taken as in copyright): is its
+                                   source in catal-commons on main, or in an
                                    open contribution, and what adding it would change; signed in
 * ``POST /contribute``             the same, then a pull request (the bot's, crediting the user) that adds it
 
@@ -62,6 +64,13 @@ GRAPH_MAX = 20 * 2**20            # the largest graph a query, search or questio
 def anthropic_client():
     import anthropic                                  # the service's one dependency beyond scale-catal
     return anthropic.Anthropic()
+
+
+
+# The rights a graph curated in the reader's browser is contributed under: the service never read its source.
+BROWSER_RIGHTS = {"class": "in_copyright", "licence": "not verified by the service",
+                  "basis": "curated in the contributor's browser; the service did not read the source, so it is taken "
+                           "as in copyright"}
 
 
 class Service:
@@ -256,8 +265,15 @@ class Service:
         and with ``open_pr`` the pull request that adds it."""
         graph = req["graph"]
         entry = auth.check_receipt(self.cfg, str(req.get("receipt") or ""), user, graph)
+        # a graph the reader curated in their own browser, with their own model key, carries no receipt: the service
+        # never read its source, so it is taken as in copyright (no quote kept) and the pull request says how it was
+        # made; a person reviews it, as every contribution
+        browser = entry is None and req.get("curated_in_browser") is True
+        if browser:
+            entry = dict(BROWSER_RIGHTS)
         if entry is None:
-            return 403, {"error": "only a graph this service curated for you, unchanged, can be contributed"}, {}
+            return 403, {"error": "only a graph this service curated for you, unchanged, or one you curated in your "
+                                  "browser (curated_in_browser), can be contributed"}, {}
         if not self.cfg.github_token:
             return 503, {"error": "contributions are not set up on this service (SCALE_WEB_GITHUB_TOKEN)"}, {}
         repo = github.Repo(self.cfg.repo, self.cfg.github_token, self.cfg.commons, request=self.github_request)
@@ -285,7 +301,7 @@ class Service:
             refused = self.budget.take("contribution", user)
             if refused:
                 return 429, {"error": refused}, {}
-            title, body = self._pr_text(user, graph, entry, preview)
+            title, body = self._pr_text(user, graph, entry, preview, browser)
             try:
                 pr = repo.open_pull_request(sha, f"{github.BRANCH_PREFIX}{res['slug']}", res["files"], title, body,
                                             f"{title}\n\nContributed by @{user} through the SCALE web service.",
@@ -296,7 +312,7 @@ class Service:
         finally:
             shutil.rmtree(d, ignore_errors=True)
 
-    def _pr_text(self, user: str, graph: dict, entry: dict, p: dict) -> tuple[str, str]:
+    def _pr_text(self, user: str, graph: dict, entry: dict, p: dict, browser: bool = False) -> tuple[str, str]:
         src = next(n for n in graph["nodes"] if n.get("label") == "Source")["props"]
         name = src.get("title") or src.get("name") or p["slug"]
         ref = f"doi:{src['doi']}" if src.get("doi") else p["slug"]
@@ -319,8 +335,12 @@ class Service:
                + "; ".join(f"`{x['record']}` {x['property']}: held {json.dumps(x['held'])}, given {json.dumps(x['given'])}"
                            for x in p["conflicts"][:20]) + "."),
             "",
-            f"**Who.** Contributed by @{user} through the SCALE web service. The model ({self.cfg.model}) curated it "
-            "by the curate-corpus skill until `scale source check` passed, every quote found in the source's text.",
+            (f"**Who.** Contributed by @{user}, who curated it in their own browser with their own model key, by the "
+             "curate-corpus skill and `scale source check` run there against the PDF's text. The service never read "
+             "the source, so it takes it as in copyright and keeps no quote; check its values against the source."
+             if browser else
+             f"**Who.** Contributed by @{user} through the SCALE web service. The model ({self.cfg.model}) curated it "
+             "by the curate-corpus skill until `scale source check` passed, every quote found in the source's text."),
             "",
             f"**Rights.** {entry.get('class')}: {entry.get('licence')} ({entry.get('basis')}); {withheld}.",
             "",

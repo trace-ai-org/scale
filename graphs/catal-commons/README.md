@@ -10,9 +10,13 @@ with spare compute; the skills and the workflow for that come later.
 
 ## Adding a source
 
-From the web page ([`service/`](../../service/README.md)): curate the publication, then **Contribute to the commons**.
-The service checks that the source is not here already, on main or in an open contribution, then opens a pull request
-that adds it. The pull request is the bot's, and it credits the contributor. From the command line:
+From the [graph explorer](https://trace-ai-org.github.io/scale/): curate the publication with your own model key,
+then **Contribute** on its card. The page downloads the graph with every quote withheld and opens GitHub's upload page
+for [`incoming/`](incoming/README.md); drop the file and propose it, and GitHub opens the pull request under your login,
+your credit. The commons intake (`.github/workflows/commons-intake.yml`, [`service/scaleweb/intake.py`](../../service/scaleweb/intake.py))
+reads it as data, checks that the source is not here already (on main or in an open contribution), and opens the bot's
+fold pull request that adds it, crediting you; a person reviews and merges it. With the web service running
+([`service/`](../../service/README.md)), the service opens the fold pull request itself. From the command line:
 
 ```bash
 scale source start --doi DOI --out W        # then curate W/<slug>.graph.json and scale source check W

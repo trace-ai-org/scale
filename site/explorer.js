@@ -52,7 +52,7 @@ const status = (t) => { $("status").textContent = t; };
 const ready = () => "Search, queries and answers run in this browser.";
 
 // ------------------------------------------------------------------------------------------ the graphs rail
-const SCOPE = { service: ["new", "var(--select)"], graphs: ["curated", "var(--green)"], examples: ["example", "var(--blue)"], domain: ["synthetic", "var(--violet)"] };
+const SCOPE = { "own-key": ["personal", "var(--green)"], service: ["personal", "var(--green)"], graphs: ["curated", "var(--green)"], examples: ["example", "var(--blue)"], domain: ["synthetic", "var(--violet)"] };
 const scopeOf = (e) => SCOPE[(e.from || "").split("/")[0]] || ["file", "var(--subtle)"];
 const CARET = `<svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6 L15 12 L9 18"/></svg>`;
 
@@ -154,18 +154,36 @@ async function call(method, path, body, headers = {}) {
   if (!r.ok) throw Object.assign(new Error(data.error || `the service answered ${r.status}`), { status: r.status });
   return data;
 }
+// Who curates: the reader's own key, in this browser, when one is set (as questions are answered); else the service,
+// with a GitHub sign-in. The dialog's terms say which, for the provider and model that will read the source.
+const SERVICE_TERMS = $("curate-terms").innerHTML;
+const curateMode = () => ownKey ? "own" : SERVICE ? "service" : "";
+function curateTerms() {
+  const own = curateMode() === "own";
+  $("curate-terms").innerHTML = own ? `
+    <li><b>Private.</b> The PDF is read in your browser, and the graph opens here for you alone.</li>` : SERVICE_TERMS;
+  $("curate-details").hidden = own;
+}
 async function curateAccount(note = "") {
   const el = $("curate-account");
   const warn = note ? `<span class="gx-err">${esc(note)}</span>` : "";
+  curateTerms();
+  if (curateMode() === "own") {
+    el.innerHTML = warn;                                  // the key is the toolbar's: nothing to say about it here
+    syncCurate();
+    return;
+  }
   if (!SERVICE) {
-    el.innerHTML = `<span class="gx-warn">The curation service is not deployed yet.</span>`;
-    $("curate-start").disabled = true;
+    el.innerHTML = `<span class="gx-warn">Set your API key to curate in this browser.</span>
+      <button type="button" class="gx-btn gx-btn-tiny gx-btn-primary" id="curate-key">Set an API key</button>${warn}`;
+    $("curate-key").onclick = () => { $("curate-dialog").close(); openOwnKeyMenu(); };
+    syncCurate();
     return;
   }
   if (!token) {
     el.innerHTML = `<a class="gx-btn gx-btn-primary" id="curate-signin" href="#" role="button" data-signin="curate">Sign in with GitHub</a>
       <span class="gx-subtle">Free; the service needs only your login.</span>${warn}`;
-    $("curate-start").disabled = true;
+    syncCurate();
     return;
   }
   try {
@@ -175,13 +193,14 @@ async function curateAccount(note = "") {
       + `${me.tokens_left_today === 0 ? `<span class="gx-err">· the service's budget for today is spent</span>` : ""}`
       + `<button type="button" class="gx-btn gx-btn-tiny" id="curate-signout">Sign out</button>${warn}`;
     $("curate-signout").onclick = signOut;
-    $("curate-start").disabled = false;
+    syncCurate();
   } catch { /* curateAccount ran again on 401 */ }
 }
 async function openCurate() {
+  if (!curating && $("curate-dialog").classList.contains("is-done")) curateReset();
   if (!$("curate-dialog").open) $("curate-dialog").showModal();
   curateAccount();
-  if (!SERVICE) { $("curate-schema").textContent = ""; return; }
+  if (curateMode() !== "service") { $("curate-schema").textContent = ""; return; }
   try {
     const h = await call("GET", "/health");
     $("curate-schema").textContent = `Curated under SCALE Catalysis, schema scale-catal v${h.schema_version} (scale-catal ${h.scale_catal}).`;
@@ -268,8 +287,16 @@ async function showInbox() {
     $("curate-inbox").querySelectorAll("[data-follow]").forEach((b) => (b.onclick = () => { $("curate-job").hidden = false; followJob(b.dataset.follow, true); }));
   } catch { $("curate-inbox").innerHTML = ""; }
 }
-// One drop zone and one DOI field: a PDF (with or without its DOI), or a DOI alone.
-const pdfName = () => { const f = $("curate-pdf").files[0]; $("curate-pdf-name").textContent = f ? f.name : "Drop a PDF here, or choose one"; $("curate-drop").classList.toggle("has-file", !!f); $("curate-attest-row").hidden = !f; };
+// One drop zone: the source's PDF.
+// Curate is grey until there is something to curate: a PDF, the statement ticked, a key (or a service sign-in), and
+// no curation under way.
+function syncCurate() {
+  const mode = curateMode();
+  $("curate-start").disabled = curating || !$("curate-pdf").files[0] || !$("curate-attest").checked
+    || !mode || (mode === "service" && !token);
+}
+$("curate-attest").addEventListener("change", syncCurate);
+const pdfName = () => { const f = $("curate-pdf").files[0]; $("curate-pdf-name").textContent = f ? f.name : "Drop a PDF here, or choose one"; $("curate-drop").classList.toggle("has-file", !!f); $("curate-attest-row").hidden = !f; syncCurate(); };
 $("curate-pdf").onchange = pdfName;
 for (const ev of ["dragenter", "dragover"]) $("curate-drop").addEventListener(ev, (e) => { e.preventDefault(); $("curate-drop").classList.add("over"); });
 for (const ev of ["dragleave", "drop"]) $("curate-drop").addEventListener(ev, () => $("curate-drop").classList.remove("over"));
@@ -279,29 +306,227 @@ $("curate-drop").addEventListener("drop", (e) => {
   if (f) { const dt = new DataTransfer(); dt.items.add(f); $("curate-pdf").files = dt.files; pdfName(); }
 });
 async function startCuration(again = false) {
+  if (curateMode() === "own") return curateOwnKey();
   const job = $("curate-job");
   job.hidden = false;
   try {
     if (!token) throw new Error("sign in with GitHub first");
-    const f = $("curate-pdf").files[0], doi = $("curate-doi").value.trim();
-    if (!f && !doi) throw new Error("give a PDF, a DOI, or both");
-    if (f && !$("curate-attest").checked) throw new Error("tick the statement that you have lawful access to this PDF");
+    const f = $("curate-pdf").files[0];
+    if (!f) throw new Error("give the source's PDF");
+    if (!$("curate-attest").checked) throw new Error("tick the statement that you have lawful access to this PDF");
     const keep = !$("curate-keep-row").hidden && $("curate-keep").checked;
-    const q = new URLSearchParams({ ...(again ? { again: "1" } : {}), ...(keep ? { keep: "1" } : {}) });
-    let res;
-    if (f) {
-      q.set("filename", f.name);
-      q.set("attest", "1");
-      if (doi) q.set("doi", doi);
-      res = await call("POST", `/jobs?${q}`, f, { "Content-Type": "application/pdf" });
-    } else res = await call("POST", `/jobs${again ? "?again=1" : ""}`, { doi, keep_text: keep });
+    const q = new URLSearchParams({ ...(again ? { again: "1" } : {}), ...(keep ? { keep: "1" } : {}), filename: f.name, attest: "1" });
+    const res = await call("POST", `/jobs?${q}`, f, { "Content-Type": "application/pdf" });
     if (res.known) { showKnown(res.known); return; }
-    $("curate-start").disabled = true;
+    curating = true; syncCurate();
     await followJob(res.job, !!res.inbox);
   } catch (e) { job.innerHTML = `<span class="gx-err">${esc(e.message)}</span>`; }
-  $("curate-start").disabled = !token;
+  curating = false; syncCurate();
 }
 $("curate-start").onclick = () => startCuration();
+// Curating with the reader's own key, all in this browser: pdf.js reads the PDF's text layer page by page, SCALE starts
+// the source's folder in Pyodide (scale source start), and the model fills the graph by
+// the curate-corpus skill with scale.curation_tools (the service's own tools), through modelLoop, until it calls done.
+// The graph then opens on the canvas, as one the service curated would, without a receipt: it is the reader's.
+const PDFJS = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/";
+const PDFJS_SRI = { "pdf.min.js": "sha384-/1qUCSGwTur9vjf/z9lmu/eCUYbpOTgSjmpbMQZ1/CtX2v/WcAIKqRv+U1DUCG6e",
+  "pdf.worker.min.js": "sha384-SnzOobpRMLXZ52iJvZm/C0fYw0OQemTXzTjIsdsfMcrCtCEe9qgzxTd3RSklO5x2" };
+let pdfjs = null;
+function loadPdfjs() {                                     // loaded when first needed, each file checked against its digest
+  pdfjs ||= new Promise((resolve, reject) => {
+    const el = Object.assign(document.createElement("script"), { src: PDFJS + "pdf.min.js", integrity: PDFJS_SRI["pdf.min.js"], crossOrigin: "anonymous" });
+    el.onload = async () => {
+      try {
+        const w = await fetch(PDFJS + "pdf.worker.min.js", { integrity: PDFJS_SRI["pdf.worker.min.js"] });
+        window.pdfjsLib.GlobalWorkerOptions.workerSrc = URL.createObjectURL(new Blob([await w.text()], { type: "text/javascript" }));
+        resolve(window.pdfjsLib);
+      } catch (err) { reject(err); }
+    };
+    el.onerror = () => reject(new Error("pdf.js could not be loaded"));
+    document.head.append(el);
+  });
+  pdfjs.catch(() => { pdfjs = null; });
+  return pdfjs;
+}
+async function pdfText(file) {                            // "[page N]" and the page's text, as scale source start writes it
+  const lib = await loadPdfjs();
+  const pdf = await lib.getDocument({ data: new Uint8Array(await file.arrayBuffer()) }).promise;
+  let text = "", chars = 0;
+  for (let i = 1; i <= pdf.numPages; i++) {
+    const c = await (await pdf.getPage(i)).getTextContent();
+    const page = c.items.map((it) => it.str + (it.hasEOL ? "\n" : "")).join("").replace(/[ \t]+\n/g, "\n").trim();
+    chars += page.length;
+    text += `[page ${i}]\n${page}\n\n`;
+  }
+  return { text, pages: pdf.numPages, chars };
+}
+let curating = false, finishNow = false, commonsVersion = "";   // the schema catal-commons pins: curated under it
+const FINISH_UP = "The reader asked you to finish now. Write no more new records: run check, fix what it reports, then call done "
+  + "saying what was curated and what was left out.";
+// Where a curation is, and about how long it has left. Four stages; the model's stage advances with the pages it has
+// read (most of the work), then with each check it runs; the time left is the elapsed time scaled by what is left,
+// a rough estimate from the page count until enough is done to measure.
+const STAGES = [["read", "Read the PDF"], ["prepare", "Prepare SCALE in your browser"], ["curate", "Curate: read every page and write records"],
+  ["check", "Check every quote against the PDF and fix"]];
+const mmss = (s) => `${Math.floor(s / 60)}:${String(Math.floor(s % 60)).padStart(2, "0")}`;
+function curateProgress(job) {
+  const st = { stage: "read", detail: "", pages: 0, seen: new Set(), records: 0, checks: 0, errors: null, t0: Date.now(), log: [], frac: 0 };
+  job.hidden = false;
+  job.innerHTML = `<div class="gx-cj-head"><b id="cj-title">Curating</b><span class="gx-subtle" id="cj-time"></span></div>
+    <div class="gx-cj-bar"><span id="cj-bar"></span></div>
+    <ol class="gx-cj-steps" id="cj-steps"></ol>
+    <div class="gx-cj-detail" id="cj-detail"></div>
+    <details class="gx-cj-log"><summary id="cj-logsum">Activity</summary><ol id="cj-log"></ol></details>
+    <div id="cj-end"></div>
+    <button type="button" class="gx-btn gx-btn-tiny" id="curate-finish" title="Write no more records: check, fix and finish" hidden>Finish now</button>`;
+  $("curate-finish").onclick = (e) => { finishNow = true; e.target.disabled = true; e.target.textContent = "Finishing…"; st.note("Asked the model to check, fix and finish"); };
+  const order = STAGES.map(([k]) => k);
+  st.frac = () => {
+    if (st.stage === "read") return 0.02;
+    if (st.stage === "prepare") return 0.06;
+    if (st.stage === "curate") return 0.1 + 0.6 * (st.pages ? st.seen.size / st.pages : 0);
+    if (st.stage === "check") return Math.min(0.97, 0.75 + 0.2 * (1 - 0.6 ** st.checks));
+    return 1;
+  };
+  st.render = () => {
+    const i = order.indexOf(st.stage), f = st.frac(), el = (Date.now() - st.t0) / 1000;
+    $("cj-steps").innerHTML = STAGES.map(([k, label], j) =>
+      `<li class="${j < i || st.stage === "done" ? "done" : j === i ? "now" : ""}">${esc(label)}</li>`).join("");
+    $("cj-bar").style.width = `${Math.round(f * 100)}%`;
+    let left = "";
+    if (st.stage === "done" || st.stage === "failed") left = "";
+    else if (f > 0.15 && el > 30) left = ` · about ${Math.max(1, Math.round(el * (1 - f) / f / 60))} min left`;
+    else if (st.pages) left = ` · usually ${Math.max(2, Math.round(st.pages * 0.7))}–${Math.max(5, Math.round(st.pages * 2))} min for ${st.pages} pages`;
+    $("cj-time").textContent = `${mmss(el)} elapsed${left}`;
+    $("cj-detail").textContent = st.detail;
+  };
+  st.note = (line) => { st.log.push(`${mmss((Date.now() - st.t0) / 1000)} ${line}`); $("cj-log").innerHTML = st.log.map((l) => `<li>${esc(l)}</li>`).join(""); $("cj-logsum").textContent = `Activity (${st.log.length})`; };
+  st.go = (stage, detail) => {
+    st.stage = stage; st.detail = detail; st.note(detail); st.render();
+    if (stage === "curate" && $("curate-finish")) $("curate-finish").hidden = false;   // the model's stages only
+  };
+  st.timer = setInterval(st.render, 1000);
+  st.end = (title, html) => {
+    clearInterval(st.timer);
+    $("cj-title").textContent = title;
+    $("curate-finish")?.remove();
+    $("cj-end").innerHTML = html;
+    st.render();
+  };
+  // what each tool the model calls says about where it is
+  st.tool = (tool, args, result) => {
+    if (tool === "read_pages") {
+      for (let n = Number(args.first); n <= Math.min(Number(args.last), st.pages); n++) st.seen.add(n);
+      st.detail = `Read ${st.seen.size} of ${st.pages} pages · ${st.records} records written`;
+    } else if (tool === "upsert") {
+      try { const r = JSON.parse(result); st.records = r.nodes + r.links; } catch { /* an error, said to the model */ }
+      st.detail = `Read ${st.seen.size} of ${st.pages} pages · ${st.records} records written`;
+    } else if (tool === "check") {
+      st.checks++; st.stage = "check";
+      try { const r = JSON.parse(result); st.errors = r.errors.length + (r.errors_not_shown || 0); } catch { /* as above */ }
+      st.detail = st.errors ? `Check ${st.checks}: ${st.errors} problems to fix · ${st.records} records` : `Check ${st.checks}: no errors · ${st.records} records`;
+    } else if (tool === "describe") st.detail = "Reading the schema";
+    else if (tool === "remove") st.detail = `Removing records · ${st.records} records`;
+    st.note(st.detail);
+    st.render();
+  };
+  return st;
+}
+// Done: the form gives way to what was curated, in a few numbers, and what to do next: explore the graph (it is open
+// on the canvas, and questions now go to it), contribute it to catal-commons, or curate another source.
+function curateDone({ doc, check, r, pages, secs, title, log }) {
+  const by = {};
+  for (const n of doc.nodes) by[n.label] = (by[n.label] || 0) + 1;
+  const skip = new Set(["Source", "Institution", "Project", "Person"]);
+  const kinds = Object.entries(by).filter(([l]) => !skip.has(l)).sort((x, y) => y[1] - x[1]).slice(0, 8);
+  const evidenced = [...doc.nodes, ...doc.links].filter((x) => (x.props?.evidence || []).length).length;
+  const problems = check.ok ? 0 : check.errors.length + (check.errors_not_shown || 0);
+  const tile = (n, label) => `<div><b>${Number(n).toLocaleString()}</b><span>${esc(label)}</span></div>`;
+  $("curate-dialog").classList.add("is-done");
+  $("curate-job").hidden = false;
+  $("curate-job").innerHTML = `<div class="gx-done-head"><span class="gx-done-mark">✓</span><div><b>Curated</b><div class="gx-subtle">${esc(title)}</div></div></div>
+    <div class="gx-done-stats">${tile(doc.nodes.length, "records")}${tile(doc.links.length, "links")}${tile(evidenced, "with evidence")}${tile(pages, "pages read")}</div>
+    <div class="gx-done-kinds">${kinds.map(([l, n]) => `<span class="gx-chip">${esc(l)} <b>${n}</b></span>`).join("")}</div>
+    <p class="${problems ? "gx-card-warn" : "gx-subtle"}">${problems ? `${problems} problems the check still reports: the graph is open, and a reviewer sees them.` : "The check passes: every quote was found in the PDF."}
+      Took ${mmss(secs)}${r.stopped ? `; ${esc(r.stopped)}` : ""}.</p>
+    <details><summary>What the model curated</summary><div class="gx-done-summary">${idLinks(md(r.stopInput?.summary || r.text || ""))}</div>
+      ${problems ? `<p><b>Problems left</b></p><ul>${check.errors.slice(0, 20).map((e) => `<li>${esc(typeof e === "string" ? e : (e.record ? `${e.record}: ` : "") + (e.message || JSON.stringify(e)))}</li>`).join("")}</ul>` : ""}
+      <p class="gx-subtle">${esc(accountLine(r))}.</p></details>
+    <details><summary>Activity (${log.length})</summary><ol>${log.map((l) => `<li>${esc(l)}</li>`).join("")}</ol></details>
+    <div class="gx-done-next">
+      <button type="button" class="gx-btn gx-btn-primary" id="done-explore">Explore the graph</button>
+      <button type="button" class="gx-btn" id="done-contrib">Contribute to catal-commons</button>
+      <button type="button" class="gx-btn" id="done-again">Curate another</button>
+    </div>`;
+  $("done-explore").onclick = () => {
+    $("curate-dialog").close();
+    $("search-input").placeholder = "Ask a question about this graph...";
+    $("search-input").focus();
+  };
+  $("done-contrib").onclick = () => { $("curate-dialog").close(); contribute(); };
+  $("done-again").onclick = () => curateReset();
+  $("done-explore").focus();
+}
+function curateReset() {                         // the form again, empty
+  $("curate-dialog").classList.remove("is-done");
+  $("curate-pdf").value = "";
+  $("curate-attest").checked = false;
+  $("curate-job").hidden = true;
+  $("curate-job").innerHTML = "";
+  pdfName();
+}
+// A curated graph's title, short enough for its card: the one the model gives when it calls done, else the source's
+// title when it was found, else the PDF's name; cut at a word before 60 characters.
+function graphTitle(given, doc, filename) {
+  const src = doc.nodes.find((n) => n.label === "Source")?.props || {};
+  const slug = (doc.graph?.graph_id || "").split("/").pop();
+  const pick = [given, src.title !== slug ? src.title : "", filename.replace(/\.pdf$/i, "")].find((t) => t && String(t).trim()) || "Curated source";
+  const t = String(pick).replace(/\s+/g, " ").trim();
+  if (t.length <= 60) return t;
+  const cut = t.slice(0, 60).replace(/\s+\S*$/, "").replace(/[\s,;:–—-]+$/, "");
+  return `${cut}…`;
+}
+async function curateOwnKey() {
+  const job = $("curate-job");
+  let st = null;
+  try {
+    const f = $("curate-pdf").files[0];
+    if (!f) throw new Error("give the source's PDF");
+    if (!$("curate-attest").checked) throw new Error("tick the statement that you have lawful access to this PDF");
+    curating = true; finishNow = false; syncCurate();
+    st = curateProgress(job);
+    st.go("read", `Reading ${f.name}`);
+    const src = await pdfText(f);
+    if (src.chars < 200) throw new Error("the PDF has no text layer to read (a scan?); curating it needs text, which OCR would give");
+    st.pages = src.pages;
+    st.go("prepare", `${src.pages} pages of text read. Preparing SCALE in your browser (the first time, up to a minute)`);
+    const stem = f.name.replace(/\.pdf$/i, "").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "").slice(0, 60) || "source";
+    const s = await rpc({ op: "curate_start", text: src.text, name: `${stem}.txt`, version: commonsVersion });
+    $("curate-schema").textContent = `Curated under SCALE Catalysis, schema scale-catal v${s.started.schema_version}, in this browser.`;
+    st.go("curate", `Read 0 of ${st.pages} pages · waiting for the model`);
+    const r = await modelLoop({ system: s.system, tools: s.tools, first: s.first, stop: "done",
+      run: async (tool, args) => {
+        const out = await rpc({ op: "curate_call", tool, args });
+        st.tool(tool, args, out);
+        return out;
+      },
+      wrapUp: FINISH_UP, stopNow: () => finishNow, progress: () => {}, alive: () => true });
+    st.go("check", "Final check");
+    const check = JSON.parse(await rpc({ op: "curate_call", tool: "check", args: {} }));
+    const doc = await rpc({ op: "curate_graph" });
+    curating = false;
+    clearInterval(st.timer);
+    const title = graphTitle(r.stopInput?.title, doc, f.name);
+    doc.graph = { ...(doc.graph || {}), title };
+    await openOwn({ id: `curated-${stem}`, title, from: "own-key" }, JSON.stringify(doc), null, doc);
+    curateDone({ doc, check, r, pages: st.pages, secs: (Date.now() - st.t0) / 1000, title, log: st.log });
+  } catch (e) {
+    curating = false;
+    if (st) { st.stage = "failed"; st.end("Failed", `<div class="gx-err">${esc(e.message || String(e))}</div>`); }
+    else { job.hidden = false; job.innerHTML = `<div class="gx-err">${esc(e.message || String(e))}</div>`; }
+  }
+  syncCurate();
+}
 // The commons holds the source already, or an open contribution adds it: nothing was curated and nothing spent.
 function showKnown(k) {
   const commons = manifest.find((e) => e.id === "catal-commons");
@@ -379,12 +604,14 @@ async function openOwn(entry, text, receipt = null, doc = null) {
   await showOwn();
 }
 async function showOwn() {
+  if (own.prUrl && /\/upload\//.test(own.prUrl)) { own.contributed = null; own.prUrl = ""; }   // by hand: GitHub alone knows
+  // a graph curated before titles were concise carries its file's slug: give it its source's title
+  if (own.entry.from === "own-key" && !/\s/.test(own.entry.title)) own.entry.title = graphTitle("", own.doc || JSON.parse(own.text), own.entry.title);
   await openGraph(own.entry, own.text, own.doc);
   G.receipt = own.receipt;
-  G.contrib = own.receipt ? `<span class="gx-subtle">Checking catal-commons…</span>` : "";
   renderGraphs();
   if (!own.kept && !own.entry.windowed) status("This graph is too large to keep in this tab: download it before you sign in or reload.");
-  if (own.receipt) checkContribution();
+  if (token && store.take(CONTRIB_PENDING) === own.entry.id) contribute();   // back from the sign-in a click asked for
 }
 // A graph the service just curated, with its receipt, which alone lets it be contributed (only that graph, unchanged,
 // by the user it was curated for).
@@ -394,45 +621,188 @@ async function openCurated(doc, receipt) {
   const entry = { id: `curated-${title.toLowerCase().replace(/\W+/g, "-").slice(0, 40)}`, title, from: "service" };
   await openOwn(entry, JSON.stringify(doc), receipt || null);
 }
-function downloadGraph() {
-  const B = G.base || G;
-  download(`${B.entry.id}.json`, new Blob([JSON.stringify(B.doc, null, 1)], { type: "application/json" }));
+// Contributing: one click. Signed out, the click signs the reader in with GitHub (their login is their credit) and the
+// contribution goes on by itself when they come back; signed in, the service is asked whether catal-commons holds the
+// source already (or an open pull request proposes it) and, if not, the pull request opens at once, for a person to
+// review. A graph the service curated carries its receipt; one curated in this browser says so (curated_in_browser).
+const CONTRIB_PENDING = "scale-contrib-pending";
+let contribBusy = false;
+// Contributed: a pull request to catal-commons exists (opened by the page or the service). The by-hand route says
+// nothing about it, since only GitHub knows whether the reader uploaded the file.
+const sentToCommons = () => !!(own?.contributed && own.prUrl && !/\/upload\//.test(own.prUrl));
+function contribButton() {                       // on a personal graph's title line, before its label
+  if (!own || (own.entry.from !== "own-key" && !own.receipt && !own.contributed)) return "";
+  if (sentToCommons()) return "";                // its label says catal-commons now, linking the pull request
+  if (!SERVICE) return `<button type="button" class="gx-graph-contrib" id="contrib-go"${contribBusy ? ' aria-disabled="true"' : ""}
+    title="${GH_LOGIN ? "Sign in with GitHub, and the pull request to catal-commons opens with your graph attached, under your login (your credit)" : "GitHub's upload page opens and the graph downloads: drop it there, then Propose changes (your login is your credit)"}">${contribBusy ? "Contributing…" : "Contribute"}</button>`;
+  return `<button type="button" class="gx-graph-contrib" id="contrib-go"${contribBusy ? ' aria-disabled="true"' : ""}
+    title="${token ? "Contribute it to catal-commons: a pull request under your GitHub login, for a person to review" : "Contribute it to catal-commons: sign in with GitHub (your credit), and a pull request opens for a person to review"}">${contribBusy ? "Contributing…" : "Contribute"}</button>`;
 }
-// Contributing: what it would add is checked as soon as the graph arrives, so one click opens the pull request. What
-// becomes public is said next to the button, before it is pressed.
-function contribHtml() { return G?.contrib || ""; }
-function setContrib(html) { const B = G.base || G; B.contrib = html; const box = $("contrib-box"); if (box) { box.innerHTML = html; wireContrib(); } }
-function wireContrib() { $("contrib-go")?.addEventListener("click", contribute); }
-async function checkContribution() {
+const contribBody = (B) => ({ graph: B.doc, ...(B.receipt ? { receipt: B.receipt } : { curated_in_browser: true }) });
+function wireContrib() {
+  const b = $("contrib-go");
+  if (!b) return;
+  b.onclick = (ev) => {
+    ev.stopPropagation();
+    if (own?.prUrl) { window.open(own.prUrl, "_blank", "noopener"); return; }
+    if (b.getAttribute("aria-disabled") !== "true" && !own?.contributed) contribute();
+  };
+}
+function contributed(html, url = "") {           // the outcome, the card's Visibility, kept through a reload or sign-in
+  if (own) {
+    own.contributed = html; own.prUrl = url;
+    store.set(OWN, JSON.stringify({ entry: own.entry, text: own.text, receipt: own.receipt, contributed: html, prUrl: url }));
+  }
+  contribBusy = false;
+  renderGraphs();
+}
+// Without the service, a contribution is a pull request the reader opens on GitHub: the page downloads the graph with
+// every quote withheld (the repository keeps no text of a source in copyright) and opens GitHub's upload page for
+// graphs/catal-commons/incoming/; GitHub forks the repository and opens the pull request under the reader's login,
+// their credit. The commons intake (.github/workflows/commons-intake.yml) folds it into catal-commons and opens the
+// fold pull request for a person to review.
+const REPO = window.SCALE_REPO || "trace-ai-org/scale";
+async function contributeOnGitHub() {
   const B = G.base || G;
+  const tab = window.open(`https://github.com/${REPO}/upload/main/graphs/catal-commons/incoming`, "_blank");   // in the click, so no
+  if (tab) tab.opener = null;                                                                             // blocker stops it
+  contribBusy = true; renderGraphs();
   try {
-    const r = await call("POST", "/contribute/check", { graph: B.doc, receipt: B.receipt });
-    if (r.already) {
-      setContrib(`Already in catal-commons: ${r.already.map((h) => `<a href="${esc(h.url)}" target="_blank" rel="noopener">${esc(h.source)}</a> (the same ${esc(h.by.join(", "))})`).join("; ")}.`);
-      return;
+    const c = await rpc({ op: "contribution", text: JSON.stringify(B.doc) });
+    const file = `${c.slug}.json`;
+    download(file, new Blob([JSON.stringify(c.doc, null, 1)], { type: "application/json" }));
+    contribBusy = false; renderGraphs();
+    status(tab ? `On the GitHub tab: drop ${file} (just downloaded), then Propose changes and Create pull request.`
+      : `Your browser blocked the GitHub tab: open github.com/${REPO}/upload/main/graphs/catal-commons/incoming and drop ${file} there.`);
+  } catch (e) { contribBusy = false; renderGraphs(); status(`Contributing failed: ${e.message}`); }
+}
+// With a GitHub sign-in (service/github-login: a window opens on GitHub, and its token comes back to this page only,
+// kept in memory for this one contribution and never saved), the page opens the pull request itself, the graph
+// attached: it forks the repository (or brings the reader's fork up to date), adds the graph on a new branch of the
+// fork, and opens GitHub's pull request page for it, the graph attached and the title and description filled in, for
+// the reader to review and create under their login.
+const GH_API = "https://api.github.com";
+const GH_LOGIN = (window.SCALE_GITHUB_LOGIN || "").replace(/\/$/, "");
+let ghToken = "";                                // this contribution's token, forgotten when it ends
+function githubSignIn() {                        // called in the click itself, so that no blocker stops the window
+  return new Promise((resolve, reject) => {
+    const nonce = Array.from(crypto.getRandomValues(new Uint8Array(16)), (b) => b.toString(16).padStart(2, "0")).join("");
+    const w = window.open(`${GH_LOGIN}/login?origin=${encodeURIComponent(location.origin)}&nonce=${nonce}`, "scale-github", "width=640,height=760");
+    if (!w) { reject(new Error("your browser blocked the GitHub sign-in window: allow pop-ups for this page")); return; }
+    const from = new URL(GH_LOGIN).origin;
+    const end = (fn, v) => { window.removeEventListener("message", on); clearInterval(watch); fn(v); };
+    const on = (e) => {
+      if (e.origin !== from || e.data?.type !== "scale-github" || e.data.nonce !== nonce) return;
+      if (e.data.token) end(resolve, { token: e.data.token, win: w });
+      else { w.close(); end(reject, new Error(e.data.error || "GitHub did not sign you in")); }
+    };
+    window.addEventListener("message", on);
+    const watch = setInterval(() => { if (w.closed) end(reject, new Error("the GitHub sign-in window was closed")); }, 800);
+  });
+}
+async function gh(method, path, body) {
+  const r = await fetch(GH_API + path, { method, body: body ? JSON.stringify(body) : undefined, headers: {
+    Authorization: `Bearer ${ghToken}`, Accept: "application/vnd.github+json", "X-GitHub-Api-Version": "2022-11-28",
+    ...(body ? { "Content-Type": "application/json" } : {}) } });
+  const j = await r.json().catch(() => ({}));
+  if (!r.ok) throw Object.assign(new Error(j.message || `GitHub answered ${r.status}`), { status: r.status });
+  return j;
+}
+const base64 = (text) => {
+  const bytes = new TextEncoder().encode(text);
+  let s = "";
+  for (let i = 0; i < bytes.length; i += 0x8000) s += String.fromCharCode(...bytes.subarray(i, i + 0x8000));
+  return btoa(s);
+};
+async function contributeWithToken(win = null) {   // win: the sign-in window, which then shows GitHub's pull request page
+  const B = G.base || G;
+  contribBusy = true; renderGraphs();
+  const step = (t) => status(`Contributing to catal-commons: ${t}…`);
+  try {
+    step("preparing the graph");
+    const c = await rpc({ op: "contribution", text: JSON.stringify(B.doc) });
+    const title = B.doc.graph?.title || c.slug;
+    step("checking your GitHub token");
+    const me = await gh("GET", "/user");
+    step("forking the repository");
+    const fork = await gh("POST", `/repos/${REPO}/forks`, { default_branch_only: true });
+    for (let i = 0; ; i++) {                       // a new fork takes a few seconds to be ready
+      try { await gh("GET", `/repos/${fork.full_name}/git/ref/heads/main`); break; } catch (e) {
+        if (i >= 30) throw new Error("GitHub is still making your fork; press Contribute again in a minute");
+        await new Promise((r) => setTimeout(r, 2000));
+      }
     }
-    if (r.proposed) {
-      setContrib(`Already proposed: <a href="${esc(r.proposed.url)}" target="_blank" rel="noopener">#${esc(r.proposed.number)} ${esc(r.proposed.title)}</a>.`);
-      return;
-    }
-    const p = r.new;
-    setContrib(`<button type="button" class="gx-btn gx-btn-tiny gx-btn-primary" id="contrib-go">Contribute to catal-commons</button>
-      <ul class="gx-contrib-terms"><li>Adds ${Number(p.records.triples).toLocaleString()} new triples (${esc(p.records.nodes)} records, ${esc(p.records.links)} links), your credit on the leaderboard</li>
-        ${p.repeats && (p.repeats.records.length + p.repeats.links + p.repeats.values) ? `<li>${esc(p.repeats.records.length + p.repeats.links + p.repeats.values)} repeats of what catal-commons holds are discarded and not counted</li>` : ""}
-        ${p.conflicts && p.conflicts.length ? `<li>${esc(p.conflicts.length)} values differ from catal-commons' records; the reviewer decides</li>` : ""}<li>A public pull request on GitHub, naming you</li>
-        <li>Shared under CC BY 4.0; ${esc(p.quotes.kept)} quotes kept, ${esc(p.quotes.withheld)} withheld for the source's rights</li><li>Reviewed by a person before it is merged</li></ul>`);
-  } catch (e) { setContrib(`<span class="gx-err">${esc(e.message)}</span>`); }
+    try { await gh("POST", `/repos/${fork.full_name}/merge-upstream`, { branch: "main" }); } catch { /* up to date, or it cannot: the branch still works */ }
+    const head = await gh("GET", `/repos/${fork.full_name}/git/ref/heads/main`);
+    const branch = `scale-contribute-${c.slug}-${Date.now().toString(36)}`.slice(0, 90);
+    await gh("POST", `/repos/${fork.full_name}/git/refs`, { ref: `refs/heads/${branch}`, sha: head.object.sha });
+    step("adding your graph");
+    await gh("PUT", `/repos/${fork.full_name}/contents/graphs/catal-commons/incoming/${encodeURIComponent(c.slug)}.json`,
+      { message: `catal-commons: contribute ${title}`, content: base64(JSON.stringify(c.doc, null, 1)), branch });
+    // GitHub's "Open a pull request" page, the graph attached as its diff and the title and description filled in: the
+    // reader reviews it and clicks Create pull request; the page watches for that pull request and marks the graph
+    const evidenced = [...c.doc.nodes, ...c.doc.links].filter((x) => (x.props?.evidence || []).length).length;
+    const prTitle = `catal-commons: contribute ${title}`;
+    const prBody = [
+      `Contributes **${title}** to catal-commons: \`graphs/catal-commons/incoming/${c.slug}.json\`, ${c.doc.nodes.length} records and ${c.doc.links.length} links, ${evidenced} with evidence.`,
+      "", "Curated in the SCALE graph explorer by the curate-corpus skill, `scale source check` run in the browser against the source's text. "
+        + `Every quote is withheld (${c.withheld}, kept as sha256 and length): the repository keeps no text of a source in copyright.`,
+      "", "The commons intake folds it into catal-commons and opens the fold pull request crediting the contributor, for a person to review."].join("\n");
+    const compare = `https://github.com/${REPO}/compare/main...${encodeURIComponent(me.login)}:${encodeURIComponent(branch)}?expand=1`
+      + `&title=${encodeURIComponent(prTitle)}&body=${encodeURIComponent(prBody)}`;
+    ghToken = "";
+    if (win && !win.closed) win.location = compare; else window.open(compare, "_blank");
+    status("On GitHub: review your pull request, then Create pull request.");
+    contribBusy = false; renderGraphs();
+    watchForPullRequest(`${me.login}:${branch}`, compare);
+  } catch (e) {
+    if (win && !win.closed) win.close();
+    ghToken = ""; contribBusy = false; renderGraphs();
+    status(`Contributing failed: ${e.message}`);
+  }
+}
+// The pull request the reader creates on GitHub's page, looked for every few seconds for half an hour (GitHub's public
+// API, no token): once it exists, the graph's label reads catal-commons and links it.
+async function watchForPullRequest(head, compare) {
+  const entry = own?.entry;
+  for (let i = 0; i < 360 && own?.entry === entry && !sentToCommons(); i++) {
+    await new Promise((r) => setTimeout(r, 5000));
+    try {
+      const r = await fetch(`${GH_API}/repos/${REPO}/pulls?state=all&head=${encodeURIComponent(head)}`, { headers: { Accept: "application/vnd.github+json" } });
+      const prs = r.ok ? await r.json() : [];
+      if (prs.length && own?.entry === entry) {
+        contributed(`Sent to catal-commons: <a href="${esc(prs[0].html_url)}" target="_blank" rel="noopener">pull request #${esc(prs[0].number)}</a>`, prs[0].html_url);
+        status(ready());
+        return;
+      }
+    } catch { /* offline a moment: look again */ }
+  }
+}
+async function contributeSignedIn() {
+  const signIn = githubSignIn();                 // the window opens now, in the click
+  contribBusy = true; renderGraphs(); status("Contributing to catal-commons: signing in with GitHub…");
+  let win;
+  try { ({ token: ghToken, win } = await signIn); } catch (e) { contribBusy = false; renderGraphs(); status(`Contributing stopped: ${e.message}.`); return; }
+  await contributeWithToken(win);
 }
 async function contribute() {
   const B = G.base || G;
-  $("contrib-go").disabled = true;
+  if (contribBusy) return;
+  if (!SERVICE) return GH_LOGIN ? contributeSignedIn() : contributeOnGitHub();
+  if (!token) { store.set(CONTRIB_PENDING, B.entry.id); signIn("contribute"); return; }
+  contribBusy = true; renderGraphs();
+  status("Contributing to catal-commons…");
   try {
-    const o = await call("POST", "/contribute", { graph: B.doc, receipt: B.receipt });
+    const r = await call("POST", "/contribute/check", contribBody(B));
+    if (r.already) { status(ready()); return contributed(`In catal-commons already: <a href="${esc(r.already[0].url)}" target="_blank" rel="noopener">${esc(r.already[0].source)}</a>`, r.already[0].url); }
+    if (r.proposed) { status(ready()); return contributed(`Proposed already: <a href="${esc(r.proposed.url)}" target="_blank" rel="noopener">pull request #${esc(r.proposed.number)}</a>`, r.proposed.url); }
+    const o = await call("POST", "/contribute", contribBody(B));
     B.receipt = null;
-    if (own && own.entry === B.entry) { own.receipt = null; store.set(OWN, JSON.stringify(own)); }
-    setContrib(o.pull_request ? `Opened <a href="${esc(o.pull_request.url)}" target="_blank" rel="noopener">pull request #${esc(o.pull_request.number)}</a>. Thank you.`
-      : "It is in catal-commons already, or proposed.");
-  } catch (e) { $("contrib-go").disabled = false; setContrib(contribHtml() + `<div class="gx-err">${esc(e.message)}</div>`); }
+    if (own) own.receipt = null;
+    status(ready());
+    contributed(o.pull_request ? `Sent to catal-commons: <a href="${esc(o.pull_request.url)}" target="_blank" rel="noopener">pull request #${esc(o.pull_request.number)}</a>, for review`
+      : "In catal-commons already, or proposed", o.pull_request?.url || "");
+  } catch (e) { contribBusy = false; renderGraphs(); status(`Contributing failed: ${e.message}`); }
 }
 
 async function start() {
@@ -441,7 +811,10 @@ async function start() {
   if (own) own.kept = true;
   readSignIn();
   renderAccount();
-  try { manifest = (await (await fetch("data/graphs.json")).json()).graphs || []; } catch { manifest = []; }
+  try {
+    const m = await (await fetch("data/graphs.json")).json();
+    manifest = m.graphs || []; commonsVersion = m.commons_schema_version || "";
+  } catch { manifest = []; }
   renderGraphs();
   window.onhashchange = () => openFromHash();
   $("graph-file").onchange = async (e) => {
@@ -469,12 +842,19 @@ function renderGraphs() {
   const list = own ? [own.entry, ...manifest] : manifest;
   $("graphs").innerHTML = list.map((e) => {
     const [scope, c] = scopeOf(e), active = G && G.entry === e, open = active && !folded;
-    return `<div role="listitem"><button class="gx-graph-item${active ? " is-active" : ""}" type="button" data-id="${esc(e.id)}" title="${esc(e.title)}"
-        aria-expanded="${open}" style="--dot:${c}"><span class="gx-graph-caret">${CARET}</span><span class="gx-graph-dot"></span>
-        <span class="gx-graph-title">${esc(e.title)}</span><span class="gx-graph-scope">${scope}</span></button>${open ? details() : ""}</div>`;
+    const mineRow = own && e === own.entry, sent = mineRow && sentToCommons();
+    const action = mineRow ? (sent ? `<a class="gx-graph-scope gx-graph-sent" href="${esc(own.prUrl)}" target="_blank" rel="noopener"
+        title="Contributed to catal-commons: its pull request, for a person to review">catal-commons</a>` : contribButton() + `<span class="gx-graph-scope">${scope}</span>`) : "";
+    return `<div role="listitem" class="gx-graph-row${action ? " has-action" : ""}" style="--dot:${c}"><button class="gx-graph-item${active ? " is-active" : ""}" type="button" data-id="${esc(e.id)}" title="${esc(e.title)}"
+        aria-expanded="${open}"><span class="gx-graph-caret">${CARET}</span><span class="gx-graph-dot"></span>
+        <span class="gx-graph-title">${esc(e.title)}</span>${action ? "" : `<span class="gx-graph-scope">${scope}</span>`}</button>`
+      + (action ? `<span class="gx-graph-actions">${action}</span>` : "")
+      + `${open ? details() : ""}</div>`;
   }).join("") || `<p class="gx-muted">No graphs are listed: open a file.</p>`;
-  const dl = $("curated-download");
-  if (dl) dl.onclick = (ev) => { ev.preventDefault(); downloadGraph(); };
+  // the title gives way to the actions laid over its row's right end, by their measured width
+  $("graphs").querySelectorAll(".gx-graph-row.has-action").forEach((r) => {
+    r.querySelector(".gx-graph-item").style.paddingRight = `${r.querySelector(".gx-graph-actions").offsetWidth + 17}px`;
+  });
   wireContrib();
   const gs = $("graph-show");
   if (gs) gs.onclick = (ev) => { ev.preventDefault(); showGraph(); };
@@ -495,22 +875,20 @@ function renderGraphs() {
 }
 function details() {
   const B = G.base || G;                          // in the schema view, the facts are still the graph's
-  const g = B.doc.graph || {}, e = B.entry, [scope] = scopeOf(e);
+  const g = B.doc.graph || {}, e = B.entry, [scope] = scopeOf(e), mine = e.from === "service" || e.from === "own-key";
   const facts = [
     ["Type", `<a href="#" id="graph-show" title="Show the graph on the canvas">Knowledge graph</a>${G.base ? "" : ` <span class="gx-subtle">(shown)</span>`}${scope === "synthetic" ? ` <span class="gx-warn">synthetic example</span>` : ""}`],
     ["Size", `${B.doc.nodes.length.toLocaleString()} nodes · ${B.doc.links.length.toLocaleString()} rels · ${B.props.toLocaleString()} props`],
     g.version ? ["Release", esc(g.version)] : null,
-    ["Visibility", e.from === "service" ? "Private to you, until you contribute it" : esc(((g.stewardship || {}).access || "public").replace(/^./, (c) => c.toUpperCase()))],
+    ["Visibility", mine ? "Private" : esc(((g.stewardship || {}).access || "public").replace(/^./, (c) => c.toUpperCase()))],
     g.created || g.date ? ["Created", esc(g.created || g.date)] : null,
     e.windowed ? null : ["Checksum", B.sha ? `<span class="gx-sha" title="sha256 ${esc(B.sha)}">${esc(B.sha.slice(0, 12))}…</span>` : "…"],
     ...windowRows(e),
-    ["Source", e.from === "service" ? "curated by the service just now" : e.from ? `<a href="https://github.com/trace-ai-org/scale/tree/main/${esc(e.from)}">${esc(e.from)}</a>` : "a file on this computer"],
+    ["Source", e.from === "service" ? "curated by the service just now" : e.from === "own-key" ? "curated by you, in this browser" : e.from ? `<a href="https://github.com/trace-ai-org/scale/tree/main/${esc(e.from)}">${esc(e.from)}</a>` : "a file on this computer"],
     ["Schema", `<a href="#" id="schema-toggle" title="${G.base ? "Back to the graph" : "Show the schema on the canvas"}">${esc(g.schema || "scale-catal")} v${esc(g.schema_version || "?")}</a>${G.base ? ` <span class="gx-subtle">(shown)</span>` : ""}<br>
       ${B.labels.size} labels · ${B.rels.size} rel types · ${schemaPropCount(B).toLocaleString()} props`],
-    e.from === "service" ? ["Graph", `<a href="#" id="curated-download">Download</a>`] : null,
   ].filter(Boolean);
-  return `<div class="gx-graph-detail"><dl class="gx-facts">${facts.map(([k, v]) => `<dt>${k}</dt><dd>${v}</dd>`).join("")}</dl>`
-    + (e.from === "service" ? `<div class="gx-contrib" id="contrib-box">${B.contrib || ""}</div>` : "") + `</div>`;
+  return `<div class="gx-graph-detail"><dl class="gx-facts">${facts.map(([k, v]) => `<dt>${k}</dt><dd>${v}</dd>`).join("")}</dl></div>`;
 }
 
 // A bundle with more records than the explorer draws at once is drawn a window at a time (bundle.js): its sources in
@@ -1443,12 +1821,11 @@ async function claude(body) {
   if (r.status === 401) throw new Error(`Anthropic did not accept the API key (${why}). Check it under Your API key.`);
   if (r.status === 429) throw new Error(`Your API account's rate limit was reached; ask again in a minute (${why}).`);
   if (/usage limit|spend limit|credit balance/i.test(why)) throw new Error(`Anthropic's API answered: ${why} The spend limit is set in the Claude Console (Settings, Limits, or the workspace's own limits under Settings, Workspaces), or switch to another key under Your API key.`);
-  if (/prompt is too long|context window|too many tokens/i.test(why)) throw new Error(`Anthropic's API answered: ${why} The plans' rows outgrew what the model can read at once; ask a narrower question, or press Answer now earlier.`);
+  if (/prompt is too long|context window|too many tokens/i.test(why)) throw new Error(`Anthropic's API answered: ${why} The work so far outgrew what the model can read at once: ask a narrower question, or press Answer now (or Finish now) earlier.`);
   if (/anthropic-workspace-id|scoped to a workspace/i.test(why)) throw new Error(`Anthropic's API answered: ${why} Under Your API key, edit the key and give its Workspace ID (Claude Console, Settings, Workspaces), or use a key created inside a workspace.`);
   throw new Error(`Anthropic's API answered: ${why}`);
 }
 // OpenAI's chat completions format, which OpenAI and OpenRouter both take: the same tools, as functions.
-const CHAT_TOOLS = OWN_TOOLS.map((t) => ({ type: "function", function: { name: t.name, description: t.description, parameters: t.input_schema } }));
 async function chat(provider, body) {
   const p = PROVIDERS[provider];
   const r = await fetch(p.url, { method: "POST", headers: { "content-type": "application/json", "Authorization": `Bearer ${ownKey}` },
@@ -1473,9 +1850,83 @@ async function ownTool(name, a, plans) {
   }
   throw new Error(`unknown tool ${name}`);
 }
+// One tool-use loop for every provider and every task (a question, a curation): the model runs the tools until it
+// writes its answer, or calls the stop tool (curation's done), or the reader asks it to finish (stopNow), when wrapUp
+// is said to it beside the last results and its next reply ends the loop. No token budget, no turn limit and no tool
+// result cut short. In Anthropic's format the conversation is cached as it grows (markCache), the tools and the
+// system prompt staying the same throughout (the last turn keeps the tools, so the cache holds); in the chat
+// completions format (OpenAI, OpenRouter) the provider caches the repeated prefix itself.
+async function modelLoop({ system, tools, first, run, stop = "", wrapUp, stopNow, progress, alive }) {
+  const provider = ownProvider, model = ownModel;
+  const out = { text: "", stopInput: null, stopped: "", inTok: 0, cacheTok: 0, outTok: 0 };
+  const chatTools = tools.map((t) => ({ type: "function", function: { name: t.name, description: t.description, parameters: t.input_schema } }));
+  const messages = provider === "anthropic" ? [{ role: "user", content: first }]
+    : [{ role: "system", content: system }, { role: "user", content: first }];
+  const sys = [{ type: "text", text: system, cache_control: { type: "ephemeral" } }];
+  for (let turn = 0; ; turn++) {
+    const last = !!out.stopped;                             // the reader asked to finish: this reply ends the loop
+    let calls, cut;                                         // [{id, name, input}], and whether the reply ran out of room
+    if (provider === "anthropic") {
+      markCache(messages);
+      const r = await claude({ model, max_tokens: OWN_OUTPUT, system: sys, tools, messages });
+      if (!alive()) return null;
+      const u = r.usage || {};
+      out.inTok += (u.input_tokens || 0) + (u.cache_creation_input_tokens || 0) + (u.cache_read_input_tokens || 0);
+      out.cacheTok += u.cache_read_input_tokens || 0; out.outTok += u.output_tokens || 0;
+      const blocks = r.content || [];
+      messages.push({ role: "assistant", content: blocks });   // as returned, thinking blocks included
+      out.text = blocks.filter((b) => b.type === "text").map((b) => b.text).join("\n").trim();
+      if (r.stop_reason === "refusal") { out.stopped = "the model declined"; return out; }
+      calls = blocks.filter((b) => b.type === "tool_use").map((c) => ({ id: c.id, name: c.name, input: c.input || {} }));
+      cut = r.stop_reason === "max_tokens";
+    } else {
+      const r = await chat(provider, { model, messages, tools: chatTools, [PROVIDERS[provider].limit]: OWN_OUTPUT });
+      if (!alive()) return null;
+      out.inTok += r.usage?.prompt_tokens || 0; out.cacheTok += r.usage?.prompt_tokens_details?.cached_tokens || 0;
+      out.outTok += r.usage?.completion_tokens || 0;
+      const choice = r.choices?.[0] || {}, msg = choice.message || { role: "assistant", content: "" };
+      messages.push(msg);                                   // as returned (OpenRouter's reasoning details included)
+      out.text = (typeof msg.content === "string" ? msg.content : (msg.content || []).map((c) => c.text || "").join("\n")).trim();
+      if (msg.refusal || choice.finish_reason === "content_filter") { out.stopped = "the model declined"; out.text ||= msg.refusal || ""; return out; }
+      calls = (msg.tool_calls || []).filter((c) => c.type === "function" || c.function).map((c) => {
+        let input = {}; try { input = JSON.parse(c.function.arguments || "{}"); } catch { /* answered as an error below */ input = null; }
+        return { id: c.id, name: c.function.name, input };
+      });
+      cut = choice.finish_reason === "length";
+    }
+    const ending = stop && calls.find((c) => c.name === stop);
+    if (ending) { out.stopInput = ending.input || {}; return out; }
+    if (!calls.length || last) { if (cut) out.stopped ||= "the reply ran out of room"; return out; }
+    progress(`Turn ${turn + 1}: ${calls.map((c) => c.name).join(", ")}`);
+    const results = [];
+    for (const c of calls) {
+      let content, error = false;
+      try {
+        if (c.input === null) throw new Error("the tool call's arguments were not valid JSON");
+        content = whole(await run(c.name, c.input));
+      } catch (err) { content = `Error: ${err.message || err}`; error = true; }
+      if (!alive()) return null;
+      results.push(provider === "anthropic" ? { type: "tool_result", tool_use_id: c.id, content, ...(error ? { is_error: true } : {}) }
+        : { role: "tool", tool_call_id: c.id, content });
+    }
+    if (stopNow()) out.stopped = "finished early, on request";
+    if (provider === "anthropic") {
+      if (out.stopped) results.push({ type: "text", text: wrapUp });
+      messages.push({ role: "user", content: results });
+    } else {
+      messages.push(...results);
+      if (out.stopped) messages.push({ role: "user", content: wrapUp });
+    }
+  }
+}
+const OWN_OUTPUT = 32000;                                 // the most one reply may write (the answer included)
+const tokenLine = (inTok, cacheTok, outTok) =>
+  `${inTok.toLocaleString()} input (${cacheTok.toLocaleString()} read from the cache) and ${outTok.toLocaleString()} output tokens`;
+const accountLine = (r) => `${tokenLine(r.inTok, r.cacheTok, r.outTok)} on your API account`;
+// A question, by the query-graph skill, over the graph on the canvas.
 async function askOwnKey(question) {
   leaveSchema();
-  const g = G, model = ownModel, provider = ownProvider, modelName = modelLabel();
+  const g = G, modelName = modelLabel();
   answerNow = false;
   const progress = (line) => {
     if (G !== g) return;
@@ -1486,87 +1937,22 @@ async function askOwnKey(question) {
   };
   progress("");
   const plans = [];
-  let inTok = 0, cacheTok = 0, outTok = 0, text = "", stopped = "";
   try {
     if (skillText === null) {
       const s = await fetch("data/query-graph.md");
       if (!s.ok) throw new Error(`data/query-graph.md: HTTP ${s.status}`);
       skillText = await s.text();
     }
-    const runTool = async (name, input) => whole(await ownTool(name, input, plans));
-    if (provider !== "anthropic") {
-      ({ text, stopped, inTok, cacheTok, outTok } = await askChat(provider, model, question, runTool, progress, g));
-      if (G !== g) return;
-      answerCard({ answer: text, plans, stopped }, `${tokenLine(inTok, cacheTok, outTok)} on your ${PROVIDERS[provider].name} account (${model})`);
-      return;
-    }
-    // The tools and the system prompt never change within a question, so they are read from the cache from the second
-    // turn on; the conversation is cached as it grows (markCache). The tools stay offered on the last turn too, since
-    // changing them or tool_choice would cost the conversation's cache: WRAP_UP asks for the answer instead.
-    const system = [{ type: "text", text: skillText + WORKING_HERE, cache_control: { type: "ephemeral" } }];
-    const messages = [{ role: "user", content: question }];
-    for (let turn = 0; ; turn++) {
-      const last = !!stopped;                               // the reader asked for the answer: this turn gives it
-      markCache(messages);
-      const r = await claude({ model, max_tokens: OWN_OUTPUT, system, tools: OWN_TOOLS, messages });
-      if (G !== g) return;                                  // another graph was opened meanwhile
-      const u = r.usage || {};
-      inTok += (u.input_tokens || 0) + (u.cache_creation_input_tokens || 0) + (u.cache_read_input_tokens || 0);
-      cacheTok += u.cache_read_input_tokens || 0;
-      outTok += u.output_tokens || 0;
-      const blocks = r.content || [];
-      messages.push({ role: "assistant", content: blocks });   // as returned, thinking blocks included
-      text = blocks.filter((b) => b.type === "text").map((b) => b.text).join("\n").trim();
-      if (r.stop_reason === "refusal") { stopped = "the model declined to answer this question"; break; }
-      const calls = blocks.filter((b) => b.type === "tool_use");
-      if (!calls.length || last) { if (r.stop_reason === "max_tokens") stopped = stopped || "the answer ran out of room"; break; }
-      progress(`Turn ${turn + 1}: ${calls.map((c) => c.name).join(", ")}`);
-      const results = [];
-      for (const c of calls) {
-        try { results.push({ type: "tool_result", tool_use_id: c.id, content: await runTool(c.name, c.input || {}) }); }
-        catch (err) { results.push({ type: "tool_result", tool_use_id: c.id, is_error: true, content: String(err.message || err) }); }
-      }
-      if (answerNow) { stopped = ANSWERED_EARLY; results.push({ type: "text", text: WRAP_UP }); }
-      messages.push({ role: "user", content: results });
-    }
-    answerCard({ answer: text, plans, stopped }, `${tokenLine(inTok, cacheTok, outTok)} on your API account (${modelName})`);
+    const r = await modelLoop({ system: skillText + WORKING_HERE, tools: OWN_TOOLS, first: question,
+      run: (name, input) => ownTool(name, input, plans), wrapUp: WRAP_UP, stopNow: () => answerNow, progress, alive: () => G === g });
+    if (!r) return;                                         // another graph was opened meanwhile
+    const stopped = r.stopped === "finished early, on request" ? ANSWERED_EARLY : r.stopped;
+    answerCard({ answer: r.text, plans, stopped }, accountLine(r));
   } catch (err) {
     if (G === g) card("Answer", `<p class="gx-card-warn">${esc(err.message || err)}</p>`);
   }
 }
-const OWN_OUTPUT = 32000;                                 // the most one reply may write (the answer included)
 const ANSWERED_EARLY = "you asked for the answer before the model had finished; it answered from the rows returned so far";
-const tokenLine = (inTok, cacheTok, outTok) =>
-  `${inTok.toLocaleString()} input (${cacheTok.toLocaleString()} read from the cache) and ${outTok.toLocaleString()} output tokens`;
-// The same loop in the chat completions format: the skill as the system message, each tool call answered by a tool
-// message, the assistant's message sent back as returned (OpenRouter's reasoning details included). OpenAI caches a
-// repeated prefix by itself; the messages are only ever appended to, so each turn's prefix is the last turn's prompt.
-async function askChat(provider, model, question, runTool, progress, g) {
-  const p = PROVIDERS[provider];
-  const messages = [{ role: "system", content: skillText + WORKING_HERE }, { role: "user", content: question }];
-  let inTok = 0, cacheTok = 0, outTok = 0, text = "", stopped = "";
-  for (let turn = 0; ; turn++) {
-    const last = !!stopped;
-    const r = await chat(provider, { model, messages, tools: CHAT_TOOLS, [p.limit]: OWN_OUTPUT });
-    if (G !== g) break;
-    inTok += r.usage?.prompt_tokens || 0; cacheTok += r.usage?.prompt_tokens_details?.cached_tokens || 0; outTok += r.usage?.completion_tokens || 0;
-    const choice = r.choices?.[0] || {}, msg = choice.message || { role: "assistant", content: "" };
-    messages.push(msg);
-    text = (typeof msg.content === "string" ? msg.content : (msg.content || []).map((c) => c.text || "").join("\n")).trim();
-    if (msg.refusal || choice.finish_reason === "content_filter") { stopped = "the model declined to answer this question"; text = text || msg.refusal || ""; break; }
-    const calls = (msg.tool_calls || []).filter((c) => c.type === "function" || c.function);
-    if (!calls.length || last) { if (choice.finish_reason === "length") stopped = stopped || "the answer ran out of room"; break; }
-    progress(`Turn ${turn + 1}: ${calls.map((c) => c.function.name).join(", ")}`);
-    for (const c of calls) {
-      let content;
-      try { content = await runTool(c.function.name, JSON.parse(c.function.arguments || "{}")); }
-      catch (err) { content = `Error: ${err.message || err}`; }
-      messages.push({ role: "tool", tool_call_id: c.id, content });
-    }
-    if (answerNow) { stopped = ANSWERED_EARLY; messages.push({ role: "user", content: WRAP_UP }); }
-  }
-  return { text, stopped, inTok, cacheTok, outTok };
-}
 function renderOwnKey() {
   const btn = $("ownkey-btn");
   $("ownkey-label").textContent = ownKey ? modelLabel() : "Set an API key";
@@ -1574,7 +1960,7 @@ function renderOwnKey() {
   btn.classList.toggle("gx-ownkey-btn-unset", !ownKey);
   btn.title = ownKey ? `Questions are answered with your ${PROVIDERS[ownProvider].name} key ${tail(ownKey)} (${modelLabel()}); click to switch or add keys`
     : "No API key set: questions list the matching evidence. Click to add your own key (Anthropic, OpenAI or OpenRouter) and have them answered in words";
-  $("search-input").placeholder = ownKey ? `Ask a question (answered with ${modelLabel()})...` : "Search by asking...";
+  $("search-input").placeholder = ownKey ? "Ask a question..." : "Search by asking...";
 }
 // Saved keys show which one is in use. The shared add/edit form opens on request, or for the first key.
 let ownForm = { editing: "", provider: "" };

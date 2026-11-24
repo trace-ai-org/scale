@@ -305,9 +305,23 @@ button.gx-add-graph { width: 100%; font: inherit; color: inherit; cursor: pointe
 .gx-kept { font-size: 12px; color: var(--muted); }
 .gx-kept ul { margin: 6px 0 0; padding-left: 16px; }
 .gx-kept li { margin: 3px 0; }
-.gx-curate-job { margin-top: 12px; padding: 10px 12px; border-radius: 8px; background: var(--bg-input); font-size: 12px; max-height: 220px; overflow: auto; }
+.gx-curate-job { margin-top: 12px; padding: 10px 12px; border-radius: 8px; background: var(--bg-input); font-size: 12px; max-height: 360px; overflow: auto; }
 .gx-curate-job ol { margin: 6px 0 0; padding-left: 18px; }
 .gx-curate-job .gx-state { font-weight: 600; text-transform: capitalize; }
+.gx-cj-head { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; font-size: 12.5px; }
+.gx-cj-bar { height: 6px; margin: 8px 0; border-radius: 3px; background: var(--line); overflow: hidden; }
+.gx-cj-bar span { display: block; height: 100%; width: 0; background: var(--green); transition: width 0.6s ease; }
+.gx-cj-steps { list-style: none; margin: 4px 0; padding: 0; }
+.gx-cj-steps li { position: relative; padding: 2px 0 2px 20px; color: var(--muted); }
+.gx-cj-steps li::before { content: ""; position: absolute; left: 3px; top: 6px; width: 8px; height: 8px; border-radius: 50%; border: 1.5px solid var(--muted); }
+.gx-cj-steps li.done { color: var(--fg); }
+.gx-cj-steps li.done::before { background: var(--green); border-color: var(--green); }
+.gx-cj-steps li.now { color: var(--fg); font-weight: 600; }
+.gx-cj-steps li.now::before { border-color: var(--green); animation: gx-cj-pulse 1.2s ease-in-out infinite; }
+@keyframes gx-cj-pulse { 50% { background: var(--green); } }
+.gx-cj-detail { margin: 4px 0 6px; }
+.gx-cj-log summary { cursor: pointer; color: var(--muted); }
+.gx-curate-job #curate-finish { margin-top: 6px; }
 .gx-err { color: #d9534f; }
 .gx-contrib { margin-top: 6px; font-size: 12px; }
 .gx-link-btn { display: block; margin: 0 0 6px; padding: 0; border: 0; background: none; color: var(--link-ink); font-size: 12px; cursor: pointer; }
@@ -345,3 +359,36 @@ button.gx-add-graph { width: 100%; font: inherit; color: inherit; cursor: pointe
 .gx-contrib { margin-top: 10px; }
 .gx-contrib .gx-btn { width: 100%; justify-content: center; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .gx-contrib-terms { margin: 6px 0 0; padding-left: 14px; color: var(--muted); font-size: 11.5px; line-height: 1.45; }
+
+/* a curation done: the form gives way to what was curated and what to do next */
+.gx-curate.is-done form > p.gx-muted, .gx-curate.is-done .gx-drop, .gx-curate.is-done .gx-share,
+.gx-curate.is-done .gx-keep, .gx-curate.is-done #curate-start, .gx-curate.is-done #curate-schema { display: none !important; }
+.gx-curate.is-done .gx-curate-job { max-height: none; background: none; padding: 0; font-size: 13px; }
+.gx-done-head { display: flex; gap: 10px; align-items: center; margin-bottom: 12px; }
+.gx-done-head b { font-size: 15px; }
+.gx-done-mark { display: grid; place-items: center; width: 28px; height: 28px; border-radius: 50%; background: var(--green); color: #fff; font-weight: 700; flex: none; }
+.gx-done-stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin: 8px 0; }
+.gx-done-stats div { padding: 10px; border-radius: 8px; background: var(--bg-input); text-align: center; }
+.gx-done-stats b { display: block; font-size: 20px; }
+.gx-done-stats span { color: var(--muted); font-size: 11.5px; }
+.gx-done-kinds { display: flex; flex-wrap: wrap; gap: 6px; margin: 8px 0; }
+.gx-chip { padding: 3px 9px; border-radius: 999px; background: var(--bg-input); font-size: 12px; }
+.gx-done-summary { max-height: 260px; overflow: auto; font-size: 12.5px; }
+.gx-curate.is-done details { margin: 6px 0; }
+.gx-curate.is-done details summary { cursor: pointer; color: var(--muted); }
+.gx-done-next { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
+.gx-contrib-go { width: 100%; height: 34px; margin-bottom: 4px; }
+.gx-contrib { margin-bottom: 10px; }
+@media (max-width: 520px) { .gx-done-stats { grid-template-columns: repeat(2, 1fr); } }
+
+/* a personal graph's title line: its Contribute button sits before its label, over the row's right end */
+.gx-graph-row { position: relative; }
+.gx-graph-actions { position: absolute; top: 0; right: 9px; height: 34px; display: flex; align-items: center; gap: 8px; pointer-events: none; }
+.gx-graph-actions > * { pointer-events: auto; }
+.gx-graph-contrib { height: 22px; padding: 0 9px; border-radius: 6px; border: 1px solid var(--green); background: var(--green); color: #fff;
+  font: inherit; font-size: 11px; font-weight: 600; cursor: pointer; }
+.gx-graph-contrib:hover { filter: brightness(1.05); }
+.gx-graph-contrib[aria-disabled="true"] { background: transparent; color: var(--muted); border-color: var(--line); cursor: default; filter: none; }
+.gx-graph-contrib.is-done { background: transparent; color: var(--green); }
+.gx-graph-sent { text-decoration: none; }
+.gx-graph-sent:hover { background: color-mix(in oklab, var(--dot) 12%, transparent); }
