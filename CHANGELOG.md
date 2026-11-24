@@ -19,6 +19,10 @@
   - `scale source start` records the PDF's copy (`pdfs/<slug>.pdf`) as `retrieved_from` and keeps the title whole.
   - Conformance lists a should item a record declares `not_reported` under `declared_not_reported`, not
     `missing_recommended` (neither counts as filled).
+  - `scale check` runs the tests on every core (pytest-xdist, in the dev extra), and so does the test that runs the
+    whole suite again on a copy of the repository after a version bump, which took most of its time.
+  - The ambiguous-repetition messages name the `definition` among what tells two values apart: a reflection or a
+    peak a value is read from goes there (no schema change).
 
 - **catal-commons holds its first source (graphs only; no schema change).** Cl-promoted Cu catalysts for CO2
   electroreduction (10.1016/j.xcrp.2023.101294), curated under scale-catal 0.8.2 and added with

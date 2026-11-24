@@ -58,8 +58,9 @@ def _fixture(repo, version: str) -> None:
 
 
 def _pytest(repo, *args) -> subprocess.CompletedProcess:
+    from scale.devcheck import _parallel                # the copy's suite on every core, as scale check runs it
     env = {**os.environ, GUARD: "1"}
-    return subprocess.run([sys.executable, "-m", "pytest", "-q", "-p", "no:cacheprovider", *args], cwd=repo,
+    return subprocess.run([sys.executable, "-m", "pytest", "-q", "-p", "no:cacheprovider", *_parallel(), *args], cwd=repo,
                           capture_output=True, text=True, env=env)
 
 
