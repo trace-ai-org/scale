@@ -1,0 +1,10 @@
+# Who contributed each source of this folder, one entry per contribution, added by the pull request that
+# adds the source (tools/commons.py). The site's leaderboard ranks contributors from it.
+contributions:
+- github: mutianyou2013
+  source: 10.1016-j.xcrp.2023.101294
+  added: '2026-11-23'
+  records: 226
+  links: 971
+  triples: 2492
+  completeness: 0.662

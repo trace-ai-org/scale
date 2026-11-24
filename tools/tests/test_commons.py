@@ -49,8 +49,13 @@ def one_source(tmp_path, name, doi=None, licensed=False, title=None):
 
 @pytest.fixture
 def folder(tmp_path):
+    """catal-commons as it started (its steward and project only), whatever sources it holds by now."""
     d = tmp_path / "catal-commons"
     shutil.copytree(REPO / "graphs" / "catal-commons", d)
+    shutil.rmtree(d / "parts" / "sources", ignore_errors=True)
+    (d / "contributors.yaml").unlink(missing_ok=True)
+    text = (d / "rights.yaml").read_text(encoding="utf-8")
+    (d / "rights.yaml").write_text(text[: text.index("\nsources:") + 1] + "sources: {}\n", encoding="utf-8")
     return d
 
 

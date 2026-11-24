@@ -2,6 +2,11 @@
 
 ## Unreleased
 
+- **catal-commons holds its first source (graphs only; no schema change).** Cl-promoted Cu catalysts for CO2
+  electroreduction (10.1016/j.xcrp.2023.101294), curated under scale-catal 0.8.2 and added with
+  `scale graph contribute`. The tests that took catal-commons to be empty (`test_commons.py`'s folder fixture, the
+  site's list of graphs) now start from the commons as it began, or list every graph folder with a source.
+
 - **An API reader samples as its endpoint does, not greedily (curate-corpus, no schema change, no migration).**
   `review-api` asked for `temperature: 0`. A reasoning reader decoded greedily falls into loops: on a CO2RR run
   (DeepSeek-V4.1-Flash on vLLM, high reasoning), 897 of 1,257 readings ended with no verdict, each after about 150,000

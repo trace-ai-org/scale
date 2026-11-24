@@ -6,4 +6,11 @@
 limits:
   quote_chars: 0
   source_chars: 0
-sources: {}
+sources:
+  scale:commons/source/10.1016-j.xcrp.2023.101294:
+    class: open
+    licence: CC-BY-NC-ND-4.0
+    basis: 'published under CC BY-NC-ND 4.0, printed on the first page of the copy read (p. 1 of the article,
+      PDF page 2 footer: ''This is an open access article under the CC BY-NC-ND license (http://creativecommons.org/licenses/by-nc-nd/4.0/)'');
+      version of record'
+    text_chars: 51442
