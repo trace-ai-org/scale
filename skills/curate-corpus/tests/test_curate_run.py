@@ -321,12 +321,18 @@ def test_an_api_model_reads_a_second_time(corpus, tmp_path):
         assert ask["path"] == "/v1/chat/completions" and ask["auth"] == "Bearer secret" and ask["body"]["stream"]
         assert "left undigitized" in ask["body"]["messages"][0]["content"]       # the figure rule reaches the reader
         assert ask["body"]["model"] == "test-reader" and "Faradaic efficiency" in ask["body"]["messages"][1]["content"]
+        # no sampling of its own: the endpoint's default (greedy decoding sends a reasoning reader into loops)
+        assert "temperature" not in ask["body"] and "top_p" not in ask["body"]
         assert run("status", "--run", r)["states"] == {"needs_fix": 1}
         assert "V vs RHE" in Path(run("next", "--run", r, "--role", "fix")["prompt"]).read_text()
         write(f / "work" / "curation.json", {"result": "curated", "records": 1, "gaps": 0, "note": "fixed", "attempt": 1})
-        assert run("review-api", "--run", r)["read"][0]["verdict"] == "pass"
+        assert run("review-api", "--run", r, "--temperature", "1.0", "--top-p", "0.95")["read"][0]["verdict"] == "pass"
+        assert seen[1]["body"]["temperature"] == 1.0 and seen[1]["body"]["top_p"] == 0.95
         assert run("status", "--run", r)["states"] == {"passed": 1}
         assert json.loads((f / "work" / "review.json").read_text())["reader"] == "api:test-reader"
+        run("prepare", "--corpus", corpus, "--run", tmp_path / "run2", "--scale", SCALE, "--curator", "sonnet",
+            "--reviewer", "api:test-reader", "--api-base-url", "http://127.0.0.1:1/v1", "--api-temperature", "0.6")
+        assert json.loads((tmp_path / "run2" / "run.json").read_text())["models"]["api"]["temperature"] == 0.6
     finally:
         os.environ.pop("TEST_READER_KEY", None)
         srv.shutdown()

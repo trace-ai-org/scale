@@ -3,11 +3,12 @@ follows the curate-corpus skill's procedure for one source, read a second time b
 
   python3 -I curate_run.py prepare --corpus <sources.json> --run <dir> --curator opus|sonnet|fable|haiku|api:<model>
                                    --reviewer opus|sonnet|fable|haiku|api:<model>|skip [--api-base-url <url>]
-                                   [--api-context-tokens N]
+                                   [--api-context-tokens N] [--api-temperature T] [--api-top-p P]
                                    [--ids 12,57 | --ids-file F] [--max 50]
                                    [--contributor <id>] [--project <id>] [--version <v>] [--no-si] [--scale "<command>"]
   python3 -I curate_run.py next    --run <dir> --role curate|review|fix [--n 5]
   python3 -I curate_run.py review-api --run <dir> [--n 5] [--context-tokens N] [--max-chars 300000] [--max-doc-chars N]
+                                    [--temperature T] [--top-p P]
                                                               (the second reading by a model behind an API)
   python3 -I curate_run.py status  --run <dir> [--apply]
   python3 -I curate_run.py finish  --run <dir> [--public] [--bundle]
@@ -37,7 +38,10 @@ review-api  the second reading of the next N curated sources by the API model: t
           token, --answer-tokens 64,000 kept for the answer and doubled once for a reading cut by length; without a window, --max-doc-chars, 150,000 characters of compact
           JSON) is read in parts: each part holds whole records with the links they start,
           and lists the records of the other parts (id, label, name), so that nothing is read twice or reported
-          missing; the parts' issues are merged into one reading (its "parts" field says how many).
+          missing; the parts' issues are merged into one reading (its "parts" field says how many). The request
+          carries no sampling of its own unless given (--temperature/--top-p, or prepare --api-temperature/
+          --api-top-p): the endpoint's default, which for a served model is the one its makers recommend. Greedy
+          decoding (temperature 0) sends a reasoning reader into loops that fill the window without a verdict.
           Every reading (review-api's and a subagent's) is given today's date and, after a fix, the previous reading's
           issues to check first.
 
@@ -380,7 +384,8 @@ def cmd_prepare(a):
         models["reviewer"] = a.reviewer
     if a.api_base_url:
         models["api"] = {"base_url": a.api_base_url, "key_name": a.api_key_name, "key_env": a.api_key_env,
-                         **({"context_tokens": a.api_context_tokens} if a.api_context_tokens else {})}
+                         **({"context_tokens": a.api_context_tokens} if a.api_context_tokens else {}),
+                         **sampling(a.api_temperature, a.api_top_p)}
     if not (is_model(models.get("curator")) and is_model(models.get("reviewer"), ("skip",))):
         die("ask first, then give both: --curator " + "|".join(MODELS) + "|api:<model> (the model that curates; "
             "opus is recommended) and --reviewer " + "|".join(MODELS) + "|api:<model>|skip (who reads each document a "
@@ -699,7 +704,14 @@ class Answer(tuple):
         return out
 
 
-def _chat(base, key, model, messages, tries=5):
+def sampling(temperature=None, top_p=None):
+    """The sampling a request carries: only what was given, so that the endpoint's default (for a served model, the
+    one in its generation config) applies otherwise."""
+    return {**({"temperature": temperature} if temperature is not None else {}),
+            **({"top_p": top_p} if top_p is not None else {})}
+
+
+def _chat(base, key, model, messages, tries=5, sample=None):
     """One answer, `Answer(content, reasoning)`, from an OpenAI-compatible chat endpoint (standard library), retried
     on rate limits, 5xx, network errors and a cut stream. Asked for as a stream: some endpoints cap an unstreamed
     answer (8,000 tokens, thinking included), which a reasoning model spends before it writes the verdict; an
@@ -707,7 +719,7 @@ def _chat(base, key, model, messages, tries=5):
     `[DONE]`; one that does not is a failure like a 5xx, and after the last try `CutStream` carries what arrived."""
     import urllib.error
     import urllib.request
-    body = json.dumps({"model": model, "messages": messages, "temperature": 0, "stream": True,
+    body = json.dumps({"model": model, "messages": messages, **(sample or {}), "stream": True,
                        "stream_options": {"include_usage": True}}).encode("utf-8")
     last, cut = "no answer", None             # cut: the cut stream with the most content so far
     for attempt in range(tries):
@@ -788,6 +800,8 @@ def cmd_review_api(a):
             + (f" or set {api['key_env']}" if api.get("key_env") else ""))
     context = a.context_tokens or api.get("context_tokens")       # the reader's window: requests are fitted to it
     answer = a.answer_tokens or api.get("answer_tokens") or ANSWER_TOKENS    # of it, kept for the answer
+    sample = {**sampling(api.get("temperature"), api.get("top_p")),
+              **sampling(getattr(a, "temperature", None), getattr(a, "top_p", None))}
     hand, done, failed = run.handouts(), [], []
     for i in run.ids():
         if len(done) + len(failed) >= a.n:
@@ -833,7 +847,8 @@ def cmd_review_api(a):
                 got = None
                 try:
                     got = _chat(api["base_url"], key, reviewer[4:], [{"role": "system", "content": READER},
-                                                                     {"role": "user", "content": f"{head}\n\n{common}"}])
+                                                                     {"role": "user", "content": f"{head}\n\n{common}"}],
+                                sample=sample)
                     readings.append(_verdict(got[0]))
                 except (RuntimeError, ValueError) as e:
                     content, reasoning = (e.content, e.reasoning) if isinstance(e, CutStream) else (got or ("", ""))
@@ -1027,6 +1042,9 @@ def main():
     p.add_argument("--api-key-env", help="or the environment variable that holds its key")
     p.add_argument("--api-context-tokens", type=int, help="the API reader's context window in tokens: review-api fits "
                    "each request to it, reading a large document in parts only when it does not fit")
+    p.add_argument("--api-temperature", type=float, help="the API reader's sampling temperature (default: the "
+                   "endpoint's; never 0 for a reasoning model, which then loops)")
+    p.add_argument("--api-top-p", type=float, help="the API reader's top_p (default: the endpoint's)")
     p = sub.add_parser("review-api")
     p.add_argument("--run", required=True)
     p.add_argument("--n", type=int, default=5)
@@ -1037,6 +1055,8 @@ def main():
                    f"included (default {ANSWER_TOKENS}; a reading cut by length is read once more with twice as many)")
     p.add_argument("--context-tokens", type=int, help="the reader's context window in tokens (default: the run's, "
                    "prepare --api-context-tokens): each request is fitted to it, in parts only when it must be")
+    p.add_argument("--temperature", type=float, help="sampling temperature (default: the run's, else the endpoint's)")
+    p.add_argument("--top-p", type=float, help="top_p (default: the run's, else the endpoint's)")
     p = sub.add_parser("next")
     p.add_argument("--run", required=True)
     p.add_argument("--role", required=True, choices=sorted(ROLE_STATES))

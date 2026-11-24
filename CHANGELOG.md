@@ -2,6 +2,15 @@
 
 ## Unreleased
 
+- **An API reader samples as its endpoint does, not greedily (curate-corpus, no schema change, no migration).**
+  `review-api` asked for `temperature: 0`. A reasoning reader decoded greedily falls into loops: on a CO2RR run
+  (DeepSeek-V4.1-Flash on vLLM, high reasoning), 897 of 1,257 readings ended with no verdict, each after about 150,000
+  tokens of thinking in which 88% of the lines repeated others ("Now, check the document's links for species/el-mg…
+  Good."). Now a reading carries no sampling of its own, so the endpoint's default applies (for a served model, the
+  one in its generation config), and `prepare --api-temperature/--api-top-p` or `review-api --temperature/--top-p`
+  give another. Four of those sources read again with temperature 1.0 and top_p 0.95 (the run now gives both):
+  all four reached a verdict (one pass, three needs_fix), each of their six requests ending on its own
+  (`finish_reason: stop`) after 31,000-54,000 tokens, with 0-8% of lines repeated.
 - **Contribute without a server: a pull request under the reader's own GitHub login, folded in by the repository
   (site, service, catal-commons; no schema change, no migration of documents).** With no web service running, the
   explorer's *Contribute* downloads the graph with every quote withheld and opens GitHub's upload page for
