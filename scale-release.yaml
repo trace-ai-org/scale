@@ -11,6 +11,7 @@ skills:
 - skills/fetch-corpus
 - skills/curate-corpus
 - skills/query-graph
+- skills/plan-synthesis
 - skills/map-coverage
 - skills/scan-conflicts
 - skills/export-graph
