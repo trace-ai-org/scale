@@ -17,7 +17,7 @@ name: publish
 #
 # One-time setup (done). Human actions; an agent never does these:
 # 1. pypi.org: register a trusted publisher for the project `scale-catal` (a "pending publisher" if
-#    the project does not exist yet): owner `hlxin`, repository `scale`, workflow `publish.yml`,
+#    the project does not exist yet): owner `trace-ai-org`, repository `scale`, workflow `publish.yml`,
 #    environment `pypi`.
 # 2. Repository settings → Environments → `pypi` (deployment protection rules on a private personal
 #    repository need a paid plan; without them the tag ruleset below is the boundary):

@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+## v0.4.0 — 2026-11-24
+
 - **The review step after a first curation (tools, curate-corpus; no schema change, no migration).** From the first
   paper contributed to catal-commons:
   - `scale review values` backs a value only with the evidence its `evidence_ids` name (else its own, else its
