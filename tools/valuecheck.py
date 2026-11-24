@@ -7,7 +7,10 @@ gap for every value object (``{status: present, value, unit, as_reported?}``) at
 
 - ``value_vs_as_reported``: the recorded ``value`` is one of the readings of the printed ``as_reported`` text;
 - ``value_vs_evidence``: the value (or its ``as_reported`` text) is printed in at least one quote or page-image
-  transcription the record cites.
+  transcription of the evidence that states it: the items its ``evidence_ids`` name when it names them, else its own
+  evidence, else its record's. A ``kind: figure`` transcription is the curator's reading of a plot, not printed text:
+  it never backs a value, which then goes to a person as read from a figure. Signs count: ``-0.5`` is not backed by
+  a printed ``0.5`` (a minus between two numbers, as in ``10-20``, is a range, not a sign).
 
 Each value gets one outcome: ``ok``; ``flag`` (a check failed: a person must look); or ``unverifiable`` (the number
 is written in words, its quotes are withheld under the copyright cap, or the record cites no text), which a person
@@ -56,13 +59,33 @@ def _word_numbers(text: str) -> list[float]:
     return out
 
 
-def readings(text: str) -> list[float]:
-    """Every number a printed text can stand for, signs dropped: the readings of values_in, OCR look-alikes inside
-    digit runs ("39O" for 390, "3, 560" for 3560), and numbers in words."""
-    t = text or ""
+# a minus that makes a number negative: at the start or after a space, "=", "(", "[", ",", ":", ";", "~", "≈", "<",
+# ">" or "/", never between two numbers or after a letter (a range "10-20", a name "Cu-HCl(323)"); an em dash, which
+# OCR of old print gives for a minus, only at the start or after a space
+_NEGATIVE = re.compile(r"(?:(?:^|(?<=[\s=(\[,:;~≈<>/]))[-−–‑]|(?:^|(?<=\s))—)\s?(?=\.?\d)")
+_NUMBER_RUN = re.compile(r"[\d.,]*\d(?:\s*[×x]\s*10\s*[⁻\-−]?[⁰¹²³⁴⁵⁶⁷⁸⁹\d]+)?")
+
+
+def _magnitudes(t: str) -> list[float]:
     grouped = re.sub(r"(?<=\d),(?=\d{3}(?!\d))", "", t)            # 125,000,000: thousands separators
     out = values_in(t) + values_in(grouped) + [float(n) for n in numbers_in(t, lenient=True)] + _word_numbers(t)
     return [abs(x) for x in out]
+
+
+def readings(text: str) -> list[float]:
+    """Every number a printed text can stand for, with its sign: the readings of values_in, OCR look-alikes inside
+    digit runs ("39O" for 390, "3, 560" for 3560), and numbers in words; a number after a minus sign (``_NEGATIVE``)
+    is read negative."""
+    t, negative, rest, at = text or "", [], [], 0
+    for m in _NEGATIVE.finditer(t):
+        run = _NUMBER_RUN.match(t, m.end())
+        if not run:
+            continue
+        rest.append(t[at:m.start()])
+        negative.append(run.group())
+        at = run.end()
+    rest.append(t[at:])
+    return _magnitudes(" ".join(rest)) + [-x for n in negative for x in _magnitudes(n)]
 
 
 def _norm(text: str) -> str:
@@ -95,13 +118,26 @@ def iter_values(props: dict, path: str = "") -> Iterator[tuple[str, dict]]:
                     yield from iter_values(x, f"{p}[{i}]")
 
 
+def cited(value: dict, evidence: list) -> list[dict]:
+    """The evidence items that state a value: those its ``evidence_ids`` name (when they name items of the record),
+    else its own evidence, else its record's."""
+    items = [e for e in evidence or [] if isinstance(e, dict)]
+    ids = value.get("evidence_ids")
+    if isinstance(ids, list) and ids:
+        named = [e for e in items if e.get("id") in ids]
+        if named:
+            return named
+    return [e for e in (value.get("evidence") or items) if isinstance(e, dict)]
+
+
 def _texts(evidence: list) -> tuple[list[str], int]:
-    """The cited texts (quotes and page-image transcriptions) and how many items have their text withheld."""
+    """The printed texts the evidence cites (quotes, and page-image transcriptions of anything but a figure) and how
+    many items have their text withheld."""
     texts, withheld = [], 0
     for ev in evidence or []:
         if not isinstance(ev, dict):
             continue
-        got = [t for t in (ev.get("quote"), ev.get("transcription")) if t]
+        got = [t for t in (ev.get("quote"), None if ev.get("kind") == "figure" else ev.get("transcription")) if t]
         texts += got
         if not got and "withheld" in (ev.get("note") or ""):
             withheld += 1
@@ -110,15 +146,15 @@ def _texts(evidence: list) -> tuple[list[str], int]:
 
 def check_value(value: dict, evidence: list) -> dict:
     """The outcome for one value object against the evidence of its record (or its own, when it carries some)."""
-    ev = value.get("evidence") or evidence
+    ev = cited(value, evidence)
     texts, withheld = _texts(ev)
-    x = abs(float(value["value"]))
+    x = float(value["value"])
     rep = value.get("as_reported")
     problems, notes = [], []
 
-    printed = readings(" ".join([rep or ""] + texts))
+    printed = readings(" | ".join(texts))          # what the source prints; as_reported is the curator's copy of it
     from_figure = bool(_FIGURE.search(rep or "")) and not any(_close(x, r) for r in readings(rep or "")) or \
-        any(isinstance(e, dict) and e.get("kind") == "figure" for e in ev or []) and not any(_close(x, r) for r in printed)
+        any(e.get("kind") == "figure" for e in ev) and not any(_close(x, r) for r in printed)
     if from_figure:      # a value read off a plot: no text prints it, a person checks it against the figure
         return {"outcome": "unverifiable", "checks_failed": [], "problems": [],
                 "notes": ["read from a figure: check against the plot"]}
@@ -132,8 +168,9 @@ def check_value(value: dict, evidence: list) -> dict:
 
     if texts:
         joined = " | ".join(texts)
-        in_text = any(_close(x, r) for r in readings(joined))
-        rep_in_text = isinstance(rep, str) and rep.strip() and _norm(rep) in _norm(joined)
+        in_text = any(_close(x, r) for r in printed)
+        rep_in_text = isinstance(rep, str) and rep.strip() and _norm(rep) in _norm(joined) \
+            and any(_close(x, r) for r in readings(rep) or [x])
         if not (in_text or rep_in_text):
             problems.append(("value_vs_evidence", "neither the value nor its as_reported text is printed in the quotes "
                                                   "this record cites (cite the passage that states it)"))
@@ -155,7 +192,9 @@ def check_document(doc: dict) -> dict:
             props = r.get("props") or {}
             for path, v in iter_values(props):
                 res = check_value(v, props.get("evidence") or [])
-                first = next((e for e in (v.get("evidence") or props.get("evidence") or []) if isinstance(e, dict)), {})
+                ev = cited(v, props.get("evidence") or [])     # the item that prints it, else the first it cites
+                first = next((e for e in ev if any(_close(float(v["value"]), r) for r in readings(" ".join(
+                    _texts([e])[0])))), ev[0] if ev else {})
                 rows.append({"record": r["id"], "kind": kind, "label": r.get("label") or r.get("type"),
                              "name": props.get("name"), "path": path, "value": v.get("value"),
                              "unit": v.get("unit"), "as_reported": v.get("as_reported"), "bound": v.get("bound"),

@@ -620,7 +620,9 @@ def refs_of(p: dict, default: list, key: str) -> list:
 def conformance(doc: dict, spec: dict, by_record: bool = False) -> dict:
     """Check every node against the domain checklists it follows (``follows_domains``): its own declaration, else
     the graph's. Per checklist: ``conformant`` (no must item, edge or evidence is missing), the should items filled
-    of those expected, the evidence patterns found of those expected, ``applicability`` (records whose cases are
+    of those expected (a should item the record declares ``not_reported`` is counted in ``declared_not_reported``, not
+    in ``missing_recommended``: it was looked at; neither counts as filled), the evidence patterns found of those
+    expected, ``applicability`` (records whose cases are
     known, ``unknown`` because they state no value of a property their label applies by, or ``exempt``), the
     ``unknown`` records, and ``complete``: conformant, nothing unknown, every should item and evidence pattern found.
     Validity is reported apart (``pgraph.validate``), and so is what a scientific comparison may compare
@@ -654,7 +656,7 @@ def conformance(doc: dict, spec: dict, by_record: bool = False) -> dict:
             return None
         out[ref] = {"profile": name, "version": p["version"], "conformant": True, "nodes_checked": 0,
                     "violations": [], "recommended": {"filled": 0, "expected": 0}, "missing_recommended": {},
-                    "evidence": {"found": 0, "expected": 0}, "missing_evidence": {},
+                    "declared_not_reported": {}, "evidence": {"found": 0, "expected": 0}, "missing_evidence": {},
                     "applicability": {"known": 0, "unknown": 0, "exempt": 0}, "unknown": []}
         return out[ref]
 
@@ -750,8 +752,11 @@ def _check_props(rid, props: dict, c: dict, r: dict, prefix: str) -> None:
             r["violations"].append({"record": rid, "message": f"required {prefix}{k} is {why}"})
     for k in c.get("recommended") or []:
         r["recommended"]["expected"] += 1
-        if _filled(props.get(k))[0]:
+        v = props.get(k)
+        if _filled(v)[0]:
             r["recommended"]["filled"] += 1
+        elif isinstance(v, dict) and v.get("status") == "not_reported":     # looked at: the source does not say
+            r["declared_not_reported"][prefix + k] = r["declared_not_reported"].get(prefix + k, 0) + 1
         else:
             _miss(r, prefix + k)
 

@@ -95,6 +95,9 @@ are in `references/recipes.md` beside this file (through the agent tools:
    whose values the text loses, read the page image too and let OCR check it (`scale pages`: the
    reading's region and transcription on the evidence, the tool's agreement, an independent second
    reading where OCR does not confirm it; docs/curation.md, "Reading scanned pages: two readers").
+   Some PDFs encode symbols in the text layer as control characters or other letters (− as U+0003, ° as U+0004,
+   ~ as U+0001; θ as q, Δ as D): check every quote that holds such a symbol, and the value it gives, against the page
+   image. `scale source check` warns about control characters in the page texts.
 3. **Read the schema, not your memory of it:** `scale graph describe <Label> --domain catalysis`
    (the schema is the catalysis graph schema manifest, `domain/graph/scale-catal.yaml`: the
    science kernel plus the catalysis file (`catalysis.yaml`) with its one checklist). What a catalytic test must
@@ -163,10 +166,39 @@ are in `references/recipes.md` beside this file (through the agent tools:
     source does not report makes the record non-conformant, not invalid: declare it missing with its
     reason.
 12. **Route gaps** (`scale gap issue <gap.json>`, a dry run): only `missing_concept` goes to schema
-    evolution (the `evolve-schema` skill). A gap you write by hand states its `access` (`{level, note}`):
-    one with none reads as institution, failing closed, and `--submit` files only a gap whose
-    `access.level` is `public`, so give that only when its record ids, fields and question may all be
-    public.
+    evolution (the `evolve-schema` skill). No command writes a gap found while curating (`scale gap from-query`
+    makes gaps only from a query result): write it by hand, one canonical JSON file per gap,
+    `work/gaps/<id>.json` in the source's folder (`scale gap list work/gaps` lists them; a run counts them). Its
+    fields, as `make_gap` in `tools/gaps.py` writes them: `id` (`GAP-` and 8 upper-case hex characters, also the
+    file's name), `kind` (`missing_concept`, `extraction_error`, `absent_source_information`,
+    `ambiguous_source_information`), `title` (`[<kind>] <about> (<record>)`), `status: open`, `detected_by`
+    (`curate-corpus`), `schema` (the pinned version), `records` (the record ids), `about` (what cannot be expressed
+    or read, in your words), `source_context` (where in the source), `evidence` (locators), `consequence`,
+    `candidate_mappings` (existing terms that come close), `recommended_action` and `labels` (the kind's, from
+    `ACTIONS` and `LABELS` in `tools/gaps.py`) and `access`:
+
+    ```json
+    {
+      "id": "GAP-3F2A9C1B",
+      "kind": "extraction_error",
+      "title": "[extraction_error] CO efficiency at -1.2 V hidden by an overlapping point (ex:s1/test/t5)",
+      "status": "open",
+      "detected_by": "curate-corpus",
+      "schema": "0.7.8",
+      "records": ["ex:s1/test/t5"],
+      "about": "CO efficiency at -1.2 V hidden by an overlapping point",
+      "source_context": "Fig. 3b",
+      "evidence": ["p. 5, Fig. 3b"],
+      "consequence": "the test has no CO efficiency",
+      "candidate_mappings": [],
+      "recommended_action": "Re-extract and correct the record against its source (skills/curate-corpus/SKILL.md).",
+      "labels": ["gap:extraction-error", "curation"],
+      "access": {"level": "public", "note": "from a public source"}
+    }
+    ```
+
+    A gap you write by hand states its `access` (`{level, note}`): one with none reads as institution, failing closed, and `--submit` files only a gap whose
+    `access.level` is `public`, so give that only when its record ids, fields and question may all be public.
 
 ## Reading runs, tables and figures
 
@@ -199,8 +231,8 @@ are in `references/recipes.md` beside this file (through the agent tools:
   resolution, a half-width a giving a/√3, or the spread of two readings, whichever is larger); put the
   axis scale and the ticks used in the evidence `note`, and keep the second reading. A tool's
   digitization is a computational Experiment (`USES_SOFTWARE`, the value's `produced_by`). Never
-  record a value read off a plot without an uncertainty (`references/recipes.md`, "Digitizing a
-  figure"). A main result the source prints only in a figure is digitized, never declared not
+  record a value read off a plot without an uncertainty. Its evidence is `kind: figure` with `reading`, `region` and
+  `transcription` (`references/recipes.md`, "Digitizing a figure", has the fields and an example). A main result the source prints only in a figure is digitized, never declared not
   curated: the second reading returns such a document (`needs_fix`, naming the figure). A point that
   cannot be read stays out, in an `extraction_error` gap.
 
@@ -242,6 +274,15 @@ Never record `± 0`: keep the printed text in `as_reported` and leave `uncertain
   identify is an `unresolved_target` in its words; one below the detection limit is `below_detection_limit` with the
   limit; a carbon or charge balance is a `balance` result `produced_by` an Analysis (`analysis_kind: balance`), kept as
   reported, never computed or capped. A reference names a result by its id (`/result_values/<id>`), never by position.
+  Which key: a Faradaic efficiency per product goes in the test's `faradaic_efficiency` list, and a partial current
+  density per product in `partial_current_density` (one value per product, its species in `target`, with an `id`,
+  `produced_by`, `phase`, `stream` and `evidence_ids` where they tell two values apart); the electrocatalysis
+  checklist looks for them there, and an efficiency kept only in `result_values` leaves its item unfilled. Every other
+  per-product result (a yield, a selectivity, a conversion, a production rate, an amount, a balance) goes in
+  `result_values`. A result is recorded once, never in both.
+  Two values of one record that differ only in what they are read from (two reflections of one phase, two peaks of
+  one spectrum) say it in their `definition` ("(002) reflection", "Cu 2p3/2"): otherwise nothing tells them apart and
+  validation warns of an ambiguous repetition.
 - **Driving forces and readings** (scale-catal 0.5.0 on). List every driving force of a test; one that lists none has
   unknown applicability and is never complete. Record what the source reads a test as showing in `interpretations`
   (`intrinsic_kinetics`, `system_performance`, `photothermal_effect`, `nonthermal_light_effect`,
@@ -291,11 +332,12 @@ Never record `± 0`: keep the printed text in `as_reported` and leave `uncertain
   machine-learned model states its architecture, hyperparameters, training objective and uncertainty method; each
   validation its `split_strategy`. `scale trace-ai <doc>` shows what TRACE-AI asks that the records do not hold
   (docs/trace-ai.md).
-- **Say how you curated.** An agent names itself in the graph's stewardship (`curated_by`: a Software of kind `agent`,
-  with its version) and states the `autonomy_level` of the curation: A2 when a person approves each record, A3 when
-  people check a sample and the flagged records (governance/review-policy.yaml), A4 when nobody checks them. A person's
-  check is written into `graph.checks` after it was made, with what it found, never before (`scale review sample`
-  returns what to fill in).
+- **Say how you curated.** State the `autonomy_level` of the curation in the graph's stewardship: A2 when a person
+  approves each record, A3 when people check a sample and the flagged records (governance/review-policy.yaml), A4 when
+  nobody checks them. Leave `curated_by` empty: SCALE records no curator, person or agent
+  (docs/decisions/0001-scale-0.1.0.md, item 13; no tool fills it, and `scale trace-ai` reports the curator as not
+  stated). A person's check is written into `graph.checks` after it was made, with what it found, never before
+  (`scale review sample` returns what to fill in).
 - **Keys and qualifiers.** Use one key per quantity and put what the value is about in its fields:
   the species or product in `target`, the basis in `basis`, the measurand in `variable` (a Variable)
   and how it was defined or measured in `definition`. When a source gives several values of one
@@ -355,7 +397,7 @@ and its column dictionary determine which parts can be populated.
    (`contributed_by`), the `project` and the `access` its owners set (`project`, `institution`,
    `consortium`, `embargoed` with its date, or `public` only when they cleared it). Project data stays
    in the project's own data repository, never in the public one. Do not
-   fill `curated_by`: SCALE records no curator attribution.
+   fill `curated_by`: SCALE records no curator attribution (**Say how you curated**).
 3. **Map the columns** to labels and properties with `scale graph describe <Label> --domain
    catalysis`: a row is usually a run (a CatalyticTest, a Characterization) with its catalyst sample,
    feed and reactor; repeated entities (one catalyst in many rows) are one record. A column the schema

@@ -382,7 +382,7 @@ def cmd_source_finish(args):
 def cmd_pages_render(args):
     from . import pagereading
     only = [int(x) for x in args.only.split(",")] if args.only else None
-    _emit(pagereading.render(args.pdf, args.source, args.pages, args.dpi, only), args)
+    _emit(pagereading.render(args.pdf, args.source, args.pages, args.dpi, only, ocr=not args.no_ocr), args)
 
 
 def cmd_pages_region(args):
@@ -1385,11 +1385,14 @@ def build_parser() -> argparse.ArgumentParser:
                         "the agreement of each reading with OCR and independent second readings").add_subparsers(dest="sub", required=True)
     PAGES_HELP = "the pages folder (local: page images and OCR words reproduce the source and are never committed)"
     sp = add("render", cmd_pages_render, "page images (PNG) and the positioned words of the text layer and of OCR, per page, "
-             "into DIR/<source key>/ (needs pymupdf; OCR needs tesseract)", pg)
+             "into DIR/<source key>/ (needs pymupdf; OCR needs tesseract, without which the pages are rendered with a "
+             "warning and the text layer's words alone)", pg)
     sp.add_argument("pdf"); sp.add_argument("--source", required=True, help="the Source id the PDF is")
     sp.add_argument("--pages", required=True, help=PAGES_HELP)
     sp.add_argument("--dpi", type=int, default=200, help="the page images' resolution (the OCR reads 300 dpi)")
-    sp.add_argument("--only", help="comma-separated PDF pages (default: all)"); out_opts(sp)
+    sp.add_argument("--only", help="comma-separated PDF pages (default: all)")
+    sp.add_argument("--no-ocr", action="store_true", help="render without OCR (the text layer's words alone; a "
+                    "later render with OCR adds its words)"); out_opts(sp)
     sp = add("region", cmd_pages_region, "a 400 dpi crop of a region and what OCR reads there; with --transcription, the "
              "agreement the tool would record", pg)
     sp.add_argument("--pages", required=True, help=PAGES_HELP); sp.add_argument("--source", required=True)

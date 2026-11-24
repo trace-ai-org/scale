@@ -817,8 +817,27 @@ queries). A value is in the unit printed; a fitted or derived value names its pr
    reading resolution (a half-width a gives a/√3) and the spread of the readings.
 4. Record the value with `qualifier: approximate`, `uncertainty`,
    `uncertainty_kind: standard_uncertainty` and `uncertainty_evaluation: type_b`, and evidence of
-   `kind: figure` whose locator names the figure and panel and whose `note` gives the axis scale and
-   the ticks used; keep the second reading on the evidence.
+   `kind: figure` (the kernel's evidence item; `scale graph describe` shows it):
+   - required: `source`, `kind` and a `locator` that starts with the PDF page and names the figure and panel
+     (`p. 5, Fig. 3b`);
+   - `reading`: `vision` (read off the page image) or `vision_ocr`; a reading of the image then needs `region`
+     (`[x0, y0, x1, y1]`, fractions of that page, origin top left: the point or the curve read) and `transcription`
+     (what you read there, holding every number of the value: "CO at -1.0 V: about 42 %");
+   - `note`: the axis scale and the ticks used; `quote` only for text found verbatim in the text layer (the
+     caption, an axis label);
+   - `agreement` is written by `scale pages agree`, never by hand; OCR cannot read a plotted point, so a figure
+     reading needs a `second_reading` (`scale pages pending`, then `scale pages merge-second`), whose numbers
+     agree within 5 % or 0.3.
+
+   ```json
+   {"id": "f3b_co", "source": "ex:s1/source/paper", "locator": "p. 5, Fig. 3b", "kind": "figure",
+    "reading": "vision", "region": [0.52, 0.18, 0.95, 0.46],
+    "transcription": "CO at -1.0 V vs RHE: about 42 %",
+    "note": "y axis linear, ticks 0 and 60 %; x axis linear, ticks -0.6 and -1.2 V"}
+   ```
+
+   `scale pages check` reports a reading without a region, a transcription or a confirming second reading
+   (docs/curation.md, "Reading scanned pages: two readers").
 5. A digitizing tool's run is a computational Experiment (`USES_SOFTWARE` with its version) and the
    value's `produced_by`.
 6. A point you cannot read reliably is not recorded: list an `extraction_error` gap.

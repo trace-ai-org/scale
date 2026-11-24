@@ -24,7 +24,9 @@ none; ``pip install "scale-catal[pdf]"`` and the tesseract command). The folder:
     work/texts/<slug>.txt  its page texts, each page headed "[page N]" (local; the verbatim check reads them)
 
 **check.** Validates the graph under the schema it pins with every quote checked against the page texts, reports the
-checklist conformance and the gaps, and counts quoted characters against the cap (``ok`` only with no error).
+checklist conformance and the gaps (the gap files under ``work/gaps/``, the records' ``unmodeled`` entries and
+``gaps``), warns where the page texts encode symbols as control characters, and counts quoted characters against the
+cap (``ok`` only with no error).
 
 **finish.** Builds the evidence index; with ``--public``, writes ``<slug>.public.graph.json`` with quoted text capped
 (only an in-copyright source's text is withheld, as sha256 and length); with ``--bundle``, exports that graph (or the
@@ -215,7 +217,7 @@ def start(out: Path, doi: str | None = None, pdf: Path | None = None, text: Path
         pdf_path.parent.mkdir(parents=True, exist_ok=True)
         if Path(pdf).resolve() != pdf_path.resolve():
             shutil.copyfile(pdf, pdf_path)
-        retrieved_from = str(Path(pdf).name)
+        retrieved_from = str(pdf_path.relative_to(out))         # the copy the folder keeps, as its page texts cite
     elif meta.get("open_access") and rights_class([meta["open_access"].get("licence") or ""]) != "in_copyright":
         download(meta["open_access"]["pdf"], pdf_path, get)
         retrieved_from = meta["open_access"]["pdf"]
@@ -252,9 +254,8 @@ def start(out: Path, doi: str | None = None, pdf: Path | None = None, text: Path
         "licence": "; ".join(licences) or None, "text_version": text_version,
         "text_sha256": read.get("pdf_sha256"), "retrieved_from": retrieved_from,
         "retrieved_on": today.isoformat() if retrieved_from else None, "origin": "curated"}.items() if v is not None}
-    from .kgbundle import concise_title
-    title = (meta.get("title") or slug)
-    graph_title = concise_title(title)
+    title = " ".join((meta.get("title") or slug).split())
+    graph_title = title          # whole: a short title is made where one is needed (a kg-bundle, a graph card)
     steward = _steward(repo, contributor)
     project = project or f"ex:pub/project/{slug}"
     doc = {"directed": True, "multigraph": True,
@@ -304,6 +305,28 @@ def _folder(d: Path) -> tuple[Path, dict, Path]:
     return d, info, d / f"{info['slug']}.graph.json"
 
 
+# Control characters some PDFs' text layers put for a symbol (U+0001 for ~, U+0003 for −, U+0004 for °, ...): a quote
+# copied from such a text keeps them and still passes the verbatim check, though it misprints the source.
+CONTROL = re.compile(r"[\x00-\x08\x0b\x0c\x0e-\x1f\x7f]")
+
+
+def glyph_warnings(texts: dict, doc: dict) -> list[str]:
+    """Where the page texts encode symbols as control characters, and the quotes that carry them: check those quotes
+    against the page image (a minus, a degree sign or a tilde may be lost; θ may read q and Δ read D)."""
+    out = []
+    for name, t in (texts or {}).items():
+        n = len(CONTROL.findall(t if isinstance(t, str) else ""))
+        if n:
+            out.append(f"{name}: the text layer has {n} control characters where the PDF draws symbols (−, °, ~); "
+                       "θ may read q and Δ read D")
+    bad = sorted({r["id"] for r in doc["nodes"] + doc["links"] for ev in (r.get("props") or {}).get("evidence") or []
+                  if isinstance(ev, dict) and CONTROL.search(ev.get("quote") or "")})
+    if bad:
+        out.append(f"{len(bad)} records quote text with control characters (first: {', '.join(bad[:5])}): write the "
+                   "symbol the page image shows in as_reported and check the value's sign and unit")
+    return out
+
+
 def check(d: Path, repo: Path | None = None, derive_links: bool = False) -> dict:
     """Validate the folder's graph with every quote checked against its page texts; conformance, gaps, the cap. With
     ``derive_links``, first rewrite its REPORTED_IN links as its evidence implies (one per record and cited source)."""
@@ -317,7 +340,9 @@ def check(d: Path, repo: Path | None = None, derive_links: bool = False) -> dict
     rep = pgraph.validate(doc, spec, texts or None)
     cap = rights.report(doc, rights.load_rights(d / "rights.yaml"))
     evidenced = sum(1 for r in doc["nodes"] + doc["links"] if (r.get("props") or {}).get("evidence"))
-    gaps = [g for n in doc["nodes"] for g in (n.get("props") or {}).get("gaps") or []] if doc["nodes"] else []
+    gaps = {"files": len(list((d / "work/gaps").glob("*.json"))) if (d / "work/gaps").is_dir() else 0,
+            "unmodeled": sum(len((r.get("props") or {}).get("unmodeled") or []) for r in doc["nodes"] + doc["links"]),
+            "on_records": sum(len((n.get("props") or {}).get("gaps") or []) for n in doc["nodes"])}
     from .valuecheck import check_document as check_values      # advisory: a person reviews what it flags
     vals = check_values(doc)
     flagged = [{k: r[k] for k in ("record", "path", "value", "unit", "as_reported", "problems")}
@@ -327,7 +352,8 @@ def check(d: Path, repo: Path | None = None, derive_links: bool = False) -> dict
                        "review_sheet": f"scale review values {gpath} --out {d / 'review-values.md'}"},
             "conformance": rep.conformance, "records": {"nodes": len(doc["nodes"]), "links": len(doc["links"]),
                                                         "with_evidence": evidenced},
-            "quotes_checked_against_text": bool(texts), "gaps": len(gaps),
+            "quotes_checked_against_text": bool(texts), "gaps": sum(gaps.values()), "gaps_by_kind": gaps,
+            "text_symbols": glyph_warnings(texts, doc),
             "cap": {"ok": cap["ok"], "violations": cap["violations"], "class": info["metadata"].get("rights_class")}}
 
 

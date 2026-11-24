@@ -99,29 +99,53 @@ def _tests(doc: dict) -> list[dict]:
     return rows
 
 
-def _values(props: dict) -> tuple[list[str], list[str]]:
-    conds, results = [], []
+# a list entry's kind, as the digest names it ("FE CO 18.9 %")
+KIND_LABEL = {"faradaic_efficiency": "FE", "selectivity": "selectivity", "yield": "yield", "conversion": "conversion",
+              "partial_current_density": "partial j", "production_rate": "rate"}
+
+
+def _entries(props: dict, names: dict) -> list[tuple[str, str, dict]]:
+    """Every value of a test as (property, label, value object): a property's own value object, and each entry of a
+    list of them (faradaic_efficiency, result_values), labelled by its kind and its product (``target``)."""
+    out = []
     for k, v in props.items():
-        if isinstance(v, dict) and "status" in v and k != "evidence":
-            if v.get("status") == "not_reported":
-                continue
-            (conds if k in CONDITIONS else results).append(f"{k} {_fmt(v)}")
+        if k == "evidence":
+            continue
+        if isinstance(v, dict) and "status" in v:
+            out.append((k, k, v))
+        elif isinstance(v, list):
+            for x in v:
+                if not (isinstance(x, dict) and "status" in x):
+                    continue
+                kind = x.get("kind") or k
+                target = x.get("target")
+                what = names.get(target) or (target.rsplit("/", 1)[-1] if isinstance(target, str) else "")
+                out.append((k, " ".join(t for t in (KIND_LABEL.get(kind, kind), what) if t), x))
+    return out
+
+
+def _values(props: dict, names: dict | None = None) -> tuple[list[str], list[str]]:
+    conds, results = [], []
+    for k, label, v in _entries(props, names or {}):
+        if v.get("status") == "not_reported":
+            continue
+        (conds if k in CONDITIONS else results).append(f"{label} {_fmt(v)}")
     order = {k: i for i, k in enumerate(CONDITIONS)}
     conds.sort(key=lambda s: order.get(s.split(" ")[0], 99))
     return conds, results
 
 
-def _negative(t: dict) -> list[str]:
+def _negative(t: dict, names: dict | None = None) -> list[str]:
     p, why = _props(t), []
     if p.get("experiment_status") in ("failed", "aborted"):
         why.append(f"experiment {p['experiment_status']}")
-    for k, v in p.items():
-        if not isinstance(v, dict) or k in CONDITIONS or k == "evidence":
+    for k, label, v in _entries(p, names or {}):
+        if k in CONDITIONS:
             continue
         if v.get("status") in NEGATIVE_STATUS:
-            why.append(f"{k} {_fmt(v)}")
+            why.append(f"{label} {_fmt(v)}")
         elif v.get("status") == "present" and (v.get("bound") == "upper" or v.get("value") == 0):
-            why.append(f"{k} {_fmt(v)}")
+            why.append(f"{label} {_fmt(v)}")
     return why
 
 
@@ -158,9 +182,10 @@ def digest(doc: dict, references: list[Path], validation: dict | None = None) ->
     own = {s for r in tests for s in r["sources"]}
     ref = _reference(references)
 
+    names = {n["id"]: _props(n).get("formula") or _props(n).get("name") for n in nodes}     # a product by its formula
     q1 = []
     for r in tests:
-        conds, results = _values(_props(r["test"]))
+        conds, results = _values(_props(r["test"]), names)
         q1.append({"test": _props(r["test"]).get("name") or r["test"]["id"],
                    "catalyst": "; ".join(_props(c).get("name") or c["id"] for c in r["catalysts"]) or "(none linked)",
                    "conditions": conds, "results": results})
@@ -181,7 +206,7 @@ def digest(doc: dict, references: list[Path], validation: dict | None = None) ->
 
     q3 = [{"test": _props(r["test"]).get("name") or r["test"]["id"],
            "catalyst": "; ".join(_props(c).get("name") or c["id"] for c in r["catalysts"]), "why": w}
-          for r in tests if (w := _negative(r["test"]))]
+          for r in tests if (w := _negative(r["test"], names))]
     q3_claims = [_props(n).get("statement") or _props(n).get("name") for n in nodes
                  if n.get("label") == "Claim" and _props(n).get("claim_status") in ("disputed", "refuted")]
 

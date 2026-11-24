@@ -428,3 +428,14 @@ def test_a_value_that_is_not_a_finite_number_is_an_error():
         assert (test["id"], "props.temperature.value is not a finite number (NaN or infinity): a value is a number "
                             "the source states, or a status") in msgs, bad
 
+
+
+def test_a_should_item_declared_not_reported_is_not_listed_as_missing(spec, example):
+    rep, c = _conf(example, spec)
+    key = next(k for k in c["missing_recommended"] if k.startswith("CatalyticTest.") and "-" not in k)
+    test = _node(example, "ex:exmpl/thermo/test/zno-run-1")["props"]
+    test[key.split(".", 1)[1]] = {"status": "not_reported", "missing_reason": "not_stated_in_source"}
+    _, after = _conf(example, spec)
+    assert after["declared_not_reported"] == {key: 1}
+    assert after["missing_recommended"].get(key, 0) == c["missing_recommended"][key] - 1
+    assert after["recommended"]["filled"] == c["recommended"]["filled"]          # looked at, but not filled
