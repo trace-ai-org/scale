@@ -8,6 +8,7 @@
   with a comment; a push dismisses the approval, and the next approval merges. The main ruleset still decides: one
   approval, the required checks, no request for changes. It is the only workflow job that writes the repository.
   Review policy 5; the governance text, AGENTS.md and the skills say "approves; it merges once the checks pass".
+## v0.4.0 — 2026-11-24
 
 - **The review step after a first curation (tools, curate-corpus; no schema change, no migration).** From the first
   paper contributed to catal-commons:
