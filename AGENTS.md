@@ -69,8 +69,9 @@ scale-catal@0.4.0 …` a pinned one. In a checkout of this repository run `uv ru
   it and merges it. An agent opens it under its own GitHub identity (the Claude GitHub App, or a bot account),
   never under the user's account: GitHub does not let an author approve their own pull request, so the user who
   asked for the change can approve the agent's pull request.
-- **Humans only:** approving and merging pull requests (one reviewer approves every change and merges it, the
-  person who asked for it included, never its author; every reviewer is asked and the first approval is enough),
+- **Humans only:** approving pull requests (one reviewer approves every change, the person who asked for it
+  included, never its author; every reviewer is asked and the first approval is enough; the reviewers workflow then
+  merges it once the checks pass),
   building releases and filing issues. Give the user the command from
   `status.human_only_actions`.
 
@@ -79,7 +80,7 @@ scale-catal@0.4.0 …` a pinned one. In a checkout of this repository run `uv ru
 - This repository is `trace-ai-org/scale`; its Python package is `scale-catal`, with the commands `scale` and
   `scale-catal`. Never write `pip install schema` or `uvx schema`: `schema` on PyPI is an unrelated library.
 - **How a change is made (any change).** Anyone suggests a change (an issue, a comment) or opens a pull request;
-  agents do the work; one person approves and merges. When you are asked to make a change: work on a branch
+  agents do the work; one person approves, and the pull request merges once the checks pass. When you are asked to make a change: work on a branch
   (`agent/…` on GitHub), make the change and its tests, run `uv run --extra dev scale check` (every check of CI's
   `test` jobs; `--fast` skips the tests; `scale fmt` fixes formatting, [docs/style.md](docs/style.md)) and fix what
   it reports, and open a pull request under your own identity that says what it answers, what it changed, what it
@@ -137,6 +138,6 @@ the other roles' [.github/scale-agents/roles/](.github/scale-agents/roles/); in 
   may change when the change needs it, listed under **Governance changes** in the pull request.
 - Work on an `agent/…` branch, run `scale check --fast` (and `scale schema check` for a schema change), and open a
   pull request, ready for review, that says what it answers; push requested fixes to the same branch; never
-  approve or merge. A person approves and merges it.
+  approve or merge. A person approves it, and it merges once the checks pass.
 - To find gaps in a corpus, curate a sample with the curate-corpus skill (short capped quotes, open-access
   sources only) and open one pull request from the gap themes.

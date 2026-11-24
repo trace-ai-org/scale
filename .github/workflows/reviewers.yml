@@ -4,13 +4,15 @@
 # every new pull request (except its author). The main ruleset needs one approval. This workflow keeps the others from
 # reviewing in vain:
 #   - when a reviewer approves, the review requests still open are withdrawn and a comment says who approved; the
-#     approver merges once the checks pass;
+#     pull request then merges by itself once the required checks pass (the merge job below), and the site is
+#     published from main (a merge by the workflow token starts no push workflow, so it starts pages by hand);
 #   - when a push changes a pull request, every reviewer whose approval the push dismissed, or who asked for changes,
 #     is asked again (GitHub does not re-request them on its own);
 #   - so does a change of the base branch (a stacked pull request retargeted to main once the one below it merges):
 #     it dismisses the approvals too, but is an `edited` event, not a push.
 # A reviewer who asks for changes blocks the merge until they approve or their review is dismissed, whoever else
-# approved. The workflow token comments, so no other workflow (@scale-agents) starts from it.
+# approved: the main ruleset refuses it, as it refuses a merge with no approval, a failing check or a push after the
+# approval (which dismisses it; the next approval merges). The workflow token comments, so no other workflow (@scale-agents) starts from it.
 name: reviewers
 
 "on":
@@ -22,9 +24,6 @@ name: reviewers
 permissions:
   contents: read
 
-concurrency:
-  group: reviewers-${{ github.event.pull_request.number }}
-
 jobs:
   reviewers:
     # a pull request from a fork gets a read-only token; bots' reviews are not approvals; an edit counts only when it
@@ -35,6 +34,8 @@ jobs:
       (github.event.action != 'edited' || github.event.changes.base != null)
     runs-on: ubuntu-latest
     timeout-minutes: 5
+    concurrency:
+      group: reviewers-${{ github.event.pull_request.number }}
     permissions:
       pull-requests: write
     env:
@@ -55,7 +56,7 @@ jobs:
               | gh api -X DELETE "repos/$REPO/pulls/$PR/requested_reviewers" --input - > /dev/null
             note=" The review requests to $(echo "$pending" | sed 's/[^ ]*/@&/g') are withdrawn: one approval is enough."
           fi
-          gh pr comment "$PR" --repo "$REPO" --body "Approved by @$REVIEWER, who merges it once the checks pass.$note A reviewer who still has concerns can request changes, which blocks the merge."
+          gh pr comment "$PR" --repo "$REPO" --body "Approved by @$REVIEWER: it merges by itself once the checks pass.$note A reviewer who still has concerns can request changes, which blocks the merge."
 
       - name: A push or a new base asks again the reviewers it concerns
         if: github.event_name == 'pull_request'
@@ -70,3 +71,50 @@ jobs:
               | gh api -X POST "repos/$REPO/pulls/$PR/requested_reviewers" --input - > /dev/null
             echo "asked again: $again"
           fi
+
+  merge:
+    # an approval by a reviewer (a collaborator with write access; the ruleset counts no other) merges the pull request
+    # once its required checks pass; GitHub's main ruleset decides whether it may merge, this job only asks
+    if: >-
+      github.event_name == 'pull_request_review' && github.event.review.state == 'approved' &&
+      github.event.pull_request.head.repo.full_name == github.repository &&
+      github.event.review.user.type != 'Bot' &&
+      contains(fromJSON('["OWNER", "MEMBER", "COLLABORATOR"]'), github.event.review.author_association)
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    permissions:
+      contents: write
+      pull-requests: write
+      actions: write
+      checks: read
+    concurrency:
+      group: merge-${{ github.event.pull_request.number }}
+      cancel-in-progress: true
+    env:
+      GH_TOKEN: ${{ github.token }}
+      REPO: ${{ github.repository }}
+      PR: ${{ github.event.pull_request.number }}
+      HEAD: ${{ github.event.pull_request.head.sha }}
+    steps:
+      - name: Wait for the required checks, then merge
+        run: |
+          for i in $(seq 1 30); do                 # the checks may not have started yet
+            [ "$(gh pr checks "$PR" --repo "$REPO" --required 2>/dev/null | wc -l)" -gt 0 ] && break
+            sleep 20
+          done
+          passed=0; gh pr checks "$PR" --repo "$REPO" --required --watch --interval 30 || passed=$?
+          if [ "$(gh pr view "$PR" --repo "$REPO" --json headRefOid --jq .headRefOid)" != "$HEAD" ]; then
+            echo "pushed to since the approval: that push dismissed it, and the next approval merges"; exit 0
+          fi
+          if [ "$passed" -ne 0 ]; then
+            gh pr comment "$PR" --repo "$REPO" --body "Not merged: a required check failed. Fix it and push; the next approval merges it."
+            exit 1
+          fi
+          if [ "$(gh pr view "$PR" --repo "$REPO" --json state --jq .state)" != OPEN ]; then
+            echo "merged or closed already"; exit 0
+          fi
+          # merge only what was approved: the head the review was given on
+          gh pr merge "$PR" --repo "$REPO" --merge --match-head-commit "$HEAD"
+
+      - name: Publish the site from main
+        run: gh workflow run pages.yml --repo "$REPO" --ref main

@@ -77,7 +77,7 @@ When a job is done, the page offers **Contribute to the commons**:
   GitHub token (`SCALE_WEB_GITHUB_TOKEN`), a bot's and never the user's. It credits the contributor by GitHub login
   and asks the reviewers in `SCALE_WEB_REVIEWERS`. It also adds the contribution to `contributors.yaml` (the login,
   the source, the day, its evidence-backed triples and its checklist completeness), from which the leaderboard
-  ranks contributors once it is merged. CI and a reviewer check it, and a person approves and merges it.
+  ranks contributors once it is merged. CI and a reviewer check it, and a person approves it; it then merges once the checks pass.
 
 ## The leaderboard
 

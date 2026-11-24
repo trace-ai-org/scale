@@ -1,7 +1,7 @@
 # SCALE review policy (machine-readable), explained in governance/GOVERNANCE.md. GitHub pull-request reviews are the
 # approvals and GitHub's ruleset on main enforces them. Changing this file is a governance change: it needs the same
 # approval as every other pull request.
-policy_version: 4
+policy_version: 5
 
 principles:
   - Anyone, a person or an agent, may suggest a change (an issue, a comment) or open a pull request. Every change,
@@ -12,7 +12,8 @@ principles:
     GitHub identity (the Claude GitHub App), never under a person's account.
   - Every reviewer is asked to review every pull request (CODEOWNERS); the first approval is enough, and the
     reviewers workflow withdraws the other requests. A request for changes blocks until its reviewer approves.
-  - One person approves and merges. Any reviewer listed below may approve, including the person who suggested the
+  - One person approves; the reviewers workflow then merges the pull request once its required checks pass, and the
+    main ruleset refuses the merge without that approval. Any reviewer listed below may approve, including the person who suggested the
     change; GitHub does not let the author of a pull request approve it, so whoever opened it needs another
     reviewer. Agents never approve or merge.
   - A schema change raises the schema's one version (kernel and catalysis together) in the same pull request;

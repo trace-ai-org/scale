@@ -197,7 +197,7 @@ Every change is one pull request. Anyone can suggest a change in an issue or a c
 [contribution form](https://github.com/trace-ai-org/scale/issues/new?template=contribution.yml)) or open a pull request.
 `@scale-agents` pick up collaborators' issues, comments and reviews on their own (anyone else's once a collaborator
 comments on it) and prepare the pull request. One
-reviewer approves and merges it; this may be the person who suggested it. Agents never approve or merge.
+reviewer approves it, and it merges once its checks pass; this may be the person who suggested it. Agents never approve or merge.
 
 A schema change edits the schema files directly and raises the version in the same pull request
 (`scale schema bump`, checked by `scale schema check`). See [CONTRIBUTING.md](CONTRIBUTING.md) and

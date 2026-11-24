@@ -16,7 +16,7 @@ name: scale-agents
 # the change set (the patch, the evidence record, the test cases, the migration assessment). Changes go on a branch `agent/...` and into a pull request,
 # ready for review, under the Claude GitHub App's identity, so that any reviewer, the person who suggested it
 # included, can approve it. On its own pull requests the team pushes the fixes a review or comment asks for. It never
-# approves or merges: one person approves and merges every pull request.
+# approves or merges: one person approves every pull request, which then merges once the checks pass.
 # The team's rules: .github/scale-agents/instructions.md (the discovery strategist) and .github/scale-agents/roles/ (the
 # other roles), as on main, installed as the runner's user memory (~/.claude/CLAUDE.md) and subagents
 # (~/.claude/agents/), with AGENTS.md and the skills in skills/. Not in the checkout's .claude/: on an event about a
@@ -42,7 +42,7 @@ name: scale-agents
   workflow_dispatch:
     inputs:
       prompt:
-        description: "What the agents should do (they open a pull request; a person approves and merges it)"
+        description: "What the agents should do (they open a pull request; a person approves it, and it merges once the checks pass)"
         required: true
       issue:
         description: "The issue or pull request this is about, if any (runs on one issue take turns)"

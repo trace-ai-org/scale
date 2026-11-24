@@ -10,10 +10,10 @@ repository starts private and is shared with collaborators; the rules are the sa
 becomes public ([decision record 0001](../docs/decisions/0001-scale-0.1.0.md)).
 
 The model in one paragraph: **anyone can suggest a change or open a pull request; agents do most of the work; one
-person approves and merges.** Every change, whatever it touches (the schema, records, questions, tools,
+person approves, and the approved pull request merges by itself once its checks pass.** Every change, whatever it touches (the schema, records, questions, tools,
 documentation, governance), is one pull request. A suggestion (an issue or a comment, by a person or an agent)
 goes to an agent, which implements it, runs the checks and opens the pull request. Any reviewer approves it, the
-person who suggested it included, and merges it. A schema change raises the schema's one version in the same pull
+person who suggested it included, and it merges once the required checks pass. A schema change raises the schema's one version in the same pull
 request; a data repository then moves to the new version with one command (`scale kg update`). Agents never
 approve or merge.
 
@@ -35,7 +35,7 @@ approve or merge.
 
 | who | GitHub | what they do |
 |---|---|---|
-| **owner** | `@hlxin`, admin of the repository, code owner of every path in [`.github/CODEOWNERS`](../.github/CODEOWNERS) | a reviewer: approves and merges pull requests (their own are approved by another reviewer); invites reviewers; builds releases; repository settings, rulesets and secrets ([repository-settings.md](repository-settings.md)) |
+| **owner** | `@hlxin`, admin of the repository, code owner of every path in [`.github/CODEOWNERS`](../.github/CODEOWNERS) | a reviewer: approves pull requests (their own are approved by another reviewer), which then merge once the checks pass; invites reviewers; builds releases; repository settings, rulesets and secrets ([repository-settings.md](repository-settings.md)) |
 | **reviewers** | domain experts, collaborators (Write), added to the review policy and CODEOWNERS when they join; no fixed number | approve and merge pull requests (any one of them is enough). The current list is in [`review-policy.yaml`](review-policy.yaml) |
 | **contributors** | anyone: issues and comments; collaborators also branches and pull requests; others through forks once the repository is public | suggest changes, curate, report gaps |
 | **@scale-agents** | a team of Claude agents on GitHub, started by every new issue, comment and review by a collaborator (no tag or label; anyone else's once a collaborator comments on it), or a manual run | a discovery strategist frames and coordinates, a data scientist proposes the patch and its evidence, a protocol compiler writes the tests, an evidence verifier assesses support and effects, and a systems engineer opens pull requests from `agent/…` branches under the Claude GitHub App's identity; never approves or merges |
@@ -48,7 +48,7 @@ approve or merge.
   reviewer asking for changes. Any reviewer may give it, the person who suggested the change included; no
   particular reviewer or code owner has to. To correct a merged change, suggest a new one. This holds for every
   kind of change: documentation, tools, records, schema changes, governance and releases.
-- **Anyone opens it; one person approves it and merges it.** Only people approve, by reviewing the pull request
+- **Anyone opens it; one person approves it; it merges by itself.** Only people approve, by reviewing the pull request
   on GitHub; the GitHub reviews are the approvals, and there is no other approval record to write. A change made
   by an agent needs the same approval.
 - **An agent opens a pull request under its own GitHub identity**: the Claude GitHub App in the scale-agents
@@ -76,7 +76,10 @@ its author); `scale domains check` fails when a reviewer of the review policy is
 reviews:
 
 - **The first approval decides.** The [reviewers workflow](../.github/workflows/reviewers.yml) withdraws the review
-  requests still open and comments who approved; the approver merges once the checks pass. Others need not review.
+  requests still open and comments who approved, then merges the pull request once the required checks pass (the
+  head the approval was given on, nothing pushed after it) and publishes the site from `main`. A failing check
+  stops it with a comment; the fix's push dismisses the approval, and the next approval merges. Others need not
+  review.
 - **A request for changes blocks.** A reviewer who asks for changes blocks the merge until they approve or their
   review is dismissed, whoever else approved. The agents push the fixes to the same branch.
 - **A push asks again.** A push dismisses earlier approvals (the ruleset); the workflow asks again every reviewer
@@ -105,7 +108,7 @@ systems engineer: version raised, migration assessment, checks → a pull reques
         ▼
 checks: scale check, package, specification-changes (with a summary of a schema change for the reviewer)
         ▼
-every reviewer is asked; one, not the author, approves and merges
+every reviewer is asked; one, not the author, approves; it merges once the checks pass
         ▼
 data repositories: scale kg update --data DIR (every document migrated and validated)
         ▼
@@ -130,7 +133,7 @@ official release (a human step, release-process.md)
    ([`.github/scale-agents/instructions.md`](../.github/scale-agents/instructions.md)). Anyone may also open a pull request
    directly, with their own agent or by hand.
 3. **Review.** CI runs the checks and, for a schema change, writes the summary. A reviewer comments or asks
-   for changes on the pull request (the agents push the fixes to their own pull requests), or approves and merges.
+   for changes on the pull request (the agents push the fixes to their own pull requests), or approves it, and it merges once the checks pass.
 4. **Data repositories.** Whoever keeps a knowledge-graph data repository runs `scale kg update --data DIR` there:
    every scale-catal document is moved to the new version through the registered migration steps, validated and
    its evidence index rebuilt. A document a step rule cannot migrate is reported and left untouched.

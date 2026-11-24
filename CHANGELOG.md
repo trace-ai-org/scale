@@ -2,6 +2,12 @@
 
 ## Unreleased
 
+- **An approved pull request merges by itself (governance; no schema change).** The reviewers workflow's new `merge`
+  job runs on a reviewer's approval, waits for the required checks, merges the head the approval was given on and
+  publishes the site from `main` (a merge by the workflow token starts no push workflow). A failing check stops it
+  with a comment; a push dismisses the approval, and the next approval merges. The main ruleset still decides: one
+  approval, the required checks, no request for changes. It is the only workflow job that writes the repository.
+  Review policy 5; the governance text, AGENTS.md and the skills say "approves; it merges once the checks pass".
 ## v0.4.0 — 2026-11-24
 
 - **The review step after a first curation (tools, curate-corpus; no schema change, no migration).** From the first
