@@ -3510,6 +3510,7 @@ adds_properties:
         - nitrogen_source
         - sulfur_source
         - phosphorus_source
+        - halogen_source
         - etchant
         - co_reactant
         - carrier_gas
@@ -3532,7 +3533,9 @@ adds_properties:
         cation that templates a zeolite, OSDA), template (a hard or soft template removed afterwards), porogen,
         mineralizer (OH-, F-); seed; linker and modulator (a framework''s); fuel (of a combustion synthesis);
         carbon_source, nitrogen_source, sulfur_source, phosphorus_source (of a carbide, a N-doped carbon, a sulfide,
-        a phosphide); etchant; co_reactant (the second precursor of an ALD cycle: H2O, O3, O2 plasma); carrier_gas;
+        a phosphide); halogen_source (an input that supplies a halogen, F, Cl, Br or I, that is incorporated into the
+        material: HCl leaving chloride in a Cu catalyst, NH4F, KBr; a halide that only serves another function, a
+        precursor''s counter-ion, a mineralizer, a shape-directing Br-, is not a halogen_source); etchant; co_reactant (the second precursor of an ALD cycle: H2O, O3, O2 plasma); carrier_gas;
         binder; substrate (a body, an electrode or a crystal grown or deposited on); ligand; ligand_removal_agent
         (what takes capping ligands or surfactants off the surface: acetic acid, an amine wash, ozone); protective_gas
         (an inert gas a step is kept under: N2, Ar; a gas that reacts is a reducing_agent, an oxidizing_agent or a

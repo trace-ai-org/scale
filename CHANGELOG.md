@@ -23,6 +23,13 @@
     whole suite again on a copy of the repository after a version bump, which took most of its time.
   - The ambiguous-repetition messages name the `definition` among what tells two values apart: a reflection or a
     peak a value is read from goes there (no schema change).
+- **A halogen source as a synthesis function (schema 0.8.3, additive, provisional; no migration).**
+  `HAS_INPUT.synthesis_function` gains `halogen_source`, beside `carbon_source`, `nitrogen_source`, `sulfur_source` and
+  `phosphorus_source`: an input that supplies a halogen (F, Cl, Br or I) incorporated into the material (HCl leaving
+  chloride in a Cu catalyst, NH4F, KBr). A halide that only serves another function, such as a precursor's counter-ion,
+  is not one. Asked by a gap recorded while curating the first catal-commons source. Example
+  `synthesis-examples/halogen-source.json` and counterexample `halogen-source-not-in-vocabulary.json`; no ontology
+  term fits, so none is mapped. Documents pinning 0.8.2 stay valid.
 
 - **catal-commons holds its first source (graphs only; no schema change).** Cl-promoted Cu catalysts for CO2
   electroreduction (10.1016/j.xcrp.2023.101294), curated under scale-catal 0.8.2 and added with
