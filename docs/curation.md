@@ -141,6 +141,9 @@ source must be within its cap.
   balance is a `balance` result `produced_by` an Analysis (`analysis_kind: balance`) that `HAS_INPUT` the assays it adds
   up, kept as reported (103 ± 4 % stays 103 ± 4 %); never compute a remainder or a closure the source does not state.
   A reference to a result (`TESTS.result_refs`) names it by its id: `{record: <test>, path: /result_values/<id>}`.
+  A Faradaic efficiency or a partial current density per product goes instead in the test's `faradaic_efficiency` or
+  `partial_current_density` list (with the same identifying fields), where the electrocatalysis checklist looks for
+  it; a result is recorded once, never in both.
 - **Driving forces and what a test is read as showing** (scale-catal 0.5.0 on). List every driving force of a test
   (`driving_forces`). A test that lists none has unknown applicability, and its checklist is never complete. Record
   what the source reads the test as showing in `interpretations`, never a reading of your own. The values are
