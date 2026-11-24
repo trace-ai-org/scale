@@ -1,0 +1,98 @@
+# Batches, states and the run folder
+
+## The run folder
+
+| path | written by | content |
+|---|---|---|
+| `run.json` | prepare | the corpus manifest, the scale command, the schema version pinned, the models (`curator`, `reviewer`: a model, `api:<model>` with its endpoint, or `skip`), and each source picked (DOI, title, year, the copy's version and licence as the source index has them) |
+| `sources/<id>/` | `scale source start` | SCALE's working folder: `<slug>.graph.json`, `source.json`, `rights.yaml`, `BRIEF.md`, `pdfs/` and `work/texts/` (local; git-ignored by its `.gitignore`) |
+| `sources/<id>/work/si.json` | prepare | the SI files whose text was appended to the page texts (pages `[page S1]` …), and those left out, with why |
+| `sources/<id>/work/curation.json` | the curator subagent | `result` (`curated` or `no_data`), `records`, `gaps`, `not_curated`, `note`, `attempt` |
+| `sources/<id>/work/review.json` | the second reader (a subagent, or `review-api`) | `verdict` (`pass`, `needs_fix`, `reject`), `issues` (each with its `severity`, `major` or `minor`), `coverage`, `note`; `reader` and `parts` when an API model read it; `review-raw-<n>.json` holds the raw answer of a failed API reading |
+| `sources/<id>/work/gaps/GAP-*.json` | the curator | the gap reports it wrote (SCALE's gap format); `status` counts them by kind and lists the `missing_concept` ones |
+| `sources/<id>/work/check.json` | status | the last `scale source check`, kept while the graph and `rights.yaml` are unchanged |
+| `prompts/<role>/<id>.md` | next | the prompts handed out |
+| `handouts.jsonl` | next | one line per prompt handed out (source, role, time) |
+| `state.jsonl` | status --apply | one line per settled source; the last line of a source holds |
+| `finish.json`, `contribute-dry-run.json` | finish, contribute | what `scale source finish` and the `scale graph contribute` dry run reported |
+| `graph/` | assemble | a local graph kept as parts (`parts/`, `rights.yaml`, `stewardship.yaml`) with every passed document, and its build `graph.graph.json`, to query |
+
+`<id>` is the source ID from the manifest (or the slug when there is none). The document's own slug comes from
+`scale source start`: the DOI with `/` as `-`, else the PDF's name.
+
+## States
+
+| state | means | next |
+|---|---|---|
+| `not_started` | prepare has not made the folder (or `scale source start` failed: `run.json` keeps the error) | re-run prepare |
+| `prepared` | the folder is ready, no curator's report yet | `next --role curate` |
+| `curated` | the curator reported, the check passes, no second reading after the last change | `next --role review` (an API reader: `review-api`) |
+| `check_failed` | the curator reported but `scale source check` fails | `next --role fix` (the prompt lists the errors) |
+| `needs_fix` | the second reading found a major issue | `next --role fix` (the prompt lists the issues, each tagged major or minor) |
+| `passed` | the check passes and the second reading after the last change found no major issue (`curated` or `no_data`; its minor issues stay in `review.json` for the person who reviews it); with `--reviewer skip`, the check alone | settled: `status --apply`, then finish |
+| `rejected` | the second reading found the wrong source or an unreadable text | settled; a person looks |
+| `failed` | three fixes reported and the check or the reading still fails | settled; a person looks |
+
+The verdict a reading settles on follows its issues' severities, whoever wrote it: `needs_fix` when an issue is major
+(an issue without a severity, as in readings made before severities, counts as major), `pass` when every issue is
+minor. A major issue is a value, unit, pairing, condition or result that is wrong, unsupported by its quote or filled
+in, a main result missing or left undigitized, or a record that misstates the source; a minor one leaves the record
+right but its support or wording could be better. Each reading is given today's date and, after a fix, the previous
+reading's issues to check first, so that a reading checks the fix instead of starting over.
+
+A second reading counts only if it is newer than the graph, `rights.yaml` and the curator's report. A curator who
+changes the document after it was read sends it back to `curated`. A prompt handed out is not handed out again for
+three hours unless its report arrives first. A subagent that stopped without reporting gets its source back after that.
+
+## Batches
+
+- One subagent per source and per role. Launch a batch's subagents in one message, each with the prompt "Read
+  <prompt> and follow it exactly." A curator needs no other context: the prompt names the folder, the procedure
+  (`scale call skills '{"name": "curate-corpus"}'`), the commands and the report to write.
+- Start at 5. Go up to 10–15 after clean batches, and back to 5 after failures, for long sources, or for sources with
+  much SI. Never more than 15: Claude Code runs at most 20 subagents at once by default
+  (`CLAUDE_CODE_MAX_CONCURRENT_SUBAGENTS`), and a launch beyond that is refused, not queued.
+- The curator and the second reader of a source are different subagents. The second reader never edits the document.
+  Its pass is a second reading by an agent, not a review.
+- Trust a subagent's reply only together with `status`: status runs `scale source check` itself and reads the reports
+  from the folder.
+- Each source costs about three to four subagent calls (curate, read, sometimes a fix and another reading), each
+  starting with about 46,000 tokens of context. Say this before a large run. Every line `next` prints names the
+  model to launch the subagent with (`--curator` for curate and fix, `--reviewer` for the reading).
+- An API reader (`--reviewer api:<model>`): `review-api` sends each curated document, the curator's report and the
+  page texts (the first 300,000 characters) to the endpoint with the reading's checklist, and writes the verdict to
+  `work/review.json`. A stream that ends without `finish_reason` or `[DONE]` (cut off by the endpoint) is a failure and is sent
+  again like a 5xx. A failed call leaves the source `curated`, to be read again; what the reader returned (`content`,
+  and `reasoning_content` if present) is kept in `work/review-raw-<n>.json`, so that its work is not lost.
+- The reading asks for no sampling of its own: the endpoint's default applies, which for a served model is the one in
+  its generation config. Give it only when the model's makers recommend another (`prepare --api-temperature
+  --api-top-p`, or `review-api --temperature --top-p`). Never 0 for a reasoning reader: greedy decoding sends it into
+  loops (the same lines over and over) until the window is full, and the reading ends with no verdict.
+- Each reading is fitted to the reader's context window, given at prepare (`--api-context-tokens`) or to `review-api`
+  (`--context-tokens`): 2.5 characters a token (compact JSON runs under 3; a character
+  outside ASCII, such as CJK text, counts as 3), and `--answer-tokens` (64,000) kept for the answer, thinking included.
+  An answer cut by length (`finish_reason: length`, which a reasoning reader reaches when it thinks through hundreds
+  of records) is no verdict: the reading is sent once more with twice the answer room, so in smaller parts, and the
+  raw answer of a failed one keeps its `finish_reason` and `usage`, and its reasoning (`reasoning_content`, or
+  `reasoning` as vLLM names it). The curator's report goes to the reader with `records` as a count (a curator who writes
+  its records there instead of their number makes a very long report) and within 20,000 characters. A document that fits beside the page texts goes whole, so a 1M-token reader rarely
+  needs parts and a 128k-token one often does; one that does not is read in parts, and the page texts are cut only
+  when the parts would get less than half the room. Without a window, a part holds at most `--max-doc-chars` (150,000
+  characters of compact JSON by default), which also caps a part when given. Each part holds whole records, grouped by label, with the links they start, and lists
+  the records of the other parts (id, label, name), so that no record is read twice or reported missing. Every part
+  gets the curator's report, the page texts, today's date and the previous issues; the parts' issues are merged into
+  one reading (`parts` in `review.json`), and a reading with a part that failed is no reading (the source stays
+  `curated`). A record larger than the budget goes alone in its part.
+
+## The hand-off to the source index
+
+For a manifest frozen in an index-sources project, `status --apply` appends one line per settled source to
+`<project>/.scripts/<topic>/kg/<run name>/extraction_status.jsonl`:
+
+```json
+{"source_id": 12, "topic": "co2rr", "kg": "<run name>", "status": "extracted", "schema_version": "0.5.0",
+ "nodes": 18, "edges": 25, "date": "2026-10-19", "note": "scale-catal document: <folder>"}
+```
+
+`status` is `extracted`, `no_data`, `rejected` or `failed`. index-sources' next export reads these lines into its
+`extractions` table and the index's Extracted column.

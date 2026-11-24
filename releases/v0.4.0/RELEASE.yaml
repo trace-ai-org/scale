@@ -1,0 +1,577 @@
+distribution: scale-catal
+framework: SCALE — Shared Concepts, Attributes, and Links with Evidence
+release: v0.4.0
+status: released
+schema_version: 0.8.3
+core: core/CORE.yaml
+domain_profiles:
+- domain/DOMAIN.yaml
+skills:
+- skills/index-sources
+- skills/fetch-corpus
+- skills/curate-corpus
+- skills/query-graph
+- skills/map-coverage
+- skills/scan-conflicts
+- skills/export-graph
+- skills/evolve-schema
+- skills/triage-feedback
+- skills/first-paper
+- skills/upgrade-curation
+date: '2026-11-24'
+previous: v0.3.0
+comparison_to_previous:
+  kernel:
+    classification: breaking
+    from: 0.7.8
+    to: 0.8.3
+    added:
+    - value.relative_to
+    - quantities.dimensions.area_per_mass
+    - quantities.dimensions.mass_time_per_amount
+    - quantities.dimensions.mass_time_per_volume
+    - quantities.dimensions.volume_per_mass
+    - quantities.contexts.chain_growth_basis
+    - quantities.contexts.chain_growth_method
+    - quantities.contexts.fraction_basis = partial_pressure
+    - quantities.contexts.selectivity_count
+    - quantities.contexts.selectivity_whole
+    - quantities.contexts.space_velocity_basis = catalyst_mass_per_molar_flow
+    - quantities.contexts.space_velocity_basis = catalyst_mass_per_volumetric_flow
+    - quantities.kinds.aspect_ratio
+    - quantities.kinds.chain_growth_probability
+    - quantities.kinds.crystallite_size
+    - quantities.kinds.dispersion_equivalent_size
+    - quantities.kinds.film_thickness
+    - quantities.kinds.hydrodynamic_size
+    - quantities.kinds.microscopy_particle_size
+    - quantities.kinds.microscopy_particle_size_spread
+    - quantities.kinds.particle_edge_length
+    - quantities.kinds.particle_size
+    - quantities.kinds.shell_thickness
+    - quantities.kinds.space_time
+    - quantities.kinds.specific_pore_volume
+    - quantities.kinds.specific_surface_area
+    - quantities.kinds.wire_diameter
+    changed:
+    - 'quantities.units: mass% dimensionless, fraction_basis mass -> dimensionless, fraction_basis mass,
+      selectivity_count mass'
+    - 'quantities.units: wt% dimensionless, fraction_basis mass -> dimensionless, fraction_basis mass,
+      selectivity_count mass'
+    narrowed:
+    - quantities.kinds.selectivity is compared by selectivity_count
+    - quantities.kinds.selectivity is compared by selectivity_whole
+    loosened:
+    - 'quantities.contexts.fraction_basis: ''partial pressure'' names partial_pressure'
+    - 'quantities.contexts.fraction_basis: ''partial pressure ratio'' names partial_pressure'
+    - 'quantities.contexts.fraction_basis: ''partial-pressure ratio'' names partial_pressure'
+    - 'quantities.contexts.fraction_basis: ''pressure ratio'' names partial_pressure'
+    - 'quantities.contexts.space_velocity_basis: ''molar feed flow'' names catalyst_mass_per_molar_flow'
+    - 'quantities.contexts.space_velocity_basis: ''molar flow of the feed'' names catalyst_mass_per_molar_flow'
+    - 'quantities.contexts.space_velocity_basis: ''per molar flow'' names catalyst_mass_per_molar_flow'
+    - 'quantities.contexts.space_velocity_basis: ''per mole of feed'' names catalyst_mass_per_molar_flow'
+    - 'quantities.contexts.space_velocity_basis: ''per volume of feed'' names catalyst_mass_per_volumetric_flow'
+    - 'quantities.contexts.space_velocity_basis: ''per volumetric flow'' names catalyst_mass_per_volumetric_flow'
+    - 'quantities.contexts.space_velocity_basis: ''volumetric feed flow'' names catalyst_mass_per_volumetric_flow'
+    - 'quantities.contexts.space_velocity_basis: ''volumetric flow of the feed'' names catalyst_mass_per_volumetric_flow'
+  domains:
+    catalysis:
+      classification: breaking
+      from: 0.7.8
+      to: 0.8.3
+      added:
+      - value.relative_to
+      - quantities.dimensions.area_per_mass
+      - quantities.dimensions.mass_time_per_amount
+      - quantities.dimensions.mass_time_per_volume
+      - quantities.dimensions.volume_per_mass
+      - quantities.contexts.chain_growth_basis
+      - quantities.contexts.chain_growth_method
+      - quantities.contexts.fraction_basis = partial_pressure
+      - quantities.contexts.selectivity_count
+      - quantities.contexts.selectivity_whole
+      - quantities.contexts.space_velocity_basis = catalyst_mass_per_molar_flow
+      - quantities.contexts.space_velocity_basis = catalyst_mass_per_volumetric_flow
+      - quantities.kinds.aspect_ratio
+      - quantities.kinds.chain_growth_probability
+      - quantities.kinds.crystallite_size
+      - quantities.kinds.dispersion_equivalent_size
+      - quantities.kinds.film_thickness
+      - quantities.kinds.hydrodynamic_size
+      - quantities.kinds.microscopy_particle_size
+      - quantities.kinds.microscopy_particle_size_spread
+      - quantities.kinds.particle_edge_length
+      - quantities.kinds.particle_size
+      - quantities.kinds.shell_thickness
+      - quantities.kinds.space_time
+      - quantities.kinds.specific_pore_volume
+      - quantities.kinds.specific_surface_area
+      - quantities.kinds.wire_diameter
+      - nodes.ActiveSite.acid_type
+      - nodes.CatalystSample.sample_kind = dispersion
+      - nodes.CatalystState.architecture[items] = bulk
+      - nodes.CatalyticTest.space_time
+      - nodes.Electrode.sample_kind = dispersion
+      - nodes.Photoelectrode.sample_kind = dispersion
+      - nodes.Preparation.preparation_methods[items] = arc_melting
+      - nodes.Preparation.preparation_methods[items] = chemical_vapor_impregnation
+      - nodes.Preparation.preparation_methods[items] = impregnation
+      - nodes.Preparation.preparation_methods[items] = photochemical_reduction
+      - nodes.Preparation.preparation_methods[items] = radiolytic_reduction
+      - nodes.Preparation.preparation_methods[items] = spark_ablation
+      - nodes.ProcedureStep.action = anneal
+      - nodes.Reactor.operation_mode
+      - nodes.Reactor.reactor_kind = microchannel
+      - nodes.Reactor.reactor_kind = monolith
+      - nodes.Reactor.reactor_kind = slurry
+      - nodes.Sample.sample_kind = dispersion
+      - nodes.Treatment.treatment_kind = annealing
+      - edges.HAS_COMPONENT.ratio
+      - edges.HAS_INPUT.addition_mode
+      - edges.HAS_INPUT.synthesis_function[items] = antisolvent
+      - edges.HAS_INPUT.synthesis_function[items] = halogen_source
+      - edges.HAS_INPUT.synthesis_function[items] = isolating_medium
+      - edges.HAS_INPUT.synthesis_function[items] = phase_transfer_agent
+      - edges.HAS_PHASE.layer
+      changed:
+      - 'quantities.units: mass% dimensionless, fraction_basis mass -> dimensionless, fraction_basis mass,
+        selectivity_count mass'
+      - 'quantities.units: wt% dimensionless, fraction_basis mass -> dimensionless, fraction_basis mass,
+        selectivity_count mass'
+      narrowed:
+      - quantities.kinds.selectivity is compared by selectivity_count
+      - quantities.kinds.selectivity is compared by selectivity_whole
+      loosened:
+      - 'quantities.contexts.fraction_basis: ''partial pressure'' names partial_pressure'
+      - 'quantities.contexts.fraction_basis: ''partial pressure ratio'' names partial_pressure'
+      - 'quantities.contexts.fraction_basis: ''partial-pressure ratio'' names partial_pressure'
+      - 'quantities.contexts.fraction_basis: ''pressure ratio'' names partial_pressure'
+      - 'quantities.contexts.space_velocity_basis: ''molar feed flow'' names catalyst_mass_per_molar_flow'
+      - 'quantities.contexts.space_velocity_basis: ''molar flow of the feed'' names catalyst_mass_per_molar_flow'
+      - 'quantities.contexts.space_velocity_basis: ''per molar flow'' names catalyst_mass_per_molar_flow'
+      - 'quantities.contexts.space_velocity_basis: ''per mole of feed'' names catalyst_mass_per_molar_flow'
+      - 'quantities.contexts.space_velocity_basis: ''per volume of feed'' names catalyst_mass_per_volumetric_flow'
+      - 'quantities.contexts.space_velocity_basis: ''per volumetric flow'' names catalyst_mass_per_volumetric_flow'
+      - 'quantities.contexts.space_velocity_basis: ''volumetric feed flow'' names catalyst_mass_per_volumetric_flow'
+      - 'quantities.contexts.space_velocity_basis: ''volumetric flow of the feed'' names catalyst_mass_per_volumetric_flow'
+  classification: breaking
+  files:
+    added:
+    - core/graph/frozen/kernel-0.7.8.yaml
+    - core/graph/frozen/kernel-0.7.9.yaml
+    - core/graph/frozen/kernel-0.8.0.yaml
+    - core/graph/frozen/kernel-0.8.1.yaml
+    - core/graph/frozen/kernel-0.8.2.yaml
+    - domain/graph/frozen/scale-catal-0.7.8.yaml
+    - domain/graph/frozen/scale-catal-0.7.9.yaml
+    - domain/graph/frozen/scale-catal-0.8.0.yaml
+    - domain/graph/frozen/scale-catal-0.8.1.yaml
+    - domain/graph/frozen/scale-catal-0.8.2.yaml
+    - domain/graph/frozen/v0.7.8/catalysis.yaml
+    - domain/graph/frozen/v0.7.9/catalysis.yaml
+    - domain/graph/frozen/v0.8.0/catalysis.yaml
+    - domain/graph/frozen/v0.8.1/catalysis.yaml
+    - domain/graph/frozen/v0.8.2/catalysis.yaml
+    - skills/curate-corpus/scripts/api_host.py
+    - skills/fetch-corpus/scripts/accept_pdf.py
+    - skills/fetch-corpus/scripts/import_pdfs.py
+    - skills/first-paper/SKILL.md
+    - skills/index-sources/scripts/_lang.py
+    - skills/index-sources/scripts/remove_sources.py
+    - skills/query-graph/references/precedents-plan.json
+    - skills/query-graph/scripts/check_quotes.py
+    - skills/query-graph/scripts/precedents.py
+    - skills/upgrade-curation/SKILL.md
+    - specs/catalysis/scale-catal-0.7.9.json
+    - specs/catalysis/scale-catal-0.8.0.json
+    - specs/catalysis/scale-catal-0.8.1.json
+    - specs/catalysis/scale-catal-0.8.2.json
+    - specs/catalysis/scale-catal-0.8.3.json
+    removed: []
+    changed:
+    - core/CORE.yaml
+    - core/graph/frozen/SHA256SUMS
+    - core/graph/kernel.yaml
+    - domain/DOMAIN.yaml
+    - domain/graph/catalysis.yaml
+    - domain/graph/frozen/SHA256SUMS
+    - domain/graph/scale-catal.yaml
+    - skills/curate-corpus/SKILL.md
+    - skills/curate-corpus/references/batches.md
+    - skills/curate-corpus/references/recipes.md
+    - skills/curate-corpus/references/runs.md
+    - skills/curate-corpus/scripts/curate_run.py
+    - skills/curate-corpus/templates/curate.md
+    - skills/curate-corpus/templates/fix.md
+    - skills/curate-corpus/templates/review.md
+    - skills/evolve-schema/SKILL.md
+    - skills/export-graph/SKILL.md
+    - skills/fetch-corpus/README.md
+    - skills/fetch-corpus/SKILL.md
+    - skills/fetch-corpus/scripts/download_open.py
+    - skills/fetch-corpus/scripts/download_paywalled.py
+    - skills/fetch-corpus/scripts/fetch_si.py
+    - skills/fetch-corpus/scripts/run_paywalled.sh
+    - skills/index-sources/README.md
+    - skills/index-sources/SKILL.md
+    - skills/index-sources/references/queries.md
+    - skills/index-sources/references/topics.md
+    - skills/index-sources/references/troubleshooting.md
+    - skills/index-sources/scripts/_common.py
+    - skills/index-sources/scripts/_databases.py
+    - skills/index-sources/scripts/_download.py
+    - skills/index-sources/scripts/_pdf.py
+    - skills/index-sources/scripts/_topics.py
+    - skills/index-sources/scripts/_vectors.py
+    - skills/index-sources/scripts/build_list.py
+    - skills/index-sources/scripts/find_si.py
+    - skills/index-sources/scripts/keys.py
+    - skills/index-sources/scripts/screen.py
+    - skills/index-sources/scripts/search.py
+    - skills/map-coverage/SKILL.md
+    - skills/query-graph/SKILL.md
+    - skills/scan-conflicts/SKILL.md
+    - skills/triage-feedback/SKILL.md
+built_with:
+  tool: scale
+  version: 0.4.0
+source:
+  repository: https://github.com/trace-ai-org/scale
+  tag: v0.4.0
+component_versions:
+  schema:
+    version: 0.8.3
+  core:
+    name: scale-core
+    version: 0.8.3
+  kernel:
+    file: core/graph/kernel.yaml
+    version: 0.8.3
+  domains:
+  - domain: catalysis
+    version: 0.8.3
+    status: stable
+    scale_graph:
+      manifest: domain/graph/scale-catal.yaml
+      version: 0.8.3
+      status: candidate
+  tool:
+    package: scale-catal
+    version: 0.4.0
+  skills:
+  - name: index-sources
+    version: 4.2.1
+  - name: fetch-corpus
+    version: 1.2.1
+  - name: curate-corpus
+    version: 0.3.0
+  - name: query-graph
+    version: 0.3.1
+  - name: map-coverage
+    version: 0.1.0
+  - name: scan-conflicts
+    version: 0.1.0
+  - name: export-graph
+    version: 0.1.0
+  - name: evolve-schema
+    version: 0.2.0
+  - name: triage-feedback
+    version: 0.1.0
+  - name: first-paper
+    version: 0.1.0
+  - name: upgrade-curation
+    version: 0.1.0
+contributors:
+- name: Hongliang Xin
+  github: hlxin
+  roles:
+  - steward
+  scopes:
+  - core
+  - catalysis
+- name: Tianyou Mou
+  github: mutianyou2013
+  roles:
+  - maintainer
+  scopes:
+  - core
+  - catalysis
+- name: Raul Diaz
+  github: diazr04
+  roles:
+  - maintainer
+  scopes:
+  - core
+  - catalysis
+excluded_domains: []
+spec_documents:
+- domain: catalysis
+  version: 0.1.0
+  file: specs/catalysis/scale-catal-0.1.0.json
+  sha256: 3c2fa7205a7bae5e0bbfa7d87826ff7ab7803e78536129064101c7d5a2c02006
+- domain: catalysis
+  version: 0.2.0
+  file: specs/catalysis/scale-catal-0.2.0.json
+  sha256: 166bfc5539df7f44de075a4fb504c54170af32d6b3a01a916d6171bfcecec714
+- domain: catalysis
+  version: 0.2.1
+  file: specs/catalysis/scale-catal-0.2.1.json
+  sha256: f14b9a0146e5c42cd1ec573d3695fc517ffa8b9042ff062da64853f6e188fb09
+- domain: catalysis
+  version: 0.3.0
+  file: specs/catalysis/scale-catal-0.3.0.json
+  sha256: 46983cc2151b46cb7fcd5ec15ee9b4b6168cfc22d083fade48895a0de75aa4e1
+- domain: catalysis
+  version: 0.4.0
+  file: specs/catalysis/scale-catal-0.4.0.json
+  sha256: c747fbb6308d0c404076b1a23b2f8d992d8659101cbfb3d101d7235ee7b2dba3
+- domain: catalysis
+  version: 0.5.0
+  file: specs/catalysis/scale-catal-0.5.0.json
+  sha256: 704a4b511ac841c8e0254b25530c5172f4945b9268a8dcb34e7c088d85419b58
+- domain: catalysis
+  version: 0.5.1
+  file: specs/catalysis/scale-catal-0.5.1.json
+  sha256: 4a95e26b4f8c65c30c0a0657c6cd40134bd98dce41be941dd597d035907f8a53
+- domain: catalysis
+  version: 0.5.2
+  file: specs/catalysis/scale-catal-0.5.2.json
+  sha256: 753659c27dfbe30c7946f3915b06474cc14275cdc04c75cd8e5672e8183e6207
+- domain: catalysis
+  version: 0.6.0
+  file: specs/catalysis/scale-catal-0.6.0.json
+  sha256: 19dec18ed1b90cdd13f695c2da6ba5401b1054ac90f1b94925ca930a6c565035
+- domain: catalysis
+  version: 0.7.0
+  file: specs/catalysis/scale-catal-0.7.0.json
+  sha256: 37dc3aa00f769f4282173211830eab40b18015e54731ab189554e60e8895c2be
+- domain: catalysis
+  version: 0.7.1
+  file: specs/catalysis/scale-catal-0.7.1.json
+  sha256: b4ffe60d58b717196cf729b5806941b7cfc3b9337fc5c7c281b22e36591c706f
+- domain: catalysis
+  version: 0.7.2
+  file: specs/catalysis/scale-catal-0.7.2.json
+  sha256: dfe75643daf531d2a18e0c9d87187eab99965115e1801814d4a5c4053d6706ce
+- domain: catalysis
+  version: 0.7.3
+  file: specs/catalysis/scale-catal-0.7.3.json
+  sha256: 9a130df582c6696b4d6a302a84c1d44d6f2eaa90ff6886c9ecd76822f7d6c27d
+- domain: catalysis
+  version: 0.7.4
+  file: specs/catalysis/scale-catal-0.7.4.json
+  sha256: 6d266815385765e2f3cbc7b81ccc433ba9b9d65ba58cfc1438025b7ab7ff6533
+- domain: catalysis
+  version: 0.7.5
+  file: specs/catalysis/scale-catal-0.7.5.json
+  sha256: 704b56a2c8baa40d21b4521fc1cbc4e9aca5530e85d04db2be0995351dcc4d63
+- domain: catalysis
+  version: 0.7.6
+  file: specs/catalysis/scale-catal-0.7.6.json
+  sha256: 08d1813af14e741874046a47ebeef1309fbc5c5e3f1826ddfaf0c4471e6620fb
+- domain: catalysis
+  version: 0.7.7
+  file: specs/catalysis/scale-catal-0.7.7.json
+  sha256: ca78352410ccc5fadc4ebec58c62f074c2e8b46164a0139ed723768ff7f0c286
+- domain: catalysis
+  version: 0.7.8
+  file: specs/catalysis/scale-catal-0.7.8.json
+  sha256: 135f9a2b5a5d238b91d733a119516ba67b72863cf117d99b854a22cff4507c1e
+- domain: catalysis
+  version: 0.7.9
+  file: specs/catalysis/scale-catal-0.7.9.json
+  sha256: 80e8f6aa02446a8af7f172422041851b684cfa951d69debc1973c94aa8b013e8
+- domain: catalysis
+  version: 0.8.0
+  file: specs/catalysis/scale-catal-0.8.0.json
+  sha256: 7cc40d129e77e771254a5b48576b1f0c4f239bc3d7ccbc63adc200bb4eff749b
+- domain: catalysis
+  version: 0.8.1
+  file: specs/catalysis/scale-catal-0.8.1.json
+  sha256: 45243ccc5c376783bcfafdfc14413b31a1993d1704d61857b83d69d45f5c47dd
+- domain: catalysis
+  version: 0.8.2
+  file: specs/catalysis/scale-catal-0.8.2.json
+  sha256: bda8a94c9a16841beddf4f52a94c40bf4903d4f63593258089c3f3a3c4d6553b
+- domain: catalysis
+  version: 0.8.3
+  file: specs/catalysis/scale-catal-0.8.3.json
+  sha256: b6f276168d3346d4c9acf0da518a6c9e0fc0cb470c83c284aaf59824b29c2787
+digests:
+  core/CORE.yaml: db0c9c4cf25d00d57cc2099803f47b954efbf617f781a4dccff72f95a6044e18
+  core/graph/frozen/SHA256SUMS: 5655cc7276bb60cf00abf30e63e8aa2e0897987170c4597dbe3fb47f1ae31ab0
+  core/graph/frozen/kernel-0.1.0.yaml: c15027db4aac5bc339a0bc5cc0f47d740225f49503a76ac64a0f9a03dd21a31b
+  core/graph/frozen/kernel-0.2.0.yaml: 4f5ac82ddd97ee533b54e20e10e50be6c8c7b992d3b6796dd70d184f31ac3323
+  core/graph/frozen/kernel-0.2.1.yaml: 4f5ac82ddd97ee533b54e20e10e50be6c8c7b992d3b6796dd70d184f31ac3323
+  core/graph/frozen/kernel-0.3.0.yaml: 146095f59e719fa6e7202e3d51ef5b51629ad9fa9409071076389e41a37fc734
+  core/graph/frozen/kernel-0.4.0.yaml: 96b348086ddb2a9e4450e57d3fe8f47997a1b9a51e4169ab66248c612ae45023
+  core/graph/frozen/kernel-0.5.0.yaml: 96b348086ddb2a9e4450e57d3fe8f47997a1b9a51e4169ab66248c612ae45023
+  core/graph/frozen/kernel-0.5.1.yaml: 96b348086ddb2a9e4450e57d3fe8f47997a1b9a51e4169ab66248c612ae45023
+  core/graph/frozen/kernel-0.5.2.yaml: 96b348086ddb2a9e4450e57d3fe8f47997a1b9a51e4169ab66248c612ae45023
+  core/graph/frozen/kernel-0.6.0.yaml: cb1f504556a9380f5e1b4efba3d35741fab9b56e1af5bac8c7b9831feec6889c
+  core/graph/frozen/kernel-0.7.0.yaml: b54bac75f7c8262d8f2d42ba378b62ee90f66ecdd0612aaf57bc530ab4cf6150
+  core/graph/frozen/kernel-0.7.1.yaml: 2cbd318c3c63e4d12a2faa4a5f8351b5b98071815f4488a6ede47e77da1a9c46
+  core/graph/frozen/kernel-0.7.2.yaml: a81f998771fd71754accbac591cf5f0d03d92481983c233de11cf1b4e3677a31
+  core/graph/frozen/kernel-0.7.3.yaml: ad900b6760ab1ec10a6042f17d54285816d71c4c521261f05dee30aa27a500df
+  core/graph/frozen/kernel-0.7.4.yaml: ad900b6760ab1ec10a6042f17d54285816d71c4c521261f05dee30aa27a500df
+  core/graph/frozen/kernel-0.7.5.yaml: f8f0327a0598fae8aba09cf7a676d9fde0fa051133b0e0a0ef055598acce9bad
+  core/graph/frozen/kernel-0.7.6.yaml: f8f0327a0598fae8aba09cf7a676d9fde0fa051133b0e0a0ef055598acce9bad
+  core/graph/frozen/kernel-0.7.7.yaml: f8f0327a0598fae8aba09cf7a676d9fde0fa051133b0e0a0ef055598acce9bad
+  core/graph/frozen/kernel-0.7.8.yaml: 9d7d020a6abe7bf5b181ed0cf7984f7bd11c1643157558a28fdec9a0fd7a8927
+  core/graph/frozen/kernel-0.7.9.yaml: 703d2b30fa68752d58bc8c7a307b0fa1778d02741a6a52fd47569105e035f6ac
+  core/graph/frozen/kernel-0.8.0.yaml: bccc7d68b6b55caf607123da2a95da46088171122fe92bbad74476361dfd919b
+  core/graph/frozen/kernel-0.8.1.yaml: 24a4f79b6cee5aba022bd12fd6efaa0675db6e41e94c94d458d535bc3d9d2958
+  core/graph/frozen/kernel-0.8.2.yaml: 14c0cb5ebf36ef95203cd6401b53f6b9294b21b477a5eb1b8d51917652a7fe77
+  core/graph/kernel.yaml: 14c0cb5ebf36ef95203cd6401b53f6b9294b21b477a5eb1b8d51917652a7fe77
+  domain/DOMAIN.yaml: 44f33f6c748fbd9110acd7e29b4708427f09075b5a3727d5be1a6d842d605408
+  domain/graph/catalysis.yaml: 1243de5f895dad8f0edbc2ece64b090b4fbb5c94a0acb8ec1a49fcd4375d0068
+  domain/graph/frozen/SHA256SUMS: b31fa2d2d04e90f367761a4dccfcd4007a0018e155b693c431bb64f64b0e3aec
+  domain/graph/frozen/scale-catal-0.1.0.yaml: 28007408d4d3610d6ae6efd06516c19209e8b412104705f5988d900c471542d8
+  domain/graph/frozen/scale-catal-0.2.0.yaml: 17b6cffcff1d694d4496e5fcdc00b426be006a4e39c336a5999b9da03cd234c2
+  domain/graph/frozen/scale-catal-0.2.1.yaml: 90d547ff1073999495b91504c46d91c336fa889bebacafd4dd45eaa69b62d910
+  domain/graph/frozen/scale-catal-0.3.0.yaml: d40eb416e6ab40bf812af1ce948e4abf0b40d34320a8f9a318998157bdce98b2
+  domain/graph/frozen/scale-catal-0.4.0.yaml: 9022cc6ade9d99ab2f58cac4d9b1393e397b01d93e7c539d33b7297792f27ed6
+  domain/graph/frozen/scale-catal-0.5.0.yaml: c1890a0e3bca88d30612dcb0f8fda77f5f9517290353f209a0582973cd25b386
+  domain/graph/frozen/scale-catal-0.5.1.yaml: 28e07ee900320330edb992440854461a4dd0003e0819d42953fe8a34977d5f41
+  domain/graph/frozen/scale-catal-0.5.2.yaml: a99525870f7b3b914e25f2a88fadc649a8834538d6697173b168199c5479c70d
+  domain/graph/frozen/scale-catal-0.6.0.yaml: c17f97e62403f4df61dd8d3814889f58870aa8b6b2739d43b5f7f11ddc0cc1c8
+  domain/graph/frozen/scale-catal-0.7.0.yaml: 2c8f0d7d6d9834a91164552c43655872f8cddfc7ff23e169de7ba8d5150f024e
+  domain/graph/frozen/scale-catal-0.7.1.yaml: dbe2bb5aecc87cba65288456bb62fa36a3b65f2adc94ff07760a93642d0131c6
+  domain/graph/frozen/scale-catal-0.7.2.yaml: eadd77a55d86e86fcbd0cf3e679aec1cb78a51229eee9fff9d36500bb2e75826
+  domain/graph/frozen/scale-catal-0.7.3.yaml: fd27f2c26967ecbfc2e880627b30e872601763585d39fa013d6b09630850abf3
+  domain/graph/frozen/scale-catal-0.7.4.yaml: 9e8332753143097a663d52ad74228cfb9e8c8d92f595b61f8c85df80252ce147
+  domain/graph/frozen/scale-catal-0.7.5.yaml: 0b1b975ba125505d3d92efed0652deec91c63aa99bbe2d232894601cd892510c
+  domain/graph/frozen/scale-catal-0.7.6.yaml: 66f1292afd4d91b59e019f3c6396052beb44005e84074b3fb59e9bb92da7a5f8
+  domain/graph/frozen/scale-catal-0.7.7.yaml: eed8508c6b9eb19b893efbda42a48f93094a627d11eb2780cb491e66544da0df
+  domain/graph/frozen/scale-catal-0.7.8.yaml: b19dc4fb397b1be08e3a12c5b3c7a26a43cd120ce6981dcc019006d43f18c841
+  domain/graph/frozen/scale-catal-0.7.9.yaml: ccd63f92f999b002cbcd2f68d5ec3dc98e8aea97f6e9b5c8459bacc5e5931109
+  domain/graph/frozen/scale-catal-0.8.0.yaml: 67b2a46d6f5f9170bfa351b0b3b6febe195a5a081ebce891810c63b9e328c114
+  domain/graph/frozen/scale-catal-0.8.1.yaml: 473bedccdc78daff9926cc0367f96767abe0b3e21a6a5b8ad85cd99e7bcbc720
+  domain/graph/frozen/scale-catal-0.8.2.yaml: d412a0ce59f63e9d7ee7bb3b34518230a213dd5496023aceacdaa9406575d76f
+  domain/graph/frozen/v0.1.0/catalysis.yaml: 6b2d3e6a93e1fd0502b14db57b8a5e76f7194ca5d19be7f97e7f4a660909e630
+  domain/graph/frozen/v0.2.0/catalysis.yaml: 6b2d3e6a93e1fd0502b14db57b8a5e76f7194ca5d19be7f97e7f4a660909e630
+  domain/graph/frozen/v0.2.1/catalysis.yaml: e512db35416d250111e5674e1402cdd933410cfa7a94f2e5baa43f13779d9739
+  domain/graph/frozen/v0.3.0/catalysis.yaml: 0576012cdc2118e0f216363bfe63441f5bbe4796f9564450fcca178f5470310d
+  domain/graph/frozen/v0.4.0/catalysis.yaml: c9af67dedfdaf028bddf44fa5f2f606d95941877264ade2a64ad3bcae81bdaca
+  domain/graph/frozen/v0.5.0/catalysis.yaml: 5523f4127eaf5f3bc0de05a7b2b62a4260245c345709c701ad623141360d8370
+  domain/graph/frozen/v0.5.1/catalysis.yaml: cc4b0da2ac65343bdf98ad24d40241fbebac534f6db6f3098b0350ff53f525e0
+  domain/graph/frozen/v0.5.2/catalysis.yaml: b3e096b5ade3995d64ce3ee5fa856c46a689727f059ab4eb8cb04e81d20d59e0
+  domain/graph/frozen/v0.6.0/catalysis.yaml: 78c37e0a2f081194e515bd99fbc63892f054aac9c1c5d2233e357cd2ceeeafbf
+  domain/graph/frozen/v0.7.0/catalysis.yaml: 95285d6efeead8628c1a353c72515fb928fe28155e57527ec7d7200ec029b97f
+  domain/graph/frozen/v0.7.1/catalysis.yaml: e03fd2ff55885e7e028be54b3705dd6ee58b42b8e5bfd81140dac81c14a5dd48
+  domain/graph/frozen/v0.7.2/catalysis.yaml: 16cdf78b5446653b6cc1b8f36c0872431f8b1bd9ddbd5657dc6fc8ac21cab7db
+  domain/graph/frozen/v0.7.3/catalysis.yaml: d6e9ae48ef08084a9b7e96482191db5d819311c042ed49b3da1fde5143fd8020
+  domain/graph/frozen/v0.7.4/catalysis.yaml: 120b794c0474904c9b22c04af92ad8cff15394312587e91d86c44e4fb7191002
+  domain/graph/frozen/v0.7.5/catalysis.yaml: b02bfd8994320d07512d602773db5fb3f5e989556bd582706ed3a4bc4c6d97cb
+  domain/graph/frozen/v0.7.6/catalysis.yaml: 965ed4daf3de2a299dbe6e202297bda285d16dd7d3281a117c0816ef08d7c649
+  domain/graph/frozen/v0.7.7/catalysis.yaml: 0d4b6ef4b2876d517557929ed9e06f504efb4cdf690d5b150388cab3a85ce2ba
+  domain/graph/frozen/v0.7.8/catalysis.yaml: ffb9b58c41a9b88533759ce945ad1024008e5becc3ad1cc4fae9547129d81b9b
+  domain/graph/frozen/v0.7.9/catalysis.yaml: b9b15d6a07343962a80be3e506eb83a7e246eae2c5736639eb507e8416c19983
+  domain/graph/frozen/v0.8.0/catalysis.yaml: b9b15d6a07343962a80be3e506eb83a7e246eae2c5736639eb507e8416c19983
+  domain/graph/frozen/v0.8.1/catalysis.yaml: cfe57891f1c501657618cbdc0a350a8219db706b99d36ecfe153b0b38fd977e1
+  domain/graph/frozen/v0.8.2/catalysis.yaml: cfe57891f1c501657618cbdc0a350a8219db706b99d36ecfe153b0b38fd977e1
+  domain/graph/scale-catal.yaml: 84bf2945e7ed96edb9c61d1b0bce50905fadf5fe91df69920797a3931159c5f1
+  skills/curate-corpus/SKILL.md: 1b470fa51a9796bf737ca3cdc1a44cc22500190bcee107238558e7c266f42af8
+  skills/curate-corpus/references/batches.md: e9481decf8e63650f1837f9b1150319168dc180dd0f879d6357440b90aeda1af
+  skills/curate-corpus/references/recipes.md: dcf4fb9c1e9d6cb10ca339c1e91a077e8f9920da993c94525601c3f2add4f655
+  skills/curate-corpus/references/runs.md: b25d7a12c2d9f9ef12a46a646648573714b5ab47af624ac213ba528ab9a22a46
+  skills/curate-corpus/scripts/api_host.py: 9c31cdb589177a1b42bc577dae5f59475383f996b42e4ee9d57dfb14f85288fd
+  skills/curate-corpus/scripts/curate_run.py: 07834d382aa168e6a1c7e453dc86a736f610f7547ad2e5e8aba2e5af3c1bd9e0
+  skills/curate-corpus/scripts/si_pages.py: 6371a882a5084cebd56b86dbae8a88842f4ba6fe6455d0713c44e43b59205e8a
+  skills/curate-corpus/templates/curate.md: a516562688e97f30c6fa4ae6b3893e2689da47b86d1acdc94d538d22199a2647
+  skills/curate-corpus/templates/fix.md: 57215acc3186e1846a3daf38b1c7c87cd426787d9dc2eb47fb74800497e104d3
+  skills/curate-corpus/templates/review.md: 2567bee22aba103a96f76831cf1b235ff1208d042c7bfb74c6dc9916c374a845
+  skills/evolve-schema/SKILL.md: e549c8bd20b17b9fb03e13dbc0c4a10be24d0f2ff8ad4c96a8659e69ec8df1e4
+  skills/export-graph/SKILL.md: fe6e4664ffd157e4777b1dc45a0f766c652fc83520d29faf886cc041faf76591
+  skills/fetch-corpus/README.md: 15de69145f39f22dcffc984990c17e105419bf5da81161ea572ad96d81ad1a77
+  skills/fetch-corpus/SKILL.md: c1761cf9f33159be4eb771fed5e9e1099af88ad0b9b7f177fc50875790a73329
+  skills/fetch-corpus/references/paywalled.md: 124ea4c2bbc9e012f12806b38211bb117bbd7d5e9bea639df03282742145ea12
+  skills/fetch-corpus/scripts/_core.py: 47e38b36453fa733fd40a841094cb1573d60f00f5b1471c61f61754d067d0a0a
+  skills/fetch-corpus/scripts/_corpus.py: 753bfff01765b0240824920d371c52da80e21424316d96fa691f6bb76b9d5026
+  skills/fetch-corpus/scripts/_ezlimit.py: 02fb8e1ec4c88caa7e7b5daa0b5413f866aab2bdaf461b0dbfbc4f2ccd7e9498
+  skills/fetch-corpus/scripts/_ezproxy.py: adc7f5b59207a5c9d42aa1295ea040f7a3731f8560d04a0c4fd3b6f900799ead
+  skills/fetch-corpus/scripts/accept_pdf.py: 727d8fedde711cccdf046a35d6d61ea7621ea54270440c56d34bc451cfe9a3a4
+  skills/fetch-corpus/scripts/check_paywalled_access.py: 33d0510005663ccdc71e18fd278ef01029d92b44b75412e7a13807ed74d1cb70
+  skills/fetch-corpus/scripts/download_open.py: d7745f58dc6779eb327cf166e001d561f599e77c336a58b37320ec2d97c78328
+  skills/fetch-corpus/scripts/download_paywalled.py: 352eed9bd39bd35756b052284701ed698a18dd5402dc37ade707389db0371ec4
+  skills/fetch-corpus/scripts/fetch_si.py: 9b4c3e4fb875dcb1eb7d8e404dc4ba24a96c0ec276176b0a0c9d290762e105ac
+  skills/fetch-corpus/scripts/import_pdfs.py: 961402a4c31933930c74031b5b2ec27539cf42c7ad7e6f247fdc469d8516f1cb
+  skills/fetch-corpus/scripts/run_paywalled.sh: fa40a8196ca1129e35b27812b600f39f04c95258776860afa484a79a108a1491
+  skills/fetch-corpus/scripts/settle_corpus.py: 663a9958834cbf14927f802691dcea7c9eef8546ce7e6abfc4b2572a9bf73ed9
+  skills/first-paper/SKILL.md: 73eb3f39f56400303e9c37ad26263dcd5a02304b5e54d8fc542c4c262dec69e7
+  skills/index-sources/README.md: 43aa00dad38dd7515ac59156a763635f27d5cf08dc11190106b9aa8aee58cb5a
+  skills/index-sources/SKILL.md: d954b990c9ca3fa99d380f2bb83a3226442574592528b5d806e5716590fb1888
+  skills/index-sources/evals/evals.json: e9a0f43e3c9067027e0b7f86ff3eb24e1fcf25371cf3c2123fcd98be4d1f3afa
+  skills/index-sources/keys.example.txt: 63bec8aca4f0654fc17975f5cdc90ab41f9ebb19b970815f41fd915c38bca1d4
+  skills/index-sources/references/database.md: 2d0333c839c072a78fe9c418a4ff6f463e1f7a9b5c60ba5ac1d410f3222032bc
+  skills/index-sources/references/databases.md: faa29dde4e9b69bac89b606cef086bb3aa6d17a600d9e507efa90979a13bc4a2
+  skills/index-sources/references/queries.md: 61691d0c4c9fb6e9e18ac1f9d820e95540ebb44242fd3acf0b6d107a93b970bd
+  skills/index-sources/references/screening.md: 27eac1f72347622b1c8b284f375b67b30c71ab0eee3ef67225ee800bd5806af7
+  skills/index-sources/references/topics.md: 20b2df67493fb99713837d5d13554935ff1c1b43333cf6de9d8bb8c2b40c0436
+  skills/index-sources/references/troubleshooting.md: 8b68c27e0cff9b1cc9bccb644196c15f63dcf843f5dfd45ad3b2335214488336
+  skills/index-sources/scripts/_cache.py: f31f809dcc4832a413b76f250d5d659afccaf9e157a4a195fb86763aef13255a
+  skills/index-sources/scripts/_common.py: 9d244239a0182d7236da12fda9bb778fdaa24c106246de62229cae3d72413f85
+  skills/index-sources/scripts/_databases.py: 38e040c50b7184847d76a013055821c06fe629c8b7b05dd6c86b4f0c2d9e6a95
+  skills/index-sources/scripts/_download.py: 8d6e617e4b21b733d62073af7ef786351d0f922f45cbdd52c862c7269cb1a2bc
+  skills/index-sources/scripts/_filters.py: 103efa5081e4cfd98d3e868d3482c889e7dae1143a8167d04c900c2983584c87
+  skills/index-sources/scripts/_lang.py: 9ac6a621c9f617ce56616a24f2d4c65350d548458b752a66a4dc1b9912531ae2
+  skills/index-sources/scripts/_ledger.py: 6f28a105808198b5884eafe2907fc67f5081345919559a43848a706972dd2adf
+  skills/index-sources/scripts/_mdpi.py: 872ae1562bc715e7db0c978e7ba39f8ddfcdea923e5a80677fe7d4b278446459
+  skills/index-sources/scripts/_pdf.py: 612bfece4ee8dc2740e59f93299a14b060352435aa82db8bf9f7efa95a17e1cb
+  skills/index-sources/scripts/_publish.py: dfa7e70bee4de402d5f782541f94373da1148db28454deb1b5ba85f120d56443
+  skills/index-sources/scripts/_topics.py: c4c5618901991ca23de4d6ea99c612dba5ce92cbfb82721a2745d78253065cc7
+  skills/index-sources/scripts/_upgrade.py: a27dcdaf7e6f98103e244ad82312a369752bd81b7ed19cdaccd3a7e9e59eeb31
+  skills/index-sources/scripts/_vectors.py: d9214a4b85442349d93ed34fd445f360f584f0c05a8e3f60f0ed3a9060a1968f
+  skills/index-sources/scripts/build_list.py: b71d8c5d916ef5248bd7ea9dff850f51121979d3abca03dab1d940af0dc46fbf
+  skills/index-sources/scripts/classify_access.py: ac5dea79c176784fc8ceab6f48bda3c1491ed71b05bf36f411cee49380e80463
+  skills/index-sources/scripts/dedup.py: 4434d468ebe17e3cacf0d57a2c8858baf5a3ce3935cee3b04130b933c418863b
+  skills/index-sources/scripts/export.py: b4d56496a235aaa9c650189358ebada2619681613a131225a65e3f103970dce8
+  skills/index-sources/scripts/fill_abstracts.py: 740867f644fd419b505b0b1b37852dd171f6a98940a569dc071e27fcf11d0cba
+  skills/index-sources/scripts/filters.py: b62a4dbdf496d16885c6867f8fc5738312b10d6d76f762dd1909d7c60f036e60
+  skills/index-sources/scripts/find_si.py: f63a8019c598eb650fd2e93ae480eea8403a8f992eac2ef40763db7bfc1a8ba4
+  skills/index-sources/scripts/freeze_corpus.py: a65353c8bc32c251922c34bde4116d2c708fc39d17f8d9397706b3d8e6655d60
+  skills/index-sources/scripts/import_list.py: eb7644b4a69b1016157949642616f245bdfd5bf76c1982f0ec24dfc029af12bb
+  skills/index-sources/scripts/init_topic.py: b31b4f44f1f8d08f325bf1820ba7352153bae26f9d072a20177e060708c8ad76
+  skills/index-sources/scripts/keys.py: 08414d2e434a42301f4420e6943745fb514c8b96b3ee2518d4941f57ca81a0e4
+  skills/index-sources/scripts/merge_db.py: 182d5f7b7113700ea1fe9477853db359383179e229fa8a8ff18991a907fef7b6
+  skills/index-sources/scripts/remove_sources.py: 6c1af17e77d95bc3f0cd024f5a33f807b2c2697019f312b7922b3f6ff02ff30b
+  skills/index-sources/scripts/repair.py: e670bc83531114d3bc8a88589935db3c9e03a548bb107e9930f6de2ee6d44ab4
+  skills/index-sources/scripts/screen.py: f80bcc7303014bfb4933c6e70e40c665defe0acdc6d36b64d27feb005ea09fb1
+  skills/index-sources/scripts/search.py: 56cd51f3c0405a522a7aca16547a1f7bc6b64d97984597686c56d241493a285f
+  skills/index-sources/scripts/status.py: 734d4a5036a1c1e2d451b1f153eb5b710d04ac8e82f7744d7689da3a002cbc71
+  skills/index-sources/scripts/topics.py: ee597d74fb986d0a72965eb1a66aa317e85d7bfd0a3577e93074174f17b94401
+  skills/index-sources/scripts/upgrade.py: 5b40c4402389264129f1756b4ecb049f6055e694d4027038bdde2aac1c074c99
+  skills/index-sources/scripts/vectors.py: 169ea0ae8228f2cfb2a44c2db9094b291c2f2c1253f52e9292ace4cfdc1876f7
+  skills/index-sources/templates/screen_instructions.md: ab043df0beb5f014951313844113d3313e4e812beba58b1d8c57816143743854
+  skills/map-coverage/SKILL.md: 7bb220a378e6eafc1d04862a503a2403af1f128ee44ddeed4598096397b545fb
+  skills/query-graph/SKILL.md: 66923a08808b0b972a59b752a1a3d599bedb283600f5dade5473e73c2f73f7bf
+  skills/query-graph/references/precedents-plan.json: 553fc70ee806ecc6f1aa449ef4924dc41f8ac8b11ccf59a7ef8796b7bc7e686a
+  skills/query-graph/scripts/check_quotes.py: 512fb9a48c21d7482bc566122a03f98a0ca5cf86f9aec6d09459f9221eee569d
+  skills/query-graph/scripts/precedents.py: bab6a7e8ce3ad2185e8b346387696b70ed32faad6c2153273a150d164ad3b0be
+  skills/scan-conflicts/SKILL.md: 16b4c74ddae34e0ce1e7d87b96987f2fc063726386092ebd497a879813193986
+  skills/triage-feedback/SKILL.md: 588acb99581f0ff7a0c8c71be543bd90d5c02b632573eda60e0e59cef1c66a4b
+  skills/triage-feedback/proposal.schema.json: b4c4044b8c0ae8ac97181ce2921ec0fdf4297d1ca7a72e5695df236d8951fd33
+  skills/upgrade-curation/SKILL.md: 3cfb3763baf7b2c7180a2550fa786051c3ac01d3426a164670bea345d5f41d83
+  specs/catalysis/scale-catal-0.1.0.json: 3c2fa7205a7bae5e0bbfa7d87826ff7ab7803e78536129064101c7d5a2c02006
+  specs/catalysis/scale-catal-0.2.0.json: 166bfc5539df7f44de075a4fb504c54170af32d6b3a01a916d6171bfcecec714
+  specs/catalysis/scale-catal-0.2.1.json: f14b9a0146e5c42cd1ec573d3695fc517ffa8b9042ff062da64853f6e188fb09
+  specs/catalysis/scale-catal-0.3.0.json: 46983cc2151b46cb7fcd5ec15ee9b4b6168cfc22d083fade48895a0de75aa4e1
+  specs/catalysis/scale-catal-0.4.0.json: c747fbb6308d0c404076b1a23b2f8d992d8659101cbfb3d101d7235ee7b2dba3
+  specs/catalysis/scale-catal-0.5.0.json: 704a4b511ac841c8e0254b25530c5172f4945b9268a8dcb34e7c088d85419b58
+  specs/catalysis/scale-catal-0.5.1.json: 4a95e26b4f8c65c30c0a0657c6cd40134bd98dce41be941dd597d035907f8a53
+  specs/catalysis/scale-catal-0.5.2.json: 753659c27dfbe30c7946f3915b06474cc14275cdc04c75cd8e5672e8183e6207
+  specs/catalysis/scale-catal-0.6.0.json: 19dec18ed1b90cdd13f695c2da6ba5401b1054ac90f1b94925ca930a6c565035
+  specs/catalysis/scale-catal-0.7.0.json: 37dc3aa00f769f4282173211830eab40b18015e54731ab189554e60e8895c2be
+  specs/catalysis/scale-catal-0.7.1.json: b4ffe60d58b717196cf729b5806941b7cfc3b9337fc5c7c281b22e36591c706f
+  specs/catalysis/scale-catal-0.7.2.json: dfe75643daf531d2a18e0c9d87187eab99965115e1801814d4a5c4053d6706ce
+  specs/catalysis/scale-catal-0.7.3.json: 9a130df582c6696b4d6a302a84c1d44d6f2eaa90ff6886c9ecd76822f7d6c27d
+  specs/catalysis/scale-catal-0.7.4.json: 6d266815385765e2f3cbc7b81ccc433ba9b9d65ba58cfc1438025b7ab7ff6533
+  specs/catalysis/scale-catal-0.7.5.json: 704b56a2c8baa40d21b4521fc1cbc4e9aca5530e85d04db2be0995351dcc4d63
+  specs/catalysis/scale-catal-0.7.6.json: 08d1813af14e741874046a47ebeef1309fbc5c5e3f1826ddfaf0c4471e6620fb
+  specs/catalysis/scale-catal-0.7.7.json: ca78352410ccc5fadc4ebec58c62f074c2e8b46164a0139ed723768ff7f0c286
+  specs/catalysis/scale-catal-0.7.8.json: 135f9a2b5a5d238b91d733a119516ba67b72863cf117d99b854a22cff4507c1e
+  specs/catalysis/scale-catal-0.7.9.json: 80e8f6aa02446a8af7f172422041851b684cfa951d69debc1973c94aa8b013e8
+  specs/catalysis/scale-catal-0.8.0.json: 7cc40d129e77e771254a5b48576b1f0c4f239bc3d7ccbc63adc200bb4eff749b
+  specs/catalysis/scale-catal-0.8.1.json: 45243ccc5c376783bcfafdfc14413b31a1993d1704d61857b83d69d45f5c47dd
+  specs/catalysis/scale-catal-0.8.2.json: bda8a94c9a16841beddf4f52a94c40bf4903d4f63593258089c3f3a3c4d6553b
+  specs/catalysis/scale-catal-0.8.3.json: b6f276168d3346d4c9acf0da518a6c9e0fc0cb470c83c284aaf59824b29c2787
