@@ -1,0 +1,1084 @@
+"""Curate a frozen corpus into scale-catal documents: one SCALE working folder per source, curated by a subagent that
+follows the curate-corpus skill's procedure for one source, read a second time by another, and checked by SCALE's tools.
+
+  python3 -I curate_run.py prepare --corpus <sources.json> --run <dir> --curator opus|sonnet|fable|haiku|api:<model>
+                                   --reviewer opus|sonnet|fable|haiku|api:<model>|skip [--api-base-url <url>]
+                                   [--api-context-tokens N] [--api-temperature T] [--api-top-p P]
+                                   [--ids 12,57 | --ids-file F] [--max 50]
+                                   [--contributor <id>] [--project <id>] [--version <v>] [--no-si] [--scale "<command>"]
+  python3 -I curate_run.py next    --run <dir> --role curate|review|fix [--n 5]
+  python3 -I curate_run.py review-api --run <dir> [--n 5] [--context-tokens N] [--max-chars 300000] [--max-doc-chars N]
+                                    [--temperature T] [--top-p P]
+                                                              (the second reading by a model behind an API)
+  python3 -I curate_run.py status  --run <dir> [--apply]
+  python3 -I curate_run.py finish  --run <dir> [--public] [--bundle]
+  python3 -I curate_run.py assemble --run <dir> [--out <folder>]        (a local graph of the run, to query)
+  python3 -I curate_run.py contribute --run <dir> --to <folder>          (a dry run: what would change)
+
+prepare   checks the manifest with `scale corpus check`, picks its included sources whose PDF is on disk, and starts
+          a working folder for each: `scale source start --doi <doi> --pdf <pdf> --out <run>/sources/<id>` (the
+          graph to fill, pinned to the schema, with its Source; the page texts; rights.yaml; BRIEF.md). The SI files'
+          text is appended to the page texts as pages [page S1], [page S2] …: supporting information belongs to its
+          source's Source. Re-running it skips folders that exist.
+next      writes the prompt of the next N sources for a role (from ../templates) and prints one JSON line per source:
+          {"id", "role", "prompt", "model"}. Launch one subagent per line, with that model. A handed-out source is not
+          handed out again for 3 hours unless its report arrives.
+          Models (asked before prepare): --curator is the model that curates and fixes — a Claude model (a subagent)
+          or api:<model>, a model behind --api-base-url run by an agent host that follows this skill (the line then
+          carries "base_url"; the host may read that source's folder and SCALE, never another run's folders);
+          --reviewer the one that reads each document a second time — another Claude model (recommended: not the
+          curator's), api:<model> (read by review-api through an OpenAI-compatible endpoint, --api-base-url; key in
+          ~/.scale/sources/keys.txt or an environment variable), or skip (not recommended: a document then passes on
+          SCALE's checks alone, and the index says it was not read a second time). One --api-base-url serves both.
+review-api  the second reading of the next N curated sources by the API model: the document, the curator's report
+          and the page texts go to the model with the reading's checklist; its verdict is written to
+          work/review.json as a subagent's would be. A stream cut off (no finish_reason or [DONE]) is retried like a
+          5xx; the raw answer of a failed reading is kept in work/review-raw-<n>.json. A document larger than
+          its reader's context window allows (--context-tokens, or prepare --api-context-tokens: 2.5 characters a
+          token, --answer-tokens 64,000 kept for the answer and doubled once for a reading cut by length; without a window, --max-doc-chars, 150,000 characters of compact
+          JSON) is read in parts: each part holds whole records with the links they start,
+          and lists the records of the other parts (id, label, name), so that nothing is read twice or reported
+          missing; the parts' issues are merged into one reading (its "parts" field says how many). The request
+          carries no sampling of its own unless given (--temperature/--top-p, or prepare --api-temperature/
+          --api-top-p): the endpoint's default, which for a served model is the one its makers recommend. Greedy
+          decoding (temperature 0) sends a reasoning reader into loops that fill the window without a verdict.
+          Every reading (review-api's and a subagent's) is given today's date and, after a fix, the previous reading's
+          issues to check first.
+
+Severity: each issue of a second reading is major (a value, unit, pairing, condition or result that is wrong,
+unsupported or filled in; a main result missing; a record that misstates the source) or minor (the record holds, but
+its support or wording could be better). The verdict is needs_fix when an issue is major (an issue without a
+severity counts as major) and pass when every issue is minor; the minor issues stay in work/review.json for the
+person who reviews the document.
+status    runs `scale source check <folder>` on every folder (cached while the graph is unchanged), reads the
+          curator's report (work/curation.json) and the second reading (work/review.json), and gives each source a
+          state; --apply records the settled ones in state.jsonl and hands their result to the source index
+          (<project>/.scripts/<topic>/kg/<run>/extraction_status.jsonl), then runs index-sources' export so
+          the index shows them at once (its Extracted column; index.db table extractions).
+finish    `scale source finish <folder>` for every passed source (--public: the copy with quoted text capped).
+assemble  a local graph kept as parts (<run>/graph by default) with every passed document, added by `scale graph
+          contribute --write` into that local folder, and built (`scale graph build`) into one document to query.
+contribute  `scale graph contribute <graph> --to <folder>` for every passed source, without --write: writing is a
+          person's decision, then a pull request on an agent/… branch.
+
+States: prepared → (curator) curated → (second reading) passed | needs_fix → (fix) curated … ; check_failed when the
+curator's document does not pass the check; failed after 3 fixes; rejected when the second reading finds the wrong
+source or an unreadable text. Settled: passed (extracted or no_data), rejected, failed. The scripts never read or write
+a document's records: the curator writes them, SCALE's tools check them. Prints one JSON object on stdout.
+"""
+import argparse
+import datetime as _dt
+import http.client
+import json
+import os
+import re
+import shlex
+import subprocess
+import sys
+import time
+from collections import Counter
+from pathlib import Path
+from string import Template
+
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+import si_pages  # noqa: E402
+
+HERE = Path(__file__).resolve().parent
+TEMPLATES = HERE.parent / "templates"
+LEASE_S = 3 * 3600
+MAX_FIXES = 3
+INCLUDED = ("in_scope", "included")
+SETTLED = {"passed", "rejected", "failed"}
+MODELS = ("opus", "sonnet", "fable", "haiku")        # Claude models a subagent can run on
+API_CHARS = 300000                                   # page-text characters sent to an API reader at most
+DOC_CHARS = 150000      # document characters (compact JSON) per request of an API reader; a larger one goes in parts
+CHARS_PER_TOKEN = 2.5   # characters a token: compact JSON with ids and units runs under 3
+                        # (prose about 4), so 2.5 is a safe bound
+WIDE = 3                # a character outside ASCII (CJK text, Greek, symbols) can be a token alone: it counts as 3
+ANSWER_TOKENS = 64000   # tokens of a reader's window kept for its answer, thinking included (doubled once for a
+                        # reading cut by length)
+REPORT_CHARS = 20000    # characters of the curator's report sent to an API reader at most
+SEVERITIES = ("major", "minor")
+_WIDE = re.compile(r"[^\x00-\x7f]")
+
+
+def width(text):
+    """Characters as the budgets count them: a character outside ASCII counts as WIDE."""
+    return len(text) + (WIDE - 1) * len(_WIDE.findall(text))
+
+
+def head_within(text, budget):
+    """The longest start of text whose width is within budget."""
+    if width(text) <= budget:
+        return text
+    lo, hi = 0, min(len(text), budget)
+    while lo < hi:
+        mid = (lo + hi + 1) // 2
+        lo, hi = (mid, hi) if width(text[:mid]) <= budget else (lo, mid - 1)
+    return text[:lo]
+
+
+# ------------------------------------------------------------------ small helpers
+def is_model(m, also=()):
+    """A Claude model a subagent runs on, api:<model> (a model behind the run's --api-base-url), or one of `also`."""
+    return m in MODELS + tuple(also) or (isinstance(m, str) and m.startswith("api:") and len(m) > 4)
+
+
+def now():
+    return _dt.datetime.now(_dt.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+
+
+def log(*a):
+    print(f"[{_dt.datetime.now():%H:%M:%S}]", *a, file=sys.stderr, flush=True)
+
+
+def die(msg):
+    print(f"ERROR: {msg}", file=sys.stderr, flush=True)
+    sys.exit(2)
+
+
+def read_json(p, default=None):
+    try:
+        return json.loads(Path(p).read_text(encoding="utf-8"))
+    except (FileNotFoundError, json.JSONDecodeError):
+        return default
+
+
+def write_json(p, obj):
+    p = Path(p)
+    p.parent.mkdir(parents=True, exist_ok=True)
+    tmp = p.with_name(p.name + ".tmp")
+    tmp.write_text(json.dumps(obj, indent=2, ensure_ascii=False, sort_keys=True) + "\n", encoding="utf-8")
+    os.replace(tmp, p)
+
+
+def append_jsonl(p, obj):
+    Path(p).parent.mkdir(parents=True, exist_ok=True)
+    with open(p, "a", encoding="utf-8") as fh:
+        fh.write(json.dumps(obj, ensure_ascii=False, sort_keys=True) + "\n")
+
+
+def jsonl(p):
+    out = []
+    if Path(p).exists():
+        for line in Path(p).read_text(encoding="utf-8").splitlines():
+            try:
+                out.append(json.loads(line))
+            except json.JSONDecodeError:
+                continue
+    return out
+
+
+def mtime(p):
+    try:
+        return Path(p).stat().st_mtime
+    except FileNotFoundError:
+        return 0.0
+
+
+def scale_text(cmd, *args, timeout=900):
+    """Run the scale command; (exit code, stdout, stderr)."""
+    try:
+        r = subprocess.run([*shlex.split(cmd), *map(str, args)], capture_output=True, text=True, timeout=timeout)
+    except (OSError, subprocess.TimeoutExpired) as e:
+        return 127, "", f"{type(e).__name__}: {e}"
+    return r.returncode, r.stdout, r.stderr
+
+
+def scale(cmd, *args, timeout=900):
+    """Run a scale command that prints JSON; (exit code, the parsed JSON or None, the tail of its messages)."""
+    rc, out, err = scale_text(cmd, *args, timeout=timeout)
+    try:
+        parsed = json.loads(out) if out.strip() else None
+    except json.JSONDecodeError:
+        parsed = None
+    return rc, parsed, (err or out or "").strip()[-600:]
+
+
+def contribute(cmd, graph, folder, write=False):
+    """`scale graph contribute` (it prints text): ("added" | "dry_run" | "already" | "refused", its message)."""
+    rc, out, err = scale_text(cmd, "graph", "contribute", graph, "--to", folder, *(["--write"] if write else []))
+    msg = (out.strip() or err.strip())[-800:]
+    if rc == 1 and "already in " in out:
+        return "already", msg
+    if rc == 0:
+        return ("added" if write else "dry_run"), msg
+    return "refused", (err.strip() or out.strip())[-400:]
+
+
+def project_root(start):
+    """The index-sources project that holds the manifest (its working ledger, or its index.db alone), if any."""
+    for d in [Path(start).resolve(), *Path(start).resolve().parents]:
+        if (d / ".scripts" / "ledger.sqlite").is_file() or (d / "sources" / "index.db").is_file() or (d / "publications" / "papers.db").is_file():
+            return d
+    return None
+
+
+def index_export(root):
+    """index-sources' export for the project, so the source index shows the results now; what it said."""
+    for cand in (HERE.parents[1] / "index-sources" / "scripts" / "export.py",
+                 root / ".claude" / "skills" / "index-sources" / "scripts" / "export.py",
+                 root / ".claude" / "skills" / "paper-acquisition" / "scripts" / "export.py"):   # its earlier name
+        if cand.is_file():
+            r = subprocess.run([sys.executable, "-I", str(cand), "--project", str(root)], capture_output=True, text=True)
+            if r.returncode:
+                return {"exported": False, "error": r.stderr.strip()[-300:]}
+            try:
+                return {"exported": True, "database": json.loads((r.stdout.strip().splitlines() or ["{}"])[-1])}
+            except ValueError:
+                return {"exported": True}
+    return {"exported": False, "error": "index-sources not found: run its export.py --project <project>"}
+
+
+def folder_id(src):
+    if src.get("source_id") is not None:
+        return str(src["source_id"])
+    return "".join(c if c.isalnum() or c in "._-" else "-" for c in str(src.get("slug") or src.get("id"))).strip("-.")
+
+
+def severity(issue):
+    """An issue's severity: major or minor; one without a valid severity (or a reading made before severities) is
+    major."""
+    s = str((issue or {}).get("severity") or "").strip().lower()
+    return s if s in SEVERITIES else "major"
+
+
+def settled_verdict(review):
+    """The verdict a second reading settles on, whoever wrote it: reject as given; otherwise needs_fix when an issue
+    is major and pass when every issue is minor (or there is none)."""
+    v = (review or {}).get("verdict")
+    if v not in ("pass", "needs_fix"):
+        return v
+    return "needs_fix" if any(severity(x) == "major" for x in review.get("issues") or []) else "pass"
+
+
+def issue_lines(issues):
+    """The issues of a reading as hand-out lines, each tagged with its severity."""
+    return [f"[{severity(x)}] {x.get('record', '?')} ({x.get('locator', '')}): {x.get('problem', '')} → "
+            f"{x.get('fix', '')}" for x in issues or []]
+
+
+# ------------------------------------------------------------------ the run
+class Run:
+    def __init__(self, d):
+        self.d = Path(d).resolve()
+        self.cfg = read_json(self.d / "run.json")
+        if not self.cfg:
+            die(f"{self.d}: no run.json (start the run with: curate_run.py prepare --corpus … --run {self.d})")
+        self.cmd = self.cfg["scale"]
+        self.models = self.cfg.get("models") or {}
+        self.skip_review = self.models.get("reviewer") == "skip"
+
+    def folder(self, i):
+        return self.d / "sources" / i
+
+    def source(self, i):
+        return self.cfg["sources"][i]
+
+    def ids(self):
+        return list(self.cfg["sources"])
+
+    def graph(self, i):
+        info = read_json(self.folder(i) / "source.json") or {}
+        return self.folder(i) / f"{info.get('slug', '')}.graph.json", info.get("slug")
+
+    def check(self, i):
+        """`scale source check` of a folder, cached in work/check.json while the graph is unchanged."""
+        g, _ = self.graph(i)
+        cache = self.folder(i) / "work" / "check.json"
+        c = read_json(cache)
+        if c and c.get("graph_mtime") == mtime(g) and c.get("rights_mtime") == mtime(self.folder(i) / "rights.yaml"):
+            return c
+        rc, out, err = scale(self.cmd, "source", "check", self.folder(i))
+        c = {"graph_mtime": mtime(g), "rights_mtime": mtime(self.folder(i) / "rights.yaml"), "exit": rc,
+             "checked_at": now()}
+        if out is None:
+            c.update(ok=False, errors=[{"message": f"scale source check did not run: {err}"}], tool_error=True)
+        else:
+            c.update(ok=bool(out.get("ok")), errors=out.get("errors") or [], warnings=out.get("warnings") or [],
+                     records=out.get("records") or {}, gaps=out.get("gaps") or 0, cap=out.get("cap") or {},
+                     conformant=all((p or {}).get("conformant") for p in
+                                    ((out.get("conformance") or {}).get("profiles") or {}).values()))
+        write_json(cache, c)
+        return c
+
+    def gap_files(self, i):
+        """The gap reports a curator wrote for this source (work/gaps/GAP-*.json, SCALE's gap format; a subfolder
+        such as superseded/ is not counted)."""
+        out = []
+        for g in sorted((self.folder(i) / "work" / "gaps").glob("GAP-*.json")):
+            d = read_json(g) or {}
+            if d.get("kind"):
+                out.append({"id": d.get("id") or g.stem, "kind": d["kind"], "about": (d.get("about") or "")[:200]})
+        return out
+
+    def handouts(self):
+        out = {}
+        for h in jsonl(self.d / "handouts.jsonl"):
+            out.setdefault(h["id"], []).append(h)
+        return out
+
+    def state(self, i, hand):
+        """(state, detail) of one source; see the module docstring."""
+        f = self.folder(i)
+        if not (f / "source.json").is_file():
+            return "not_started", "no working folder (run prepare)"
+        g, _ = self.graph(i)
+        cur, rev = f / "work" / "curation.json", f / "work" / "review.json"
+        fix_t = [h["t"] for h in hand.get(i, []) if h["role"] == "fix"]
+        out_of_fixes = len(fix_t) >= MAX_FIXES and mtime(cur) > max(fix_t)     # the last allowed fix has reported
+        latest = max(mtime(g), mtime(cur), mtime(f / "rights.yaml"))
+        if not cur.exists():
+            return "prepared", "waiting for the curator"
+        chk = self.check(i)
+        review = read_json(rev) or {}
+        review_current = rev.exists() and mtime(rev) >= latest
+        verdict = settled_verdict(review)
+        if review_current and verdict == "reject":
+            return "rejected", review.get("note") or "the second reading rejected it"
+        if not chk.get("ok"):
+            return ("failed", "the check still fails after 3 fixes") if out_of_fixes else \
+                ("check_failed", f"{len(chk.get('errors') or [])} errors in scale source check")
+        if review_current and verdict == "pass":
+            return "passed", (read_json(cur) or {}).get("result") or "curated"
+        if review_current and verdict == "needs_fix":
+            major = sum(1 for x in review.get("issues") or [] if severity(x) == "major")
+            return ("failed", f"{major} major issues remain after 3 fixes") if out_of_fixes else \
+                ("needs_fix", f"{major} major issues from the second reading")
+        if self.skip_review:               # chosen at prepare: the check alone settles it
+            return "passed", (read_json(cur) or {}).get("result") or "curated"
+        return "curated", "waiting for the second reading"
+
+
+ROLE_STATES = {"curate": ("prepared",), "review": ("curated",), "fix": ("check_failed", "needs_fix")}
+
+
+# ------------------------------------------------------------------ prepare
+def cmd_prepare(a):
+    manifest_path = Path(a.corpus).resolve()
+    m = read_json(manifest_path)
+    if not isinstance(m, dict) or not isinstance(m.get("sources"), list):
+        die(f"{manifest_path}: not a corpus manifest (an object with a list of sources)")
+    cmd = a.scale or os.environ.get("SCALE_CMD") or "scale"
+    rc, chk, err = scale(cmd, "corpus", "check", manifest_path)
+    if chk is None:
+        die(f"scale corpus check did not run ({err}); give the scale command with --scale")
+    if not chk.get("ok"):
+        die("the corpus does not pass scale corpus check: " + "; ".join(chk.get("problems", [])[:5]))
+    included = tuple(m.get("included_status", "").split(",")) if m.get("included_status") else INCLUDED
+    want = None
+    if a.ids or a.ids_file:
+        raw = (a.ids or "").split(",") + (Path(a.ids_file).read_text().split() if a.ids_file else [])
+        want = {x.strip() for x in raw if x.strip()}
+    run_dir = Path(a.run).resolve()
+    cfg = read_json(run_dir / "run.json") or {
+        "name": run_dir.name, "corpus": str(manifest_path), "topic": m.get("topic"), "scale": cmd,
+        "created_at": now(), "contributor": a.contributor, "project": a.project, "version": a.version,
+        "si": not a.no_si, "sources": {}}
+    if cfg["corpus"] != str(manifest_path):
+        die(f"{run_dir} curates {cfg['corpus']}; give another --run for another corpus")
+    models = cfg.setdefault("models", {})
+    if a.curator:
+        models["curator"] = a.curator
+    if a.reviewer:
+        models["reviewer"] = a.reviewer
+    if a.api_base_url:
+        models["api"] = {"base_url": a.api_base_url, "key_name": a.api_key_name, "key_env": a.api_key_env,
+                         **({"context_tokens": a.api_context_tokens} if a.api_context_tokens else {}),
+                         **sampling(a.api_temperature, a.api_top_p)}
+    if not (is_model(models.get("curator")) and is_model(models.get("reviewer"), ("skip",))):
+        die("ask first, then give both: --curator " + "|".join(MODELS) + "|api:<model> (the model that curates; "
+            "opus is recommended) and --reviewer " + "|".join(MODELS) + "|api:<model>|skip (who reads each document a "
+            "second time: recommended, a model other than the curator's; skip is not recommended)")
+    for role in ("curator", "reviewer"):
+        if str(models[role]).startswith("api:") and not (models.get("api") or {}).get("base_url"):
+            die(f"--{role} api:<model> needs --api-base-url (the endpoint that serves the model)")
+    root = project_root(manifest_path.parent)
+    cfg["project_root"] = str(root) if root else None
+    picked = []
+    for s in m["sources"]:
+        if s.get("status") not in included or not s.get("pdf"):
+            continue
+        if want is not None and not ({str(s.get("source_id")), s.get("slug")} & want):
+            continue
+        pdf = (manifest_path.parent / s["pdf"]).resolve()
+        if not pdf.is_file():
+            continue
+        picked.append((s, pdf))
+    if a.max:
+        picked = picked[:a.max]
+    if not picked:
+        die("no included source with its PDF on disk matches: fetch the corpus's files first (fetch-corpus: download_open.py --corpus, then settle_corpus.py)")
+    started, skipped, notes = 0, 0, Counter()
+    for s, pdf in picked:
+        i = folder_id(s)
+        f = run_dir / "sources" / i
+        entry = cfg["sources"].setdefault(i, {})
+        entry.update({k: s.get(k) for k in ("slug", "source_id", "doi", "title", "year", "doc_type", "access_type",
+                                            "licence", "licence_url", "text_version") if s.get(k) is not None})
+        if (f / "source.json").is_file():
+            skipped += 1
+            continue
+        entry.pop("start_error", None)
+        entry.pop("note", None)
+        args = ["source", "start", *(["--doi", s["doi"]] if s.get("doi") else []), "--pdf", pdf, "--out", f,
+                *(["--contributor", a.contributor] if a.contributor else []),
+                *(["--project", a.project] if a.project else []), *(["--version", a.version] if a.version else [])]
+        rc, out, err = scale(cmd, *args)
+        if rc != 0 and "invalid choice: 'source'" in err:
+            die("this SCALE has no `scale source` (it came after release v0.2.0): use a checkout of trace-ai-org/scale, "
+                'e.g. --scale "uv run --project <checkout> scale"')
+        if rc != 0 and s.get("doi"):            # one more try after a pause: this is often a network blip
+            time.sleep(5)
+            rc, out, err = scale(cmd, *args)
+        if rc != 0 and s.get("doi"):            # the DOI did not resolve (offline, unknown to Crossref): the PDF alone
+            notes["started without the DOI lookup"] += 1
+            rc, out, err = scale(cmd, *[x for x in args if x not in ("--doi", s["doi"])])
+            entry["note"] = ("started from the PDF alone (the DOI lookup failed): the Source has no "
+                                         "metadata from Crossref; fill its title, doi, year, venue and licence from "
+                                         "the copy")
+        if rc != 0 or not out:
+            notes["start failed"] += 1
+            entry["start_error"] = err[-300:]
+            log(f"  {i}: scale source start failed: {err[-200:]}")
+            continue
+        cfg["schema_version"] = out.get("schema_version") or cfg.get("schema_version")
+        si = [(manifest_path.parent / p).resolve() for p in s.get("si") or []]
+        si = [p for p in si if p.is_file()]
+        if si and cfg["si"]:
+            write_json(f / "work" / "si.json", {"appended_to": out.get("page_texts"),
+                                                "files": si_pages.append(f / out["page_texts"], si)
+                                                if out.get("page_texts") else [{"file": p.name, "left_out": "no page texts"}
+                                                                               for p in si]})
+        started += 1
+        if s.get("doi"):
+            time.sleep(1.0)                    # Crossref's polite pace: one DOI lookup per second
+        if started % 25 == 0:
+            write_json(run_dir / "run.json", cfg)
+            log(f"  {started} folders started")
+    write_json(run_dir / "run.json", cfg)
+    print(json.dumps({"run": str(run_dir), "picked": len(picked), "started": started, "already_there": skipped,
+                      "notes": dict(notes), "schema_version": cfg.get("schema_version"),
+                      "models": {k: v for k, v in models.items() if k != "api"},
+                      "next": f"curate_run.py next --run {run_dir} --role curate --n 5"}))
+
+
+# ------------------------------------------------------------------ next
+def bullet(items, empty):
+    return "\n".join(f"- {x}" for x in items) if items else f"- {empty}"
+
+
+def cmd_next(a):
+    run = Run(a.run)
+    if a.role == "review" and (run.skip_review or str(run.models.get("reviewer")).startswith("api:")):
+        print(json.dumps({"role": "review", "handed_out": 0, "reviewer": run.models.get("reviewer"),
+                          "next": "nothing: this run skips the second reading (not recommended)" if run.skip_review
+                          else f"curate_run.py review-api --run {run.d} --n {a.n}"}))
+        return
+    model = run.models.get("reviewer" if a.role == "review" else "curator")
+    hand = run.handouts()
+    t = time.time()
+    tpl = Template((TEMPLATES / f"{a.role}.md").read_text(encoding="utf-8"))
+    out = []
+    for i in run.ids():
+        if len(out) >= a.n:
+            break
+        st, _ = run.state(i, hand)
+        if st not in ROLE_STATES[a.role]:
+            continue
+        last = max((h for h in hand.get(i, []) if h["role"] == a.role), key=lambda h: h["t"], default=None)
+        f = run.folder(i)
+        report = f / "work" / ("review.json" if a.role == "review" else "curation.json")
+        if last and t - last["t"] < LEASE_S and mtime(report) < last["t"]:
+            continue                            # handed out recently and its report has not arrived
+        g, slug = run.graph(i)
+        src = run.source(i)
+        si = (read_json(f / "work" / "si.json") or {}).get("files") or []
+        si_read = [f"{x['file']} (pages {x['pages']})" for x in si if x.get("pages")]
+        si_left = [f"{x['file']}: {x['left_out']}" for x in si if x.get("left_out")]
+        chk = run.check(i) if a.role == "fix" else {}
+        review = read_json(f / "work" / "review.json") or {}
+        fixes = sum(1 for h in hand.get(i, []) if h["role"] == "fix")
+        text = tpl.substitute(
+            scale=run.cmd, folder=str(f), graph=g.name, slug=slug, title=src.get("title") or slug,
+            year=src.get("year") or "year unknown", doi=src.get("doi") or "none", licence=src.get("licence") or "unknown",
+            text_version=src.get("text_version") or "not known", attempt=fixes + 1,
+            start_note=("**Note:** " + src["note"] + ".") if src.get("note") else "",
+            si_read=bullet(si_read, "none appended"), si_left=bullet(si_left, "none"),
+            check_errors=bullet([e.get("message") or json.dumps(e) for e in chk.get("errors") or []], "none"),
+            issues=bullet(issue_lines(review.get("issues")) if st == "needs_fix" else [], "none"),
+            today=now()[:10],
+            previous=bullet(issue_lines(review.get("issues")) if a.role == "review" and fixes else [],
+                            "none: this is the first reading"))
+        p = run.d / "prompts" / a.role / f"{i}.md"
+        p.parent.mkdir(parents=True, exist_ok=True)
+        p.write_text(text, encoding="utf-8")
+        append_jsonl(run.d / "handouts.jsonl", {"id": i, "role": a.role, "t": t, "at": now()})
+        out.append({"id": i, "role": a.role, "prompt": str(p), "model": model,
+                    **({"base_url": run.models["api"]["base_url"]} if str(model).startswith("api:") else {})})
+    for o in out:
+        print(json.dumps(o))
+    if not out:
+        print(json.dumps({"role": a.role, "handed_out": 0, "next": "curate_run.py status --run " + str(run.d)}))
+
+
+# ------------------------------------------------------------------ review-api
+READER = """You read a curated scale-catal document a second time, against the text of its source. You did not curate
+it. Report what is wrong; never rewrite the document. SCALE's tools already checked that the document is valid and
+that every quote is verbatim in the text; check what they cannot:
+- every quote supports the record or value it is cited for;
+- values as printed, in the printed unit, with as_reported where the text differs; nothing converted in place;
+- conditions and results paired from the same run; a condition stated once is on every run it covers;
+- every driving force of each test is listed; interpretations are the source's readings, not the curator's;
+- unknowns typed (not_reported with missing_reason); no typical value filled in; no unreported product as 0;
+- results the source cites from other works are not recorded as its own runs;
+- values read off a figure carry an uncertainty;
+- scope: a document left no_data, or one that leaves out a material the source itself makes or characterizes, is a
+  needs_fix issue when the source reports its own preparation or characterization, whatever the material is for (the
+  checklist covers Preparations and Characterizations; no_data is for a source with nothing of its own, such as a
+  review);
+- coverage: the source's main results (its key tables and figures) are recorded. A main result printed only in a
+  figure is digitized by the skill's recipe ("Digitizing a figure"), the points that cannot be read listed in an
+  extraction_error gap; a main-result figure left undigitized ("not curated", "not digitized") is a needs_fix issue
+  that names the figure. Supporting information and secondary figures may stay declared not curated.
+Today's date comes with the document: a date up to it (a retrieval date, say) is not in the future.
+After a fix, the previous reading's issues come with the document: check each first (those about the records you
+are given); one the fix did not resolve is reported again, with its severity. Then read the rest as above.
+A large document comes in parts: you are given some of its records, with the links they start, and a list of the
+records in the other parts (id, label, name). Read the records you are given; a record or a result in that list is
+in the document, so never report it missing, and judge coverage on the list and your records together.
+Give every issue a severity. major: a value, unit, condition or result that is wrong, not supported by its quote,
+paired with the wrong run or filled in; a main result missing or left undigitized; a record that misstates the
+source (a wrong link, a result cited from another work recorded as the source's own, a driving force or scope left
+out). minor: the record holds, but its support or wording could be better (a quote that supports it in part while the
+sentence beside it holds the rest, a locator, a note, an optional detail). The verdict is needs_fix when an issue is
+major and pass when every issue is minor (minor issues stay in the reading for the person who reviews the document).
+Answer with one JSON object and nothing else:
+{"verdict": "pass" | "needs_fix" | "reject", "issues": [{"record": "<id>", "locator": "<where in the source>",
+"problem": "<what is wrong>", "fix": "<what to do>", "severity": "major" | "minor"}], "coverage": "<one line>",
+"note": "<one line>"}.
+Use reject only when the text is of another source or cannot be read."""
+
+
+def doc_parts(graph, budget):
+    """The document as the parts an API reader is sent, each `(part, others)`: `part` a document (the graph's head,
+    whole records and the links they start) of at most `budget` characters of compact JSON where a record allows it,
+    `others` the records held by the other parts as "id | label | name" lines. A document within the budget is one
+    part with no others. Records are grouped by label (in the order labels first appear) and packed in document order;
+    each link goes with the record it starts from (a link from a record outside the document, with the last part), so
+    every record and every link is read exactly once."""
+    def size(x):
+        return width(json.dumps(x, ensure_ascii=False, separators=(",", ":")))
+
+    if size(graph) <= budget:
+        return [(graph, [])]
+    nodes, links = graph.get("nodes") or [], graph.get("links") or []
+    head = {k: v for k, v in graph.items() if k not in ("nodes", "links")}
+    ids = {n.get("id") for n in nodes}
+    starts = {}
+    for link in links:
+        starts.setdefault(link.get("source") if link.get("source") in ids else None, []).append(link)
+    order = {}
+    for n in nodes:
+        order.setdefault(n.get("label"), len(order))
+    groups = [([n], starts.get(n.get("id"), [])) for n in sorted(nodes, key=lambda n: order[n.get("label")])]
+    if starts.get(None):
+        groups.append(([], starts[None]))
+    room = max(1, budget - size({**head, "nodes": [], "links": []}))
+    packs, cur, used = [], [], 0
+    for g in groups:
+        s = sum(size(x) + 1 for x in g[0] + g[1])                            # each item and its comma
+        if cur and used + s > room:
+            packs.append(cur)
+            cur, used = [], 0
+        cur.append(g)
+        used += s
+    packs.append(cur)
+
+    out = []
+    for k, pack in enumerate(packs):
+        mine = [n for g in pack for n in g[0]]
+        others = [outline_line(n) for j, p in enumerate(packs) if j != k for g in p for n in g[0]]
+        out.append(({**head, "nodes": mine, "links": [x for g in pack for x in g[1]]}, others))
+    return out
+
+
+def reading_budget(context, doc_len, text_len, fixed_len, list_len, max_chars, max_doc_chars=None,
+                   answer_tokens=ANSWER_TOKENS):
+    """(page-text characters, document characters per part) for one source's second reading.
+
+    Without the reader's context window (tokens): the page texts up to max_chars and parts of max_doc_chars (DOC_CHARS
+    when not given). With it, the request is fitted to the window: the room is (context - answer_tokens) *
+    CHARS_PER_TOKEN characters less the instructions, the curator's report and the previous issues (fixed_len). The
+    widths count a character outside ASCII as WIDE (width()). The
+    whole document goes in one request when it fits beside the page texts (a 1M-token reader rarely needs parts);
+    otherwise it goes in parts, each beside the page texts and the list of the other parts' records (list_len); the page
+    texts are cut only when the parts would get less than half the room. max_doc_chars, when given, caps a part."""
+    text = min(text_len, max_chars)
+    if not context:
+        return text, max_doc_chars or DOC_CHARS
+    room = max(1, int((context - answer_tokens) * CHARS_PER_TOKEN) - fixed_len - width(READER))
+    if doc_len + text <= room:
+        doc = max(doc_len, 1)
+    else:
+        doc = room - text - list_len
+        if doc < room // 2:
+            doc = room // 2
+            text = max(0, min(text, room - doc - list_len))
+    return text, max(1, min(doc, max_doc_chars) if max_doc_chars else doc)
+
+
+def report_for_reader(raw):
+    """The curator's report as an API reader gets it: `records` holds counts (`{"nodes": n, "links": n}`); when the
+    curator wrote the records themselves there (the document holds them), the reader gets their number. Within
+    REPORT_CHARS."""
+    try:
+        d = json.loads(raw)
+    except ValueError:
+        d = None
+    rec = d.get("records") if isinstance(d, dict) else None
+    counts = isinstance(rec, dict) and all(isinstance(v, int) for v in rec.values())
+    if isinstance(rec, (list, dict)) and not counts:
+        d["records"] = {"listed_in_the_report": len(rec)}
+        raw = json.dumps(d, ensure_ascii=False)
+    shown = head_within(raw, REPORT_CHARS)
+    return shown if len(shown) == len(raw) else f"{shown}\n[the report is cut here, at {REPORT_CHARS} characters]"
+
+
+def outline_line(n):
+    """One record as the parts list it: id | label | name."""
+    p = n.get("props") or {}
+    name = p.get("name") or p.get("formula") or p.get("title") or ""
+    return f"{n.get('id')} | {n.get('label')} | {str(name)[:80]}"
+
+
+def merge_readings(readings):
+    """One reading from the readings of a document's parts: their issues (each once), reject when a part rejects,
+    otherwise the verdict settled by severity."""
+    issues, seen = [], set()
+    for v in readings:
+        for x in v["issues"]:
+            k = (str(x.get("record")), str(x.get("problem")))
+            if k not in seen:
+                seen.add(k)
+                issues.append(x)
+    merged = {"verdict": "reject" if any(v["verdict"] == "reject" for v in readings) else "needs_fix",
+              "issues": issues,
+              "coverage": " | ".join(dict.fromkeys(v["coverage"] for v in readings if v["coverage"])),
+              "note": " | ".join(dict.fromkeys(v["note"] for v in readings if v["note"]))}
+    if merged["verdict"] != "reject":
+        merged["verdict"] = settled_verdict(merged)
+    return merged
+
+
+def _api_key(api):
+    """The reader's key: its environment variable, else its line in ~/.scale/sources/keys.txt (never printed)."""
+    if api.get("key_env") and os.environ.get(api["key_env"]):
+        return os.environ[api["key_env"]]
+    env = os.environ.get("SCALE_SOURCES_HOME") or os.environ.get("PAPER_ACQ_HOME")    # as index-sources' global_dir()
+    new, old = Path.home() / ".scale" / "sources", Path.home() / ".paper-acquisition"
+    f = (Path(env) if env else old if old.is_dir() and not new.exists() else new) / "keys.txt"
+    for line in (f.read_text().splitlines() if f.is_file() else []):
+        k, sep, v = line.partition(":") if ":" in line else line.partition("=")
+        if sep and k.strip() == api.get("key_name", "llm_api_key") and v.strip():
+            return v.strip()
+    return None
+
+
+class CutStream(RuntimeError):
+    """A stream that ended without `finish_reason` or `[DONE]` (the endpoint closed it, e.g. after 30 minutes): what
+    arrived is kept on the error, never read as the whole answer."""
+
+    def __init__(self, content="", reasoning=""):
+        super().__init__("the stream ended without finish_reason or [DONE] (cut off)")
+        self.content, self.reasoning = content, reasoning
+
+
+class Answer(tuple):
+    """An answer, `(content, reasoning)`, with how it ended: `finish` (the last finish_reason: "stop", or "length" when
+    the reader ran out of room) and the endpoint's `usage` when it reports one."""
+
+    def __new__(cls, content, reasoning, finish=None, usage=None):
+        out = super().__new__(cls, (content, reasoning))
+        out.finish, out.usage = finish, usage
+        return out
+
+
+def sampling(temperature=None, top_p=None):
+    """The sampling a request carries: only what was given, so that the endpoint's default (for a served model, the
+    one in its generation config) applies otherwise."""
+    return {**({"temperature": temperature} if temperature is not None else {}),
+            **({"top_p": top_p} if top_p is not None else {})}
+
+
+def _chat(base, key, model, messages, tries=5, sample=None):
+    """One answer, `Answer(content, reasoning)`, from an OpenAI-compatible chat endpoint (standard library), retried
+    on rate limits, 5xx, network errors and a cut stream. Asked for as a stream: some endpoints cap an unstreamed
+    answer (8,000 tokens, thinking included), which a reasoning model spends before it writes the verdict; an
+    endpoint that answers in one piece is read as one. A stream is whole only when it ends with a `finish_reason` or
+    `[DONE]`; one that does not is a failure like a 5xx, and after the last try `CutStream` carries what arrived."""
+    import urllib.error
+    import urllib.request
+    body = json.dumps({"model": model, "messages": messages, **(sample or {}), "stream": True,
+                       "stream_options": {"include_usage": True}}).encode("utf-8")
+    last, cut = "no answer", None             # cut: the cut stream with the most content so far
+    for attempt in range(tries):
+        req = urllib.request.Request(f"{base.rstrip('/')}/chat/completions", data=body, method="POST",
+                                     headers={"Authorization": f"Bearer {key}", "Content-Type": "application/json"})
+        try:
+            with urllib.request.urlopen(req, timeout=900) as r:
+                if "text/event-stream" not in (r.headers.get("Content-Type") or ""):
+                    d = json.loads(r.read().decode("utf-8"))
+                    m = d["choices"][0]["message"]
+                    return Answer(m.get("content") or "", m.get("reasoning_content") or m.get("reasoning") or "",
+                                  d["choices"][0].get("finish_reason"), d.get("usage"))
+                parts, thoughts, whole, finish, usage = [], [], False, None, None
+                try:
+                    for raw in r:                     # server-sent events: data: {"choices": [{"delta": …}]}
+                        line = raw.decode("utf-8", "replace").strip()
+                        if not line.startswith("data:"):
+                            continue
+                        data = line[5:].strip()
+                        if data == "[DONE]":
+                            whole = True
+                        elif data:
+                            event = json.loads(data)
+                            choice = (event.get("choices") or [{}])[0]
+                            delta = choice.get("delta") or {}
+                            parts.append(delta.get("content") or "")
+                            # reasoning_content, or reasoning (the name vLLM gives it from 2025)
+                            thoughts.append(delta.get("reasoning_content") or delta.get("reasoning") or "")
+                            finish = choice.get("finish_reason") or finish
+                            usage = event.get("usage") or usage
+                            whole = whole or bool(choice.get("finish_reason"))
+                except (OSError, ValueError, http.client.HTTPException):    # the connection broke mid-stream
+                    pass
+                if whole:
+                    return Answer("".join(parts), "".join(thoughts), finish, usage)
+                this = CutStream("".join(parts), "".join(thoughts))
+                if cut is None or len(this.content + this.reasoning) >= len(cut.content + cut.reasoning):
+                    cut = this
+                last = str(this)
+        except urllib.error.HTTPError as e:
+            last = f"HTTP {e.code}"
+            if e.code in (400, 401, 403, 404):
+                break
+        except (urllib.error.URLError, OSError, ValueError, KeyError, IndexError) as e:
+            last = str(e)[:200]
+        if attempt + 1 < tries:
+            time.sleep(min(60, 5 * 2 ** attempt))
+    if cut is not None:                       # a try that was cut keeps its work, whatever failed after it
+        if last != str(cut):
+            cut.args = (f"{cut} (last try: {last})",)
+        raise cut
+    raise RuntimeError(last)
+
+
+def _verdict(text):
+    """The reading in an answer, its verdict settled by severity (reject as given)."""
+    m = re.search(r"\{.*\}", text or "", re.S)
+    v = json.loads(m.group(0)) if m else None
+    if not isinstance(v, dict) or v.get("verdict") not in ("pass", "needs_fix", "reject"):
+        raise ValueError("the answer holds no verdict")
+    issues = [{**x, "severity": severity(x)} for x in v.get("issues") or [] if isinstance(x, dict)]
+    out = {"verdict": v["verdict"], "issues": issues, "coverage": str(v.get("coverage") or ""),
+           "note": str(v.get("note") or "")}
+    if out["verdict"] != "reject":
+        out["verdict"] = settled_verdict(out)
+    return out
+
+
+def cmd_review_api(a):
+    run = Run(a.run)
+    reviewer = str(run.models.get("reviewer") or "")
+    if not reviewer.startswith("api:"):
+        die("this run's second reading is not by an API model (prepare --reviewer api:<model> --api-base-url <url>)")
+    api = run.models.get("api") or {}
+    key = _api_key(api)
+    if not key:
+        die(f"no key for the reader: add `{api.get('key_name', 'llm_api_key')}: <key>` to ~/.scale/sources/keys.txt"
+            + (f" or set {api['key_env']}" if api.get("key_env") else ""))
+    context = a.context_tokens or api.get("context_tokens")       # the reader's window: requests are fitted to it
+    answer = a.answer_tokens or api.get("answer_tokens") or ANSWER_TOKENS    # of it, kept for the answer
+    sample = {**sampling(api.get("temperature"), api.get("top_p")),
+              **sampling(getattr(a, "temperature", None), getattr(a, "top_p", None))}
+    hand, done, failed = run.handouts(), [], []
+    for i in run.ids():
+        if len(done) + len(failed) >= a.n:
+            break
+        st, _ = run.state(i, hand)
+        if st != "curated":
+            continue
+        f = run.folder(i)
+        g, slug = run.graph(i)
+        texts = next((f / "work" / "texts").glob("*.txt"), None)
+        text = texts.read_text(encoding="utf-8", errors="replace") if texts else ""
+        fixes = sum(1 for h in hand.get(i, []) if h["role"] == "fix")
+        previous = issue_lines((read_json(f / "work" / "review.json") or {}).get("issues")) if fixes else []
+        graph = json.loads(g.read_text(encoding="utf-8"))
+        report = report_for_reader((f / "work" / "curation.json").read_text(encoding="utf-8"))
+        listed = sum(width(outline_line(n)) + 1 for n in graph.get("nodes") or [])
+        doc_len = width(json.dumps(graph, ensure_ascii=False, separators=(",", ":")))
+        fixed = width(report) + width(bullet(previous, "")) + 2000
+        room_for_answer, doc_cap = answer, a.max_doc_chars
+        for attempt in (1, 2):                    # a reading cut by length is read once more with twice the room
+            chars, doc_chars = reading_budget(context, doc_len, width(text), fixed, listed, a.max_chars, doc_cap,
+                                              room_for_answer)
+            shown = head_within(text, chars)
+            cut = len(shown) < len(text)
+            parts = doc_parts(graph, doc_chars)
+            common = (f"TODAY'S DATE: {now()[:10]}\n\nTHE CURATOR'S REPORT:\n{report}\n\n"
+                      + (f"THE PREVIOUS READING'S ISSUES (a fix followed; check each first):\n"
+                         f"{bullet(previous, '')}\n\n" if previous else "")
+                      + f"THE SOURCE'S PAGE TEXTS{' (the first ' + str(len(shown)) + ' characters)' if cut else ''}:\n"
+                      f"{shown}")
+            append_jsonl(run.d / "handouts.jsonl", {"id": i, "role": "review", "t": time.time(), "at": now(),
+                                                    "reader": reviewer,
+                                                    **({"parts": len(parts)} if len(parts) > 1 else {})})
+            readings, entry, length = [], None, False
+            for k, (part, others) in enumerate(parts, 1):
+                doc = json.dumps(part, ensure_ascii=False, separators=(",", ":"))       # 1/4 fewer tokens
+                if len(parts) == 1:
+                    head = f"THE DOCUMENT ({g.name}, as compact JSON):\n{doc}"
+                else:
+                    head = (f"THE DOCUMENT ({g.name}), PART {k} OF {len(parts)}: these records, with the links they "
+                            f"start, as compact JSON:\n{doc}\n\nTHE RECORDS IN THE OTHER PARTS (id | label | name), "
+                            f"read separately; never report them missing:\n" + "\n".join(others))
+                got = None
+                try:
+                    got = _chat(api["base_url"], key, reviewer[4:], [{"role": "system", "content": READER},
+                                                                     {"role": "user", "content": f"{head}\n\n{common}"}],
+                                sample=sample)
+                    readings.append(_verdict(got[0]))
+                except (RuntimeError, ValueError) as e:
+                    content, reasoning = (e.content, e.reasoning) if isinstance(e, CutStream) else (got or ("", ""))
+                    finish = getattr(got, "finish", None)
+                    length = finish == "length"
+                    entry = {"id": i, "error": str(e)[:200] + (" (the answer ran out of room: finish_reason length)"
+                                                               if length else ""),
+                             **({"part": f"{k}/{len(parts)}"} if len(parts) > 1 else {})}
+                    if content or reasoning:          # the reader's work is kept, not lost
+                        n = len(list((f / "work").glob("review-raw-*.json"))) + 1
+                        write_json(f / "work" / f"review-raw-{n}.json",
+                                   {"reader": reviewer, "error": entry["error"], "content": content or "",
+                                    "reasoning_content": reasoning or "", "finish_reason": finish,
+                                    "usage": getattr(got, "usage", None), "answer_tokens": room_for_answer,
+                                    "at": now(), **({"part": f"{k}/{len(parts)}"} if len(parts) > 1 else {})})
+                        entry["raw"] = f"work/review-raw-{n}.json"
+                    break                             # a reading with a part unread is not a reading
+            if not (entry and length and attempt == 1):
+                break
+            if context:
+                room_for_answer = min(2 * room_for_answer, max(room_for_answer, context // 2))
+            else:
+                doc_cap = max(1, (doc_cap or DOC_CHARS) // 2)
+        if entry:
+            failed.append(entry)
+            continue
+        v = readings[0] if len(readings) == 1 else merge_readings(readings)
+        write_json(f / "work" / "review.json", {**v, "reader": reviewer, "text_cut": cut, "parts": len(parts),
+                                                **({"context_tokens": context, "answer_tokens": room_for_answer}
+                                                   if context else {}), "at": now()})
+        done.append({"id": i, "verdict": v["verdict"], "issues": len(v["issues"]),
+                     **({"parts": len(parts)} if len(parts) > 1 else {}), **({"retried": "length"} if attempt == 2 else {})})
+    print(json.dumps({"read": done, "failed": failed, "reader": reviewer,
+                      "next": f"curate_run.py status --run {run.d}"}))
+
+
+# ------------------------------------------------------------------ status
+def cmd_status(a):
+    run = Run(a.run)
+    hand = run.handouts()
+    states, by_state, gaps, nodes, kinds, concepts = {}, {}, 0, 0, Counter(), []
+    for i in run.ids():
+        st, detail = run.state(i, hand)
+        states[i] = (st, detail)
+        by_state.setdefault(st, []).append(i)
+        chk = read_json(run.folder(i) / "work" / "check.json") or {}
+        gaps += chk.get("gaps") or 0                      # gaps recorded on the document's records
+        nodes += max(0, ((chk.get("records") or {}).get("nodes") or 3) - 3)
+        for g in run.gap_files(i):                        # gap reports written as files
+            kinds[g["kind"]] += 1
+            if g["kind"] == "missing_concept":
+                concepts.append({"source": i, "gap": g["id"], "about": g["about"]})
+    applied = 0
+    if a.apply:
+        last = {r["id"]: r for r in jsonl(run.d / "state.jsonl")}
+        root = Path(run.cfg["project_root"]) if run.cfg.get("project_root") else None
+        topic = run.cfg.get("topic")
+        handoff = root / ".scripts" / topic / "kg" / run.cfg["name"] / "extraction_status.jsonl" \
+            if root and topic else None
+        for i, (st, detail) in states.items():
+            if st not in SETTLED:
+                continue
+            result = {"passed": "extracted" if detail != "no_data" else "no_data", "rejected": "rejected",
+                      "failed": "failed"}[st]
+            if last.get(i, {}).get("result") == result:
+                continue
+            chk = read_json(run.folder(i) / "work" / "check.json") or {}
+            rec = chk.get("records") or {}
+            row = {"id": i, "state": st, "result": result, "detail": detail, "at": now(),
+                   "schema_version": run.cfg.get("schema_version"), "nodes": rec.get("nodes"), "links": rec.get("links"),
+                   "curator": run.models.get("curator"), "second_reading": run.models.get("reviewer")}
+            append_jsonl(run.d / "state.jsonl", row)
+            pid = run.source(i).get("source_id")
+            if handoff and pid is not None:
+                append_jsonl(handoff, {"source_id": pid, "topic": topic, "kg": run.cfg["name"], "status": result,
+                                       "schema_version": run.cfg.get("schema_version"), "nodes": rec.get("nodes"),
+                                       "edges": rec.get("links"), "date": now()[:10],
+                                       "note": (f"scale-catal document: {run.folder(i)}" + ("; not read a second time"
+                                                if run.skip_review else "")) if result == "extracted" else detail})
+            applied += 1
+        index = index_export(root) if applied and handoff else None
+    counts = Counter(st for st, _ in states.values())
+    todo = [f"next --role {r} ({sum(counts[s] for s in ss)})" for r, ss in ROLE_STATES.items()
+            if sum(counts[s] for s in ss)]
+    print(json.dumps({"run": str(run.d), "sources": len(states), "states": dict(sorted(counts.items())),
+                      "settled": sum(counts[s] for s in SETTLED), "nodes_added": nodes,
+                      "gaps": {"on_records": gaps, "reports": dict(sorted(kinds.items())),
+                               "missing_concept": concepts[:20]},
+                      "lists": {k: v[:50] for k, v in sorted(by_state.items()) if k != "passed"},
+                      "applied": applied if a.apply else None, "index": index if a.apply else None,
+                      "next": todo or (["finish"] if counts["passed"] else ["nothing left to do"])}))
+
+
+# ------------------------------------------------------------------ finish / contribute
+def passed(run):
+    """The sources settled as passed whose document holds what they report (not no_data)."""
+    hand = run.handouts()
+    return [i for i in run.ids() if run.state(i, hand) == ("passed", "curated")]
+
+
+def cmd_finish(a):
+    run = Run(a.run)
+    res, bad = {}, {}
+    for i in passed(run):
+        rc, out, err = scale(run.cmd, "source", "finish", run.folder(i), *(["--public"] if a.public else []),
+                             *(["--bundle"] if a.bundle else []))
+        (res if rc == 0 and out else bad)[i] = out if rc == 0 and out else err[-300:]
+    write_json(run.d / "finish.json", {"at": now(), "public": a.public, "bundle": a.bundle, "finished": res,
+                                       "failed": bad})
+    print(json.dumps({"run": str(run.d), "finished": len(res), "failed": bad, "report": str(run.d / "finish.json")}))
+
+
+def cmd_contribute(a):
+    run = Run(a.run)
+    res = {}
+    for i in passed(run):
+        g, _ = run.graph(i)
+        outcome, msg = contribute(run.cmd, g, a.to)
+        res[i] = {"outcome": outcome, "report": msg}
+    write_json(run.d / "contribute-dry-run.json", {"at": now(), "to": a.to, "sources": res})
+    print(json.dumps({"run": str(run.d), "would_add": sum(r["outcome"] == "dry_run" for r in res.values()),
+                      "already_there": [i for i, r in res.items() if r["outcome"] == "already"],
+                      "refused": [i for i, r in res.items() if r["outcome"] == "refused"],
+                      "report": str(run.d / "contribute-dry-run.json"),
+                      "next": "a person reviews the report; writing is `scale graph contribute <graph> --to <folder> "
+                              "--write` on an agent/… branch, then a pull request"}))
+
+
+def cmd_assemble(a):
+    """A local graph kept as parts holding every passed document of the run (scale graph contribute --write into a
+    folder of the run, never the repository), built into one document that query-graph can query."""
+    run = Run(a.run)
+    out = Path(a.out).resolve() if a.out else run.d / "graph"
+    name = re.sub(r"[^a-z0-9-]+", "-", run.cfg["name"].lower()).strip("-") or "run"
+    ns, version = f"ex:{name}", run.cfg.get("schema_version")
+    contributor = run.cfg.get("contributor") or "scale:org/scale-researchers"
+    project = run.cfg.get("project") or f"{ns}/project/{name}"
+    if not (out / "parts" / "header.json").is_file():
+        stew = {"contributed_by": [contributor], "project": project, "access": "public"}
+        write_json(out / "parts" / "header.json", {"directed": True, "multigraph": True, "graph": {
+            "schema": "scale-catal", "schema_version": version, "graph_id": f"{ns}/graph/{name}",
+            "title": (a.title or f"Curation run {name}")[:40], "data_status": "research_data",
+            "description": f"The scale-catal documents of the curation run {name}, one part per source, assembled "
+                           f"locally with scale graph contribute from {run.cfg['corpus']}.",
+            "follows_domains": ["catalysis"], "stewardship": stew}})
+        write_json(out / "parts" / "shared.json", {"schema_version": version, "nodes": [
+            {"id": contributor, "label": "Institution", "props": {"name": contributor.rsplit("/", 1)[-1], "origin": "curated"}},
+            {"id": project, "label": "Project", "props": {"name": f"Curation run {name}", "origin": "curated"}}],
+            "links": [{"id": f"{project}/participant/{contributor.rsplit('/', 1)[-1]}", "type": "PARTICIPATES_IN",
+                       "source": contributor, "target": project, "props": {"origin": "curated", "role": "data_provider"}}]})
+        (out / "rights.yaml").write_text("# Rights of the sources of this local graph, one entry per source, added with "
+                                         "the source (scale graph contribute).\nsources: {}\n", encoding="utf-8")
+        (out / "stewardship.yaml").write_text(f"default:\n  contributed_by: [{json.dumps(contributor)}]\n"
+                                              f"  project: {json.dumps(project)}\n  access: public\n", encoding="utf-8")
+    added, already, refused = [], [], {}
+    for i in passed(run):
+        g, _ = run.graph(i)
+        outcome, msg = contribute(run.cmd, g, out, write=True)
+        {"added": added, "already": already}.get(outcome, []).append(i)
+        if outcome == "refused":
+            refused[i] = msg
+    rc, _, err = scale(run.cmd, "graph", "build", out)
+    built = sorted(out.glob("*.graph.json"))
+    print(json.dumps({"graph": str(out), "built": str(built[0]) if rc == 0 and built else None, "added": len(added),
+                      "already_there": len(already), "refused": refused, "build_error": None if rc == 0 else err[-300:],
+                      "next": f"query-graph: scale graph query {out} <plan.yaml>"}))
+
+
+def main():
+    ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
+    sub = ap.add_subparsers(dest="cmd", required=True)
+    p = sub.add_parser("prepare")
+    p.add_argument("--corpus", required=True)
+    p.add_argument("--run", required=True)
+    p.add_argument("--ids", help="comma list of source IDs or slugs to curate (default: every included source)")
+    p.add_argument("--ids-file", help="a file of source IDs or slugs, one per line")
+    p.add_argument("--max", type=int, help="at most this many sources (in manifest order)")
+    p.add_argument("--contributor", help="who curates: a stewardship registry id (scale source start --contributor)")
+    p.add_argument("--project", help="the project the documents belong to (scale source start --project)")
+    p.add_argument("--version", help="the schema version to pin (default: SCALE's head; the version of the graph the "
+                                     "documents will be contributed to, e.g. graphs/catal-commons)")
+    p.add_argument("--no-si", action="store_true", help="do not append the SI files' text to the page texts")
+    p.add_argument("--scale", help='the scale command (default: $SCALE_CMD or "scale"; e.g. "uv run --project <checkout> scale")')
+    p.add_argument("--curator", help="the model that curates and fixes: " + "|".join(MODELS) + " (a subagent; opus "
+                   "recommended) or api:<model> (scripts/api_host.py, on a model behind --api-base-url)")
+    p.add_argument("--reviewer", help="who reads each document a second time: " + "|".join(MODELS) +
+                   " (recommended: not the curator's), api:<model>, or skip (not recommended)")
+    p.add_argument("--api-base-url", help="for an api:<model> curator or reviewer: the endpoint that serves it "
+                   "(…/v1; OpenAI-compatible for review-api)")
+    p.add_argument("--api-key-name", default="llm_api_key", help="its key's name in ~/.scale/sources/keys.txt")
+    p.add_argument("--api-key-env", help="or the environment variable that holds its key")
+    p.add_argument("--api-context-tokens", type=int, help="the API reader's context window in tokens: review-api fits "
+                   "each request to it, reading a large document in parts only when it does not fit")
+    p.add_argument("--api-temperature", type=float, help="the API reader's sampling temperature (default: the "
+                   "endpoint's; never 0 for a reasoning model, which then loops)")
+    p.add_argument("--api-top-p", type=float, help="the API reader's top_p (default: the endpoint's)")
+    p = sub.add_parser("review-api")
+    p.add_argument("--run", required=True)
+    p.add_argument("--n", type=int, default=5)
+    p.add_argument("--max-chars", type=int, default=API_CHARS, help="page-text characters sent at most")
+    p.add_argument("--max-doc-chars", type=int, help=f"document characters (compact JSON) per request at most; a larger "
+                   f"document is read in parts (default: fitted to --context-tokens, else {DOC_CHARS})")
+    p.add_argument("--answer-tokens", type=int, help=f"tokens of the window kept for the reader's answer, thinking "
+                   f"included (default {ANSWER_TOKENS}; a reading cut by length is read once more with twice as many)")
+    p.add_argument("--context-tokens", type=int, help="the reader's context window in tokens (default: the run's, "
+                   "prepare --api-context-tokens): each request is fitted to it, in parts only when it must be")
+    p.add_argument("--temperature", type=float, help="sampling temperature (default: the run's, else the endpoint's)")
+    p.add_argument("--top-p", type=float, help="top_p (default: the run's, else the endpoint's)")
+    p = sub.add_parser("next")
+    p.add_argument("--run", required=True)
+    p.add_argument("--role", required=True, choices=sorted(ROLE_STATES))
+    p.add_argument("--n", type=int, default=5)
+    p = sub.add_parser("status")
+    p.add_argument("--run", required=True)
+    p.add_argument("--apply", action="store_true")
+    p = sub.add_parser("finish")
+    p.add_argument("--run", required=True)
+    p.add_argument("--public", action="store_true")
+    p.add_argument("--bundle", action="store_true")
+    p = sub.add_parser("assemble")
+    p.add_argument("--run", required=True)
+    p.add_argument("--out", help="the local graph folder (default: <run>/graph)")
+    p.add_argument("--title", help="the graph's title (at most 40 characters)")
+    p = sub.add_parser("contribute")
+    p.add_argument("--run", required=True)
+    p.add_argument("--to", required=True, help="a graph kept as parts, e.g. <trace-ai-org/scale checkout>/graphs/catal-commons")
+    a = ap.parse_args()
+    {"prepare": cmd_prepare, "next": cmd_next, "review-api": cmd_review_api, "status": cmd_status, "finish": cmd_finish,
+     "assemble": cmd_assemble, "contribute": cmd_contribute}[a.cmd](a)
+
+
+if __name__ == "__main__":
+    main()
