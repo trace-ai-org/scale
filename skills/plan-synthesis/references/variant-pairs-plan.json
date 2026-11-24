@@ -1,0 +1,47 @@
+{
+  "question": "Which preparations are variants of another, what one change makes each, and what does each obtain?",
+  "match": {
+    "label": "Preparation",
+    "as": "variant"
+  },
+  "steps": [
+    {
+      "from": "variant",
+      "edge": "VARIANT_OF",
+      "to": "Preparation",
+      "as": "base",
+      "edge_as": "change"
+    },
+    {
+      "from": "variant",
+      "edge": "REACHED_BY",
+      "direction": "in",
+      "to": "CatalystState",
+      "as": "variant_state",
+      "optional": true
+    },
+    {
+      "from": "base",
+      "edge": "REACHED_BY",
+      "direction": "in",
+      "to": "CatalystState",
+      "as": "base_state",
+      "optional": true
+    }
+  ],
+  "return": [
+    "variant.id",
+    "variant.name",
+    "base.id",
+    "base.name",
+    "change.changed",
+    "change.varied",
+    "base_state.particle_shape",
+    "variant_state.particle_shape",
+    "base_state.architecture",
+    "variant_state.architecture",
+    "base_state.properties.particle_size",
+    "variant_state.properties.particle_size"
+  ],
+  "evidence": true
+}
