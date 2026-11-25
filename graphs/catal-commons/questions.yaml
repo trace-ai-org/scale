@@ -6,7 +6,7 @@ questions:
     kind: conditions and outcomes
   - question: How was chloride introduced into the copper catalysts?
     kind: preparation
-  - question: Which products were detected in CO2 electroreduction, and which stayed below 1 % Faradaic efficiency?
+  - question: For each catalyst and potential, which products had a Faradaic efficiency below 1 %, and were these measured values, upper bounds or not detected?
     kind: negative results
-  - question: Does chloride stay in the catalyst during electrolysis, according to the authors?
+  - question: Which measurements support the authors' claims that chloride is retained, and do they describe the catalyst before, during or after electrolysis?
     kind: authors' interpretations

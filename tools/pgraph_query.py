@@ -57,7 +57,8 @@ a value is compared only when it holds a number (``value``, or ``lower``/``upper
 as the filter's, case included, once each run of whitespace counts as one space and the ends are trimmed (``mPa``
 is not ``MPa``, ``°c`` is not ``°C``; never a synonym: ``mol%`` is not ``%``, ``barg`` is not ``bar``, ``1/h`` is
 not ``h-1``), and its ``basis`` is the filter's (``basis``, compared the same way), or, as the filter's, absent.
-Nothing is converted, and no basis is read from a unit, a reported text or a note. Any other value is left out with
+Nothing is converted unless a filter asks (``convert: true``: temperature, absolute pressure and time, exactly,
+:data:`CONVERSIONS`), and no basis is read from a unit, a reported text or a note. Any other value is left out with
 the reason ``unit_unstated`` (the filter or the value states no unit: none, blank, or the placeholder ``not stated``
 a curator writes for a number printed without one, read in any case and spacing),
 ``incompatible_unit`` (another unit, or a unit that is not text), ``other_basis`` (another basis, or a basis on one
@@ -143,6 +144,7 @@ filter that every row passes.
 
 from __future__ import annotations
 
+import contextvars
 import copy
 import datetime as dt
 import functools
@@ -181,6 +183,10 @@ CONVERSIONS = {
 _GROUP = {unit: (g, fo) for g, units in CONVERSIONS.items() for unit, fo in units.items()}
 
 
+# the conversions a query made, by "from -> to" unit (set by run, counted by _numeric, reported in the coverage)
+_CONVERTED: contextvars.ContextVar = contextvars.ContextVar("scale_query_converted", default=None)
+
+
 def converted(v: dict, unit: str) -> dict | None:
     """``v`` (a value object) in ``unit``, when both units are in one group of :data:`CONVERSIONS` and differ; else
     None. ``value``, ``lower``, ``upper`` and ``uncertainty`` (a difference: no offset) are converted, ``unit`` set,
@@ -189,13 +195,16 @@ def converted(v: dict, unit: str) -> dict | None:
     a, b = _GROUP.get(vu), _GROUP.get(fu)
     if not a or not b or a[0] != b[0] or vu == fu:
         return None
+    if a[0] == "pressure" and any(isinstance(v.get(k), str) and "gauge" in v[k].casefold()
+                                  for k in ("definition", "basis", "as_reported", "note", "pressure_convention")):
+        return None                     # a gauge pressure is not absolute: never converted, left out as reported
     (fa, oa), (fb, ob) = a[1], b[1]
     out = {**v, "unit": unit, "_converted_from": v.get("unit")}
     for k in ("value", "lower", "upper"):
         if _is_number(v.get(k)):
-            out[k] = round((float(v[k]) * fa + oa - ob) / fb, 10)
+            out[k] = (float(v[k]) * fa + oa - ob) / fb     # never rounded: a compared number keeps its precision
     if _is_number(v.get("uncertainty")):
-        out["uncertainty"] = round(float(v["uncertainty"]) * fa / fb, 10)
+        out["uncertainty"] = float(v["uncertainty"]) * fa / fb
     return out
 
 
@@ -567,6 +576,9 @@ def _numeric(v: Any, f: dict, op: str, read_basis: bool = False) -> tuple[bool |
             c = converted(v, unit)          # asked for: another unit of the same quantity, converted exactly
             if c is not None:
                 v, why = c, comparable(c, unit, f.get("basis"), read_basis)
+                seen = _CONVERTED.get()
+                if seen is not None and not why:
+                    seen[f"{c['_converted_from']} -> {unit}"] += 1
         if why:
             return None, why
         side = v.get("bound")
@@ -587,19 +599,29 @@ def _numeric(v: Any, f: dict, op: str, read_basis: bool = False) -> tuple[bool |
         x = xs[0]
         return {"lt": (lo if lo is not None else hi) < x, "le": (lo if lo is not None else hi) <= x,
                 "gt": (hi if hi is not None else lo) > x, "ge": (hi if hi is not None else lo) >= x}[op], None
-    # eq: the number, or a reported range that holds it (in: one of the numbers); ne: not so
+    # eq: the number, or a reported range that holds it (in: one of the numbers); ne: not so. A converted number is
+    # equal within floating-point error (1 h is 1/24 d), never more
     low, high = (lo if lo is not None else hi), (hi if hi is not None else lo)
-    held = any(low <= x <= high for x in xs)
+    tol = (lambda y: 1e-9 * max(abs(y), 1e-300)) if isinstance(v, dict) and v.get("_converted_from") else (lambda y: 0.0)
+    held = any(low - tol(x) <= x <= high + tol(x) for x in xs)
     return (not held if op == "ne" else held), None
 
 
-def formula_text(text: str) -> bool:
-    """Whether a filter's text is a chemical formula, whose case is meaningful (Co, CO, Cu/ZnO, Cu-ZnO-Al2O3): every
-    part between separators a formula or element symbol (:func:`passages.is_formula`). Other text is compared
-    ignoring case."""
+_WORDS = re.compile(r"[^\W_]+", re.UNICODE)
+
+
+def chemical_case(text: str) -> str:
+    """``text`` as a text filter compares it: each chemical formula or element symbol in its case
+    (:func:`passages.is_formula`: CO, Co, ZnO), every other word lower-cased, whitespace runs as one space."""
     from .passages import is_formula
-    parts = [x for x in re.split(r"[\s/·+\-–,()]+", text.strip()) if x]
-    return bool(parts) and all(is_formula(x) for x in parts)
+    return " ".join(_WORDS.sub(lambda m: m.group() if is_formula(m.group()) else m.group().lower(), text).split())
+
+
+def formula_text(text: str) -> bool:
+    """Whether a filter's text names a chemical formula or element symbol (Co, CO hydrogenation, Cu/ZnO), whose case
+    is then compared (:func:`chemical_case`); other text is compared ignoring case."""
+    from .passages import is_formula
+    return any(is_formula(w) for w in _WORDS.findall(text))
 
 
 def _one(v: Any, f: dict, op: str) -> tuple[bool | None, str | None]:
@@ -620,16 +642,19 @@ def _one(v: Any, f: dict, op: str) -> tuple[bool | None, str | None]:
     if numeric_filter(f) and (op in NUMERIC_OPS or isinstance(v, dict) or _is_number(v)):
         return _numeric(v, f, op)
     s = scalar(v)
-    exact = isinstance(want, str) and formula_text(want)      # CO is carbon monoxide, Co cobalt: case kept
+    exact = isinstance(want, str) and formula_text(want)      # CO is carbon monoxide, Co cobalt: their case kept
     if op == "eq":
-        return (s == want) or (not exact and isinstance(s, str) and isinstance(want, str) and s.lower() == want.lower()), None
+        if exact and isinstance(s, str):
+            return chemical_case(s) == chemical_case(want), None
+        return (s == want) or (isinstance(s, str) and isinstance(want, str) and s.lower() == want.lower()), None
     if op == "ne":
         return s != want, None
     if op == "in":
         return s in (want or []), None
     if op == "contains":
         def has(x):
-            return isinstance(x, str) and (want in x if exact else str(want).lower() in x.lower())
+            return isinstance(x, str) and (chemical_case(want) in chemical_case(x) if exact
+                                           else str(want).lower() in x.lower())
         if isinstance(s, list):
             return want in s or any(has(x) for x in s), None
         return has(s), None
@@ -1035,7 +1060,7 @@ def check_plan(plan: dict, spec: dict) -> None:
     that is not non-empty text or on a filter that compares no number in a unit, a ``convert`` that is not true or
     false, on a filter that compares no number, or on the plan (:data:`CONVERT_REFUSED`), and a step that is not an edge, entries or field step as
     :func:`_check_steps` says."""
-    if plan.get("convert") not in (None, False):
+    if plan.get("convert") is not None and plan.get("convert") is not False:
         raise ScaleError(CONVERT_REFUSED)
     mode = plan.get("comparison", "ordinary")
     if mode not in COMPARISONS:
@@ -1045,7 +1070,8 @@ def check_plan(plan: dict, spec: dict) -> None:
     labels, edge_vars = _variables(plan)
     for f, label, edge in _filters(plan):
         what = f"the filter {f.get('prop')} {f.get('op')} {f.get('value')}"
-        if f.get("convert") not in (None, False, True) or (f.get("convert") is True and not numeric_filter(f)):
+        if ("convert" in f and type(f["convert"]) is not bool and f["convert"] is not None) \
+                or (f.get("convert") is True and not numeric_filter(f)):
             raise ScaleError(f"{what}: {CONVERT_REFUSED}")
         if "context" in f:
             if mode != "scientific":
@@ -1279,7 +1305,11 @@ def run(doc: dict, spec: dict, plan: dict, evidence_index=None, graph: Graph | N
     """Run ``plan`` on ``doc``. ``graph``: the document's :class:`Graph`, when several plans run on one document (used
     only when it was built from this document and schema). The result shares no object with the document: a caller
     may change it without changing the document, or a later answer drawn from it."""
-    return detached(_run(doc, spec, plan, evidence_index, graph))
+    token = _CONVERTED.set(Counter())             # the conversions this run makes, reported in its coverage
+    try:
+        return detached(_run(doc, spec, plan, evidence_index, graph))
+    finally:
+        _CONVERTED.reset(token)
 
 
 _ATOMS = (str, int, float, bool, type(None))
@@ -1996,9 +2026,11 @@ def _run(doc: dict, spec: dict, plan: dict, evidence_index=None, graph: Graph | 
         status = "missing_context"
     else:
         status = "no_matching_record"
+    conversions = _CONVERTED.get() or Counter()
     coverage = {"ran": True, "candidates": len(cands), "steps": stages, "link_types": link_types,
                 "excluded": {"total": len(excluded), "listed": min(len(excluded), LISTED), "by_reason": dict(sorted(reasons.items()))},
-                "compared_in_unit": len(compared), "retracted": retracted_rows, "published_before": dated_out,
+                "compared_in_unit": len(compared), **({"converted": dict(sorted(conversions.items()))} if conversions else {}),
+                "retracted": retracted_rows, "published_before": dated_out,
                 "second_hand_only": own_out, "second_hand_rows": second_hand_rows,
                 "missing_context": {"total": len(missing_ctx), "listed": min(len(missing_ctx), LISTED)},
                 "not_evaluated_in_steps": {"total": sum(in_steps.values()), "by_reason": dict(sorted(in_steps.items())),
@@ -2034,7 +2066,8 @@ def _run(doc: dict, spec: dict, plan: dict, evidence_index=None, graph: Graph | 
         lim.append(f"{sum(apart.values())} values were not compared for their unit or basis "
                    f"({', '.join(f'{k} {n}' for k, n in apart.items() if n)}): a filter compares only values in its own "
                    "unit, spelled the same, case included (mPa is not MPa, mol% is not %, barg is not bar), and on "
-                   "the basis it states, or none as it states none; nothing is converted. Run one plan per unit and basis "
+                   "the basis it states, or none as it states none; nothing else is converted (a filter's convert: true "
+                   "converts temperature, absolute pressure and time exactly). Run one plan per unit and basis "
                    "(`scale graph stats` lists the units in use), and report each apart.")
     if dated_out:
         lim.append(f"{dated_out} rows were left out because they cite a source from {str(before)[:4]} or later, or no dated "
@@ -2048,9 +2081,15 @@ def _run(doc: dict, spec: dict, plan: dict, evidence_index=None, graph: Graph | 
     if second_hand_rows:
         lim.append(f"{second_hand_rows} rows rest only on second-hand evidence (ECO:0000033): say so and name the citing "
                    "source; cite the primary work where the graph holds it (own_work_only: true leaves such rows out).")
+    if conversions:
+        lim.append(f"{sum(conversions.values())} values were compared after converting their unit, exactly, for a filter "
+                   f"that asked for it ({', '.join(f'{k}: {n}' for k, n in sorted(conversions.items()))}); each row returns "
+                   "the value as reported, in its own unit: state it so, and give a converted number only as yours. An "
+                   "order_by sorts the numbers as reported, never converted.")
     if compared:
         lim.append(f"{len(compared)} values were compared in a filter's unit by their number, unit and stated basis alone: "
-                   "nothing was converted, and a basis or condition written only in a value's reported text or note (gauge, "
+                   + ("only the conversions above were made" if conversions else "nothing was converted")
+                   + ", and a basis or condition written only in a value's reported text or note (gauge, "
                    "on hydrogen, per pass) was not read; return the value and read its as_reported and note before stating it.")
     if missing_ctx:
         lim.append(f"{len(missing_ctx)} returned fields are not reported or not curated (each record's field once); see "
@@ -2246,7 +2285,9 @@ def _render_coverage(cov: dict) -> list[str]:
         lines.append(f"- left out by reason ({ex['listed']} of {ex['total']} listed): "
                      + ", ".join(f"{k} {n}" for k, n in ex["by_reason"].items()))
     if cov.get("compared_in_unit"):
-        lines.append(f"- compared in a filter's unit (number, unit and stated basis; nothing converted): {cov['compared_in_unit']} values")
+        lines.append(f"- compared in a filter's unit (number, unit and stated basis; "
+                     + (f"converted on request: {', '.join(f'{k} {n}' for k, n in cov['converted'].items())}"
+                        if cov.get("converted") else "nothing converted") + f"): {cov['compared_in_unit']} values")
     if cov.get("second_hand_rows"):
         lines.append(f"- rows resting only on second-hand evidence: {cov['second_hand_rows']}")
     return lines

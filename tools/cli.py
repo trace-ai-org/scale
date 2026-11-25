@@ -608,10 +608,13 @@ def cmd_graph_search(args):
     years = {n["id"]: n["props"].get("year") for n in doc["nodes"] if n["label"] == "Source"}
     before = int(args.published_before[:4]) if args.published_before else None
     where = (lambda it: years.get(it.get("source")) is not None and years[it["source"]] < before) if before else None
-    hits = ix.search(args.query, k=args.k, mode=args.mode, where=where)
+    from .passages import search_quotes
+
+    def name_of(rid):
+        rec = nodes.get(rid) or links.get(rid)
+        return (rec or {}).get("props", {}).get("name") or (rec or {}).get("type")
+    hits = search_quotes(ix, args.query, k=args.k, mode=args.mode, where=where, name_of=name_of)   # one hit per quote
     for h in hits:
-        rec = nodes.get(h["record"]) or links.get(h["record"])
-        h["record_name"] = (rec or {}).get("props", {}).get("name") or (rec or {}).get("type")
         h["source_year"] = years.get(h.get("source"))
     # the hits are the document's verbatim quotes: they go only where the whole document may go, as a query's answer
     access = document_access(doc, pgraph.embargo_today())       # the day every path reads embargoes on
@@ -619,7 +622,8 @@ def cmd_graph_search(args):
     md = "\n".join([f"# {args.query}", "", f"access: **{access['level']}**"
                      + (f" · {access['note']}" if access["level"] != "public" else ""), ""]
                     + [f"{i}. [{h['score']}] {h['label']} {h['record_name']} — {h['source_year']}, "
-                       f"{h['locator']}: “{h['text']}”" for i, h in enumerate(hits, 1)]) + "\n"
+                       f"{h['locator']}: “{h['text']}”" + (f" (and {len(h['also'])} more citing it)" if h.get("also") else "")
+                       for i, h in enumerate(hits, 1)]) + "\n"
     _emit(res, args, md)
 
 

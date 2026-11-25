@@ -69,7 +69,9 @@ ELEMENTS = set("""H He Li Be B C N O F Ne Na Mg Al Si P S Cl Ar K Ca Sc Ti V Cr 
 Sr Y Zr Nb Mo Tc Ru Rh Pd Ag Cd In Sn Sb Te I Xe Cs Ba La Ce Pr Nd Pm Sm Eu Gd Tb Dy Ho Er Tm Yb Lu Hf Ta W Re Os Ir Pt
 Au Hg Tl Pb Bi Po At Rn Fr Ra Ac Th Pa U Np Pu Am Cm Bk Cf Es Fm Md No Lr""".split())
 # element symbols that are also common English words at the start of a sentence: read as words
-NOT_FORMULAS = {"In", "As", "At", "Be", "He", "No", "Am", "Es", "I"}
+NOT_FORMULAS = {"In", "As", "At", "Be", "He", "No", "Am", "Es", "I",
+                # and words in capitals that read as symbols (IS: iodine, sulfur)
+                "IS", "US", "OF", "IN", "ON", "SO", "BY", "IF", "OK", "IP"}
 _SYMBOLS = re.compile(r"([A-Z][a-z]?)(\d*)")
 
 
@@ -157,8 +159,10 @@ EMBEDDERS: dict[str, Callable[[], object]] = {"scale-hash-v1": HashEmbedder, "sc
 
 
 def formula_words(embedder_id: str) -> bool:
-    """Whether an index's words keep formulas in their case: those of the embedders that do (scale-hash-v2)."""
-    return bool(getattr(EMBEDDERS.get(embedder_id), "formulas", embedder_id != "scale-hash-v1"))
+    """Whether an index's words keep formulas in their case: only those of the embedders built to (scale-hash-v2).
+    Every other embedder, a registered or neural one included, keeps the words it was built with (lower-cased)."""
+    factory = EMBEDDERS.get(embedder_id)
+    return isinstance(factory, type) and bool(getattr(factory, "formulas", False))
 
 
 def register_embedder(name: str, factory: Callable[[], object]) -> None:
@@ -308,6 +312,13 @@ class Index:
         self.formulas = formula_words(embedder_id)
         self.vocab, self.indptr, self.post_item, self.post_count, self.lengths = terms or _terms(items, self.formulas)
         self.term_id = {w: i for i, w in enumerate(self.vocab)}
+        # a formula's case variants by its lower-case form (cu: Cu; co: CO and Co), so a query typed in lower case
+        # still finds them (both, when the lower case cannot tell them apart)
+        self.cased: dict[str, list[str]] = {}
+        if self.formulas:
+            for w in self.vocab:
+                if w != w.lower() and is_formula(w):
+                    self.cased.setdefault(w.lower(), []).append(w)
         n = len(items)
         self.avg = (int(self.lengths.sum()) / n) if n else 0.0
         self.norms = np.ones(n)
@@ -380,7 +391,7 @@ class Index:
         np = _np()
         n = len(self.items)
         s = np.zeros(n)
-        for w in sorted(set(tokens(query, self.formulas))):
+        for w in sorted(set(tokens(self.expand(query), self.formulas))):
             t = self.term_id.get(w)
             if t is None:
                 continue
@@ -391,8 +402,17 @@ class Index:
             s[rows] += idf * f * (k1 + 1) / (f + k1 * (1 - b + b * self.lengths[rows] / (self.avg or 1)))
         return s
 
+    def expand(self, query: str) -> str:
+        """``query`` with each lower-case word that is a formula's lower-case form followed by the formula as the index
+        holds it ("cu" adds "Cu"; "co" adds "CO" and "Co": a lower-case query cannot tell them apart)."""
+        if not self.cased:
+            return query
+        extra = [v for w in WORD.findall(query) if w == w.lower() for v in self.cased.get(w, [])]
+        return f"{query} {' '.join(extra)}" if extra else query
+
     def cosine(self, query: str, embedder=None):
         np = _np()
+        query = self.expand(query)
         emb = embedder or get_embedder(self.embedder_id)
         if emb.id != self.embedder_id:
             raise ScaleError(f"index built with {self.embedder_id}, query embedder is {emb.id}")
@@ -474,6 +494,49 @@ class Index:
             if len(top) < m:
                 return out
             m *= 4
+
+
+def quote_key(item: dict) -> tuple:
+    """What makes two evidence items one quote: their source and their text, whitespace runs as one space, case kept
+    (a CO quote is not a Co quote)."""
+    return item.get("source"), " ".join(str(item.get("text") or "").split())
+
+
+def search_quotes(ix: "Index", query: str, k: int = 10, mode: str = "hybrid",
+                  where: Callable[[dict], bool] | None = None, name_of: Callable[[str], str | None] | None = None) -> list[dict]:
+    """The best ``k`` distinct quotes for ``query``: each quote of a source once, its best-scoring item as the hit, and
+    in its ``also`` every other citation of the same text that ``where`` keeps (another record, or the same record at
+    another locator), however deep they rank. ``name_of`` names a record."""
+    quotes = getattr(ix, "_quotes", None)
+    if quotes is None:                          # every item by its quote, once per index
+        quotes = {}
+        for it in ix.items:
+            quotes.setdefault(quote_key(it), []).append(it)
+        ix._quotes = quotes
+    depth, picked = k, {}
+    while True:
+        raw = ix.search(query, k=depth, mode=mode, where=where)
+        picked = {}
+        for h in raw:
+            picked.setdefault(quote_key(h), h)
+            if len(picked) >= k:
+                break
+        if len(picked) >= k or len(raw) < depth:
+            break
+        depth *= 4
+    out = []
+    for key, h in picked.items():
+        hit = dict(h)
+        if name_of:
+            hit["record_name"] = name_of(h["record"])
+        also = [{"record": it["record"], "label": it.get("label"),
+                 **({"record_name": name_of(it["record"])} if name_of else {}),
+                 **({"locator": it.get("locator")} if it.get("locator") != h.get("locator") else {})}
+                for it in quotes.get(key, []) if it["id"] != h["id"] and (where is None or where(it))]
+        if also:
+            hit["also"] = also
+        out.append(hit)
+    return out
 
 
 def _terms_digest(vocab: list, payload: bytes) -> str:

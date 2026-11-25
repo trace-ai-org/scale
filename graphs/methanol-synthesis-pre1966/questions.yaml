@@ -4,8 +4,8 @@
 questions:
   - question: Which catalysts were found inactive for methanol synthesis, and under what conditions?
     kind: negative results
-  - question: How does sulfur poison copper catalysts, and which sources report it?
-    kind: what a source reports
+  - question: What sulfur-related activity losses were reported for copper catalysts, under which conditions, and what explanations did the authors give?
+    kind: authors' interpretations
   - question: What do the sources say zinc oxide does in copper-zinc oxide catalysts?
     kind: authors' interpretations
   - question: How were copper-zinc oxide catalysts prepared by precipitation?
@@ -18,3 +18,5 @@ questions:
     kind: what a source reports
   - question: Was copper reported as a methanol catalyst before 1930?
     kind: has this been done
+  - question: Which methanol-synthesis tests ran at or below 250 °C, including temperatures reported in K or °F, and what pressure and feed do they state?
+    kind: conditions and outcomes

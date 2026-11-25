@@ -89,6 +89,15 @@ def test_co_is_not_co_in_search_and_in_filters():
     assert tokens("CO over Co", formulas=True)[:4] == ["CO", "carbon", "monoxide", "over"] and "Co" in tokens("Co", True)
     assert "co" in tokens("CO over Co") and "CO" not in tokens("CO over Co")                # v1: lower-cased
     assert tokens("In the run, No change", True)[:2] == ["in", "the"]
+    assert tokens("IS OF ICP", True)[:2] == ["is", "of"]                  # capitals that only read as symbols
+    many = [{"id": "a", "record": "r1", "text": "CO hydrogenation"}, {"id": "b", "record": "r2", "text": "a Co catalyst"},
+            {"id": "c", "record": "r3", "text": "Cu on ZnO"}]
+    ix2 = Index.build(many)                   # a query in lower case finds the formulas it may mean, both when ambiguous
+    assert [h["id"] for h in ix2.search("cu", k=5, mode="keyword")] == ["c"]
+    assert sorted(h["id"] for h in ix2.search("co", k=5, mode="keyword")) == ["a", "b"]
+    from scale import passages
+    passages.register_embedder("custom-test", lambda: passages.HashEmbedder())
+    assert passages.formula_words("custom-test") is False and passages.formula_words("scale-hash-v1") is False
     items = [{"id": "a", "record": "r1", "text": "CO hydrogenation over copper"},
              {"id": "b", "record": "r2", "text": "a Co catalyst for Fischer-Tropsch"}]
     ix = Index.build(items)
@@ -101,6 +110,12 @@ def test_co_is_not_co_in_search_and_in_filters():
     assert one("Co3O4", {"value": "CO"}, "contains") == (False, None) and one("cobalt", {"value": "Cobalt"}, "eq") == (True, None)
     assert one("Cu/ZnO", {"value": "cu/zno"}, "eq") == (True, None) and one("Cu/ZnO", {"value": "Cu/ZnO"}, "eq") == (True, None)
     assert one("CU/ZNO", {"value": "Cu/ZnO"}, "eq") == (False, None)
+    # a formula inside a phrase keeps its case, the other words do not; a lower-case filter matches either
+    assert one("Co hydrogenation", {"value": "CO hydrogenation"}, "eq") == (False, None)
+    assert one("CO Hydrogenation", {"value": "CO hydrogenation"}, "eq") == (True, None)
+    assert one("Co-hydrogenation over Cu", {"value": "CO-hydrogenation"}, "contains") == (False, None)
+    assert one("CO hydrogenation", {"value": "co hydrogenation"}, "eq") == (True, None)
+    assert one("Co hydrogenation", {"value": "co hydrogenation"}, "eq") == (True, None)
 
 
 def test_vectors_are_deterministic_int8(tmp_path, doc):
@@ -421,7 +436,20 @@ def test_a_filter_converts_only_when_asked_and_only_exact_units(doc, spec):
     assert pgraph_query.converted({"status": "present", "lower": 0, "upper": 100, "unit": "°C", "uncertainty": 5},
                                   "K") == {"status": "present", "lower": 273.15, "upper": 373.15, "unit": "K",
                                            "uncertainty": 5.0, "_converted_from": "°C"}
-    for bad in ({"op": "contains", "value": "x", "convert": True}, {"op": "eq", "value": 380, "unit": "°C", "convert": "yes"}):
+    assert res["coverage"]["converted"] == {"K -> °C": 1, "°F -> °C": 1}
+    assert any("after converting their unit" in x for x in res["limitations"])
+    md = pgraph_query.render_markdown(res)
+    assert "converted on request" in md and "nothing converted" not in md
+    # exact: never rounded (1e-6 Pa is above 0 bar), equal within float error only (1 h is 1/24 d)
+    assert pgraph_query._numeric(V(1e-6, "Pa"), {"value": 0, "unit": "bar", "convert": True}, "gt") == (True, None)
+    assert pgraph_query._numeric(V(1, "h"), {"value": 1 / 24, "unit": "d", "convert": True}, "eq") == (True, None)
+    assert pgraph_query._numeric(V(33, "°F"), {"value": 5 / 9, "unit": "°C", "convert": True}, "eq") == (True, None)
+    # a gauge pressure is never converted, whatever field says so
+    for gauge in ({"definition": "gauge"}, {"as_reported": "10 bar (gauge)"}, {"note": "gauge pressure"}):
+        r, why = pgraph_query._numeric({**V(10, "bar"), **gauge}, {"value": 145, "unit": "psia", "convert": True}, "lt")
+        assert r is None and why.startswith("incompatible_unit")
+    for bad in ({"op": "contains", "value": "x", "convert": True}, {"op": "eq", "value": 380, "unit": "°C", "convert": "yes"},
+                {"op": "eq", "value": 380, "unit": "°C", "convert": 1}):
         with pytest.raises(ScaleError, match="convert"):
             pgraph_query.run(d, spec, {**plan, "where": [{"var": "t", "prop": "name", **bad}]})
     with pytest.raises(ScaleError, match="convert"):
@@ -783,7 +811,7 @@ def test_a_unit_is_compared_as_it_is_spelled_case_included_whitespace_aside(doc,
     assert run("space_velocity", "h-1")[:2] == ([cu], {cr: "incompatible_unit", late: "incompatible_unit"})
     found, why, res = run("conversion", "%")
     assert res["excluded"][0]["reason"] in ("incompatible_unit ('mol%', filter in '%')", "incompatible_unit ('mol %', filter in '%')")
-    assert any("not compared for their unit or basis (incompatible_unit 2)" in x and "nothing is converted" in x
+    assert any("not compared for their unit or basis (incompatible_unit 2)" in x and "nothing else is converted" in x
                for x in res["limitations"])
     # a value that states no unit, and a plain number against a filter with a unit: unit_unstated, never compared
     for unstated in (None, "", "   "):
@@ -933,7 +961,8 @@ def test_nothing_is_converted_unless_a_filter_asks(doc, spec):
     plan = {**CU_PLAN, "where": [{"var": "test", "prop": "temperature", "op": "le", "value": 600, "unit": "K"}]}
     off = pgraph_query.run(doc, spec, plan)
     assert off["status"] == "missing_context" and off["coverage"]["excluded"]["by_reason"] == {"incompatible_unit": 2}
-    assert "convertible_left_out" not in off["coverage"] and not any("convert:" in x for x in off["limitations"])
+    assert "convertible_left_out" not in off["coverage"] and "converted" not in off["coverage"]
+    assert any("convert: true" in x for x in off["limitations"])            # the left-out values say how to ask
     assert pgraph_query.run(doc, spec, {**plan, "convert": False})["coverage"] == off["coverage"]
     for asked in ({**plan, "convert": True}, {**plan, "convert": "yes"},
                   {**plan, "where": [{**plan["where"][0], "convert": "yes"}]}):

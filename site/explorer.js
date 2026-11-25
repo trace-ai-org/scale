@@ -2057,18 +2057,34 @@ function showExamples() {
   box.innerHTML = `<div class="gx-examples-head">Try a question this graph answers</div>` + qs.map((q, i) =>
     `<button type="button" class="gx-example" role="option" data-i="${i}">${esc(q.question)}${q.kind ? `<span class="gx-example-kind">${esc(q.kind)}</span>` : ""}</button>`).join("")
     + `<div class="gx-examples-note">Best for what the sources report: conditions and outcomes, preparations, what failed and why. A question that chains reasoning across many sources works better asked in parts.</div>`;
-  box.querySelectorAll(".gx-example").forEach((b) => b.onmousedown = (ev) => {      // before the input's blur hides it
-    ev.preventDefault();
+  box.querySelectorAll(".gx-example").forEach((b) => (b.onclick = () => {           // a click, Enter or Space asks it
     $("search-input").value = qs[Number(b.dataset.i)].question;
     box.hidden = true;
+    $("search-input").focus({ preventScroll: true });
     $("search-form").requestSubmit();
-  });
+  }));
   box.hidden = false;
+}
+function exampleKeys(e) {                     // arrows move through the questions, Escape closes them
+  const box = $("examples"), opts = [...box.querySelectorAll(".gx-example")];
+  if (box.hidden || !opts.length) return;
+  const at = opts.indexOf(document.activeElement);
+  if (e.key === "ArrowDown" || e.key === "ArrowUp") {
+    e.preventDefault();
+    const next = e.key === "ArrowDown" ? (at + 1) % opts.length : at - 1;      // up from the first returns to the box
+    (next < 0 ? $("search-input") : opts[next]).focus();
+  } else if (e.key === "Escape") {
+    box.hidden = true;
+    $("search-input").focus();
+  }
 }
 $("search-input").addEventListener("focus", showExamples);
 $("search-input").addEventListener("input", showExamples);
-$("search-input").addEventListener("blur", () => { $("examples").hidden = true; });
-$("search-input").addEventListener("keydown", (e) => { if (e.key === "Escape") $("examples").hidden = true; });
+$("search-form").addEventListener("keydown", exampleKeys);
+$("search-form").addEventListener("focusout", (e) => {          // hidden once focus leaves the question box and its list
+  if (!$("search-form").contains(e.relatedTarget)) $("examples").hidden = true;
+});
+$("examples").addEventListener("mousedown", (e) => e.preventDefault());   // a click keeps the focus in the box
 
 // ------------------------------------------------------------------------------------------ controls
 $("search-form").onsubmit = (e) => {

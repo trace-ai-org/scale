@@ -621,32 +621,14 @@ class ScaleToolkit:
         years = {n["id"]: n["props"].get("year") for n in doc["nodes"] if n["label"] == "Source"}
         before = int(str(published_before)[:4]) if published_before else None
         where = (lambda it: years.get(it.get("source")) is not None and years[it["source"]] < before) if before else None
-        # one hit per quote of a source: the same text cited by several records (a test, its links, a claim), at one
-        # locator or several, is listed once,
-        # with the records that cite it in `also`; read deeper until k distinct quotes are found or none are left
+        # one hit per quote of a source, every other citation of the same text in its `also` (passages.search_quotes)
         def name_of(rid):
             rec = nodes.get(rid) or links.get(rid)
             return (rec or {}).get("props", {}).get("name") or (rec or {}).get("type")
-        depth, hits = k, []
-        while True:
-            raw = ix.search(query, k=depth, mode=mode, where=where)
-            groups: dict = {}
-            for h in raw:
-                key = (h.get("source"), " ".join(str(h.get("text") or "").split()).casefold())
-                g = groups.get(key)
-                if g is None:
-                    groups[key] = {**h, "record_name": name_of(h["record"]), "source_year": years.get(h.get("source")),
-                                   "also": []}
-                elif h["record"] != g["record"] and all(a["record"] != h["record"] for a in g["also"]):
-                    g["also"].append({"record": h["record"], "label": h.get("label"), "record_name": name_of(h["record"]),
-                                      **({"locator": h["locator"]} if h.get("locator") != g.get("locator") else {})})
-            hits = list(groups.values())[:k]
-            if len(groups) >= k or len(raw) < depth:
-                break
-            depth *= 4
+        from .passages import search_quotes
+        hits = search_quotes(ix, query, k=k, mode=mode, where=where, name_of=name_of)
         for h in hits:
-            if not h["also"]:
-                del h["also"]
+            h["source_year"] = years.get(h.get("source"))
         # the hits are the document's verbatim quotes: they go only where the whole document may go (scale_query's access)
         return {"query": query, "mode": mode, "embedder": ix.embedder_id, "hits": hits,
                 "access": document_access(doc, pgraph.embargo_today())}
