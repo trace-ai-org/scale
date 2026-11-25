@@ -407,7 +407,7 @@ def test_the_answering_prompt_leaves_the_proposal_procedure_to_a_tool(built):
     js = (REPO / "site/explorer.js").read_text()
     for part in ('name: "proposal_procedure"', 'fetch("data/query-graph-propose.md")', "at least two routes",
                  "**Found by:**", "**What is missing:**", "[record id, locator]", "function citeLinks", "Reference checks",
-                 "returnedIds(res, seen)"):
+                 "returnedIds(res, seen)", 'view: "model"', "checklist: false", "page.next"):
         assert part in js, part
     assert "verified" not in js[js.index("function checksLine"):js.index("function checksLine") + 1500].replace(
         "never that the answer is verified", "")
@@ -422,7 +422,7 @@ def test_citations_become_links_and_the_page_checks_their_references(tmp_path):
     if not shutil.which("node"):
         pytest.skip("node is not installed")
     js = (REPO / "site/explorer.js").read_text()
-    code = js[js.index("const ID_RE"):js.index("\n}\n", js.index("function checksLine")) + 3]
+    code = js[js.index("let idPrefix"):js.index("\n}\n", js.index("function checksLine")) + 3]
     harness = tmp_path / "t.js"
     harness.write_text("""
 global.esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({"&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;"}[c]));
@@ -436,7 +436,9 @@ global.G = {doc: {nodes: [src, rec], links: []}, byId: new Map([[src.id, src], [
 const seen = new Set(["ex:t/test/1"]);
 const ok = citeLinks('<p>It was \\u201csensitive to poisoning by carbonyl at 400\\u00b0C\\u201d [ex:t/test/1, p. 3].</p>', seen);
 const bad = citeLinks('<p>Also \\u201cnot in the quote at all\\u201d [ex:t/test/1, p. 3]; and [ex:t/nope/2, p. 1]; [ex:t/source/s].</p>', seen);
-console.log(JSON.stringify({ok: ok.checks, bad: bad.checks, html: ok.html, line: checksLine(ok.checks)}));
+const seen2 = new Set(); returnedIds({id_prefix: "ex:t/", rows: [{bound: {t: "~test/1"}}]}, seen2);
+const tilde = citeLinks('<p>Run 1 [~test/1, p. 3].</p>', seen2);
+console.log(JSON.stringify({ok: ok.checks, bad: bad.checks, html: ok.html, line: checksLine(ok.checks), tilde: tilde.checks, seen2: [...seen2]}));
 """)
     out = json.loads(subprocess.run(["node", str(harness)], capture_output=True, text=True, check=True).stdout)
     assert out["ok"]["cited"] == 1 and not out["ok"]["quotesMissing"] and not out["ok"]["unknown"]
@@ -444,3 +446,5 @@ console.log(JSON.stringify({ok: ok.checks, bad: bad.checks, html: ok.html, line:
     assert "sensitive to poison-" in out["html"] and "all resolve" in out["line"] and "verified" not in out["line"]
     assert out["bad"]["unknown"] == ["ex:t/nope/2"] and out["bad"]["unreturned"] == ["ex:t/source/s"]
     assert len(out["bad"]["quotesMissing"]) == 1
+    # a model view shortens ids with ~ for its id_prefix: returned and cited ids are read in full
+    assert out["seen2"] == ["ex:t/test/1"] and out["tilde"]["cited"] == 1 and not out["tilde"]["unknown"]

@@ -1740,10 +1740,15 @@ function answerCard(r, cost) {
 // locator and whose click goes to the record. The page then checks references mechanically, never their meaning:
 // the id is a record of this graph; a tool returned it while this answer was written; a phrase quoted just before
 // the citation is in that record's evidence. It says "reference checks", never that the answer is verified.
-const ID_RE = /^((?:ex|scale|[a-z][a-z0-9-]*):[A-Za-z0-9_.\/#-]+)\s*(?:[,:]\s*(.+))?$/;
+let idPrefix = "";                                        // the latest model view's id prefix, for a citation written with ~
+const ID_RE = /^((?:ex|scale|[a-z][a-z0-9-]*):[A-Za-z0-9_.\/#-]+|~[A-Za-z0-9_.\/#-]+)\s*(?:[,:]\s*(.+))?$/;
 function returnedIds(res, seen) {                         // every record id of this graph a tool result names
   if (!G) return;
-  const text = typeof res === "string" ? res : JSON.stringify(res);
+  let text = typeof res === "string" ? res : JSON.stringify(res);
+  if (res && typeof res === "object" && res.id_prefix) {                 // a model view: ~ stands for its id prefix
+    idPrefix = res.id_prefix;
+    text = text.replace(/"~/g, `"${res.id_prefix}`).replace(/([\s:])~(?=[A-Za-z0-9])/g, `$1${res.id_prefix}`);
+  }
   for (const m of text.matchAll(/(?:ex|scale|[a-z][a-z0-9-]*):[A-Za-z0-9_.\/#-]+/g)) if (G.byId.has(m[0])) seen.add(m[0]);
 }
 // text as the quote check compares it: case, line-break hyphens ("poison- ing"), page marks (|) and spacing aside
@@ -1778,7 +1783,8 @@ function citeLinks(html, seen) {
     const before = html.slice(Math.max(0, at - 400), at).replace(/<[^>]+>/g, " ")
       .split(/[.!?]\s|\]/).pop();                         // the citation's own sentence, after any earlier citation
     const quoted = [...before.matchAll(/[“"]([^“”"]{4,300})[”"]/g)].pop()?.[1];
-    return parts.map(([, id, locator]) => {
+    return parts.map(([, id0, locator]) => {
+      const id = id0.startsWith("~") && idPrefix ? idPrefix + id0.slice(1) : id0;
       checks.cited += 1;
       const rec = G?.byId.get(id);
       if (!rec) { checks.unknown.push(id); return `<span class="gx-cite gx-cite-bad" title="No record ${esc(id)} in this graph">${esc(id)} ?</span>`; }
@@ -1866,14 +1872,14 @@ let skillText = null;
 const OWN_TOOLS = [
   { name: "describe", description: "The schema: labels and edge types with their properties (scale describe).",
     input_schema: { type: "object", properties: { names: { type: "array", items: { type: "string" } } }, required: [] } },
-  { name: "stats", description: "The graph's units in use per property and its link patterns (scale graph stats).",
-    input_schema: { type: "object", properties: {}, required: [] } },
+  { name: "stats", description: "The graph's units in use per property and its link patterns (scale graph stats). Name the labels and properties a plan needs (e.g. labels [CatalyticTest], properties [temperature, pressure]): the whole graph's units are long.",
+    input_schema: { type: "object", properties: { labels: { type: "array", items: { type: "string" } }, properties: { type: "array", items: { type: "string" } } }, required: [] } },
   { name: "search", description: "Search the graph's evidence by words and meaning (scale graph search); hits lead to the records that cite them, one hit per quote (the other records citing it in `also`). Formulas keep their case: CO is carbon monoxide, Co cobalt.",
     input_schema: { type: "object", properties: { query: { type: "string" }, k: { type: "integer" }, published_before: { type: "string" } }, required: ["query"] } },
   { name: "proposal_procedure", description: "The procedure for a proposal (how to make a material, how to run a test the graph holds no record of): call it first when the question asks what to do, and follow it.",
     input_schema: { type: "object", properties: {}, required: [] } },
-  { name: "query", description: "Run a graph query plan (scale graph query): match, steps, where, return, evidence, order_by, limit, text, published_before. Returns rows, the kind of answer and the coverage. A numeric filter states its unit; add convert: true to also compare values in another unit of the same quantity, converted exactly (temperature K, °C, °F; absolute pressure; time), e.g. {prop: temperature, op: le, value: 250, unit: °C, convert: true}. Text filters ignore case except formulas (Co is cobalt, CO carbon monoxide).",
-    input_schema: { type: "object", properties: { plan: { type: "object" } }, required: ["plan"] } },
+  { name: "query", description: "Run a graph query plan (scale graph query): match, steps, where, return, evidence, order_by, limit, text, published_before. Returns rows, the kind of answer and the coverage, in a compact model view (its legend says how: each quote once as E1..En, sources once, ids shortened with ~ for id_prefix; cite the full id). Rows come in pages: fetch the next with page = the result's page.next; never answer from one page as if it were all. A numeric filter states its unit; add convert: true to also compare values in another unit of the same quantity, converted exactly (temperature K, °C, °F; absolute pressure; time), e.g. {prop: temperature, op: le, value: 250, unit: °C, convert: true}. Text filters ignore case except formulas (Co is cobalt, CO carbon monoxide).",
+    input_schema: { type: "object", properties: { plan: { type: "object" }, page: { type: "object", description: "the result's page.next, passed back whole, for its next page of rows" } }, required: ["plan"] } },
 ];
 // How an answer is written in this page: the principles the design review settled on (docs/answering.md).
 const WORKING_HERE = `
@@ -1948,12 +1954,12 @@ async function ownTool(name, a, plans) {
     }
     return proposeText;
   }
-  if (name === "describe") return scale("describe", { names: a.names || [], domain: "catalysis" });
-  if (name === "stats") return scale("stats", {});
-  if (name === "search") return scale("search", { query: String(a.query || ""), k: Number(a.k) || 10, ...(a.published_before ? { published_before: a.published_before } : {}) });
+  if (name === "describe") return scale("describe", { names: a.names || [], domain: "catalysis", checklist: false });
+  if (name === "stats") return scale("stats", { ...(Array.isArray(a.labels) ? { labels: a.labels } : {}), ...(Array.isArray(a.properties) ? { properties: a.properties } : {}) });
+  if (name === "search") return scale("search", { query: String(a.query || ""), k: Number(a.k) || 10, view: "model", ...(a.published_before ? { published_before: a.published_before } : {}) });
   if (name === "query") {
-    const res = await scale("query", { plan: a.plan });
-    plans.push({ plan: a.plan, status: res.status || res.error, rows: res.row_count || 0 });
+    const res = await scale("query", { plan: a.plan, view: "model", ...(a.page && typeof a.page === "object" ? a.page : {}) });
+    if (!a.page) plans.push({ plan: a.plan, status: res.status || res.error, rows: res.row_count || 0 });   // a further page is the same plan
     return res;
   }
   throw new Error(`unknown tool ${name}`);
