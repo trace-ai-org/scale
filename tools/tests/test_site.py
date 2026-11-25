@@ -435,7 +435,7 @@ global.G = {doc: {nodes: [src, rec], links: []}, byId: new Map([[src.id, src], [
 """ + code + """
 const seen = new Set(["ex:t/test/1"]);
 const ok = citeLinks('<p>It was \\u201csensitive to poisoning by carbonyl at 400\\u00b0C\\u201d [ex:t/test/1, p. 3].</p>', seen);
-const bad = citeLinks('<p>Also \\u201cnot in the quote at all\\u201d [ex:t/test/1, p. 3]; and [ex:t/nope/2, p. 1]; [ex:t/source/s].</p>', seen);
+const bad = citeLinks('<p>Also \\u201cnot in the quote at all\\u201d [ex:t/test/1, p. 3]; and [ex:t/nope/2, p. 1]; [ex:t/source/s]; [ex:t/test/1, p. 9].</p>', seen);
 const seen2 = new Set(); returnedIds({id_prefix: "ex:t/", rows: [{bound: {t: "~test/1"}}]}, seen2);
 const tilde = citeLinks('<p>Run 1 [~test/1, p. 3].</p>', seen2);
 console.log(JSON.stringify({ok: ok.checks, bad: bad.checks, html: ok.html, line: checksLine(ok.checks), tilde: tilde.checks, seen2: [...seen2]}));
@@ -446,5 +446,6 @@ console.log(JSON.stringify({ok: ok.checks, bad: bad.checks, html: ok.html, line:
     assert "sensitive to poison-" in out["html"] and "all resolve" in out["line"] and "verified" not in out["line"]
     assert out["bad"]["unknown"] == ["ex:t/nope/2"] and out["bad"]["unreturned"] == ["ex:t/source/s"]
     assert len(out["bad"]["quotesMissing"]) == 1
+    assert out["bad"]["locators"] == ["ex:t/test/1: p. 9"] and not out["ok"]["locators"]     # a page the evidence lacks
     # a model view shortens ids with ~ for its id_prefix: returned and cited ids are read in full
     assert out["seen2"] == ["ex:t/test/1"] and out["tilde"]["cited"] == 1 and not out["tilde"]["unknown"]

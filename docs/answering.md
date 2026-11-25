@@ -50,6 +50,27 @@ measured the tools' real output on the public methanol graph.
 - Each citation becomes a short link (source title, year, kind and locator) whose title shows the cited record's
   quote at that locator and whose click opens the record.
 - **Reference checks**, run in the page on every answer: each cited id is a record of the graph; a tool returned it
-  while the answer was written; a phrase quoted in the citation's sentence is in that record's evidence. The line
+  while the answer was written; the cited locator is one the record's evidence gives; a phrase quoted in the
+  citation's sentence is in that record's evidence (line-break hyphens, page marks, spacing and ellipses aside). The line
   says "reference checks", never that the answer is verified: whether a record supports a sentence is a reader's
   judgment.
+
+## The tools' results
+
+The page asks the toolkit for the **model view** of query and search results (docs/querying.md, "The model view"):
+each quote once (`E1`..`En`) with explicit ownership, each source once, ids shortened with `~` for an id prefix,
+rows in pages fetched with `page.next` rather than truncated; `stats` and `describe` narrowed to what a plan needs.
+On the methanol graph this sends the model 49-65% fewer characters per query, losing nothing an answer uses (a
+round-trip test rebuilds the full result).
+
+## How it was tested
+
+Six questions (five on the methanol graph, one on catal-commons) were answered by the current prompt and by the new
+one, each with the page's four tools, and judged blind by a second model that checked every claim against the graph
+(faithfulness, recall, scientific care, reader effort, 1-5 each). After a first round the answering rules were revised
+for what the judge found (missed record kinds, retrieval gaps written as source absences, lost context, unchecked
+counts, too much narration). In the second round the new answers scored 90 against 83 in total, with preferences
+split (2 new, 3 current, 1 tie); they read 3 to 15 times less tool output on five of the six questions and were
+about 40% shorter. The judge's remaining weaknesses (misses that become absence claims, claim statuses, scope,
+locators, numerical context) shaped the last rules and the locator check. This is a small test: six questions,
+one answering model, one judge.

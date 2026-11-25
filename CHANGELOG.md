@@ -13,7 +13,10 @@
   - the answering rules ask for two routes, a table where records share columns, typed absences, a Found by line and
     `[record id, locator]` citations;
   - each citation becomes a short link (source, year, kind, locator) showing the quote, and the page runs reference
-    checks: the id is a record of the graph, a tool returned it while answering, a quoted phrase is in its evidence.
+    checks: the id is a record of the graph, a tool returned it while answering, the locator is one its evidence
+    gives, a quoted phrase is in its evidence;
+  - the page asks for the model view of results (each quote once, pages, narrower stats and describe);
+  - tested blind on six questions against the current prompt (`docs/answering.md`, "How it was tested").
 - **A model view of query and search results, narrower schema tools and plan errors a model can repair (tools,
   service, site; no schema change, no migration).** A result sent to a model repeated each evidence item in every row
   that cites it, with its source's details each time. `scale_query` and `scale_search` take `view: "model"`: the same

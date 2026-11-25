@@ -1776,7 +1776,7 @@ function chipLabel(src, locator) {
   return [short, p.year, p.kind && p.kind !== "article" ? p.kind : "", locator].filter(Boolean).join(" · ");
 }
 function citeLinks(html, seen) {
-  const checks = { cited: 0, unknown: [], unreturned: [], quotes: 0, quotesMissing: [] };
+  const checks = { cited: 0, unknown: [], unreturned: [], quotes: 0, quotesMissing: [], locators: [] };
   const out = html.replace(/\[([^\[\]<>]{3,600})\]/g, (whole, inner, at) => {
     const parts = inner.split(/\s*;\s*/).map((x) => x.match(ID_RE));
     if (!parts.length || parts.some((m) => !m)) return whole;            // not a citation: left as written
@@ -1790,6 +1790,10 @@ function citeLinks(html, seen) {
       if (!rec) { checks.unknown.push(id); return `<span class="gx-cite gx-cite-bad" title="No record ${esc(id)} in this graph">${esc(id)} ?</span>`; }
       if (!seen.has(id)) checks.unreturned.push(id);
       const { ev, src } = sourceOf(rec, locator);
+      const locs = (rec.props?.evidence || []).map((e) => squash(e.locator)).filter(Boolean);
+      const want = squash(locator).replace(/[.;,]+$/, "");
+      if (want && locs.length && !locs.some((l) => l === want || l.startsWith(want) || want.startsWith(l) || l.includes(want)))
+        checks.locators.push(`${id}: ${locator}`);                     // a locator none of the record's evidence has
       if (quoted) {
         checks.quotes += 1;
         const inEv = quotedIn(quoted, rec.props?.evidence || []);
@@ -1807,10 +1811,11 @@ function checksLine(c) {
     c.unknown.length ? `${c.unknown.length} cited id${c.unknown.length > 1 ? "s are" : " is"} not in this graph` : "",
     c.unreturned.length ? `${c.unreturned.length} cited record${c.unreturned.length > 1 ? "s were" : " was"} not returned by a tool while answering` : "",
     c.quotesMissing.length ? `${c.quotesMissing.length} quoted phrase${c.quotesMissing.length > 1 ? "s are" : " is"} not in the cited record's evidence` : "",
+    c.locators.length ? `${c.locators.length} locator${c.locators.length > 1 ? "s are" : " is"} not one the cited record's evidence gives` : "",
   ].filter(Boolean);
   const head = `Reference checks: ${c.cited} citation${c.cited > 1 ? "s" : ""}${c.quotes ? `, ${c.quotes} quoted phrase${c.quotes > 1 ? "s" : ""}` : ""}`;
   return bad.length
-    ? `<p class="gx-card-warn" title="${esc([...c.unknown, ...c.unreturned, ...c.quotesMissing].join("\n"))}">${esc(head)}: ${esc(bad.join("; "))}.</p>`
+    ? `<p class="gx-card-warn" title="${esc([...c.unknown, ...c.unreturned, ...c.quotesMissing, ...c.locators].join("\n"))}">${esc(head)}: ${esc(bad.join("; "))}.</p>`
     : `<p class="gx-meta gx-checks-ok" title="Each cited id is a record of this graph that a tool returned while answering, and each quoted phrase is in the cited record's evidence. These check references, not whether the record supports the sentence.">${esc(head)}: all resolve to records returned while answering${c.quotes ? ", quotes found" : ""}.</p>`;
 }
 
@@ -1900,6 +1905,7 @@ You answer in a web page, through the tools given (no shell). The graph is the o
 - Lead with the answer in 1-3 sentences. Keep the whole answer short (about 400 words) unless the question asks for a full list; put a full list in a table, not in prose.
 - Then the evidence: a table when the records share columns (one row per test or finding; conditions shared by a source stated once; a column for what was varied; a column for the citation), otherwise short paragraphs. Put a caveat that changes the meaning beside its claim.
 - Cite as [record id, locator], e.g. [ex:msyn/10.1021-ie50226a034/test/cu-from-sulfate, p. 3]: the page shows each as a short link with its quote, so do not repeat ids in prose. Quote a phrase in quotation marks only when it is in the cited record's evidence, exactly as stored.
+- Copy each locator from the record's evidence; never guess a page. Report a claim's status as recorded (claim_status: proposed, supported, disputed, refuted, superseded): a refuted or superseded explanation is said to be so, and a missing CONTRADICTS link does not make a claim uncontested.
 - Give values as reported, with unit, basis and the conditions the record states; never add or average across assays, bases or units. Copy counts, statuses (claim_status, bound, missing_reason) and identifiers exactly from the tool results; count with a query rather than by hand.
 - Keep apart, visibly: what was observed; what the authors read it as showing ("**Authors' reading:**"); and your own inference ("**Our inference:**", only when asked or needed).
 - **What is missing:** name an absence only for what you checked, by its kind: "the source does not state it" only when the record says so (not_reported, not_stated_in_source); "not found by these plans" when your search found nothing; a withheld quote is not missing information (the record's values and statements still count). An absence in this graph is not an absence in the literature.
