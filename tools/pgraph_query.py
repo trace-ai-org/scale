@@ -1117,8 +1117,8 @@ def check_plan_shape(plan: Any) -> None:
     if not isinstance(m, dict):
         hint = f' (e.g. {{"label": "{m.strip()}", "as": "x"}})' if isinstance(m, str) and m.strip() else ""
         raise bad(f"match is an object with label (or id) and as{hint}", m)
-    for k in ("label", "id", "as"):
-        if k in m and not isinstance(m[k], str):
+    for k in ("label", "id", "as"):              # null stays as the engine reads it: not given
+        if m.get(k) is not None and not isinstance(m[k], str):
             raise bad(f"match.{k} is text", m[k])
     objects("where", m.get("where"), "match.")
     steps = plan.get("steps")
@@ -1129,7 +1129,7 @@ def check_plan_shape(plan: Any) -> None:
         if not isinstance(st.get("as"), str) or not st["as"].strip():
             raise bad(f"steps[{i}] names the variable it binds in as (text)", st)
         for k in ("from", "edge", "to", "field", "edge_as", "link"):
-            if k in st and not isinstance(st[k], str):
+            if st.get(k) is not None and not isinstance(st[k], str):
                 raise bad(f"steps[{i}].{k} is text", st[k])
         objects("where", st.get("where"), f"steps[{i}].")
         objects("edge_where", st.get("edge_where"), f"steps[{i}].")
@@ -1148,7 +1148,7 @@ def check_plan_shape(plan: Any) -> None:
         if xs is not None and (not isinstance(xs, list) or not all(isinstance(x, str) for x in xs)):
             raise bad(f'{k} is a list of variable.property texts (e.g. ["test.name", "test.temperature"])', xs)
     t = plan.get("text")
-    if t is not None and not (isinstance(t, dict) and isinstance(t.get("query"), str)):
+    if t and not (isinstance(t, dict) and isinstance(t.get("query"), str)):     # an empty one asks nothing
         raise bad('text is an object with a query (e.g. {"query": "zinc oxide promoter", "vars": ["test"]})', t)
     lim = plan.get("limit")
     if lim is not None and (isinstance(lim, bool) or not isinstance(lim, int) or lim < 0):

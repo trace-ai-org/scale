@@ -11,7 +11,7 @@
   each filter records were left out by once. Nothing an answer uses is removed: `scale.modelview.expand` gives back the
   full result, checked on every competency question and the methanol graph. The view is versioned (`view.version`)
   and its rows come in pages (`offset`, `page_size`, `page_chars`; `page.next`), with rows matched, rows the plan's
-  limit returned and distinct records per variable stated, never truncated. The default stays the full result. A new
+  limit returned and distinct bindings per variable stated, never truncated. The default stays the full result. A new
   agent tool `scale_stats` (and `scale graph stats --label --property`) keeps only the units and link patterns of the
   labels and properties named; `scale_describe` takes `checklist: false` to leave out the curation checklist. A plan of
   the wrong shape (`match` given as text, a filter given as text, a `limit` as text, a step without `as`) is an error

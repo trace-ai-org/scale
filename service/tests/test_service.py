@@ -150,6 +150,9 @@ def test_a_question_is_answered_with_the_tools_own_query(tmp_path):
     asked = json.loads(model.seen[1]["messages"][2]["content"][0]["content"])
     assert asked["view"]["name"] == "model"                         # the model view of what scale query returns,
     assert modelview.expand(asked)["rows"] == direct[1]["rows"]     # which gives back exactly its rows
+    # a model view is never cut (its rows come in pages; a cut would lose its coverage and limitations)
+    big = {"view": {"name": "model"}, "missing_context": ["x" * 100] * 1000, "limitations": ["the end"]}
+    assert json.loads(agent._clip(big)) == big and len(agent._clip({"other": "x" * 50_000})) < 50_000
     assert "# Query scale-catal documents" in model.seen[0]["system"][0]["text"]
 
 

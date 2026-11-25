@@ -494,8 +494,8 @@ HTTP and MCP) take `view: "model"` to return the same answer with each repetitio
 {"view": {"name": "model", "of": "query", "version": 1, "legend": "…"},
  "id_prefix": "ex:msyn/",
  "status": "answered", "row_count": 58,
- "counts": {"rows_matched": 58, "rows_returned": 58, "distinct_records": {"test": 58, "sample": 40}, "sources_cited": 12},
- "page": {"offset": 0, "rows": 25, "of": 58, "next": {"offset": 25, "page_size": 100, "page_chars": 40000, "how": "…"}},
+ "counts": {"rows_matched": 58, "rows_returned": 58, "distinct_bound": {"test": 58, "sample": 40}, "sources_cited": 12},
+ "page": {"offset": 0, "rows": 25, "of": 58, "next": {"offset": 25, "page_size": 100, "page_chars": 40000}, "how": "…"},
  "columns": ["test.name", "sample.name", "test.temperature", "test.pressure"],
  "rows": [{"bound": {"test": "~10.1021-ie50225a025/test/table1-bzc-305", "sample": "~10.1021-ie50225a025/sample/bzc-no4"},
            "links": ["~10.1021-ie50225a025/link/127"],
@@ -518,8 +518,8 @@ HTTP and MCP) take `view: "model"` to return the same answer with each repetitio
   gives back the full result (a page's rows), and `tools/tests/test_modelview.py` checks it on every competency
   question and on the methanol graph.
 - **Evidence once, with its owner.** Each distinct evidence item is written once in `evidence` as `E1` … `En`
-  (numbered over the whole result: an id means the same item on every page; a text two items share is written once,
-  `quote_of` / `transcription_of`). A row says whose evidence each item is: per record, `var` (the plan variable, or
+  (numbered over the whole result: an id means the same item on every page; a quote (or transcription) two items share is
+  written once, `quote_of: E3` / `transcription_of: E3` naming the item that holds it in the same field). A row says whose evidence each item is: per record, `var` (the plan variable, or
   the link type) and `items` (`"0:E4 1:E5"`: item 0 of that record's evidence is E4), with `record` (and `entry`)
   only when they are not the row's binding of `var`, in the full result's order. An item two records cite (a test
   and its link) is one entry, owned by both.
@@ -532,7 +532,8 @@ HTTP and MCP) take `view: "model"` to return the same answer with each repetitio
   first row, about `page_chars` (default 40,000) characters of rows and the evidence items they bring.
   `page.next` holds the arguments that fetch the next page (`null` on the last). `counts.rows_matched` counts every
   match, `rows_returned` the rows the plan's `limit` kept (default 200); when they differ, `not_returned_by_limit`
-  says how many and how to reach them (a larger `limit`).
+  says how many and how to reach them (a larger `limit`); `distinct_bound` counts what each variable binds (a record,
+  or an entry of one). With `format: markdown` the rendering is of the page's rows.
 - **Versioned.** `view.version` is the format's version; `expand` refuses a version it does not read.
 
 A search's model view (`view: "model"` on `scale_search`) drops each hit's id where it is `record#evidence/i`,

@@ -602,11 +602,14 @@ class ScaleToolkit:
                                  + pgraph_query.PLAN_EXAMPLE) from None
         pgraph_query.check_plan_shape(plan)          # a plan of the wrong shape: an error that says how to repair it
         res, doc = self._run_query(plan, document, path, domain)
+        if view == "model":
+            from .modelview import expand, pack_query
+            out = pack_query(res, offset, page_size, doc, page_chars)
+            if format == "markdown" and "error" not in out:     # the page's rows, as the page holds them
+                out["markdown"] = pgraph_query.render_markdown(expand(out))
+            return out
         if format == "markdown":
             res["markdown"] = pgraph_query.render_markdown(res)
-        if view == "model":
-            from .modelview import pack_query
-            return pack_query(res, offset, page_size, doc, page_chars)
         return res
 
     def _run_query(self, plan: dict, document: dict | None, path: str | None, domain: str | None) -> tuple[dict, dict]:

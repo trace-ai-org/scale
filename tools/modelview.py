@@ -24,7 +24,7 @@ coverage, exclusions, missing context, limitations, access and the graph's ident
 :func:`expand` restores the full result (with a page's rows); ``tools/tests/test_modelview.py`` proves the round trip on
 real plans. A query's rows come in pages (``page``: offset, rows, of and ``next``, the arguments that fetch the next
 page): no row is ever dropped without saying so, and ``counts`` states rows matched, rows the plan's limit returned and
-the distinct records per variable.
+the distinct bindings per variable (a record, or an entry of one).
 """
 
 from __future__ import annotations
@@ -52,7 +52,7 @@ QUERY_LEGEND = (
     "rest. rows[].values follow columns. rows[].evidence says whose evidence each item is: for each record of the row, "
     "var (the plan variable, or a link type) and items 'i:En' (item i of that record's evidence is evidence En); record "
     "(and entry) are given only when they are not the row's binding of var. evidence.En: the item once (source, "
-    "locator, kind, quote or transcription; quote_of En: the same text as En). sources: each source once, with the "
+    "locator, kind, quote or transcription; quote_of En: the same quote as En's). sources: each source once, with the "
     "year, publication status, kind and peer review every item of it carries. excluded[].filter_ref (order_by_ref): "
     "the plan's filter in filters. page.next: the arguments that fetch the next rows; counts.rows_matched counts every "
     "match, rows_returned what the plan's limit kept.")
@@ -274,17 +274,17 @@ def pack_query(full: dict, offset: int = 0, page_size: int | None = None, doc: d
     page = out_rows
 
     ev: dict[str, dict] = {}
-    first_with: dict[str, str] = {}
-    for e in sorted(used, key=lambda x: int(x[1:])):
+    first_with: dict[tuple, str] = {}       # (field, text) -> the first item that holds it: a quote refers to a
+    for e in sorted(used, key=lambda x: int(x[1:])):          # quote, a transcription to a transcription
         c = dict(table[e])
         for f in _TEXTS:
             t = c.get(f)
             if isinstance(t, str) and len(t) >= _MIN_SHARED_TEXT:
-                if t in first_with:
+                if (f, t) in first_with:
                     del c[f]
-                    c[f + "_of"] = first_with[t]
+                    c[f + "_of"] = first_with[(f, t)]
                 else:
-                    first_with[t] = e
+                    first_with[(f, t)] = e
         ev[e] = c
     srcs = sorted({c["source"] for c in ev.values() if isinstance(c.get("source"), str)})
     names = _source_names(doc, set(srcs))
@@ -303,12 +303,12 @@ def pack_query(full: dict, offset: int = 0, page_size: int | None = None, doc: d
                   "how_to_reach_them": f"the plan's limit (default 200) kept {len(rows)} of {row_count} matches: run "
                                        f"the plan again with a larger limit (e.g. {row_count}) and page through"}
                  if isinstance(row_count, int) and row_count > len(rows) else {}),
-              "distinct_records": {k: len(v) for k, v in distinct.items()},
+              "distinct_bound": {k: len(v) for k, v in distinct.items()},
               **({"sources_cited": len(cited)} if items else {})}
     pg = {"offset": offset, "rows": len(page), "of": len(rows),
-          "next": {"offset": end, "page_size": page_size, "page_chars": page_chars,
-                   "how": "call scale_query again with the same plan and path, view model and these arguments"}
-          if end < len(rows) else None}
+          "next": {"offset": end, "page_size": page_size, "page_chars": page_chars} if end < len(rows) else None}
+    if pg["next"]:
+        pg["how"] = "call scale_query again with the same plan, path and view model, and the arguments in next"
     if offset and offset >= len(rows):
         pg["note"] = f"offset {offset} is past the {len(rows)} rows returned"
 
@@ -356,20 +356,17 @@ def _expand_query(v: dict) -> dict:
     srcs = v.get("sources") or {}
     texts = {}
 
-    def text_of(e: str) -> str:
+    def text_of(e: str, f: str) -> str:
         c = ev[e]
-        for f in _TEXTS:
-            if f in c:
-                return c[f]
-            if f + "_of" in c:
-                return text_of(c[f + "_of"])
-        raise ScaleError(f"evidence {e} has no text")
+        if f in c:
+            return c[f]
+        raise ScaleError(f"evidence {e} has no {f} for another item to share")
 
     for e, c in ev.items():
         full = {}
         for k, x in c.items():
             if k in ("quote_of", "transcription_of"):
-                full[k[:-3]] = text_of(x)
+                full[k[:-3]] = text_of(x, k[:-3])
             else:
                 full[k] = x
         s = srcs.get(full.get("source")) if isinstance(full.get("source"), str) else None

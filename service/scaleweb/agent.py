@@ -19,14 +19,19 @@ from scale.api import ScaleToolkit
 from scale.util import find_repo_root
 
 RESULT_CHARS = 40_000          # the longest tool result handed back to the model
-PAGE_CHARS = 25_000            # a query's page of rows and their evidence (the model view), within it
+PAGE_CHARS = 25_000            # a query's page of rows and their evidence (the model view)
 
 
 _skill = skill                 # a skill's procedure, without its front matter (runner.py too)
 
 
 def _clip(obj) -> str:
+    """A tool result as the model reads it; a long one cut at RESULT_CHARS, except a model view (scale.modelview): its
+    rows come in pages already, and cutting it would cut its coverage and limitations and leave JSON that does not
+    parse."""
     s = obj if isinstance(obj, str) else json.dumps(obj, ensure_ascii=False, default=str)
+    if isinstance(obj, dict) and (obj.get("view") or {}).get("name") == "model":
+        return s
     return s if len(s) <= RESULT_CHARS else s[:RESULT_CHARS] + f"\n… ({len(s) - RESULT_CHARS} more characters cut)"
 
 

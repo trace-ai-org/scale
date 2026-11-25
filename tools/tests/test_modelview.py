@@ -21,15 +21,27 @@ def chars(x) -> int:
 
 def pages(tk, args) -> list[dict]:
     """Every page of a query's model view, followed by page.next."""
-    out, off = [], 0
+    out, nxt = [], {}
     while True:
-        p = tk.call("query", {**args, "view": "model", "offset": off})
+        p = tk.call("query", {**args, "view": "model", **nxt})          # page.next passed back whole
         assert "error" not in p, p
         out.append(p)
         if not p["page"]["next"]:
             return out
         assert p["page"]["rows"] >= 1
-        off = p["page"]["next"]["offset"]
+        nxt = p["page"]["next"]
+
+
+def resolved(page: dict) -> dict:
+    """Each evidence item of a page whole: its shared text and its source's fields put back."""
+    back = {}
+    for e, item in page["evidence"].items():
+        x = {k: v for k, v in item.items() if not k.endswith("_of")}
+        for f in ("quote", "transcription"):
+            if f + "_of" in item:
+                x[f] = page["evidence"][item[f + "_of"]][f]
+        back[e] = {**x, **page["sources"].get(item.get("source"), {})}
+    return back
 
 
 def same_answer(tk, args) -> dict:
@@ -121,9 +133,8 @@ def test_pages_cover_every_row_and_say_what_the_limit_left(methanol):
     # an evidence id names the same item on every page
     seen = {}
     for p in ps:
-        for e, item in p["evidence"].items():
-            key = (item.get("source"), item.get("locator"), item.get("kind"))
-            assert seen.setdefault(e, key) == key
+        for e, item in resolved(p).items():
+            assert seen.setdefault(e, item) == item
     limited = methanol.call("query", {"path": "methanol.json", "plan": {**ZN_CR, "limit": 5}, "view": "model"})
     assert limited["counts"]["rows_returned"] == 5 and limited["counts"]["not_returned_by_limit"] == \
         limited["counts"]["rows_matched"] - 5
@@ -215,3 +226,34 @@ def test_stats_and_describe_narrow_to_what_a_plan_needs(methanol):
     lean = methanol.call("describe", {"names": ["CatalyticTest"], "domain": "catalysis", "checklist": False})
     assert "checklist" in full and "checklist" not in lean and lean["labels"] == full["labels"]
     assert "checklist_left_out" in lean
+
+
+def test_a_quote_and_a_transcription_that_share_a_text_keep_their_own_fields():
+    a, b = "A" * 20, "B" * 20
+    full = {"status": "answered", "row_count": 2, "plan": {"return": []}, "rows": [
+        {"bound": {"x": "r"}, "links": [], "values": {}, "evidence": [
+            {"var": "x", "record": "r", "evidence": 0, "quote": a, "transcription": b},
+            {"var": "x", "record": "r", "evidence": 1, "quote": b},
+            {"var": "x", "record": "r", "evidence": 2, "transcription": a, "locator": "p. 2"}]},
+        {"bound": {"x": "s"}, "links": [], "values": {}, "evidence": [
+            {"var": "x", "record": "s", "evidence": 0, "quote": b}]}]}
+    assert modelview.expand(modelview.pack_query(full)) == full
+    pages = [modelview.pack_query(full, offset=i, page_size=1) for i in (0, 1)]
+    assert [r for p in pages for r in modelview.expand(p)["rows"]] == full["rows"]
+    assert resolved(pages[0])["E2"] == resolved(pages[1])["E2"] == {"quote": b}
+
+
+@pytest.mark.parametrize("plan", [
+    {"match": {"label": "Claim", "as": "c", "id": None}, "steps": [{"from": "c", "edge": "REPORTED_IN", "to": None,
+                                                                    "as": "s", "edge_as": None}], "limit": 2},
+    {"match": {"label": "Claim", "as": "c"}, "text": {}, "limit": 2},
+])
+def test_a_plan_that_ran_before_the_shape_check_still_runs(methanol, plan):
+    assert "error" not in methanol.call("query", {"path": "methanol.json", "plan": plan})
+
+
+def test_markdown_in_the_model_view_renders_the_page(methanol):
+    one = methanol.call("query", {"path": "methanol.json", "plan": ZN_CR, "view": "model", "page_size": 1,
+                                  "format": "markdown"})
+    whole = methanol.call("query", {"path": "methanol.json", "plan": ZN_CR, "format": "markdown"})
+    assert one["markdown"] and len(one["markdown"]) < len(whole["markdown"])
