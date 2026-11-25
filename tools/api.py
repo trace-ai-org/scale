@@ -33,7 +33,7 @@ import os
 import re
 import shutil
 from pathlib import Path
-from typing import Callable
+from typing import Any, Callable
 
 from . import __version__, layout
 from .util import ScaleError, find_repo_root, load_doc, load_yaml, write_canonical
@@ -156,10 +156,24 @@ TOOLS: list[dict] = [
                        "stated is left out as missing_context. A step {from, entries, kind, as} binds one value entry "
                        "per row (result_values, a per-product list, a map or a scalar) and {from, field, to, as} follows "
                        "its target, variable or produced_by: every filter, returned value and evidence item on it is "
-                       "that one result's. Absences are answers; never fill them with typical values.",
+                       "that one result's. Absences are answers; never fill them with typical values. With graphs (several "
+                     "documents, each with an alias), the plan runs on each graph on its own under the schema it pins, "
+                     "nothing merged: every row says its graph and digest, a record is (alias, id), rows of different "
+                     "graphs join only through an evidenced identity_map (the plan's join steps), one id with two "
+                     "definitions is an identity_conflict, a graph that cannot be read makes the answer partial, ranking "
+                     "and limit apply after federation, and the access is the intersection of the graphs' audiences.",
         "input_schema": {"type": "object", "required": ["plan"], "properties": {
             "plan": {"type": "object", "description": "Query plan; see the query-graph skill and example_plans in scale_domains."},
             **_DOC, **_DOMAIN,
+            "graphs": {"type": "array", "description": "Query several documents without merging them (docs/querying.md, "
+                                                      "Querying across graphs), instead of document or path.",
+                       "items": {"type": "object", "required": ["alias"], "properties": {
+                           "alias": {"type": "string", "description": "A name for the graph (letters, digits, _ or -)."},
+                           "path": _DOC["path"], "document": _DOC["document"],
+                           "spec_sha256": {"type": "string", "description": "The spec digest the caller binds this graph's "
+                                                                            "schema to; another digest is spec_mismatch."}}}},
+            "identity_map": {"description": "With graphs: the evidenced identity map of shared reference records (an "
+                                            "object, or a file path).", "type": ["object", "string"]},
             "format": {"type": "string", "enum": ["json", "markdown"], "description": "markdown adds a readable rendering."}}},
     },
     {
@@ -193,9 +207,15 @@ TOOLS: list[dict] = [
         "description": "Search a document's evidence by words and meaning (its evidence index: the one saved beside it "
                        "by `scale graph index`, or built in memory from the document when none is); hits lead to the records that cite each passage. "
                        "Each hit is one quote: the other records that cite the same quote are in its `also`. The "
-                       "result's access says where the hits may go: the whole document's, as scale_query's.",
-        "input_schema": {"type": "object", "required": ["path", "query"], "properties": {
+                       "result's access says where the hits may go: the whole document's, as scale_query's. With graphs "
+                       "(several documents, each with an alias), each graph's evidence is searched on its own; hits say "
+                       "their graph, are interleaved by their rank in their graph (scores of separate indexes are never "
+                       "compared), k applies after federation, and the access is the intersection of the graphs' audiences.",
+        "input_schema": {"type": "object", "required": ["query"], "properties": {
             "path": _DOC["path"], "query": {"type": "string"}, "k": {"type": "integer", "minimum": 1, "default": 10},
+            "graphs": {"type": "array", "description": "Search several documents, instead of path.",
+                       "items": {"type": "object", "required": ["alias", "path"], "properties": {
+                           "alias": {"type": "string"}, "path": _DOC["path"]}}},
             "mode": {"type": "string", "enum": ["hybrid", "vector", "keyword", "rrf"], "default": "hybrid"},
             "published_before": {"type": "string", "description": "Only evidence from sources published before this year."}}},
     },
@@ -544,9 +564,65 @@ class ScaleToolkit:
         from . import curate
         return curate.finish(self._path(folder), public=public, bundle=bundle, title=title, repo=self.repo)
 
+    def _members(self, graphs: Any, domain: str | None) -> list[dict]:
+        """The graphs of a federated call (:mod:`federation`), each read as the single-document tools read it (a path
+        cached while its file is unchanged), under the schema it pins; a graph that cannot be read, or pins a version
+        the tools do not hold, is that graph's status, never the call's error."""
+        from . import federation, pgraph_query
+        if not isinstance(graphs, list) or not graphs:
+            raise ScaleError("graphs is a list of {alias, path} or {alias, document}")
+        recorded = federation.recorded_digests(self.repo)
+        out = []
+        for g in graphs:
+            if not isinstance(g, dict) or set(g) - {"alias", "path", "document", "spec_sha256"} \
+                    or ("path" in g) == ("document" in g):
+                raise ScaleError("each graph is {alias, path} or {alias, document} (and optionally spec_sha256)")
+            alias, path, hit = g.get("alias"), g.get("path"), None
+            try:
+                if path:
+                    hit = self._load(path)
+                    doc = hit["doc"]
+                else:
+                    doc = g["document"]
+                if not isinstance(doc, dict) or not isinstance(doc.get("nodes"), list) or not isinstance(doc.get("links"), list):
+                    raise ScaleError("not a scale-catal document (node-link JSON with nodes and links)")
+            except (ScaleError, OSError, ValueError) as exc:
+                out.append(federation.member(alias, status="unavailable", error=str(exc), path=path))
+                continue
+            try:
+                spec = self._doc_spec(doc, domain)
+            except ScaleError as exc:
+                out.append(federation.member(alias, doc=doc, status="unsupported_version", error=str(exc), path=path))
+                continue
+            graph = None
+            if hit is not None:
+                graph = hit["graphs"].get(id(spec))
+                if graph is None:
+                    graph = hit["graphs"][id(spec)] = pgraph_query.Graph(doc, spec)
+            out.append(federation.member(alias, doc=doc, spec=spec, path=path, expect_spec=g.get("spec_sha256"),
+                                         recorded=recorded, graph=graph,
+                                         index=lambda path=path, doc=doc, hit=hit: self._index(path, doc, hit)))
+        return out
+
+    def _identity_map(self, identity_map: Any) -> dict | None:
+        from . import federation
+        if isinstance(identity_map, str):
+            return federation.load_identity_map(self._path(identity_map))
+        return federation.load_identity_map(identity_map)
+
     def _scale_query(self, plan: dict, document: dict | None = None, path: str | None = None, domain: str | None = None,
-                     format: str = "json") -> dict:
+                     format: str = "json", graphs: list | None = None, identity_map: Any = None) -> dict:
         from . import pgraph_query
+        if graphs is not None:
+            from . import federation
+            if document is not None or path:
+                raise ScaleError("give graphs, or a document or path, not both")
+            res = federation.run(self._members(graphs, domain), plan, self._identity_map(identity_map))
+            if format == "markdown":
+                res["markdown"] = federation.render_markdown(res)
+            return pgraph_query.detached(res)
+        if identity_map is not None:
+            raise ScaleError("identity_map identifies records across graphs: give graphs")
         if document is None and path:
             hit = self._load(path)
             doc = hit["doc"]
@@ -609,10 +685,19 @@ class ScaleToolkit:
             hit["index"], hit["index_key"] = index_for(stem, doc), key
         return hit["index"]
 
-    def _scale_search(self, path: str, query: str, k: int = 10, mode: str = "hybrid",
-                      published_before: str | None = None) -> dict:
+    def _scale_search(self, query: str, path: str | None = None, k: int = 10, mode: str = "hybrid",
+                      published_before: str | None = None, graphs: list | None = None) -> dict:
         from . import pgraph
         from .pgraph_query import document_access
+        if graphs is not None:
+            from . import federation
+            if path:
+                raise ScaleError("give graphs or a path, not both")
+            if any(not isinstance(g, dict) or "document" in g for g in graphs):
+                raise ScaleError("each graph to search is {alias, path}: its evidence index is the one beside it")
+            return federation.search(self._members(graphs, None), query, k=k, mode=mode, published_before=published_before)
+        if not path:
+            raise ScaleError("give a path (or graphs)")
         hit = self._load(path)
         doc = hit["doc"]
         ix = self._index(path, doc, hit)
