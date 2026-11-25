@@ -2,6 +2,18 @@
 
 ## Unreleased
 
+- **An optional passage index for re-reading after a schema upgrade (skills; no schema change, no migration).**
+  `skills/curate-corpus/scripts/passage_index.py` indexes a source folder's page texts into SQLite (FTS5), passages of
+  whole paragraphs that keep their page and character span, so each is a verbatim substring of the page the graph's
+  locators name; `search` merges word queries, regular expressions for printed forms words miss (1:1 w/w, 73/27,
+  5 wt%) and, when the index has vectors, a semantic ranking, and reports a source with no hit as "none found in the
+  passages", never as not stated. `curate_run.py prepare --passage-index <db>` indexes every folder it starts; without
+  it nothing changes. upgrade-curation's re-reading looks items up there when an index exists, with rules for what is
+  written (one value per sample, as printed, a ratio on its numerator's edge). The index holds the full page texts:
+  it stays private beside the run. Measured on 25 papers of a 0.7.9 synthesis graph upgraded to 0.8.2
+  (`HAS_COMPONENT.ratio`, same model and prompt): input tokens 909k → 353k (−61%), cost −63%, the same time, and the
+  same 8 values, all correct by hand review.
+
 - **The agent team's roles say what the team does (governance; no schema change, no migration).** The evidence
   verifier is given the sources a patch cites but not the proposer's reasoning, reads the sources before the
   proposer's explanation, lists every source it could not read as not checked against the source, and names the commit
