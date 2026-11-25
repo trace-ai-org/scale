@@ -1082,6 +1082,82 @@ def _check_steps(plan: dict, spec: dict, qc: quantities.Contracts | None) -> Non
                                  f"{st['field']} names a node")
 
 
+PLAN_EXAMPLE = ('{"match": {"label": "CatalyticTest", "as": "test"}, "steps": [{"from": "test", "edge": "USES_CATALYST", '
+                '"to": "CatalystSample", "as": "sample"}], "where": [{"var": "test", "prop": "temperature", "op": "le", '
+                '"value": 300, "unit": "°C"}], "return": ["test.name", "test.temperature", "sample.name"], '
+                '"evidence": true, "limit": 50}')
+
+
+def check_plan_shape(plan: Any) -> None:
+    """A plan's shape, before anything reads it: an object whose ``match`` is an object (``label`` or ``id``, ``as``:
+    text), whose ``steps``, ``where`` (its own, match's and a step's), ``edge_where`` and ``order_by`` are lists of
+    objects, ``return`` and ``evidence_vars`` lists of text, ``text`` an object with a ``query``, ``limit`` a whole
+    number from 0 and ``evidence`` true or false. Raised as a :class:`ScaleError` that says what was expected, with an
+    example plan: a model that wrote the plan repairs it from the message instead of reading a Python error."""
+    def bad(what: str, got: Any) -> ScaleError:
+        shown = json.dumps(got, ensure_ascii=False, default=str)
+        shown = shown if len(shown) <= 120 else shown[:117] + "..."
+        return ScaleError(f"plan shape: {what}, not {shown}. A plan looks like {PLAN_EXAMPLE}")
+
+    def objects(key: str, xs: Any, where: str = "") -> None:
+        if xs is None:
+            return
+        if not isinstance(xs, list):
+            raise bad(f"{where}{key} is a list of objects", xs)
+        for i, x in enumerate(xs):
+            if not isinstance(x, dict):
+                raise bad(f"{where}{key}[{i}] is an object (a filter: "
+                          '{"prop": "name", "op": "contains", "value": "copper"})', x)
+
+    if not isinstance(plan, dict):
+        raise bad("a plan is an object", plan)
+    m = plan.get("match")
+    if m is None:
+        raise ScaleError(f"a plan needs match.label or match.id. A plan looks like {PLAN_EXAMPLE}")
+    if not isinstance(m, dict):
+        hint = f' (e.g. {{"label": "{m.strip()}", "as": "x"}})' if isinstance(m, str) and m.strip() else ""
+        raise bad(f"match is an object with label (or id) and as{hint}", m)
+    for k in ("label", "id", "as"):              # null stays as the engine reads it: not given
+        if m.get(k) is not None and not isinstance(m[k], str):
+            raise bad(f"match.{k} is text", m[k])
+    objects("where", m.get("where"), "match.")
+    steps = plan.get("steps")
+    if steps is not None and not (isinstance(steps, list) and all(isinstance(st, dict) for st in steps)):
+        raise bad('steps is a list of objects (e.g. {"from": "test", "edge": "USES_CATALYST", "to": "CatalystSample", '
+                  '"as": "sample"})', steps)
+    for i, st in enumerate(steps or []):
+        if not isinstance(st.get("as"), str) or not st["as"].strip():
+            raise bad(f"steps[{i}] names the variable it binds in as (text)", st)
+        for k in ("from", "edge", "to", "field", "edge_as", "link"):
+            if st.get(k) is not None and not isinstance(st[k], str):
+                raise bad(f"steps[{i}].{k} is text", st[k])
+        objects("where", st.get("where"), f"steps[{i}].")
+        objects("edge_where", st.get("edge_where"), f"steps[{i}].")
+    objects("where", plan.get("where"))
+    every = list(m.get("where") or []) + list(plan.get("where") or []) \
+        + [f for st in steps or [] for k in ("where", "edge_where") for f in st.get(k) or []]
+    for f in every:
+        if f.get("op") == "in" and not isinstance(f.get("value"), list):
+            raise bad(f"the filter on {f.get('prop')} with op in takes a list as its value (e.g. [\"Cu\", \"Zn\"])",
+                      f.get("value"))
+    order = plan.get("order_by")
+    if order is not None and not (isinstance(order, list) and all(isinstance(o, dict) for o in order)):
+        raise bad('order_by is a list of objects (e.g. {"var": "test", "prop": "temperature", "desc": true})', order)
+    for k in ("return", "evidence_vars"):
+        xs = plan.get(k)
+        if xs is not None and (not isinstance(xs, list) or not all(isinstance(x, str) for x in xs)):
+            raise bad(f'{k} is a list of variable.property texts (e.g. ["test.name", "test.temperature"])', xs)
+    t = plan.get("text")
+    if t and not (isinstance(t, dict) and isinstance(t.get("query"), str)):     # an empty one asks nothing
+        raise bad('text is an object with a query (e.g. {"query": "zinc oxide promoter", "vars": ["test"]})', t)
+    lim = plan.get("limit")
+    if lim is not None and (isinstance(lim, bool) or not isinstance(lim, int) or lim < 0):
+        raise bad("limit is a whole number from 0", lim)
+    ev = plan.get("evidence")
+    if ev is not None and not isinstance(ev, bool):
+        raise bad("evidence is true or false", ev)
+
+
 def check_plan(plan: dict, spec: dict) -> None:
     """Errors in a plan, raised: a property path that cannot be read, an entry of a property that is no map or
     list, a numeric filter (:func:`numeric_filter`: lt, le, gt, ge, and eq, ne or in with numbers) without a unit on
@@ -1363,6 +1439,7 @@ def detached(x: Any) -> Any:
 
 def _run(doc: dict, spec: dict, plan: dict, evidence_index=None, graph: Graph | None = None) -> dict:
     g = graph if graph is not None and graph.doc is doc and graph.spec is spec else Graph(doc, spec)
+    check_plan_shape(plan)
     plan = json.loads(json.dumps(plan, default=_plain))
     m = plan.get("match") or {}
     if not m.get("label") and not m.get("id"):
