@@ -717,6 +717,8 @@ const base64 = (text) => {
 };
 async function contributeWithToken(win = null) {   // win: the sign-in window, which then shows GitHub's pull request page
   const B = G.base || G;
+  // the graph open now (another may have been opened during the sign-in) is checked again: only a public one goes
+  if (graphLevels().length) { contribBusy = false; renderGraphs(); status("Not contributed: the graph open now holds records that are not public; only a public graph goes to catal-commons."); return; }
   contribBusy = true; renderGraphs();
   const step = (t) => status(`Contributing to catal-commons: ${t}…`);
   try {
@@ -1887,7 +1889,7 @@ async function modelLoop({ system, tools, first, run, stop = "", wrapUp, stopNow
     const last = !!out.stopped;                             // the reader asked to finish: this reply ends the loop
     let calls, cut;                                         // [{id, name, input}], and whether the reply ran out of room
     if (provider === "anthropic") {
-      gate();                                               // egress: throws before a request it may not send
+      gate(provider);                                       // egress: throws before a request it may not send
       markCache(messages);
       const r = await claude({ model, max_tokens: OWN_OUTPUT, system: sys, tools, messages });
       if (!alive()) return null;
@@ -1901,7 +1903,7 @@ async function modelLoop({ system, tools, first, run, stop = "", wrapUp, stopNow
       calls = blocks.filter((b) => b.type === "tool_use").map((c) => ({ id: c.id, name: c.name, input: c.input || {} }));
       cut = r.stop_reason === "max_tokens";
     } else {
-      gate();
+      gate(provider);
       const r = await chat(provider, { model, messages, tools: chatTools, [PROVIDERS[provider].limit]: OWN_OUTPUT });
       if (!alive()) return null;
       out.inTok += r.usage?.prompt_tokens || 0; out.cacheTok += r.usage?.prompt_tokens_details?.cached_tokens || 0;
@@ -1952,7 +1954,8 @@ async function askOwnKey(question) {
   // egress: the tool results are drawn from this graph; a graph with closed records reaches the provider only once the
   // reader approves it for their levels (checked here and again before every request of the loop)
   const levels = graphLevels(), destination = `provider:${ownProvider}`;
-  const check = egressGate(levels, destination, PROVIDERS[ownProvider].name, egressApprovals);
+  // the loop gates each request by the provider it actually sends to (the reader may switch keys meanwhile)
+  const check = (provider = ownProvider) => egressGate(levels, `provider:${provider}`, PROVIDERS[provider].name, egressApprovals)();
   try { check(); } catch (err) { return egressCard(err, levels, destination, () => askOwnKey(question)); }
   answerNow = false;
   const progress = (line) => {

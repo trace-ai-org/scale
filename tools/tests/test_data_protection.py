@@ -451,8 +451,8 @@ def test_the_explorer_gates_every_request_drawn_from_a_graph_that_is_not_public(
     assert "egress.js" in site.PAGES and 'from "./egress.js";' in js
     loop = js[js.index("async function modelLoop"):js.index("const OWN_OUTPUT")]
     # every provider request of the loop is preceded by the gate
-    assert loop.count("gate();") == 2
-    assert loop.index("gate();") < loop.index("await claude(") and loop.rindex("gate();") < loop.index("await chat(")
+    assert loop.count("gate(provider);") == 2
+    assert loop.index("gate(provider);") < loop.index("await claude(") and loop.rindex("gate(provider);") < loop.index("await chat(")
     own = js[js.index("async function askOwnKey"):js.index("const ANSWERED_EARLY")]
     assert own.index("egressGate(levels") < own.index("modelLoop(") and "gate: check" in own
     svc = js[js.index("async function ask(question)"):js.index("// The answer, the query plans")]
@@ -529,3 +529,115 @@ def test_scale_check_runs_the_guard_over_every_tracked_file():
     cmds = {s["name"]: s["cmds"] for s in check_steps(REPO, fast=True)}
     step = cmds["no undeclared raw data, no document the public may not read (scale guard)"]
     assert step[0][-4:] == ["check", "--all", "--path", str(REPO)]
+
+
+# ---------------------------------------------------------------- what the review of the first version found
+def test_documents_are_found_in_any_json_spelling_and_in_yaml_by_their_shape(tmp_path):
+    import yaml as _yaml
+    repo = new_repo(tmp_path)
+    private = doc("project", PROJECT_A, name=CANARY)
+    write(repo, "a.json", json.dumps(private).replace("scale-catal", "scale\\u002dcatal"))
+    write(repo, "b.yaml", json.dumps(private))                    # JSON is YAML flow style
+    write(repo, "c.yml", _yaml.safe_dump(private).replace("\n", "\r\n"))
+    write(repo, "d.yaml", "graph: {schema: scale-catal\nnodes: [\n")   # a candidate that does not parse
+    write(repo, "e.yaml", "title: a plain YAML file\nitems: [1, 2]\n")
+    git(repo, "add", ".")
+    by = {p["path"]: p["rule"] for p in guard.check_staged(repo)["problems"]}
+    assert by == {"a.json": "access", "b.yaml": "access", "c.yml": "access", "d.yaml": "malformed"}
+
+
+def test_deleting_a_policy_or_a_parts_header_rechecks_what_it_governed(tmp_path):
+    repo = new_repo(tmp_path, policy=data_policy({"access": "project", "project": PROJECT_A}))
+    write(repo, "g.json", doc("project", PROJECT_A, name=CANARY))
+    head = {k: v for k, v in doc("project", PROJECT_A).items() if k not in ("nodes", "links")}
+    write(repo, "h/parts/header.json", head)
+    write(repo, "h/parts/shared.json", {"schema_version": HEAD_VERSION, "nodes": [], "links": []})
+    write(repo, "h/parts/sources/s1.json", {"source": "lab:h/source/s1", "schema_version": HEAD_VERSION,
+                                            "nodes": [{"id": "lab:h/source/s1", "label": "Source", "props": {}}],
+                                            "links": []})
+    git(repo, "add", ".")
+    assert guard.check_staged(repo)["ok"]
+    git(repo, "commit", "-qm", "data", "--no-verify")
+    git(repo, "rm", "-q", "--cached", audience.POLICY_FILE)       # now held to public rules: the project data fails
+    res = guard.check_staged(repo)
+    assert {p["path"] for p in res["problems"]} == {"g.json", "h"}
+    git(repo, "reset", "-q")
+    git(repo, "rm", "-q", "--cached", "h/parts/header.json")      # the parts left cannot build
+    assert [(p["rule"], p["path"]) for p in guard.check_staged(repo)["problems"]] == [("malformed", "h/parts/")]
+
+
+def test_removing_the_policy_does_not_open_the_history_to_another_remote(tmp_path):
+    repo = new_repo(tmp_path, policy=data_policy({"access": "project", "project": PROJECT_A}))
+    write(repo, "g.json", doc("project", PROJECT_A, name=CANARY))
+    git(repo, "add", ".")
+    git(repo, "commit", "-qm", "data", "--no-verify")
+    git(repo, "rm", "-q", "-r", ".")
+    write(repo, "README.md", "nothing here\n")
+    git(repo, "add", ".")
+    git(repo, "commit", "-qm", "gone", "--no-verify")
+    res = guard.check_push(repo, "public", url="https://example.org/public.git", rng="main")
+    assert res["commits"] == 2 and [p["rule"] for p in res["problems"]] == ["destination"]
+
+
+def test_tracking_refs_count_only_for_the_url_the_remote_fetches_from(tmp_path):
+    remote = tmp_path / "remote.git"
+    git(tmp_path, "init", "-q", "--bare", str(remote))
+    repo = new_repo(tmp_path)
+    write(repo, "g.json", doc("institution", name=CANARY))
+    git(repo, "add", ".")
+    git(repo, "commit", "-qm", "private", "--no-verify")
+    git(repo, "remote", "add", "origin", str(remote))
+    git(repo, "push", "-q", "--no-verify", "origin", "main")       # origin/main now reaches the private commit
+    tip = git(repo, "rev-parse", "HEAD").stdout.strip()
+    line = [("refs/heads/main", tip, "refs/heads/main", guard.ZERO)]
+    assert guard.check_push(repo, "origin", url=str(remote), lines=line)["commits"] == 0
+    other = guard.check_push(repo, "origin", url="https://example.org/other.git", lines=line)
+    assert other["commits"] == 1 and not other["ok"]
+    # remote URLs are compared exactly (case and a .git suffix name other repositories)
+    assert guard._norm_url("ssh://h/team/Private.git/") == "ssh://h/team/Private.git" != guard._norm_url("/team/private")
+
+
+def test_a_gated_tool_refuses_unreadable_or_replaced_documents_without_their_diagnostics(tmp_path):
+    ws = tmp_path / "ws"
+    (ws / "g" / "parts" / "sources").mkdir(parents=True)
+    head = {k: v for k, v in doc("project", PROJECT_A).items() if k not in ("nodes", "links")}
+    (ws / "g" / "parts" / "header.json").write_text(json.dumps(head))
+    rec = {"id": f"lab:g/s1/{CANARY}", "label": "CatalyticTest", "props": {}}
+    for s in ("s1", "s2"):                                        # the same record twice: the parts do not build
+        (ws / "g" / "parts" / "sources" / f"{s}.json").write_text(json.dumps(
+            {"source": f"lab:g/source/{s}", "schema_version": HEAD_VERSION, "nodes": [rec], "links": []}))
+    kit = ScaleToolkit(workspace=ws, repo=REPO, egress=EgressGate("anthropic", []))
+    out = kit.call("validate", {"path": "g"})
+    assert "cannot be read to check its access" in out["error"] and CANARY not in json.dumps(out)
+    # a public file replaced by a private one while the tool runs: nothing is returned
+    (ws / "p.json").write_text(json.dumps(doc("public")))
+    kit2 = ScaleToolkit(workspace=ws, repo=REPO, egress=EgressGate("anthropic", []))
+    real = kit2._handlers["scale_validate"]
+
+    def swap(**kw):
+        (ws / "p.json").write_text(json.dumps(doc("project", PROJECT_A, name=CANARY)) + " ")
+        return real(**kw)
+    kit2._handlers["scale_validate"] = swap
+    out = kit2.call("validate", {"path": "p.json"})
+    assert "changed while the tool ran" in out["error"] and CANARY not in json.dumps(out)
+
+
+def test_the_explorer_reads_embargoes_on_the_earlier_of_the_local_and_utc_dates():
+    import os
+    node = shutil.which("node")
+    if not node:
+        pytest.skip("node is not installed")
+    js = (REPO / "site/explorer.js").read_text()
+    loop = js[js.index("async function modelLoop"):js.index("const OWN_OUTPUT")]
+    assert loop.count("gate(provider);") == 2                    # the provider the request actually goes to
+    wt = js[js.index("async function contributeWithToken"):js.index("async function watchForPullRequest")]
+    assert wt.index("graphLevels()") < wt.index('rpc({ op: "contribution"')
+    script = (f"import {{ todayISO, closedLevels }} from {json.dumps((REPO / 'site/egress.js').as_uri())};\n"
+              "const d = new Date('2026-11-25T01:00:00Z');\n"
+              "const st = {graph: {stewardship: {access: 'public'}}, links: [], nodes: [{props: {stewardship: "
+              "{access: 'embargoed', embargo_until: '0000-01-01', access_after_embargo: 'public'}}}]};\n"
+              "console.log(JSON.stringify([todayISO(d), closedLevels(st, '2026-01-01')]));")
+    run = subprocess.run([node, "--input-type=module", "-e", script], capture_output=True, text=True, timeout=60,
+                         env={**os.environ, "TZ": "America/New_York"})
+    assert run.returncode == 0, run.stderr
+    assert json.loads(run.stdout) == ["2026-11-24", ["institution"]]

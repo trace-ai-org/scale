@@ -26,7 +26,7 @@ by its owner only (mode 0700), with no remote, holding:
 
 | file | what it is |
 |---|---|
-| `scale-data.yaml` | the policy: `repository.readers` (stewardship keys `access`, `project`, `contributed_by`), `repository.remotes` (none), `repository.raw_data` (none), `repository.copyright_cap` (true), `defaults.stewardship` (the stewardship a new document states; `access: project` by default) and `egress.endpoints` (none). Unknown keys are refused, so a misspelt key never loosens it. |
+| `scale-data.yaml` | the policy: `repository.readers` (stewardship keys `access`, `project`, `contributed_by`), `repository.remotes` (none), `repository.raw_data` (none), `repository.copyright_cap` (true), `defaults.stewardship` (the stewardship to give each new document, `access: project` by default; no tool applies it: `scale call template` and `scale source start` write `access: public`, so set it in the graph header yourself) and `egress.endpoints` (none). Unknown keys are refused, so a misspelt key never loosens it. |
 | `rights.yaml` | the rights of the sources the documents quote, as in this repository ([curation.md](curation.md)) |
 | `.gitignore` | `raw/`, `index/`, `exports/`, `cache/`, `work/` and evidence indexes stay on the computer |
 | `README.md` | the model, for whoever opens the repository |
@@ -51,17 +51,18 @@ writes two git hooks. Each runs `scale guard check`, which you can also run by h
 | hook | what it inspects |
 |---|---|
 | pre-commit (`scale guard check --staged`) | the snapshot the commit records: the git index's blobs, not the working tree (a file changed after `git add` is judged as it was added) |
-| pre-push (`scale guard check --push REMOTE [RANGE]`) | every commit the push sends that the remote does not hold, each on its own snapshot, so a private file added in one commit and deleted in a later one is found; in a data repository, the destination against `repository.remotes` |
+| pre-push (`scale guard check --push REMOTE [RANGE]`) | every commit the push sends that the destination does not hold (what git says the remote ref points at; the remote's tracking refs only when the push goes to the URL the remote fetches from), each on its own snapshot against its first parent's, deletions included, so a private file added in one commit and deleted in a later one is found; in a data repository, the destination against `repository.remotes` of the tip's policy, or of the last policy the outgoing history had when the tip has none |
 | by hand (`scale guard check --all [--rev REV]`) | every tracked file of the index, or of a commit; `scale check` runs it on this repository |
 
 What a snapshot may hold:
 
-- **Documents every reader may read.** Every scale-catal document (JSON, or YAML naming the schema) and every graph
+- **Documents every reader may read.** Every scale-catal document (every JSON file is parsed; a YAML file is when
+  it is flow style or has top-level `graph` and `nodes` keys) and every graph
   kept as parts, rebuilt from its `parts/` blobs. In this repository each is explicitly public, header and records
   (`scale evidence access`'s rule; a missing access reads as institution, an embargo is not public). In a data
   repository the audience rule decides: a record fails when some least-privileged reader of the repository may not
   see it (an embargo in force admits its institutions only; a lapsed one, its `access_after_embargo`).
-- **Well-formed documents.** A file that names scale-catal and is not JSON, a document without node and link lists,
+- **Well-formed documents.** A `.json` file that does not parse (or a YAML candidate), a document without node and link lists,
   or parts that do not build (`scale graph build`'s rules) cannot be judged, so it is refused.
 - **Quotes within the copyright cap** of the nearest `rights.yaml` (`scale evidence report`'s rule; a data
   repository may set `copyright_cap: false`).
@@ -115,8 +116,11 @@ about where it sends.
 - **Isolation is the boundary.** Process private data where there is no unrestricted network and no credentials for
   public repositories. Forks, pull-request artifacts and provider caches keep what was sent after it is deleted.
 - **Content outside scale-catal documents is not read.** A private value pasted into Markdown, code or a YAML file
-  that is not a document passes; so does a table in an unrecognised format under 5 MiB. Raw-data detection is by
-  name, first bytes and layout, not by meaning.
+  that is not a document passes; so does a table in an unrecognised format under 5 MiB, or a YAML document whose
+  top-level keys are spelt with escapes. Raw-data detection is by name, first bytes and layout, not by meaning.
+- **The remote's tracking refs are trusted** when the push goes where the remote fetches from: a commit they
+  reach is taken as held by the destination. Stale tracking refs (a branch deleted remotely, a repository replaced
+  at the same URL) can hide commits from the check.
 - **`.gitignore`, checksums and the copyright cap are not confidentiality.** An ignored file is still on disk,
   readable by whatever runs there; a sha256 of a short value can be guessed.
 - **Not every path to a model is gated.** A shell an agent runs (`cat`, `jq`, `scale graph query` itself) prints

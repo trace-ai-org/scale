@@ -48,7 +48,9 @@ project's partners clear it (docs/private-data.md in the SCALE repository).
 must be allowed to read every record in it, so a record is committed only when its stewardship admits at least
 those readers. Public data may live here; data of one institution only, or of another project, may not.
 
-New documents state the stewardship in `defaults.stewardship` (in the graph's header): {stewardship}.
+Give every new document the stewardship in `defaults.stewardship` (in its graph header): {stewardship}. Set it
+yourself: `scale call template` and `scale source start` write `access: public`, and the hooks refuse a document
+narrower than the readers but not one wider than you meant.
 
 ## What stays on this computer
 
@@ -106,7 +108,7 @@ def policy_text(readers: dict) -> str:
               "  raw_data: []",
               "  copyright_cap: true",
               "defaults:",
-              "  # the stewardship a new document of this repository states in its graph header",
+              "  # the stewardship to give a new document of this repository (in its graph header; set it yourself)",
               "  stewardship:", f"    access: {readers['access']}"]
     if readers.get("project"):
         lines.append(f'    project: "{readers["project"]}"')

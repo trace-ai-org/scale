@@ -328,9 +328,15 @@ class ScaleToolkit:
         if handler is None:
             return {"error": f"unknown tool {name!r}", "available": list(self._handlers)}
         try:
-            if self.egress is not None:
-                self._egress_check(name, arguments or {})
-            return handler(**(arguments or {}))
+            if self.egress is None:
+                return handler(**(arguments or {}))
+            checked = self._egress_check(name, arguments or {})
+            out = handler(**(arguments or {}))
+            # the result must come from the snapshot that was checked: a file replaced meanwhile is refused
+            if checked is not None and self._version(checked) != checked[1]:
+                from .egress import EgressDenied
+                raise EgressDenied("egress denied: the document changed while the tool ran; nothing was returned")
+            return out
         except TypeError as exc:
             return {"error": f"bad arguments for {name}: {exc}"}
         except ScaleError as exc:
@@ -339,25 +345,49 @@ class ScaleToolkit:
             return {"error": f"file not found: {exc.filename}"}
 
     # ------------------------------------------------------------ helpers
-    def _egress_check(self, name: str, arguments: dict) -> None:
+    @staticmethod
+    def _version(checked: tuple) -> tuple:
+        """The version key of a checked file now (every file of a graph kept as parts), to compare with the one
+        checked."""
+        p = checked[0]
+        files = sorted(p.rglob("*.json")) if p.is_dir() else [p]
+        return tuple((str(f), _file_key(f.stat())) for f in files if f.exists())
+
+    def _egress_check(self, name: str, arguments: dict) -> tuple | None:
         """Refuse (scale.egress.EgressDenied, returned as an error) a tool whose result would carry records the gate's
-        endpoint may not receive: the document given inline or by path, or the graph of a curation folder."""
+        endpoint may not receive: the document given inline or by path, or the graph of a curation folder (a file or
+        a graph kept as parts). A document that cannot be read is refused without its diagnostics, which may name
+        its records. Returns the file checked and its version key (None for an inline document or none at all)."""
+        from .egress import EgressDenied
         if not isinstance(arguments, dict):
-            return
-        doc, where = None, None
+            return None
+        target = None
         if isinstance(arguments.get("document"), dict):
-            doc, where = arguments["document"], self.workspace
-        elif isinstance(arguments.get("path"), str) and arguments["path"]:
-            where = self._path(arguments["path"])
-            doc = self._load(arguments["path"])["doc"]
+            self.egress.check(arguments["document"], "the document (inline)", self.workspace)
+            return None
+        if isinstance(arguments.get("path"), str) and arguments["path"]:
+            target = self._path(arguments["path"])
         elif isinstance(arguments.get("folder"), str) and name in ("scale_source_check", "scale_source_finish"):
             from .curate import _folder
-            _, _, g = _folder(self._path(arguments["folder"]))
-            if g.is_file():
-                doc, where = load_doc(g), g
-        if doc is not None:
-            self.egress.check(doc, f"the document {arguments.get('path') or arguments.get('folder') or '(inline)'}",
-                              where)
+            try:
+                _, _, target = _folder(self._path(arguments["folder"]))
+            except (ScaleError, OSError, ValueError, KeyError) as exc:
+                raise EgressDenied("egress denied: the curation folder cannot be read to check its access; nothing "
+                                   "was sent") from exc
+            if not target.exists():
+                return None
+        if target is None:
+            return None
+        if not target.exists():
+            raise FileNotFoundError(2, "no such file", str(target))
+        before = self._version((target,))
+        try:
+            doc = self._load(arguments["path"])["doc"] if "path" in arguments and arguments.get("path") else load_doc(target)
+        except Exception as exc:                     # noqa: BLE001 - its text may name private records
+            raise EgressDenied("egress denied: the document cannot be read to check its access; nothing was sent "
+                               "(read it without a gate to see why)") from exc
+        self.egress.check(doc, f"the document {arguments.get('path') or arguments.get('folder')}", target)
+        return (target, before)
 
     def _path(self, path: str) -> Path:
         """A document path: absolute as given, else relative to the working directory."""

@@ -14,7 +14,7 @@ function embargoEnd(until) {                     // the last day an embargo hold
   if (m < 1 || m > 12) return null;
   const last = new Date(Date.UTC(y, m, 0)).getUTCDate();
   if (d === undefined) return `${until}-${String(last).padStart(2, "0")}`;
-  return d >= 1 && d <= last ? until : null;
+  return y >= 1 && d >= 1 && d <= last ? until : null;      // a full date of the calendar (year 1 on, as Python's)
 }
 const stewardshipOf = (v) => (v === null || v === undefined ? {} : typeof v === "object" && !Array.isArray(v) ? v : { access: "institution" });
 function effective(graphSt, rec) {
@@ -32,7 +32,14 @@ export function openness(st, today) {
   }
   return LEVELS.includes(access) ? access : "institution";
 }
-export const todayISO = () => new Date().toISOString().slice(0, 10);
+// The day embargoes are read on: the earlier of the local and the UTC date, as pgraph.embargo_today reads it, so the
+// page never opens an embargo the tools still keep.
+export function todayISO(now = new Date()) {
+  const pad = (n) => String(n).padStart(2, "0");
+  const local = `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}`;
+  const utc = now.toISOString().slice(0, 10);
+  return local < utc ? local : utc;
+}
 // The access levels a document's header and records grant today that are not public, least open last ([] when every
 // one is public: the graph may go anywhere).
 export function closedLevels(doc, today = todayISO()) {

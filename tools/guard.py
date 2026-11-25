@@ -240,8 +240,15 @@ def _yaml(data: bytes):
     return yaml.load(data.decode("utf-8"), Loader=getattr(yaml, "CSafeLoader", yaml.SafeLoader))
 
 
-# a YAML file that may be a scale-catal document (a graph object naming the schema); other YAML is not parsed
-YAML_DOC = re.compile(rb"^[ \t]*schema:[ \t]*[\"']?scale-(?:catal|graph)[\"']?[ \t]*(?:#.*)?$", re.M)
+# a YAML file that may be a scale-catal document, by its shape: flow style at the top, or top-level graph and nodes
+# keys (plain or quoted, any line ending). Other YAML is not parsed (the frozen schemas would take long to read); a
+# candidate that does not parse is refused. Every JSON file is parsed.
+YAML_FLOW = re.compile(rb"\A(?:\xef\xbb\xbf)?(?:[ \t\r\n]|#[^\n]*\n)*(?:---[ \t\r\n]+)?[{\[]")
+YAML_KEY = {k: re.compile(rb"^[\"']?" + k + rb"[\"']?[ \t]*:", re.M) for k in (b"graph", b"nodes")}
+
+
+def _yaml_candidate(data: bytes) -> bool:
+    return bool(YAML_FLOW.match(data)) or all(r.search(data) for r in YAML_KEY.values())
 
 
 class Rules:
@@ -333,15 +340,20 @@ def check_snapshot(snap: Snapshot, changed: set[str] | None = None) -> list[dict
     fixture list re-checks everything)."""
     rules = Rules(snap)
     present = set(snap.entries)
+    folders: set[str] = set()
+    # ``changed`` holds added, modified and deleted paths: a deleted policy, fixture list or rights file re-checks
+    # what it governed, and a deleted part rebuilds its graph from what remains
     if changed is None or {POLICY_FILE, layout.PUBLIC_FIXTURES} & changed:
         targets = set(present)
     else:
         targets = set(changed) & present
-        for p in list(targets):
+        for p in changed:
             if PurePosixPath(p).name == rights.RIGHTS_FILE:
                 base = str(PurePosixPath(p).parent)
                 targets |= {q for q in present if base == "." or q.startswith(base + "/")}
-    folders: set[str] = set()
+            folder = _parts_folder(p)
+            if folder is not None and any(_parts_folder(q) == folder for q in present):
+                folders.add(folder)
     for path in sorted(targets):
         if not snap.regular(path):                    # a symbolic link or a submodule: no content of its own here
             continue
@@ -361,16 +373,14 @@ def check_snapshot(snap: Snapshot, changed: set[str] | None = None) -> list[dict
         if folder is not None:
             folders.add(folder)
             continue
-        suffix = PurePosixPath(path).suffix
-        if suffix not in (".json", ".yaml", ".yml") or b"scale-catal" not in data and b"scale-graph" not in data \
-                or suffix != ".json" and not YAML_DOC.search(data):
+        suffix = PurePosixPath(path).suffix.lower()
+        if suffix not in (".json", ".yaml", ".yml") or suffix != ".json" and not _yaml_candidate(data):
             continue
         try:
             doc = json.loads(data.decode("utf-8")) if suffix == ".json" else _yaml(data)
         except (ValueError, yaml.YAMLError) as exc:
-            if suffix == ".json":
-                rules.problems.append(_problem("malformed", path, f"names scale-catal but is not JSON ({exc}); "
-                                               "it cannot be checked, so it is refused"))
+            rules.problems.append(_problem("malformed", path, f"not readable as {suffix[1:].upper()} ({str(exc)[:200]}); "
+                                           "it may be a document and cannot be checked, so it is refused"))
             continue
         if _is_scale(doc):
             _check_doc(snap, doc, path, str(PurePosixPath(path).parent), rules)
@@ -407,12 +417,17 @@ def _check_parts(snap: Snapshot, folder: str, present: set[str], rules: Rules) -
 
 
 # ---------------------------------------------------------------- entry points
+def _changed(before: dict, now: dict) -> set[str]:
+    """Paths added, modified or deleted between two snapshots."""
+    return {p for p in set(before) | set(now) if before.get(p) != now.get(p)}
+
+
 def check_staged(repo: Path) -> dict:
     """The snapshot a commit would record (the index), against HEAD's: the changed paths and what they touch."""
     blobs = Blobs(repo)
     try:
         index, head = index_entries(repo), tree_entries(repo, _head(repo))
-        changed = {p for p, e in index.items() if head.get(p) != e}
+        changed = _changed(head, index)
         problems = check_snapshot(Snapshot(index, blobs, "the staged snapshot"), changed)
     finally:
         blobs.close()
@@ -431,8 +446,17 @@ def check_all(repo: Path, rev: str | None = None) -> dict:
 
 
 def _norm_url(url: str) -> str:
-    u = url.strip().rstrip("/")
-    return (u[:-4] if u.endswith(".git") else u).lower()
+    """A remote URL as compared with the policy's: exactly, but for surrounding space and a trailing slash (case and
+    a .git suffix can name another repository)."""
+    return url.strip().rstrip("/")
+
+
+def _tracking_matches(repo: Path, remote: str, url: str) -> bool:
+    """Whether ``remote``'s tracking refs may stand for what the destination holds: the push goes to the URL the
+    remote fetches from (no other push URL)."""
+    fetch = _git(repo, "remote", "get-url", remote, check=False).decode().strip()
+    push = _git(repo, "remote", "get-url", "--push", remote, check=False).decode().strip()
+    return bool(fetch) and _norm_url(fetch) == _norm_url(url) == _norm_url(push)
 
 
 def _exists(repo: Path, sha: str) -> bool:
@@ -456,14 +480,17 @@ def check_push(repo: Path, remote: str, url: str | None = None, lines: list[tupl
     pushes only to a remote its policy lists."""
     if url is None:
         url = _git(repo, "remote", "get-url", remote, check=False).decode().strip() or remote
+    # what the destination holds already: the commit git says the remote ref points at, and the remote's tracking refs
+    # only when the push goes where the remote fetches from (else they may describe another repository)
+    tracking = ["--remotes=" + remote] if _tracking_matches(repo, remote, url) else []
     plans: list[tuple[str, list[str]]] = []          # (tip, rev-list arguments)
     if rng is not None:
         tip = rng.split("..")[-1] if ".." in rng else rng
-        plans.append((tip or "HEAD", [rng] if ".." in rng else [rng, "--not", f"--remotes={remote}"]))
+        plans.append((tip or "HEAD", [rng] if ".." in rng else [rng, "--not", *tracking]))
     for _, local, _, remote_sha in lines or []:
         if local == ZERO:                            # a deletion sends no objects
             continue
-        excl = ["--not", f"--remotes={remote}"] + ([remote_sha] if remote_sha != ZERO and _exists(repo, remote_sha) else [])
+        excl = ["--not", *tracking] + ([remote_sha] if remote_sha != ZERO and _exists(repo, remote_sha) else [])
         plans.append((local, [local, *excl]))
     blobs, trees, problems, commits = Blobs(repo), {}, [], []
 
@@ -472,23 +499,32 @@ def check_push(repo: Path, remote: str, url: str | None = None, lines: list[tupl
             trees[rev] = tree_entries(repo, rev)
         return trees[rev]
     try:
-        for tip, args in plans:
-            revs = _git(repo, "rev-list", "--reverse", "--parents", *args).decode().split("\n")
+        for _tip, args in plans:
+            governed = None                          # the last policy an outgoing commit of this ref carried
+            revs =_git(repo, "rev-list", "--reverse", "--parents", *args).decode().split("\n")
             for line in filter(None, revs):
                 c, *parents = line.split()
                 if c in commits:
                     continue
                 commits.append(c)
                 now, before = tree(c), tree(parents[0]) if parents else {}
-                changed = {p for p, e in now.items() if before.get(p) != e}
-                for pr in check_snapshot(Snapshot(now, blobs, c), changed):
+                snap = Snapshot(now, blobs, c)
+                for pr in check_snapshot(snap, _changed(before, now)):
                     problems.append({**pr, "commit": c})
-            rules = Rules(Snapshot(tree(tip), blobs, tip))
-            if rules.policy is not None and _norm_url(url) not in {_norm_url(u) for u in rules.policy["remotes"]}:
-                problems.append({"rule": "destination", "path": POLICY_FILE, "commit": tip,
+                if snap.has(POLICY_FILE):
+                    governed = Rules(snap).policy or {"remotes": []}      # unreadable: no remote is listed
+            # the destination, by the tip's policy; a tip without one is held to the last policy its outgoing history
+            # had, so removing the policy does not open that history to another remote
+            tip_rules = Rules(Snapshot(tree(_tip), blobs, _tip))
+            policy = tip_rules.policy or (None if tip_rules.framework else governed)
+            if tree(_tip).get(POLICY_FILE) and tip_rules.policy is None and not tip_rules.framework:
+                policy = {"remotes": []}
+            said = any(p["rule"] == "destination" for p in problems)
+            if policy is not None and not said and _norm_url(url) not in {_norm_url(u) for u in policy["remotes"]}:
+                problems.append({"rule": "destination", "path": POLICY_FILE, "commit": _tip,
                                  "message": f"{url} is not among the remotes this data repository's policy lists "
-                                            "(repository.remotes): add it only once you have checked that its readers "
-                                            "are the repository's readers"})
+                                            "(repository.remotes): add it only once you have checked that its "
+                                            "readers are the repository's readers"})
     finally:
         blobs.close()
     return {"checked": "push", "remote": remote, "url": url, "commits": len(commits), "problems": problems,
