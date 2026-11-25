@@ -29,6 +29,9 @@ def test_the_site_lists_the_curated_graphs(built):
     # the curated graphs, built from their parts; a parts folder with no source yet is left out, examples are not offered
     assert set(ids) == {g.name for g in (REPO / "graphs").iterdir() if any((g / "parts" / "sources").glob("*.json"))}
     assert "methanol-synthesis-pre1966" in ids
+    # example questions (graphs/<id>/questions.yaml) go with their graph, for the explorer to offer
+    meth = next(e for e in entries if e["id"] == "methanol-synthesis-pre1966")
+    assert meth["questions"] and all(q["question"].endswith("?") for q in meth["questions"])
     for e in entries:
         doc = json.loads((out / e["path"]).read_text())
         assert (len(doc["nodes"]), len(doc["links"])) == (e["nodes"], e["links"]), e["id"]
@@ -36,6 +39,20 @@ def test_the_site_lists_the_curated_graphs(built):
     assert (out / "data/query-graph.md").read_text().lstrip().startswith("#")       # the skill, without its front matter
     for page in site.PAGES:
         assert (out / page).is_file(), page
+
+
+def test_every_example_question_finds_evidence(built):
+    """Each example question a graph offers finds quotes of that graph in the page's search (the reader's first look,
+    before a model answers it)."""
+    from scale.passages import Index, evidence_items, search_quotes
+    out, _ = built
+    for e in json.loads((out / "data/graphs.json").read_text())["graphs"]:
+        if not e.get("questions"):
+            continue
+        ix = Index.build(evidence_items(json.loads((out / e["path"]).read_text())))
+        for q in e["questions"]:
+            hits = search_quotes(ix, q["question"], k=5)
+            assert len(hits) == 5 and hits[0]["score"] > 0.3, (e["id"], q["question"])
 
 
 def test_the_package_is_the_wheels_without_the_examples(built):

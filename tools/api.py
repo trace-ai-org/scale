@@ -191,7 +191,8 @@ TOOLS: list[dict] = [
     {
         "name": "scale_search",
         "description": "Search a document's evidence by words and meaning (its evidence index: the one saved beside it "
-                       "by `scale graph index`, or built in memory from the document when none is); hits lead to the records that cite each passage. The "
+                       "by `scale graph index`, or built in memory from the document when none is); hits lead to the records that cite each passage. "
+                       "Each hit is one quote: the other records that cite the same quote are in its `also`. The "
                        "result's access says where the hits may go: the whole document's, as scale_query's.",
         "input_schema": {"type": "object", "required": ["path", "query"], "properties": {
             "path": _DOC["path"], "query": {"type": "string"}, "k": {"type": "integer", "minimum": 1, "default": 10},
@@ -620,10 +621,13 @@ class ScaleToolkit:
         years = {n["id"]: n["props"].get("year") for n in doc["nodes"] if n["label"] == "Source"}
         before = int(str(published_before)[:4]) if published_before else None
         where = (lambda it: years.get(it.get("source")) is not None and years[it["source"]] < before) if before else None
-        hits = ix.search(query, k=k, mode=mode, where=where)
+        # one hit per quote of a source, every other citation of the same text in its `also` (passages.search_quotes)
+        def name_of(rid):
+            rec = nodes.get(rid) or links.get(rid)
+            return (rec or {}).get("props", {}).get("name") or (rec or {}).get("type")
+        from .passages import search_quotes
+        hits = search_quotes(ix, query, k=k, mode=mode, where=where, name_of=name_of)
         for h in hits:
-            rec = nodes.get(h["record"]) or links.get(h["record"])
-            h["record_name"] = (rec or {}).get("props", {}).get("name") or (rec or {}).get("type")
             h["source_year"] = years.get(h.get("source"))
         # the hits are the document's verbatim quotes: they go only where the whole document may go (scale_query's access)
         return {"query": query, "mode": mode, "embedder": ix.embedder_id, "hits": hits,

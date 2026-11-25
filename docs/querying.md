@@ -73,12 +73,17 @@ entries as `results.<key>`, list entries as `<property>.*`; a value that states 
 placeholder `not stated` included, is counted under `(no unit)`), and the link patterns
 (`link_patterns`: source label, link type, target label and count).
 
+A text filter (`eq`, `contains`) ignores case, except for a chemical formula or element symbol, whose case is
+meaningful: `formula eq Co` finds cobalt, never CO (carbon monoxide), and `contains CO` never matches `Co3O4`. Search
+does the same: the default embedder, `scale-hash-v2`, keeps formulas in their case (CO and Co are two words, each with
+its alias, carbon monoxide and cobalt); an index built with `scale-hash-v1` is still read with its own words.
+
 ## Units
 
 A numeric filter compares numbers in the unit it states: `lt`, `le`, `gt`, `ge`, and `eq`, `ne`
 with a number or `in` with numbers (`temperature eq 380 °C` holds for 380 °C, or for a reported
 range that holds 380 °C; `ne` for neither). One rule decides which values it compares, and nothing
-is converted:
+is converted unless the filter asks (`convert: true`, below):
 
 - The filter states its `unit`. A value is compared only when it holds a number (`value`, or
   `lower`/`upper`), its `unit` is text spelled as the filter's, case included, once each run of
@@ -464,8 +469,18 @@ Every result carries:
 `--format markdown` prints the access (and its note when it is not public), the rows, the second-hand
 notes, the evidence with each source's kind, and the coverage.
 
-Nothing is converted: a numeric filter (`eq`, `ne` and `in` with numbers included) compares only
-values in the unit it states, spelled the same, and on the basis it states.
+A numeric filter (`eq`, `ne` and `in` with numbers included) compares only values in the unit it states, spelled
+the same, and on the basis it states, unless it asks for conversion: `convert: true` also compares a value in another
+unit of the same quantity, converted exactly (temperature: K, °C, °F; absolute pressure: Pa, kPa, MPa, bar, mbar,
+atm, Torr, mmHg, psi; time: s, min, h, d), so `temperature lt 250 °C` with `convert: true` finds 500 K too. The row
+returns the value as reported, and the coverage counts the conversions made (`converted`, by unit pair). Nothing else
+is converted: no gauge pressure (`barg`, `psig`, or a value whose definition, basis, reported text or note says
+gauge), no basis, no unit read from a reported text, and no other quantity; an `order_by` sorts the numbers as
+reported.
+
+```yaml
+where: [{prop: temperature, op: le, value: 250, unit: °C, convert: true}]
+```
 
 ## Competency questions
 

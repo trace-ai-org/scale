@@ -1,0 +1,12 @@
+# Example questions for this graph, offered by the graph explorer when its question box is empty. Each is one a
+# query plan or an evidence search answers from the records. Questions that need a chain of reasoning across many
+# sources work less well; ask them in parts.
+questions:
+  - question: What Faradaic efficiency to ethylene did the Cl-promoted Cu catalysts reach, and at which potential?
+    kind: conditions and outcomes
+  - question: How was chloride introduced into the copper catalysts?
+    kind: preparation
+  - question: For each catalyst and potential, which products had a Faradaic efficiency below 1 %, and were these measured values, upper bounds or not detected?
+    kind: negative results
+  - question: Which measurements support the authors' claims that chloride is retained, and do they describe the catalyst before, during or after electrolysis?
+    kind: authors' interpretations

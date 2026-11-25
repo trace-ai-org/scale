@@ -2,6 +2,25 @@
 
 ## Unreleased
 
+- **Explorer feedback: CO is not Co, one hit per quote, opt-in unit conversion, example questions (tools, site; no
+  schema change, no migration).** From a reader's first questions:
+  - Search keeps chemical formulas and element symbols in their case: the new default embedder, `scale-hash-v2`,
+    reads CO (carbon monoxide) and Co (cobalt) as two words, each with its alias; an index built with `scale-hash-v1`
+    is still read with its own words. A text filter (`eq`, `contains`) on a formula compares its case too.
+    A lower-case query finds the formulas it may mean (`cu` finds Cu; `co` finds both CO and Co); words in capitals
+    that only read as symbols (IS, OF) stay words; another embedder keeps the words it was built with. A text filter
+    compares a formula inside a phrase in its case ("CO hydrogenation" is not "Co hydrogenation").
+  - A search (`scale graph search`, the toolkit, the explorer) lists each quote of a source once: every other record
+    citing the same text, at that locator or another, is in the hit's `also` ("and 14 more citing it" in the
+    explorer), and `k` counts distinct quotes.
+  - A numeric filter may ask for `convert: true`: a value in another unit of the same quantity is compared after an
+    exact conversion (temperature K, °C, °F; absolute pressure Pa to GPa, bar, mbar, atm, Torr, mmHg, psi; time s,
+    min, h, d), never rounded, and returned as reported; the coverage counts the conversions (`converted`) and the
+    limitations say so. Nothing else is converted (no gauge pressure, no basis); without it, nothing is converted, as
+    before.
+  - Example questions per graph (`graphs/<id>/questions.yaml`), offered under the empty question box (mouse or
+    keyboard) with a note on what the graph answers well; a test checks that each finds evidence.
+
 - **An approved pull request merges by itself (governance; no schema change).** The reviewers workflow's new `merge`
   job runs on a reviewer's approval, waits for the required checks, merges the head the approval was given on and
   publishes the site from `main` (a merge by the workflow token starts no push workflow). A failing check stops it

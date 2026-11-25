@@ -173,6 +173,37 @@ def test_search_and_a_text_query_build_the_evidence_index_when_none_is_saved(tk)
     assert "error" not in tk.call("scale_query", {"document": doc, "plan": plan})
 
 
+def test_a_quote_cited_by_several_records_is_one_hit(tk):
+    """A search lists each quote of a source once: the other records that cite the same text (at one locator or
+    another) are in its `also`, and k counts distinct quotes."""
+    tk.call("scale_example", {"name": "c-inconsistent-reference"})
+    doc = load_doc(tk.workspace / "c-inconsistent-reference.json")
+    src = next(n["id"] for n in doc["nodes"] if n["label"] == "Source")
+    quote = "Copper-zinc oxide catalysts lost activity when sulphur reached the gas."
+    for i, n in enumerate(n for n in doc["nodes"] if n["label"] != "Source"):
+        if i < 3:
+            n["props"].setdefault("evidence", []).append({"source": src, "locator": f"p. {i + 1}", "kind": "text",
+                                                          "quote": quote})
+    write_canonical(tk.workspace / "dup.json", doc)
+    for k in (1, 3):                    # every citation is attached, however few quotes are asked for
+        res = tk.call("scale_search", {"path": "dup.json", "query": "sulphur copper zinc oxide activity", "k": k})
+        same = [h for h in res["hits"] if h["text"] == quote]
+        assert len(same) == 1 and len(same[0]["also"]) == 2 and len(res["hits"]) == len({h["text"] for h in res["hits"]})
+        assert any("locator" in a for a in same[0]["also"])              # cited at another page, said so
+    # the command line lists the same quotes
+    run = subprocess.run([sys.executable, "-m", "scale.cli", "graph", "search", str(tk.workspace / "dup.json"),
+                          "sulphur copper zinc oxide activity", "-k", "3", "--format", "json"], capture_output=True, text=True)
+    cli = json.loads(run.stdout)
+    assert [h["text"] for h in cli["hits"]] == [h["text"] for h in res["hits"]] and "also" in cli["hits"][0]
+
+
+def test_quotes_that_differ_in_a_formulas_case_are_two_hits():
+    from scale.passages import Index, search_quotes
+    items = [{"id": "a", "record": "r1", "source": "s", "text": "a CO catalyst"},
+             {"id": "b", "record": "r2", "source": "s", "text": "a Co catalyst"}]
+    assert len(search_quotes(Index.build(items), "catalyst", k=5)) == 2
+
+
 def test_search_reads_only_the_documents_own_index_and_says_its_access(tk):
     """scale_search and a text scale_query use the index beside a document only when it was built from it; the
     search result carries the document's access, as a query result does."""

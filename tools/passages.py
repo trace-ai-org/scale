@@ -7,11 +7,13 @@ Two things are indexed:
   since the full texts are not redistributed).
 
 Each gets a vector from an **embedder** and BM25 term statistics. The default embedder,
-``scale-hash-v1``, needs no model download and is deterministic: lower-cased word unigrams and
+``scale-hash-v2``, needs no model download and is deterministic: word unigrams (lower-cased, except chemical
+formulas and element symbols, which keep their case: CO, carbon monoxide, is not Co, cobalt) and
 bigrams plus character 4-grams of each word (robust to OCR errors) are hashed into 512 signed
 dimensions with sublinear term weights, L2-normalized and stored as int8. Another embedder (a
 neural sentence model) can be registered with :func:`register_embedder`; every index records the
-embedder that built it, and a search refuses to mix embedders.
+embedder that built it, and a search refuses to mix embedders. ``scale-hash-v1`` (every word lower-cased, so CO and
+Co were one word) still reads the indexes built with it; its words and term statistics are unchanged.
 
 An evidence item that quotes a passage carries the passage id in ``evidence.passage``, so a
 passage hit leads to the records that cite it.
@@ -63,10 +65,38 @@ SPELLING = {"sulphur": "sulfur", "sulphide": "sulfide", "sulphides": "sulfides",
 FORMULA = re.compile(r"\b(" + "|".join(sorted(map(re.escape, FORMULAS), key=len, reverse=True)) + r")\b")
 
 
-def tokens(text: str) -> list[str]:
-    """Lower-cased words, with formula aliases and spelling variants added (so Cu also matches copper)."""
+ELEMENTS = set("""H He Li Be B C N O F Ne Na Mg Al Si P S Cl Ar K Ca Sc Ti V Cr Mn Fe Co Ni Cu Zn Ga Ge As Se Br Kr Rb
+Sr Y Zr Nb Mo Tc Ru Rh Pd Ag Cd In Sn Sb Te I Xe Cs Ba La Ce Pr Nd Pm Sm Eu Gd Tb Dy Ho Er Tm Yb Lu Hf Ta W Re Os Ir Pt
+Au Hg Tl Pb Bi Po At Rn Fr Ra Ac Th Pa U Np Pu Am Cm Bk Cf Es Fm Md No Lr""".split())
+# element symbols that are also common English words at the start of a sentence: read as words
+NOT_FORMULAS = {"In", "As", "At", "Be", "He", "No", "Am", "Es", "I",
+                # and words in capitals that read as symbols (IS: iodine, sulfur)
+                "IS", "US", "OF", "IN", "ON", "SO", "BY", "IF", "OK", "IP"}
+_SYMBOLS = re.compile(r"([A-Z][a-z]?)(\d*)")
+
+
+def is_formula(w: str) -> bool:
+    """A word that is a chemical formula or element symbol as printed (Co, CO, CO2, ZnO, Cu2O), its case meaningful:
+    element symbols with counts, at least two characters, not a sentence-initial English word (In, As, No)."""
+    if len(w) < 2 or w in NOT_FORMULAS or not w[0].isupper():
+        return False
+    at = 0
+    for m in _SYMBOLS.finditer(w):
+        if m.start() != at or m.group(1) not in ELEMENTS:
+            return False
+        at = m.end()
+    return at == len(w)
+
+
+def tokens(text: str, formulas: bool = False) -> list[str]:
+    """Lower-cased words, with formula aliases and spelling variants added (so Cu also matches copper). With
+    ``formulas`` (scale-hash-v2), a chemical formula or element symbol keeps its case (:func:`is_formula`), so CO and
+    Co stay two words (their aliases, carbon monoxide and cobalt, are added as before)."""
     out = []
     for w in WORD.findall(FORMULA.sub(lambda m: f"{m.group(1)} {FORMULAS[m.group(1)]}", text)):
+        if formulas and is_formula(w):
+            out.append(w)
+            continue
         lw = w.lower()
         out.append(lw)
         alt = SPELLING.get(lw)
@@ -81,12 +111,13 @@ class HashEmbedder:
 
     id = name
     dim = 512
+    formulas = False                    # v1: every word lower-cased (CO and Co one word)
 
     def features(self, text: str, grams: dict | None = None) -> Counter:
         """Weighted features: each word (1), its character 4-grams with < and > as ends (0.5 each) and each word pair
         (1). ``grams`` caches each word's 4-grams across calls; the weights are multiples of 0.5, so the sums are exact
         in any order."""
-        ws = tokens(text)
+        ws = tokens(text, self.formulas)
         grams = {} if grams is None else grams
         f: Counter = Counter()
         for w, c in Counter(ws).items():
@@ -117,7 +148,21 @@ class HashEmbedder:
         return out
 
 
-EMBEDDERS: dict[str, Callable[[], object]] = {"scale-hash-v1": HashEmbedder}
+class HashEmbedderV2(HashEmbedder):
+    """scale-hash-v1 with chemical formulas and element symbols kept in their case (:func:`is_formula`)."""
+    name = id = "scale-hash-v2"
+    formulas = True
+
+
+DEFAULT_EMBEDDER = "scale-hash-v2"
+EMBEDDERS: dict[str, Callable[[], object]] = {"scale-hash-v1": HashEmbedder, "scale-hash-v2": HashEmbedderV2}
+
+
+def formula_words(embedder_id: str) -> bool:
+    """Whether an index's words keep formulas in their case: only those of the embedders built to (scale-hash-v2).
+    Every other embedder, a registered or neural one included, keeps the words it was built with (lower-cased)."""
+    factory = EMBEDDERS.get(embedder_id)
+    return isinstance(factory, type) and bool(getattr(factory, "formulas", False))
 
 
 def register_embedder(name: str, factory: Callable[[], object]) -> None:
@@ -125,7 +170,7 @@ def register_embedder(name: str, factory: Callable[[], object]) -> None:
     EMBEDDERS[name] = factory
 
 
-def get_embedder(name: str = "scale-hash-v1"):
+def get_embedder(name: str = DEFAULT_EMBEDDER):
     if name.startswith("fastembed:"):  # pragma: no cover - optional
         return _fastembed(name.split(":", 1)[1])
     if name not in EMBEDDERS:
@@ -224,7 +269,7 @@ CACHE_BYTES = 2 << 30  # vectors up to this size (as float32) are converted once
 TERMS_MAGIC = b"SCALE-TERMS-1\n"
 
 
-def _terms(items: list[dict]):
+def _terms(items: list[dict], formulas: bool = True):
     """The BM25 statistics of ``items`` as an inverted index: the words in sorted order, and for each word the items
     that hold it (in item order) with their counts (``indptr`` delimits each word's run), and each item's length."""
     np = _np()
@@ -232,7 +277,7 @@ def _terms(items: list[dict]):
     words, rows, counts = [], [], []
     lengths = np.zeros(len(items), dtype=np.int64)
     for i, it in enumerate(items):
-        c = Counter(tokens(it["text"]))
+        c = Counter(tokens(it["text"], formulas))
         lengths[i] = sum(c.values())
         for w, f in c.items():
             words.append(first.setdefault(w, len(first)))
@@ -264,8 +309,16 @@ class Index:
         np = _np()
         self.items, self.vectors, self.embedder_id = items, vectors, embedder_id
         self.graph_sha256 = graph_sha256            # the document it was built from, when recorded
-        self.vocab, self.indptr, self.post_item, self.post_count, self.lengths = terms or _terms(items)
+        self.formulas = formula_words(embedder_id)
+        self.vocab, self.indptr, self.post_item, self.post_count, self.lengths = terms or _terms(items, self.formulas)
         self.term_id = {w: i for i, w in enumerate(self.vocab)}
+        # a formula's case variants by its lower-case form (cu: Cu; co: CO and Co), so a query typed in lower case
+        # still finds them (both, when the lower case cannot tell them apart)
+        self.cased: dict[str, list[str]] = {}
+        if self.formulas:
+            for w in self.vocab:
+                if w != w.lower() and is_formula(w):
+                    self.cased.setdefault(w.lower(), []).append(w)
         n = len(items)
         self.avg = (int(self.lengths.sum()) / n) if n else 0.0
         self.norms = np.ones(n)
@@ -276,7 +329,7 @@ class Index:
         self._converted = None                      # the vectors as float32, kept after a first cosine when they fit
 
     @classmethod
-    def build(cls, items: list[dict], embedder="scale-hash-v1", graph_sha256: str | None = None) -> "Index":
+    def build(cls, items: list[dict], embedder=DEFAULT_EMBEDDER, graph_sha256: str | None = None) -> "Index":
         emb = get_embedder(embedder) if isinstance(embedder, str) else embedder
         vec = quantize(emb.encode([i["text"] for i in items])) if items else _np().zeros((0, getattr(emb, "dim", 1)), dtype="int8")
         return cls(items, vec, emb.id, graph_sha256)
@@ -297,6 +350,7 @@ class Index:
             (self.indptr, np.int64), (self.post_item, np.int32), (self.post_count, np.int32), (self.lengths, np.int64)))
         head = json.dumps({"items_sha256": hashlib.sha256(raw).hexdigest(), "count": len(self.items),
                            "words": len(self.vocab), "postings": int(len(self.post_item)), "vocab": self.vocab,
+                           **({"formulas": True} if self.formulas else {}),
                            "payload_sha256": _terms_digest(self.vocab, payload)},
                           ensure_ascii=False, sort_keys=True).encode("utf-8")
         with open(f"{stem}.terms", "wb") as f:
@@ -316,7 +370,8 @@ class Index:
         else:       # vectors that are not the ones saved with these items (or a file saved before the digest): rebuilt
             emb = get_embedder(head["embedder"])
             vec = quantize(emb.encode([i["text"] for i in items])) if items else _np().zeros((0, getattr(emb, "dim", 1)), dtype="int8")
-        return cls(items, vec, head["embedder"], head.get("graph_sha256"), _read_terms(stem, raw, len(items)))
+        terms = _read_terms(stem, raw, len(items), formula_words(head["embedder"]))
+        return cls(items, vec, head["embedder"], head.get("graph_sha256"), terms)
 
     def check_for(self, doc: dict, where: str = "the evidence index") -> "Index":
         """This index, when it may be searched for ``doc``: one holding exactly its evidence items
@@ -336,7 +391,7 @@ class Index:
         np = _np()
         n = len(self.items)
         s = np.zeros(n)
-        for w in sorted(set(tokens(query))):
+        for w in sorted(set(tokens(self.expand(query), self.formulas))):
             t = self.term_id.get(w)
             if t is None:
                 continue
@@ -347,8 +402,17 @@ class Index:
             s[rows] += idf * f * (k1 + 1) / (f + k1 * (1 - b + b * self.lengths[rows] / (self.avg or 1)))
         return s
 
+    def expand(self, query: str) -> str:
+        """``query`` with each lower-case word that is a formula's lower-case form followed by the formula as the index
+        holds it ("cu" adds "Cu"; "co" adds "CO" and "Co": a lower-case query cannot tell them apart)."""
+        if not self.cased:
+            return query
+        extra = [v for w in WORD.findall(query) if w == w.lower() for v in self.cased.get(w, [])]
+        return f"{query} {' '.join(extra)}" if extra else query
+
     def cosine(self, query: str, embedder=None):
         np = _np()
+        query = self.expand(query)
         emb = embedder or get_embedder(self.embedder_id)
         if emb.id != self.embedder_id:
             raise ScaleError(f"index built with {self.embedder_id}, query embedder is {emb.id}")
@@ -432,12 +496,55 @@ class Index:
             m *= 4
 
 
+def quote_key(item: dict) -> tuple:
+    """What makes two evidence items one quote: their source and their text, whitespace runs as one space, case kept
+    (a CO quote is not a Co quote)."""
+    return item.get("source"), " ".join(str(item.get("text") or "").split())
+
+
+def search_quotes(ix: "Index", query: str, k: int = 10, mode: str = "hybrid",
+                  where: Callable[[dict], bool] | None = None, name_of: Callable[[str], str | None] | None = None) -> list[dict]:
+    """The best ``k`` distinct quotes for ``query``: each quote of a source once, its best-scoring item as the hit, and
+    in its ``also`` every other citation of the same text that ``where`` keeps (another record, or the same record at
+    another locator), however deep they rank. ``name_of`` names a record."""
+    quotes = getattr(ix, "_quotes", None)
+    if quotes is None:                          # every item by its quote, once per index
+        quotes = {}
+        for it in ix.items:
+            quotes.setdefault(quote_key(it), []).append(it)
+        ix._quotes = quotes
+    depth, picked = k, {}
+    while True:
+        raw = ix.search(query, k=depth, mode=mode, where=where)
+        picked = {}
+        for h in raw:
+            picked.setdefault(quote_key(h), h)
+            if len(picked) >= k:
+                break
+        if len(picked) >= k or len(raw) < depth:
+            break
+        depth *= 4
+    out = []
+    for key, h in picked.items():
+        hit = dict(h)
+        if name_of:
+            hit["record_name"] = name_of(h["record"])
+        also = [{"record": it["record"], "label": it.get("label"),
+                 **({"record_name": name_of(it["record"])} if name_of else {}),
+                 **({"locator": it.get("locator")} if it.get("locator") != h.get("locator") else {})}
+                for it in quotes.get(key, []) if it["id"] != h["id"] and (where is None or where(it))]
+        if also:
+            hit["also"] = also
+        out.append(hit)
+    return out
+
+
 def _terms_digest(vocab: list, payload: bytes) -> str:
     """The digest of a .terms file's words and arrays together: the words say which postings are whose."""
     return hashlib.sha256(json.dumps(vocab, ensure_ascii=False).encode("utf-8") + b"\0" + payload).hexdigest()
 
 
-def _read_terms(stem: Path, items_raw: bytes, count: int):
+def _read_terms(stem: Path, items_raw: bytes, count: int, formulas: bool = False):
     """The inverted index saved at ``<stem>.terms``, or None (then it is rebuilt from the items) when there is none, it
     was not saved with exactly these items, its arrays do not match the digest it records, or they do not form an
     inverted index of these items (offsets that run up to the postings, rows within the items, counts above zero)."""
@@ -456,6 +563,8 @@ def _read_terms(stem: Path, items_raw: bytes, count: int):
     except (ValueError, KeyError, TypeError, UnicodeDecodeError):
         return None
     if head.get("count") != count or head.get("items_sha256") != hashlib.sha256(items_raw).hexdigest():
+        return None
+    if bool(head.get("formulas")) != formulas:      # counted with the other words (v1's, or v2's): rebuilt
         return None
     at += 8 + size
     if not isinstance(vocab, list) or head.get("payload_sha256") != _terms_digest(vocab, data[at:]):

@@ -1,0 +1,22 @@
+# Example questions for this graph, offered by the graph explorer when its question box is empty. Each is one a
+# query plan or an evidence search answers from the records: what a source reports, under which conditions, what
+# failed and why. Questions that need a chain of reasoning across many sources work less well; ask them in parts.
+questions:
+  - question: Which catalysts were found inactive for methanol synthesis, and under what conditions?
+    kind: negative results
+  - question: What sulfur-related activity losses were reported for copper catalysts, under which conditions, and what explanations did the authors give?
+    kind: authors' interpretations
+  - question: What do the sources say zinc oxide does in copper-zinc oxide catalysts?
+    kind: authors' interpretations
+  - question: How were copper-zinc oxide catalysts prepared by precipitation?
+    kind: preparation
+  - question: Which tests used a zinc oxide-chromium oxide catalyst, at what temperatures and pressures?
+    kind: conditions and outcomes
+  - question: Which Co (cobalt) catalysts were tested, and what did they give?
+    kind: conditions and outcomes
+  - question: What side products formed besides methanol, and on which catalysts?
+    kind: what a source reports
+  - question: Was copper reported as a methanol catalyst before 1930?
+    kind: has this been done
+  - question: Which methanol-synthesis tests ran at or below 250 °C, including temperatures reported in K or °F, and what pressure and feed do they state?
+    kind: conditions and outcomes
