@@ -858,6 +858,11 @@ The digitizing steps above read one value. A figure usually holds many, in sever
    - curves, scatter and bar charts: each plotted point at its x position, digitized as above.
 
    Axis ticks, scale bars, panel letters, Miller indices, formula subscripts and sample names are not values.
+   Read the axes before any point: note the first and last numbered tick of each axis and the tick spacing, and give
+   each point the x value of the tick it sits on (a time axis from -60 to 300 min is not one to 480). In a panel with
+   many series, identify each by its marker and colour from the legend, and read a series only where its markers can
+   be told apart; where series overlap so that a point cannot be assigned, leave it out as a gap. Never write a value
+   because it is what you expect (a textbook band position, a typical size): what you cannot read on the image is a gap.
    Never measure a micrograph yourself: a size, length or spacing that the panel does not print (as a label, an
    inset or a histogram) is not reported, however clear the scale bar; record nothing from such a panel, or a gap.
    In a 3D or offset (waterfall) plot, read only the trace that sits on the axis; the others are shifted by the
