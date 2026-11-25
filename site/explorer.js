@@ -2053,7 +2053,7 @@ function openOwnKeyMenu() {
 // box, so a reader sees what the graph answers well. A click asks it.
 function showExamples() {
   const box = $("examples"), qs = G?.entry?.questions || [];
-  if (!qs.length || $("search-input").value.trim()) { box.hidden = true; return; }
+  if (!qs.length || $("search-input").value.trim() || box.dataset.closed) { box.hidden = true; return; }
   box.innerHTML = `<div class="gx-examples-head">Try a question this graph answers</div>` + qs.map((q, i) =>
     `<button type="button" class="gx-example" role="option" data-i="${i}">${esc(q.question)}${q.kind ? `<span class="gx-example-kind">${esc(q.kind)}</span>` : ""}</button>`).join("")
     + `<div class="gx-examples-note">Best for what the sources report: conditions and outcomes, preparations, what failed and why. A question that chains reasoning across many sources works better asked in parts.</div>`;
@@ -2075,14 +2075,15 @@ function exampleKeys(e) {                     // arrows move through the questio
     (next < 0 ? $("search-input") : opts[next]).focus();
   } else if (e.key === "Escape") {
     box.hidden = true;
+    box.dataset.closed = "1";                 // closed until the reader types or leaves the box
     $("search-input").focus();
   }
 }
 $("search-input").addEventListener("focus", showExamples);
-$("search-input").addEventListener("input", showExamples);
+$("search-input").addEventListener("input", () => { delete $("examples").dataset.closed; showExamples(); });
 $("search-form").addEventListener("keydown", exampleKeys);
 $("search-form").addEventListener("focusout", (e) => {          // hidden once focus leaves the question box and its list
-  if (!$("search-form").contains(e.relatedTarget)) $("examples").hidden = true;
+  if (!$("search-form").contains(e.relatedTarget)) { $("examples").hidden = true; delete $("examples").dataset.closed; }
 });
 $("examples").addEventListener("mousedown", (e) => e.preventDefault());   // a click keeps the focus in the box
 

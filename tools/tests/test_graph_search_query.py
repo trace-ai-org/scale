@@ -116,6 +116,9 @@ def test_co_is_not_co_in_search_and_in_filters():
     assert one("Co-hydrogenation over Cu", {"value": "CO-hydrogenation"}, "contains") == (False, None)
     assert one("CO hydrogenation", {"value": "co hydrogenation"}, "eq") == (True, None)
     assert one("Co hydrogenation", {"value": "co hydrogenation"}, "eq") == (True, None)
+    assert one("CO hydrogenation over Cu", {"value": "co hydrogenation over Cu"}, "eq") == (True, None)
+    assert one("Co3O4 and CuO", {"value": "Co"}, "contains") == (True, None)
+    assert one("In2O3", {"prop": "formula", "value": "IN2O3"}, "eq") == (False, None)        # a formula as written
 
 
 def test_vectors_are_deterministic_int8(tmp_path, doc):
@@ -445,7 +448,13 @@ def test_a_filter_converts_only_when_asked_and_only_exact_units(doc, spec):
     assert pgraph_query._numeric(V(1, "h"), {"value": 1 / 24, "unit": "d", "convert": True}, "eq") == (True, None)
     assert pgraph_query._numeric(V(33, "°F"), {"value": 5 / 9, "unit": "°C", "convert": True}, "eq") == (True, None)
     # a gauge pressure is never converted, whatever field says so
-    for gauge in ({"definition": "gauge"}, {"as_reported": "10 bar (gauge)"}, {"note": "gauge pressure"}):
+    assert pgraph_query._numeric(V(20, "°C"), {"value": 68, "unit": "°F", "convert": True}, "ge") == (True, None)
+    assert pgraph_query._numeric(V(20, "°C"), {"value": 68, "unit": "°F", "convert": True}, "gt") == (False, None)
+    assert pgraph_query._numeric(V(1000, "Pa"), {"value": 1.0000000005, "unit": "kPa", "convert": True}, "eq") == (False, None)
+    absolute = {**V(10, "bar"), "note": "measured with an absolute pressure gauge"}
+    assert pgraph_query._numeric(absolute, {"value": 146, "unit": "psia", "convert": True}, "lt") == (True, None)
+    for gauge in ({"definition": "gauge"}, {"as_reported": "10 bar (gauge)"}, {"note": "gauge pressure"},
+                  {"as_reported": "10 bar gage"}, {"as_reported": "10 bar(g)"}):
         r, why = pgraph_query._numeric({**V(10, "bar"), **gauge}, {"value": 145, "unit": "psia", "convert": True}, "lt")
         assert r is None and why.startswith("incompatible_unit")
     for bad in ({"op": "contains", "value": "x", "convert": True}, {"op": "eq", "value": 380, "unit": "°C", "convert": "yes"},

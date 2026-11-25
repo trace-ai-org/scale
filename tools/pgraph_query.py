@@ -187,6 +187,11 @@ _GROUP = {unit: (g, fo) for g, units in CONVERSIONS.items() for unit, fo in unit
 _CONVERTED: contextvars.ContextVar = contextvars.ContextVar("scale_query_converted", default=None)
 
 
+_GAUGE = re.compile(r"\bgau?ge\b|\(g\)|\bpsig\b|\bbarg\b|\bkPag\b", re.I)
+_ABSOLUTE = re.compile(r"\babsolute\b|\babs\b|\bpsia\b|\bbara\b", re.I)
+_REL = 1e-12                            # a converted number equals another within this relative error, never more
+
+
 def converted(v: dict, unit: str) -> dict | None:
     """``v`` (a value object) in ``unit``, when both units are in one group of :data:`CONVERSIONS` and differ; else
     None. ``value``, ``lower``, ``upper`` and ``uncertainty`` (a difference: no offset) are converted, ``unit`` set,
@@ -195,9 +200,11 @@ def converted(v: dict, unit: str) -> dict | None:
     a, b = _GROUP.get(vu), _GROUP.get(fu)
     if not a or not b or a[0] != b[0] or vu == fu:
         return None
-    if a[0] == "pressure" and any(isinstance(v.get(k), str) and "gauge" in v[k].casefold()
-                                  for k in ("definition", "basis", "as_reported", "note", "pressure_convention")):
-        return None                     # a gauge pressure is not absolute: never converted, left out as reported
+    if a[0] == "pressure":              # a gauge pressure is not absolute: never converted, left out as reported
+        said = " ".join(v[k] for k in ("definition", "basis", "as_reported", "note", "pressure_convention")
+                        if isinstance(v.get(k), str))
+        if _GAUGE.search(said) and not _ABSOLUTE.search(said):
+            return None
     (fa, oa), (fb, ob) = a[1], b[1]
     out = {**v, "unit": unit, "_converted_from": v.get("unit")}
     for k in ("value", "lower", "upper"):
@@ -595,14 +602,15 @@ def _numeric(v: Any, f: dict, op: str, read_basis: bool = False) -> tuple[bool |
     elif _stated(unit):
         return None, f"unit_unstated (the value is a plain number with no unit; filter in {unit!r})"
     lo, hi = number(v)
+    # a converted number carries floating-point error: within _REL of the filter's number it is that number
+    tol = (lambda y: _REL * max(abs(y), 1e-300)) if isinstance(v, dict) and v.get("_converted_from") else (lambda y: 0.0)
     if op in NUMERIC_OPS:
         x = xs[0]
-        return {"lt": (lo if lo is not None else hi) < x, "le": (lo if lo is not None else hi) <= x,
-                "gt": (hi if hi is not None else lo) > x, "ge": (hi if hi is not None else lo) >= x}[op], None
+        a, b = (lo if lo is not None else hi), (hi if hi is not None else lo)
+        return {"lt": a < x - tol(x), "le": a <= x + tol(x), "gt": b > x + tol(x), "ge": b >= x - tol(x)}[op], None
     # eq: the number, or a reported range that holds it (in: one of the numbers); ne: not so. A converted number is
     # equal within floating-point error (1 h is 1/24 d), never more
     low, high = (lo if lo is not None else hi), (hi if hi is not None else lo)
-    tol = (lambda y: 1e-9 * max(abs(y), 1e-300)) if isinstance(v, dict) and v.get("_converted_from") else (lambda y: 0.0)
     held = any(low - tol(x) <= x <= high + tol(x) for x in xs)
     return (not held if op == "ne" else held), None
 
@@ -610,18 +618,34 @@ def _numeric(v: Any, f: dict, op: str, read_basis: bool = False) -> tuple[bool |
 _WORDS = re.compile(r"[^\W_]+", re.UNICODE)
 
 
-def chemical_case(text: str) -> str:
-    """``text`` as a text filter compares it: each chemical formula or element symbol in its case
-    (:func:`passages.is_formula`: CO, Co, ZnO), every other word lower-cased, whitespace runs as one space."""
+def _chem_words(text: str) -> list[tuple[str, bool]]:
+    """The words of a text, each with whether it is a chemical formula or element symbol (:func:`passages.is_formula`)."""
     from .passages import is_formula
-    return " ".join(_WORDS.sub(lambda m: m.group() if is_formula(m.group()) else m.group().lower(), text).split())
+    return [(w, is_formula(w)) for w in _WORDS.findall(text)]
+
+
+def _same(want: tuple[str, bool], got: tuple[str, bool]) -> bool:
+    """One filter word against one word of a value: a formula the filter writes in its case matches only that case
+    (CO is not Co); any other filter word, a lower-case one included (co: either), matches ignoring case."""
+    return want[0] == got[0] if want[1] else want[0].casefold() == got[0].casefold()
+
+
+def chemical_match(text: str, want: str, op: str) -> bool:
+    """``eq``: the words of ``text`` are those of ``want``, one by one (:func:`_same`; punctuation aside); ``contains``:
+    they hold ``want``'s words in a row, or, for a one-word filter, a word of ``text`` starts with it (Co in Co3O4)."""
+    t, w = _chem_words(text), _chem_words(want)
+    if op == "eq":
+        return len(t) == len(w) and all(_same(a, b) for a, b in zip(w, t))
+    if len(w) == 1:
+        a = w[0]
+        return any(b[0].startswith(a[0]) if a[1] else a[0].casefold() in b[0].casefold() for b in t)
+    return any(all(_same(a, b) for a, b in zip(w, t[i:i + len(w)])) for i in range(len(t) - len(w) + 1))
 
 
 def formula_text(text: str) -> bool:
     """Whether a filter's text names a chemical formula or element symbol (Co, CO hydrogenation, Cu/ZnO), whose case
-    is then compared (:func:`chemical_case`); other text is compared ignoring case."""
-    from .passages import is_formula
-    return any(is_formula(w) for w in _WORDS.findall(text))
+    is then compared word by word (:func:`chemical_match`); other text is compared ignoring case."""
+    return any(f for _, f in _chem_words(text))
 
 
 def _one(v: Any, f: dict, op: str) -> tuple[bool | None, str | None]:
@@ -642,10 +666,13 @@ def _one(v: Any, f: dict, op: str) -> tuple[bool | None, str | None]:
     if numeric_filter(f) and (op in NUMERIC_OPS or isinstance(v, dict) or _is_number(v)):
         return _numeric(v, f, op)
     s = scalar(v)
+    typed = str(f.get("prop") or "").rsplit(".", 1)[-1].endswith("formula")    # a formula property: as written
     exact = isinstance(want, str) and formula_text(want)      # CO is carbon monoxide, Co cobalt: their case kept
     if op == "eq":
+        if typed and isinstance(s, str) and isinstance(want, str):
+            return s.strip() == want.strip(), None
         if exact and isinstance(s, str):
-            return chemical_case(s) == chemical_case(want), None
+            return chemical_match(s, want, "eq"), None
         return (s == want) or (isinstance(s, str) and isinstance(want, str) and s.lower() == want.lower()), None
     if op == "ne":
         return s != want, None
@@ -653,8 +680,11 @@ def _one(v: Any, f: dict, op: str) -> tuple[bool | None, str | None]:
         return s in (want or []), None
     if op == "contains":
         def has(x):
-            return isinstance(x, str) and (chemical_case(want) in chemical_case(x) if exact
-                                           else str(want).lower() in x.lower())
+            if not isinstance(x, str):
+                return False
+            if typed:
+                return str(want) in x
+            return chemical_match(x, want, "contains") if exact else str(want).lower() in x.lower()
         if isinstance(s, list):
             return want in s or any(has(x) for x in s), None
         return has(s), None
