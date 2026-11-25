@@ -2,6 +2,15 @@
 
 ## Unreleased
 
+- **curate-corpus reads figures panel by panel (skills; no schema change, no migration).** A new recipe, "Reading a
+  figure panel by panel": find a figure by its own caption, crop each panel, list the panels, record every quantity a
+  panel reports (printed numbers, histogram bars, peaks, plotted points), judge readability per panel and record an
+  unreadable one as an `extraction_error` gap with its reason, state a caption condition once per series, and save
+  each panel as it is read. `scripts/check_figures.py` reports a caption value copied onto several records, a named
+  figure that no value or gap cites, and figure evidence without a transcription. On 94 figures of 38 held-out
+  open-access papers, curated with open-weight models, the share of hand-audited figure values recorded rose from
+  93% (83/89) to 97% (86/89), and 305 of 307 values in 16 random figures matched the image on a manual check.
+
 - **Explorer feedback: CO is not Co, one hit per quote, opt-in unit conversion, example questions (tools, site; no
   schema change, no migration).** From a reader's first questions:
   - Search keeps chemical formulas and element symbols in their case: the new default embedder, `scale-hash-v2`,

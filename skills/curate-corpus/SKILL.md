@@ -235,6 +235,15 @@ are in `references/recipes.md` beside this file (through the agent tools:
   `transcription` (`references/recipes.md`, "Digitizing a figure", has the fields and an example). A main result the source prints only in a figure is digitized, never declared not
   curated: the second reading returns such a document (`needs_fix`, naming the figure). A point that
   cannot be read stays out, in an `extraction_error` gap.
+- **Read every figure panel by panel.** Find a figure by its own printed caption, never by a citation in the
+  text; crop each panel at high resolution and read the crop. Record every quantity a panel reports about the
+  materials or their synthesis, not only the main one: printed numbers (labels, insets, inset tables, a mean ± SD),
+  histogram bars, labelled or resolved peaks, and the points of curves and bar charts. Axis ticks, scale bars, panel
+  letters and sample names are not values. Read a panel whose axis has two numbered ticks and a unit and whose series
+  can be told apart; leave out one that cannot, as an `extraction_error` gap that names the panel and the reason
+  ("Fig. 3c: no y-axis numbers"). A condition stated once in a caption or legend goes once, on the record of the
+  series it covers, not on each point. Save each panel as soon as it is read, and run `scripts/check_figures.py`
+  before finishing (`references/recipes.md`, "Reading a figure panel by panel").
 
 ## Uncertainty
 
