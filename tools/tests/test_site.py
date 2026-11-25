@@ -391,3 +391,61 @@ def test_the_build_names_the_schema_version_catal_commons_pins(built):
     out, _ = built
     header = json.loads((REPO / "graphs/catal-commons/parts/header.json").read_text())
     assert json.loads((out / "data/graphs.json").read_text())["commons_schema_version"] == header["graph"]["schema_version"]
+
+
+def test_the_answering_prompt_leaves_the_proposal_procedure_to_a_tool(built):
+    """The page's prompt is the query-graph skill without its proposal procedure (fetched by proposal_procedure when a
+    question asks what to do) and without the command-line route; the answering rules ask for two routes, typed
+    absences, a Found by line and [record id, locator] citations, which the page checks."""
+    out, _ = built
+    answering = (out / "data/query-graph.md").read_text()
+    propose = (out / "data/query-graph-propose.md").read_text()
+    assert "call the proposal_procedure tool" in answering and "A proposal's layout" not in answering
+    assert "scale gap from-query" not in answering and "## Rules" in answering
+    assert "**Propose, when the question asks what to do**" in propose and "A proposal's layout" in propose
+    assert len(answering) < 0.6 * (len(answering) + len(propose))
+    js = (REPO / "site/explorer.js").read_text()
+    for part in ('name: "proposal_procedure"', 'fetch("data/query-graph-propose.md")', "at least two routes",
+                 "**Found by:**", "**What is missing:**", "[record id, locator]", "function citeLinks", "Reference checks",
+                 "returnedIds(res, seen)", 'view: "model"', "checklist: false", "page.next"):
+        assert part in js, part
+    assert "verified" not in js[js.index("function checksLine"):js.index("function checksLine") + 1500].replace(
+        "never that the answer is verified", "")
+
+
+def test_citations_become_links_and_the_page_checks_their_references(tmp_path):
+    """An answer's [record id, locator] citations become links showing the quote; the reference checks flag an id
+    the graph does not hold, a record no tool returned, and a quoted phrase that is not in the cited record's evidence
+    (line-break hyphens, page marks, spacing and ellipses aside; a word split across two quotes still found)."""
+    import shutil
+    import subprocess
+    if not shutil.which("node"):
+        pytest.skip("node is not installed")
+    js = (REPO / "site/explorer.js").read_text()
+    code = js[js.index("let idPrefix"):js.index("\n}\n", js.index("function checksLine")) + 3]
+    harness = tmp_path / "t.js"
+    harness.write_text("""
+global.esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({"&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;"}[c]));
+global.idLinks = (h) => h;
+const src = {id: "ex:t/source/s", label: "Source", props: {title: "A study of copper catalysts", year: 1928, kind: "patent"}};
+const rec = {id: "ex:t/test/1", label: "CatalyticTest", props: {name: "run 1", evidence: [
+  {source: "ex:t/source/s", locator: "p. 3", quote: "sensitive to poison-"},
+  {source: "ex:t/source/s", locator: "p. 3", quote: "ing by carbonyl at 400\\u00b0 C. | and later"}]}};
+global.G = {doc: {nodes: [src, rec], links: []}, byId: new Map([[src.id, src], [rec.id, rec]])};
+""" + code + """
+const seen = new Set(["ex:t/test/1"]);
+const ok = citeLinks('<p>It was \\u201csensitive to poisoning by carbonyl at 400\\u00b0C\\u201d [ex:t/test/1, p. 3].</p>', seen);
+const bad = citeLinks('<p>Also \\u201cnot in the quote at all\\u201d [ex:t/test/1, p. 3]; and [ex:t/nope/2, p. 1]; [ex:t/source/s]; [ex:t/test/1, p. 9].</p>', seen);
+const seen2 = new Set(); returnedIds({id_prefix: "ex:t/", rows: [{bound: {t: "~test/1"}}]}, seen2);
+const tilde = citeLinks('<p>Run 1 [~test/1, p. 3].</p>', seen2);
+console.log(JSON.stringify({ok: ok.checks, bad: bad.checks, html: ok.html, line: checksLine(ok.checks), tilde: tilde.checks, seen2: [...seen2]}));
+""")
+    out = json.loads(subprocess.run(["node", str(harness)], capture_output=True, text=True, check=True).stdout)
+    assert out["ok"]["cited"] == 1 and not out["ok"]["quotesMissing"] and not out["ok"]["unknown"]
+    assert 'class="gx-cite"' in out["html"] and "A study of copper catalysts · 1928 · patent · p. 3" in out["html"]
+    assert "sensitive to poison-" in out["html"] and "all resolve" in out["line"] and "verified" not in out["line"]
+    assert out["bad"]["unknown"] == ["ex:t/nope/2"] and out["bad"]["unreturned"] == ["ex:t/source/s"]
+    assert len(out["bad"]["quotesMissing"]) == 1
+    assert out["bad"]["locators"] == ["ex:t/test/1: p. 9"] and not out["ok"]["locators"]     # a page the evidence lacks
+    # a model view shortens ids with ~ for its id_prefix: returned and cited ids are read in full
+    assert out["seen2"] == ["ex:t/test/1"] and out["tilde"]["cited"] == 1 and not out["tilde"]["unknown"]

@@ -13,6 +13,37 @@
   benchmarks it was measured on, it did not improve on query-graph's own proposals. query-graph goes on as the
   general skill (0.3.2); plan-synthesis stays at 0.3.1 so that its benchmarks describe it as distributed.
 
+- **Answers from the graph: principles, a leaner prompt, citations a reader can check (site, docs; no schema
+  change).** A design review (three advocates for the reader, rigor and cost, a researcher's critique, Codex as
+  arbiter) settled twelve principles (`docs/answering.md`): support first; find by two routes and say how; result
+  identity; compatible comparisons; relevance before counting; observations, authors' reading and inference apart;
+  typed absences; answer first; inspectable citations; proportionate investigation; reversible compression; checks
+  labelled for what they are. In the explorer:
+  - the prompt is the query-graph skill without its proposal procedure (about half the length); a question that asks
+    what to do fetches the procedure (`proposal_procedure`, `data/query-graph-propose.md`);
+  - the answering rules ask for two routes, a table where records share columns, typed absences, a Found by line and
+    `[record id, locator]` citations;
+  - each citation becomes a short link (source, year, kind, locator) showing the quote, and the page runs reference
+    checks: the id is a record of the graph, a tool returned it while answering, the locator is one its evidence
+    gives, a quoted phrase is in its evidence;
+  - the page asks for the model view of results (each quote once, pages, narrower stats and describe);
+  - tested blind on six questions against the current prompt (`docs/answering.md`, "How it was tested").
+- **A model view of query and search results, narrower schema tools and plan errors a model can repair (tools,
+  service, site; no schema change, no migration).** A result sent to a model repeated each evidence item in every row
+  that cites it, with its source's details each time. `scale_query` and `scale_search` take `view: "model"`: the same
+  answer with each distinct evidence item written once (`E1` … `En`, the same id on every page) and, in each row,
+  whose evidence each item is (the record, the item's index, the variable or link type); each source once with the
+  year, status, kind and peer review its items repeat, and its title and DOI; ids with the graph prefix written `~`;
+  each filter records were left out by once. Nothing an answer uses is removed: `scale.modelview.expand` gives back the
+  full result, checked on every competency question and the methanol graph. The view is versioned (`view.version`)
+  and its rows come in pages (`offset`, `page_size`, `page_chars`; `page.next`), with rows matched, rows the plan's
+  limit returned and distinct bindings per variable stated, never truncated. The default stays the full result. A new
+  agent tool `scale_stats` (and `scale graph stats --label --property`) keeps only the units and link patterns of the
+  labels and properties named; `scale_describe` takes `checklist: false` to leave out the curation checklist. A plan of
+  the wrong shape (`match` given as text, a filter given as text, a `limit` as text, a step without `as`) is an error
+  that says what was expected and shows a plan, never a Python error; a plan sent as JSON text is read. The service's
+  question loop reads the model view, the narrowed describe and stats; the browser worker runs stats through the
+  toolkit like every other tool.
 - **An optional passage index for re-reading after a schema upgrade (skills; no schema change, no migration).**
   `skills/curate-corpus/scripts/passage_index.py` indexes a source folder's page texts into SQLite (FTS5), passages of
   whole paragraphs that keep their page and character span, so each is a verbatim substring of the page the graph's
