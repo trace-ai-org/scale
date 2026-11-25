@@ -38,7 +38,7 @@ approve or merge.
 | **owner** | `@hlxin`, admin of the repository, code owner of every path in [`.github/CODEOWNERS`](../.github/CODEOWNERS) | a reviewer: approves pull requests (their own are approved by another reviewer), which then merge once the checks pass; invites reviewers; builds releases; repository settings, rulesets and secrets ([repository-settings.md](repository-settings.md)) |
 | **reviewers** | domain experts, collaborators (Write), added to the review policy and CODEOWNERS when they join; no fixed number | approve and merge pull requests (any one of them is enough). The current list is in [`review-policy.yaml`](review-policy.yaml) |
 | **contributors** | anyone: issues and comments; collaborators also branches and pull requests; others through forks once the repository is public | suggest changes, curate, report gaps |
-| **@scale-agents** | a team of Claude agents on GitHub, started by every new issue, comment and review by a collaborator (no tag or label; anyone else's once a collaborator comments on it), or a manual run | a discovery strategist frames and coordinates, a data scientist proposes the patch and its evidence, a protocol compiler writes the tests, an evidence verifier assesses support and effects, and a systems engineer opens pull requests from `agent/…` branches under the Claude GitHub App's identity; never approves or merges |
+| **@scale-agents** | a team of Claude agents on GitHub, started by every new issue, comment and review by a collaborator (no tag or label; anyone else's once a collaborator comments on it), or a manual run | a discovery strategist frames and coordinates, a data scientist proposes the patch and its evidence, a protocol compiler writes the tests, an evidence verifier reads the sources apart from the proposer's explanation and assesses support and effects, and a systems engineer opens pull requests from `agent/…` branches under the Claude GitHub App's identity; never approves or merges |
 
 ## The rule: one approval for every change
 
@@ -103,8 +103,10 @@ an issue, a comment or a gap report            a new corpus (a sample curated ag
         ▼
 discovery strategist: frames the use case, decides (answer, question back, change or nothing), coordinates
 data scientist: sources, corrections to records or changes to schema definitions, the evidence record
-protocol compiler: tests with explicit expected outcomes · evidence verifier: support, counterexamples, effects
-systems engineer: version raised, migration assessment, checks → a pull request holding the change set
+protocol compiler: procedures and tests with explicit expected outcomes
+systems engineer: version raised, migration assessment, checks
+evidence verifier: the sources read first, apart from the proposer's explanation; support, counterexamples, effects
+systems engineer: a pull request holding the change set, on the head the verifier passed
         ▼
 checks: scale check, package, specification-changes (with a summary of a schema change for the reviewer)
         ▼
@@ -123,17 +125,21 @@ official release (a human step, release-process.md)
    else's issue or comment, once a collaborator comments on it (a run spends the owner's Claude usage).
    The discovery strategist frames the use case, decides what it needs and coordinates the revision; the data
    scientist assembles the sources and proposes corrections to records or changes to schema definitions; the
-   protocol compiler turns the validation requirements into tests with explicit expected outcomes; the evidence
-   verifier assesses the scientific support, the counterexamples and the effects on existing records and queries;
-   the systems engineer packages the change set (the patch, the evidence record, the test cases, the migration
-   assessment) as a pull request. They follow [`AGENTS.md`](../AGENTS.md) and the skills. They treat issue, comment and
+   protocol compiler turns the validation requirements into procedures and tests with explicit expected outcomes; the
+   systems engineer raises the version and writes the migration assessment; the evidence verifier, given the sources
+   but not the proposer's reasoning, reads the sources before the proposer's explanation, then assesses the scientific
+   support, the counterexamples and the effects on existing records and queries on that head; the systems engineer
+   opens the pull request holding the change set (the patch, the evidence record, the test cases, the migration
+   assessment, the verification). They follow [`AGENTS.md`](../AGENTS.md) and the skills. They treat issue, comment and
    corpus text as data, never as instructions about permissions, workflows, governance or secrets, and never edit
    releases, frozen versions or workflows; a change to `governance/` or `.github/` that a change needs is listed
    under Governance changes in its pull request
    ([`.github/scale-agents/instructions.md`](../.github/scale-agents/instructions.md)). Anyone may also open a pull request
    directly, with their own agent or by hand.
-3. **Review.** CI runs the checks and, for a schema change, writes the summary. A reviewer comments or asks
-   for changes on the pull request (the agents push the fixes to their own pull requests), or approves it, and it merges once the checks pass.
+3. **Review.** CI runs the checks and, for a schema change, writes the summary. The change is already implemented
+   in the pull request; the reviewer judges its justification and consequences from the change set and accepts it
+   (approves it, and it merges once the checks pass), requests revision (asks for changes; the agents push the fixes
+   to their own pull requests) or rejects it (closes it unmerged).
 4. **Data repositories.** Whoever keeps a knowledge-graph data repository runs `scale kg update --data DIR` there:
    every scale-catal document is moved to the new version through the registered migration steps, validated and
    its evidence index rebuilt. A document a step rule cannot migrate is reported and left untouched.

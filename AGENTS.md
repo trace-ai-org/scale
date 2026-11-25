@@ -127,7 +127,7 @@ anyone else's once a collaborator comments on it; nobody tags or labels anything
 the use case, decides what the event needs (an answer, a question back, a change or nothing) and coordinates the
 revision; a data scientist assembles the sources and proposes corrections to records or changes to schema
 definitions; a protocol compiler turns the validation requirements into tests with expected outcomes; an evidence
-verifier assesses the scientific support, the counterexamples and the effects on existing records and queries; a
+verifier reads the sources apart from the proposer's explanation and assesses the scientific support, the counterexamples and the effects on existing records and queries; a
 systems engineer packages the change set (the patch, the evidence record, the test cases, the migration assessment)
 as a pull request. The strategist's rules are [.github/scale-agents/instructions.md](.github/scale-agents/instructions.md),
 the other roles' [.github/scale-agents/roles/](.github/scale-agents/roles/); in short:
