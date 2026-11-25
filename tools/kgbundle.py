@@ -104,7 +104,10 @@ What the kg-bundle format cannot carry, and stays only in the scale-catal docume
   text survives (a value
   whose ``normalized_by`` names a record the bundle withholds is withheld whole, as one naming it by ``target``);
 * the source lifecycle beyond derived statuses (notices with their scope and dates), ``status_check``, evidence
-  passages, regions, transcriptions' agreement and second readings.
+  passages, regions, transcriptions' agreement and second readings;
+* a Dataset's ``table`` and an evidence item's ``dataset_cell`` (scale-catal 0.8.4): a dataset row is cited by its
+  locator only, and a record whose only evidence is dataset cells names no publication and is not exported (counted
+  in ``nodes_not_exported_no_source``).
 
 A host that needs these (an answer that reports missing context, the lifecycle of a source) should import the
 scale-catal document natively and read it with SCALE's rules. Platform-owned names (:data:`PLATFORM_OWNED`: trust,

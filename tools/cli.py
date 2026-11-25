@@ -1193,6 +1193,52 @@ def cmd_evidence_access(args):
 
 # ---------------------------------------------------------------- parser
 
+def cmd_data_add(args):
+    from . import dataingest
+    res = dataingest.add(args.file, args.map, args.into, repo=_repo(args), dry_run=args.dry_run)
+    if args.format == "json":
+        _emit(res, args)
+        return
+    what = "would add" if args.dry_run else "added"
+    print(f"{args.into}: {what} {len(res['added'])} records and links from {args.file} (dataset {res['dataset']}, sha256 "
+          f"{res['sha256']}): {res['records']} records, {res['results']} results; {len(res['unchanged'])} already there"
+          + ("; written" if res.get("written") else "; nothing written" if not args.dry_run else ""))
+    v = res["validation"]
+    print(f"  structure: {'valid' if v['valid'] else 'INVALID'} ({v['errors']} errors), {v['new_warnings']} new warnings "
+          "(scientific comparability and plausibility, kept as recorded)")
+    for w in res["warnings"][:20]:
+        print(f"    {w['record']}: {w['message']}")
+    for ref, c in res["checklist"].items():
+        print(f"  checklist {ref}: {c['violations']} must items missing on the imported records")
+        for x in c["first"][:5]:
+            print(f"    {x['record']}: {x['message']}")
+    if args.dry_run:
+        print(to_json({"nodes": res["nodes"], "links": res["links"]}))
+
+
+def cmd_data_verify(args):
+    from . import datatable
+    files = {}
+    for pair in args.file or []:
+        did, _, path = pair.partition("=")
+        if not path:
+            raise ScaleError(f"--file expects <dataset id>=<path>, got {pair!r}")
+        files[did] = path
+    res = datatable.verify(load_doc(args.doc), files, Path(args.doc).resolve().parent)
+    if args.format == "json":
+        _emit(res, args)
+    else:
+        print(f"{args.doc}: {res['status'].upper()}")
+        for d in res["datasets"]:
+            extra = (f", {d['matched']}/{d['checked']} cells hold the recorded values" if "checked" in d else "")
+            print(f"  {d['dataset']}: {d['status']} ({d['cells']} cited cells{extra})"
+                  + (f": {d['reason']}" if d.get("reason") else ""))
+            for p in (d.get("problems") or [])[:30]:
+                print(f"    {p}")
+    if res["status"] == "failed" or (args.require_all and res["status"] != "verified"):
+        raise SystemExit(1)
+
+
 def cmd_site_build(args):
     from . import site
     print(json.dumps(site.build(_repo(args), Path(args.out)), indent=1))
@@ -1573,6 +1619,26 @@ def build_parser() -> argparse.ArgumentParser:
     sp.add_argument("--dry-run", action="store_true", help="report only; write nothing")
     sp.add_argument("--no-index", action="store_true", help="do not rebuild the evidence index of a changed document")
     sp.add_argument("--out", help="also write the report (JSON) here")
+
+    da = sub.add_parser("data", help="tabular data (a CSV file) into a document by a declarative mapping, and checks of "
+                        "the cells it cites").add_subparsers(dest="sub", required=True)
+    sp = add("add", cmd_data_add, "compile a CSV file into records of a document by a mapping (mapping_version 1): a "
+             "Dataset with its sha256 and table, records with stable ids, each value citing its cell; refuses duplicate "
+             "keys, conflicts, unresolved references, malformed numbers and what would not validate", da)
+    sp.add_argument("file", help="the CSV file (profile scale_csv_v1)")
+    sp.add_argument("--map", required=True, help="the mapping (YAML, mapping_version 1)")
+    sp.add_argument("--into", required=True, help="the destination document (an existing .json file)")
+    sp.add_argument("--dry-run", action="store_true", help="print what would be written; write nothing")
+    out_opts(sp, ("text", "json"))
+    sp = add("verify", cmd_data_verify, "check a document's tabular Datasets against local copies: the sha256 of the "
+             "bytes and that each cited cell holds the recorded value (unverified when a file is not at hand; nothing "
+             "is fetched)", da)
+    sp.add_argument("doc", help="the document")
+    sp.add_argument("--file", action="append", metavar="ID=PATH",
+                    help="a local copy of a Dataset's file (repeatable; default: its uri when that is a local path, "
+                    "relative to the document)")
+    sp.add_argument("--require-all", action="store_true", help="fail unless every Dataset is verified")
+    out_opts(sp, ("text", "json"))
 
     st = sub.add_parser("site", help="the static site: the graph explorer, published by GitHub Pages").add_subparsers(
         dest="sub", required=True)

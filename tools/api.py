@@ -20,8 +20,8 @@ Design rules
 * **Agents do the work, people decide.** Approving and merging pull requests, building releases and
   filing GitHub issues are deliberately *not* agent tools; they stay in the CLI for humans
   (``status.human_only_actions`` lists the commands).
-* **Writes stay inside the working directory.** Only ``scale_example`` and ``scale_migrate`` (with
-  ``save_as``) write, and only a sanitized file name there.
+* **Writes stay inside the working directory.** Only ``scale_example``, ``scale_migrate`` (with ``save_as``) and
+  ``scale_data_add`` (into a document there) write, and only a sanitized file name there.
 * **Results are data.** Every tool returns JSON-serializable dicts; failures return
   ``{"error": ...}`` rather than raising, so an agent can read and recover.
 """
@@ -207,6 +207,32 @@ TOOLS: list[dict] = [
         "input_schema": {"type": "object", "properties": {**_DOC, **_DOMAIN,
             "to_version": {"type": "string", "description": "Target schema version (default: the current one)."},
             "save_as": {"type": "string", "description": "File name in the working directory (letters, digits, . _ -)."}}},
+    },
+    {
+        "name": "scale_data_add",
+        "description": "Compile a CSV file into records of a document in the working directory by a declarative mapping "
+                       "(YAML, mapping_version 1): a Dataset with the file's sha256 and table, records with stable ids, "
+                       "each value citing its cell (evidence.dataset_cell). Refuses duplicate keys, conflicting run-level "
+                       "properties, unresolved references, malformed numbers, a conflict with what the document holds and "
+                       "anything that would not validate; a retry changes nothing. dry_run returns what would be written.",
+        "input_schema": {"type": "object", "required": ["csv", "mapping", "into"], "properties": {
+            "csv": {"type": "string", "description": "The CSV file (profile scale_csv_v1): relative to the working "
+                                                     "directory, or absolute."},
+            "mapping": {"type": "string", "description": "The mapping (YAML): relative to the working directory, or "
+                                                         "absolute."},
+            "into": {"type": "string", "description": "The destination document's file name in the working directory "
+                                                      "(letters, digits, . _ -); it exists and holds what the rows name."},
+            "dry_run": {"type": "boolean", "description": "Write nothing; return the records and links it would add."}}},
+    },
+    {
+        "name": "scale_data_verify",
+        "description": "Check a document's tabular Datasets against local copies of their files: the sha256 of the bytes "
+                       "and that each cited cell holds the recorded value. A Dataset whose file is not at hand is "
+                       "unverified, never verified; nothing is fetched.",
+        "input_schema": {"type": "object", "properties": {**_DOC,
+            "files": {"type": "object", "additionalProperties": {"type": "string"},
+                      "description": "Dataset id -> its local file (relative to the working directory, or absolute); "
+                                     "default: a Dataset's uri when that is a local path."}}},
     },
     {
         "name": "scale_example",
@@ -656,6 +682,21 @@ class ScaleToolkit:
             write_canonical(target_path, new)
             written = str(target_path)
         return {"from_version": have, "to_version": target, **rep, "written": written, "document": new}
+
+    def _scale_data_add(self, csv: str, mapping: str, into: str, dry_run: bool = False) -> dict:
+        from . import dataingest
+        if not _NAME.match(into):
+            return {"error": "into is a file name in the working directory: 1-80 characters, letters, digits, '.', '_' "
+                             "or '-'"}
+        target = self.workspace / (into if into.endswith(".json") else f"{into}.json")
+        return dataingest.add(self._path(csv), self._path(mapping), target, repo=self.repo, dry_run=dry_run)
+
+    def _scale_data_verify(self, document: dict | None = None, path: str | None = None,
+                           files: dict | None = None) -> dict:
+        from . import datatable
+        doc = self._doc(document, path)
+        base = self._path(path).resolve().parent if path else self.workspace
+        return datatable.verify(doc, {k: self._path(v) for k, v in (files or {}).items()}, base)
 
     def _scale_example(self, name: str | None = None) -> dict:
         ex = self._examples()
