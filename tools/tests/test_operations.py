@@ -171,7 +171,8 @@ def test_the_agent_team_has_five_roles_and_the_verifier_reads_the_sources_first(
     # the verifier: the sources first, apart from the proposer's explanation
     verifier = roles["evidence-verifier"]
     assert "not given the proposer's reasoning" in verifier
-    first, after = verifier.index("The sources first, on your own"), verifier.index("The explanation, after")
+    first, after = verifier.index("The sources first, on your own"), verifier.index("The use case and the explanation, after")
+    assert first < verifier.index("uv run scale thread") > after
     assert first < after < verifier.index("Counterexamples") < verifier.index("Compatibility and effects")
     assert "not checked against the source" in verifier and "--source-text" in verifier
     assert "the commit you verified" in verifier and "kg update" in verifier and "domains cq" in verifier
@@ -181,6 +182,8 @@ def test_the_agent_team_has_five_roles_and_the_verifier_reads_the_sources_first(
                                            "**The person decides.**")]
     assert steps == sorted(steps)
     assert "The head it opens must be the head the verifier passed" in strategist
+    assert "agent/…-wip" in strategist and "agent/…-wip" in roles["systems-engineer"]   # an open pull request gets only verified heads
+    assert "docs/changes/" in roles["data-scientist"] and "the path of the evidence record" in strategist
     engineer = roles["systems-engineer"]
     assert "the commit the evidence verifier passed" in engineer
     # the protocol compiler: procedures and tests with expected outcomes

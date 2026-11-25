@@ -136,7 +136,7 @@ capabilities:
   status: functioning
   where: tools/ci.py, tools/codeowners.py, scale ci spec-changes, tools/schema_change.py (check, summary), .github/workflows/ci.yml (job specification-changes, with the summary of a schema change as the job summary)
   tests: [test_tooling_changes_pass, test_releases_and_frozen_versions_are_immutable, test_frozen_versions_may_be_added_and_sums_appended, test_a_specification_change_needs_the_schema_check, test_path_rules_are_anchored, test_an_experimental_domain_is_free, test_demoting_a_domain_does_not_exempt_its_graph_changes, test_promoting_a_domain_counts_its_graph_changes, test_the_summary_names_the_reviewers]
-  notes: Tested on temporary git repositories; not yet run by GitHub Actions on a pull request.
+  notes: Tested on temporary git repositories; runs on every pull request as CI's required specification-changes check.
 - name: CODEOWNERS evaluator (GitHub's pattern rules, last matching line wins, any owner on a line may approve, smallest set of approving owners); every reviewer owns every path
   status: functioning
   where: tools/codeowners.py, .github/CODEOWNERS (fixture copy in tools/tests/fixtures/codeowners/)

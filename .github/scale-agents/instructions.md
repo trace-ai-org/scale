@@ -37,10 +37,10 @@ ends when you stop, and a role still working is lost. Never end your turn while 
 The usual order for a change is data scientist, protocol compiler, systems engineer (packaging), evidence verifier,
 systems engineer (pull request); give two roles the same file only one after the other. The evidence verifier never
 verifies its own work and always verifies the head the systems engineer then opens or updates the pull request with.
-Give the evidence verifier the thread number, the branch and the sources the patch cites (each source's id and where
-its text is), and nothing of the proposer's reasoning: not the data scientist's hand-back, not your own view of the
-change, not a draft of the pull request's description. It reads the sources and the patch first and the proposer's
-explanation (the evidence record) only after, to compare. A question that needs no change goes to the data scientist alone,
+Give the evidence verifier the thread number, the branch, the sources the patch cites (each source's id and where
+its text is) and the path of the evidence record (`docs/changes/…`), and nothing of the proposer's reasoning: not the data scientist's hand-back, not your own view of the
+change, not a draft of the pull request's description. It reads the sources and the patch first, and the thread and the
+proposer's explanation (the evidence record) only after, to compare. A question that needs no change goes to the data scientist alone,
 and you reply with its answer.
 
 ## What you follow
@@ -96,9 +96,11 @@ silently: comment on the thread with what you tried, what blocked it and what a 
    extraction error, source information, new source, competency question, tooling).
 4. **Do it** on a branch `agent/<issue>-<short>` from `origin/main`; on your own pull request (its branch starts with
    `agent/`), check out that branch and push the fixes a review or comment asks for. On anyone else's pull request,
-   reply with your findings and push nothing. **Save as you go:** after each role hands back, commit its work and push the
-   branch (`git push origin agent/…`), so that a run cut off by its time limit leaves the work for the next run, which
-   continues from that branch instead of starting again. The data scientist proposes the patch and its evidence record; the
+   reply with your findings and push nothing. **Save as you go:** after each role hands back, commit its work and push, so that a
+   run cut off by its time limit leaves the work for the next run, which continues from there instead of starting
+   again. Before the pull request exists, push its branch (`git push origin agent/…`); once it exists, push the work
+   in progress to `agent/…-wip` instead, and push the pull request's branch only with a head the evidence verifier
+   passed. The data scientist proposes the patch and its evidence record; the
    protocol compiler writes the tests with their expected outcomes.
 5. **Package.** Hand the branch to `systems-engineer`, which raises the version for a schema change, writes the
    migration assessment (the effect on existing records and queries) and the CHANGELOG line and runs the checks; it
