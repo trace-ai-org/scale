@@ -31,7 +31,7 @@ from . import commons, graphparts, layout
 from .util import ScaleError, write_canonical
 
 SITE = "site"
-PAGES = ("index.html", "explorer.css", "explorer.js", "bundle.js", "layout.js", "worker.js", "publication.html", "app.js", "config.js", "style.css")
+PAGES = ("index.html", "explorer.css", "explorer.js", "bundle.js", "egress.js", "layout.js", "worker.js", "publication.html", "app.js", "config.js", "style.css")
 PACKAGE_ZIP = "py/scale-py.zip"
 #: The bundled items the page never reads (the real examples' parts, texts and PDFs are tens of MB; their graphs are
 #: offered as data instead).
@@ -120,7 +120,7 @@ def _skill_body(repo: Path, name: str) -> str:
 # browser never runs a page of one build with a worker or package of another it kept in its cache.
 STAMPED = {
     "index.html": ['href="explorer.css"', 'src="explorer.js"'],
-    "explorer.js": ['"./bundle.js"', 'new Worker("worker.js")', 'new Worker("layout.js")', 'fetch("data/query-graph.md")'],
+    "explorer.js": ['"./bundle.js"', '"./egress.js"', 'new Worker("worker.js")', 'new Worker("layout.js")', 'fetch("data/query-graph.md")'],
     "worker.js": ['fetch("py/scale-py.zip")'],
     "publication.html": ['href="style.css"', 'src="app.js"'],
 }

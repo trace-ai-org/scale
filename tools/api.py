@@ -287,9 +287,14 @@ def _file_key(st: os.stat_result) -> tuple:
 class ScaleToolkit:
     """SCALE tools for an agent. ``call(name, arguments)`` never raises; errors come back as data."""
 
-    def __init__(self, workspace: str | os.PathLike | None = None, repo: str | os.PathLike | None = None):
+    def __init__(self, workspace: str | os.PathLike | None = None, repo: str | os.PathLike | None = None,
+                 egress=None):
         self.repo = Path(repo).resolve() if repo else find_repo_root()
         self.workspace = Path(workspace).expanduser().resolve() if workspace else default_workspace()
+        # an egress gate (scale.egress.EgressGate) when the results go to a model: a tool refuses a document whose
+        # records are not public unless the policy approves the gate's endpoint for their levels (None: no gate, the
+        # caller keeps the results; the MCP and HTTP servers and `scale call` pass one)
+        self.egress = egress
         self._specs: dict[str, tuple] = {}       # schema path -> (its source files' stat key, the schema)
         self._loaded: dict[str, dict] = {}      # documents by path, kept while their file is unchanged (_load)
         self._handlers: dict[str, Callable[..., dict]] = {t["name"]: getattr(self, "_" + t["name"]) for t in TOOLS}
@@ -323,6 +328,8 @@ class ScaleToolkit:
         if handler is None:
             return {"error": f"unknown tool {name!r}", "available": list(self._handlers)}
         try:
+            if self.egress is not None:
+                self._egress_check(name, arguments or {})
             return handler(**(arguments or {}))
         except TypeError as exc:
             return {"error": f"bad arguments for {name}: {exc}"}
@@ -332,6 +339,26 @@ class ScaleToolkit:
             return {"error": f"file not found: {exc.filename}"}
 
     # ------------------------------------------------------------ helpers
+    def _egress_check(self, name: str, arguments: dict) -> None:
+        """Refuse (scale.egress.EgressDenied, returned as an error) a tool whose result would carry records the gate's
+        endpoint may not receive: the document given inline or by path, or the graph of a curation folder."""
+        if not isinstance(arguments, dict):
+            return
+        doc, where = None, None
+        if isinstance(arguments.get("document"), dict):
+            doc, where = arguments["document"], self.workspace
+        elif isinstance(arguments.get("path"), str) and arguments["path"]:
+            where = self._path(arguments["path"])
+            doc = self._load(arguments["path"])["doc"]
+        elif isinstance(arguments.get("folder"), str) and name in ("scale_source_check", "scale_source_finish"):
+            from .curate import _folder
+            _, _, g = _folder(self._path(arguments["folder"]))
+            if g.is_file():
+                doc, where = load_doc(g), g
+        if doc is not None:
+            self.egress.check(doc, f"the document {arguments.get('path') or arguments.get('folder') or '(inline)'}",
+                              where)
+
     def _path(self, path: str) -> Path:
         """A document path: absolute as given, else relative to the working directory."""
         p = Path(path).expanduser()

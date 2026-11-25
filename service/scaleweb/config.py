@@ -49,6 +49,8 @@ class Config:
     inbox_minutes: int = 90                  # and its time
     inbox_workers: int = 1                   # sources Claude Code curates at once in the inbox
     ask: str = ""                            # "claude-code": questions answered here by Claude Code (runner.answer)
+    egress_policy: str = ""                  # a file approving model endpoints for access levels (scale.egress); empty: none
+    egress_endpoint: str = "anthropic"       # the endpoint the question loop sends to, as that policy names it
 
     @classmethod
     def from_env(cls) -> Config:
@@ -86,4 +88,6 @@ class Config:
             inbox_minutes=_int("SCALE_WEB_INBOX_MINUTES", 90),
             inbox_workers=_int("SCALE_WEB_INBOX_WORKERS", 1),
             ask=os.environ.get("SCALE_WEB_ASK", "").strip().lower(),
+            egress_policy=os.environ.get("SCALE_WEB_EGRESS_POLICY", ""),
+            egress_endpoint=os.environ.get("SCALE_WEB_EGRESS_ENDPOINT", "anthropic").strip() or "anthropic",
         )

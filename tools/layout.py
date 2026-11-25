@@ -56,6 +56,7 @@ DECISIONS = "docs/decisions"
 DECISION_LOG = "docs/decisions/log.json"
 GAP_REGISTER = "docs/gaps/register.json"
 IMPLEMENTATION_STATUS = "docs/implementation-status.yaml"
+PUBLIC_FIXTURES = "governance/public-fixtures.yaml"   # reviewed public files that look like raw data (scale guard)
 
 # an optional restricted copy: a folder outside the repository, mirroring repository-relative paths, for inputs that may
 # not be committed (data not cleared for publication). Nothing points there unless this variable names it; tools then

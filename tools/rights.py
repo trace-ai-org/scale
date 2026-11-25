@@ -62,7 +62,13 @@ WITHHELD = re.compile(r"\b(quote|transcription|second_reading) withheld: sha256:
 # ---------------------------------------------------------------- rights files
 def load_rights(path: str | Path) -> dict[str, dict]:
     """The ``sources`` of a rights file, checked: every entry names a known class, a licence and a basis."""
-    data = load_yaml(Path(path)) or {}
+    return parse_rights(load_yaml(Path(path)) or {}, path)
+
+
+def parse_rights(data, path: str | Path) -> dict[str, dict]:
+    """:func:`load_rights` on the rights file's parsed content (``path`` names it in errors): the data guard reads
+    rights files from git objects, not from the working tree."""
+    data = data or {}
     if not isinstance(data, dict) or set(data) - {"sources", "limits"} or not isinstance(data.get("sources"), dict):
         raise ScaleError(f"{path}: a rights file holds sources: {{<source id>: {{class, licence, basis}}}} "
                          "and, optionally, limits: {quote_chars, source_chars}")
@@ -396,20 +402,27 @@ def committed_documents(repo: str | Path) -> list[Path]:
 def access_problems(repo: str | Path, docs: list[Path] | None = None) -> list[str]:
     """Committed documents whose graph or any record is not explicitly public (effective stewardship access;
     a missing access counts as not public, as ``pgraph.visible`` reads it)."""
-    from .pgraph import effective_stewardship
     repo = Path(repo).resolve()
     out = []
     for p in docs if docs is not None else committed_documents(repo):
-        doc = load_doc(p)
         rel = p.relative_to(repo).as_posix() if p.is_relative_to(repo) else str(p)
-        g = (doc.get("graph") or {}).get("stewardship") or {}
-        if g.get("access") != "public":
-            out.append(f"{rel}: the graph's stewardship access is {g['access']}" if g.get("access") else
-                       f"{rel}: the graph states no stewardship access (read as institution); declare access: public")
-        bad = [r.get("id") for r in doc.get("nodes", []) + doc.get("links", [])
-               if effective_stewardship(doc, r).get("access") != "public"]
-        if bad:
-            out.append(f"{rel}: {len(bad)} records are not public (e.g. {bad[0]})")
+        out += doc_access_problems(load_doc(p), rel)
+    return out
+
+
+def doc_access_problems(doc: dict, rel: str) -> list[str]:
+    """:func:`access_problems` for one document (``rel`` names it): its graph and every record explicitly public."""
+    from .pgraph import effective_stewardship, stewardship_of
+    out = []
+    graph = doc.get("graph") if isinstance(doc.get("graph"), dict) else {}
+    g = stewardship_of(graph.get("stewardship"))
+    if g.get("access") != "public":
+        out.append(f"{rel}: the graph's stewardship access is {g['access']}" if g.get("access") else
+                   f"{rel}: the graph states no stewardship access (read as institution); declare access: public")
+    bad = [r.get("id") for r in doc.get("nodes", []) + doc.get("links", [])
+           if effective_stewardship(doc, r).get("access") != "public"]
+    if bad:
+        out.append(f"{rel}: {len(bad)} records are not public (e.g. {bad[0]})")
     return out
 
 
@@ -423,18 +436,31 @@ def copyright_check(repo: str | Path) -> dict:
         doc = load_doc(p)
         if (doc.get("graph") or {}).get("data_status") == "synthetic_example":
             continue
-        rel = p.relative_to(repo).as_posix()
         rf = rights_file(p, repo)
-        if rf is None:
-            problems.append(f"{rel}: research data without a {RIGHTS_FILE} in its folder or above")
-            continue
-        rep = report(doc, load_rights(rf))
-        problems += [f"{rel}: {v}" for v in rep["violations"]]
-        problems += [f"{rel}: source {s} has no entry in {rf.relative_to(repo).as_posix()}" for s in rep["unlisted"]]
-        rows.append({"document": rel, "rights": rf.relative_to(repo).as_posix(), "sources": len(rep["sources"]),
-                     "quoted_items": sum(r["quoted_items"] for r in rep["sources"].values()),
-                     "withheld_items": sum(r["withheld_items"] for r in rep["sources"].values())})
+        row, found = doc_copyright_problems(doc, p.relative_to(repo).as_posix(),
+                                            load_rights(rf) if rf is not None else None,
+                                            rf.relative_to(repo).as_posix() if rf is not None else None)
+        problems += found
+        if row is not None:
+            rows.append(row)
     return {"documents": rows, "problems": problems, "ok": not problems}
+
+
+def doc_copyright_problems(doc: dict, rel: str, rights: dict[str, dict] | None,
+                           rights_rel: str | None) -> tuple[dict | None, list[str]]:
+    """:func:`copyright_check` for one document (``rel``) under the entries of the rights file that covers it
+    (``rights``, None when none does; ``rights_rel`` names the file): its row of the report (None for a synthetic
+    example, or when no rights file covers it) and its problems."""
+    if (doc.get("graph") or {}).get("data_status") == "synthetic_example":
+        return None, []
+    if rights is None:
+        return None, [f"{rel}: research data without a {RIGHTS_FILE} in its folder or above"]
+    rep = report(doc, rights)
+    problems = [f"{rel}: {v}" for v in rep["violations"]]
+    problems += [f"{rel}: source {s} has no entry in {rights_rel}" for s in rep["unlisted"]]
+    return {"document": rel, "rights": rights_rel, "sources": len(rep["sources"]),
+            "quoted_items": sum(r["quoted_items"] for r in rep["sources"].values()),
+            "withheld_items": sum(r["withheld_items"] for r in rep["sources"].values())}, problems
 
 
 # ---------------------------------------------------------------- gap reports leaving a data repository

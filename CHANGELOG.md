@@ -2,6 +2,20 @@
 
 ## Unreleased
 
+- **Private-data protection (tools, service, explorer; no schema change, no migration).** `scale data init DIR`
+  scaffolds a data repository of one's own (a policy file, `scale-data.yaml`, naming its readers, remotes, raw-data
+  patterns and approved model endpoints; `rights.yaml`; ignored raw/index/exports/cache/work folders; mode 0700; no
+  remote). `scale guard install` writes a pre-commit hook that checks the staged snapshot (git index blobs, graphs
+  kept as parts rebuilt from them) and a pre-push hook that checks every outgoing commit and the destination: they
+  refuse documents some reader of the repository may not read (here, anything not explicitly public; in a data
+  repository, records narrower than its readers), malformed documents, quotes beyond the copyright cap and undeclared
+  raw data (by name, first bytes, table layout or size; reviewed fixtures in `governance/public-fixtures.yaml`).
+  `scale check` runs the guard over every tracked file. An egress gate, deny by default, keeps records that are not
+  public from model endpoints a policy does not approve: in `scale mcp`, `scale serve` and `scale call`
+  (`SCALE_EGRESS_POLICY`, `SCALE_EGRESS_ENDPOINT`), the service's `/ask` (`SCALE_WEB_EGRESS_POLICY`) and the graph
+  explorer's questions (approval in the page only). A graph that is not public is never contributed to the commons.
+  Hooks prevent accidents and can be bypassed; [docs/private-data.md](docs/private-data.md) says what is not caught.
+
 - **An optional passage index for re-reading after a schema upgrade (skills; no schema change, no migration).**
   `skills/curate-corpus/scripts/passage_index.py` indexes a source folder's page texts into SQLite (FTS5), passages of
   whole paragraphs that keep their page and character span, so each is a verbatim substring of the page the graph's
