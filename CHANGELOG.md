@@ -9,7 +9,8 @@
   each panel as it is read. `scripts/check_figures.py` reports a caption value copied onto several records, a named
   figure that no value or gap cites, and figure evidence without a transcription. On 94 figures of 38 held-out
   open-access papers, curated with open-weight models, the share of hand-audited figure values recorded rose from
-  93% (83/89) to 97% (86/89), and 305 of 307 values in 16 random figures matched the image on a manual check.
+  93% (83/89) to 97% (86/89); on a manual check of 16 random figures, 301 of 307 values matched the image, and
+  the 4 that did not were particle sizes measured against a scale bar, which the recipe now rules out.
 
 - **Explorer feedback: CO is not Co, one hit per quote, opt-in unit conversion, example questions (tools, site; no
   schema change, no migration).** From a reader's first questions:

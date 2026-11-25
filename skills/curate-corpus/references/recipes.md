@@ -858,6 +858,10 @@ The digitizing steps above read one value. A figure usually holds many, in sever
    - curves, scatter and bar charts: each plotted point at its x position, digitized as above.
 
    Axis ticks, scale bars, panel letters, Miller indices, formula subscripts and sample names are not values.
+   Never measure a micrograph yourself: a size, length or spacing that the panel does not print (as a label, an
+   inset or a histogram) is not reported, however clear the scale bar; record nothing from such a panel, or a gap.
+   In a 3D or offset (waterfall) plot, read only the trace that sits on the axis; the others are shifted by the
+   perspective and are left out, as a gap.
 5. **Judge readability panel by panel, neither strict nor loose.** Read a panel when its axis has at least two
    numbered ticks and a unit or quantity name, and the series you read can be told apart. Leave a panel (or one
    series) out when its axis has no numbers or no unit (arbitrary units serve for peak positions, not heights), the
