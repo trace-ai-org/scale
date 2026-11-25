@@ -10,15 +10,16 @@ it (@scale-agents), say which request it answers; the agents fill in the change 
 
 ## Change set
 
-<!-- What a reviewer needs to accept, request revision or reject: -->
+<!-- What a reviewer needs to judge the scientific justification and the consequences, and to accept (approve; it
+merges once the checks pass), request revision (request changes) or reject (close it unmerged): -->
 
 - **Proposed patch:** <!-- what changed, file by file -->
 - **Evidence record:** <!-- the sources, quotes and locators that justify it; the existing concepts considered -->
-- **Test cases and expected outcomes:** <!-- fixtures that pass, counterexamples that fail and why, competency questions and their answers -->
+- **Test cases and expected outcomes:** <!-- per requirement: the procedure (commands), fixtures that pass, counterexamples that fail and why, competency questions and their answers -->
 - **Migration assessment:** <!-- breaking or additive, the version raised, the effect on existing records and queries (scale schema check, scale kg update --dry-run) -->
 - **Governance changes:** <!-- every file changed in governance/ or .github/, and why; none if none -->
 - **Follow-ups:** <!-- what this change leaves for a separate issue (e.g. bundles to re-export at the new schema version) -->
-- **Verification:** <!-- the evidence verifier's report, or how you checked it -->
+- **Verification:** <!-- the evidence verifier's report (the commit it verified; the sources it read against their text, before the proposer's explanation, and those it could not), or how you checked it -->
 
 ## Type
 

@@ -81,7 +81,7 @@ def test_who_may_start_the_agents_and_what_workflows_may_write():
     """@scale-agents start on their own on every new issue, comment and review (no label or tag), never on a bot's
     event, and by hand only from main; the job token only reads the contents (the team pushes with the Claude GitHub
     App's token); the discovery strategist's instructions and every other role are installed for the run, the evidence
-    verifier unable to edit. No workflow asks for contents: write. The main ruleset needs one approval, no code
+    verifier without the edit tools. No workflow asks for contents: write. The main ruleset needs one approval, no code
     owner, and lets nobody bypass it, the owner included."""
     import json
     rules = json.loads((REPO / "governance/github/ruleset-main.json").read_text())
@@ -150,6 +150,55 @@ def test_who_may_start_the_agents_and_what_workflows_may_write():
     merge = load_yaml(REPO / ".github/workflows/reviewers.yml")["jobs"]["merge"]
     assert "github.event.review.state == 'approved'" in merge["if"] and "author_association" in merge["if"]
     assert "--match-head-commit" in merge["steps"][0]["run"]          # only the head the approval was given on
+
+
+def test_the_agent_team_has_five_roles_and_the_verifier_reads_the_sources_first():
+    """The team is five roles: the discovery strategist (the run's instructions) and four subagents. The evidence
+    verifier is given the sources but not the proposer's reasoning, reads the sources before the proposer's
+    explanation, lists the sources it could not read, examines the counterexamples and the effects on existing records
+    and queries, and names the commit it verified; the strategist orders packaging before verification and the pull
+    request after it, on the head the verifier passed; the protocol compiler states procedures with expected outcomes;
+    the pull request (the review package) holds every part of the change set; a person accepts, requests revision or
+    rejects, and the change is implemented before it is approved."""
+    import re
+    flat = lambda p: " ".join((REPO / p).read_text().split())          # noqa: E731  (instructions wrap their lines)
+    strategist = flat(".github/scale-agents/instructions.md")
+    roles = {p.stem: flat(p.relative_to(REPO)) for p in (REPO / ".github/scale-agents/roles").glob("*.md")}
+    assert set(roles) == {"data-scientist", "protocol-compiler", "evidence-verifier", "systems-engineer"}
+    table = re.findall(r"^\| (?:\*\*you, the discovery strategist\*\*|`([a-z-]+)`) \|",
+                       (REPO / ".github/scale-agents/instructions.md").read_text(), re.M)
+    assert len(table) == 5 and set(table) - {""} == set(roles)
+    # the verifier: the sources first, apart from the proposer's explanation
+    verifier = roles["evidence-verifier"]
+    assert "not given the proposer's reasoning" in verifier
+    first, after = verifier.index("The sources first, on your own"), verifier.index("The explanation, after")
+    assert first < after < verifier.index("Counterexamples") < verifier.index("Compatibility and effects")
+    assert "not checked against the source" in verifier and "--source-text" in verifier
+    assert "the commit you verified" in verifier and "kg update" in verifier and "domains cq" in verifier
+    assert "nothing of the proposer's reasoning" in strategist and "not the data scientist's hand-back" in strategist
+    # the order: package, verify, then the pull request on the verified head
+    steps = [strategist.index(s) for s in ("**Package.**", "**Verify.**", "**Open the pull request.**",
+                                           "**The person decides.**")]
+    assert steps == sorted(steps)
+    assert "The head it opens must be the head the verifier passed" in strategist
+    engineer = roles["systems-engineer"]
+    assert "the commit the evidence verifier passed" in engineer
+    # the protocol compiler: procedures and tests with expected outcomes
+    compiler = roles["protocol-compiler"]
+    assert "**procedure**" in compiler and "expected outcome" in compiler and "observed" in compiler
+    # the review package: every part of the change set, in the pull request the systems engineer opens and the template
+    sections = ("Proposed patch", "Evidence record", "Test cases and expected outcomes", "Migration assessment",
+                "Verification", "Governance changes")
+    template = flat(".github/PULL_REQUEST_TEMPLATE.md")
+    for s in sections:
+        assert f"**{s}**" in engineer and f"**{s}:**" in template, s
+    assert "effect on existing records and queries" in engineer and "effect on existing records" in template
+    # the person decides: accept (approve, then the merge), request revision, or reject (close unmerged)
+    for text in (strategist, template):
+        assert "request" in text and "revision" in text and "close" in text and "merges once the checks pass" in text
+    assert "A rejection ends the change" in strategist
+    governance = flat("governance/GOVERNANCE.md")
+    assert "The change is already implemented in the pull request" in governance
 
 
 def load_yaml_front(path):
