@@ -16,6 +16,7 @@ allowed-tools:
   - Bash(scale review values:*)
   - Bash(scale evidence:*)
   - Bash(scale pages:*)
+  - Bash(python3 skills/curate-corpus/scripts/passage_index.py search:*)
   # not pre-approved, so a person sees each call: `scale graph upgrade --write`, git commits, pushes, pull requests
 outputs:
   - upgrade-<graph>-<from>-to-<to>.md - the report a person decides from
@@ -78,6 +79,24 @@ for each item, read **only the cited locators** (and the sentences around them):
 - `asks` naming a checklist item: fill it from the passage with a verbatim quote, or declare it `not_reported` with
   `missing_reason: not_stated_in_source`.
 - `could_add` (a property the person chose to enrich for): fill it only where the passage states it.
+
+**With a passage index (optional).** When the curation kept one (`curate_run.py prepare --passage-index`, or
+`passage_index.py add` on the source folders), items with no locator for what they ask, chiefly `could_add`, are
+looked up there instead of reading whole papers:
+
+```bash
+python3 skills/curate-corpus/scripts/passage_index.py search --db <passages.db> --source <source id> \
+    --q <term> --q "<phrase>" … --pattern '<regex>' … [--semantic "<the property's definition>"] --json
+```
+
+Build the terms from the property's contract (`scale graph describe <Label>`: its definition, unit and the words a
+source uses for it, e.g. anneal, calcined, heat-treated, "under H2") and the names of the records' components; add
+patterns for the printed forms words miss (for a ratio: `\d+\s*:\s*\d+`, `\d+\s*/\s*\d+`, `[wvm]\s*/\s*[wvm]`,
+`(wt|at|mol)\s*\.?\s*%`). Read each hit with its neighbours; write a value only from a hit, with its page as the
+locator, as printed and on the record it belongs to: one value per sample or condition, never a group's series,
+range or paraphrase; a ratio printed A:B on A's edge with B as its target. A source in `none_found_in_passages` is not evidence that it does not
+state the property: read its pages, or leave the item open and list it. Without an index, read the page texts as
+above.
 
 Follow the curate-corpus rules for every value: as printed, with `as_reported`, the unit the source printed, a
 verbatim quote and locator for anything new. Change nothing outside the item's fields; keep every id.

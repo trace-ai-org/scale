@@ -410,6 +410,11 @@ def cmd_prepare(a):
     if not picked:
         die("no included source with its PDF on disk matches: fetch the corpus's files first (fetch-corpus: download_open.py --corpus, then settle_corpus.py)")
     started, skipped, notes = 0, 0, Counter()
+    index = None
+    if a.passage_index:
+        import passage_index
+        index = passage_index.connect(Path(a.passage_index).resolve())
+        cfg["passage_index"] = str(Path(a.passage_index).resolve())
     for s, pdf in picked:
         i = folder_id(s)
         f = run_dir / "sources" / i
@@ -450,6 +455,8 @@ def cmd_prepare(a):
                                                 "files": si_pages.append(f / out["page_texts"], si)
                                                 if out.get("page_texts") else [{"file": p.name, "left_out": "no page texts"}
                                                                                for p in si]})
+        if index is not None:                  # optional: the passages a later re-reading searches
+            notes["passages indexed"] += bool(passage_index.add(index, f).get("passages"))
         started += 1
         if s.get("doi"):
             time.sleep(1.0)                    # Crossref's polite pace: one DOI lookup per second
@@ -1031,6 +1038,9 @@ def main():
     p.add_argument("--version", help="the schema version to pin (default: SCALE's head; the version of the graph the "
                                      "documents will be contributed to, e.g. graphs/catal-commons)")
     p.add_argument("--no-si", action="store_true", help="do not append the SI files' text to the page texts")
+    p.add_argument("--passage-index", help="optional: also index each folder's page texts into this SQLite file "
+                                           "(scripts/passage_index.py), so a later re-reading (upgrade-curation) "
+                                           "reads passages instead of whole papers; private, as the page texts are")
     p.add_argument("--scale", help='the scale command (default: $SCALE_CMD or "scale"; e.g. "uv run --project <checkout> scale")')
     p.add_argument("--curator", help="the model that curates and fixes: " + "|".join(MODELS) + " (a subagent; opus "
                    "recommended) or api:<model> (scripts/api_host.py, on a model behind --api-base-url)")

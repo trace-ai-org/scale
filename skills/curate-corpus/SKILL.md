@@ -448,6 +448,11 @@ source is settled, record the results in the index, and finish. Read [references
 starting a run, and [references/batches.md](references/batches.md) for batch sizes and the states. A subagent that
 curates one source of a run follows this file; the prompt the run gives it says where that source's files are.
 
+- **A passage index is optional.** `curate_run.py prepare --passage-index <run>/passages.db` also indexes each
+  folder's page texts (`scripts/passage_index.py add`; one source alone: `passage_index.py add --db <db> <folder>`),
+  so a later re-reading after a schema change (upgrade-curation) reads the passages that may hold a new property
+  instead of whole papers. Without it nothing changes. The index holds the full page texts: keep it private beside
+  the run, never commit or contribute it. It only finds passages; values are still read on the page and quoted.
 - **A second reading is not a review.** No agent is an independent reviewer: a person reviews a document before it
   counts as reviewed. Skipping the second reading is the user's choice, never yours, and always advised against.
 - **Scripts keep the books; subagents read.** Never write a document, a report, a second reading or a state line
