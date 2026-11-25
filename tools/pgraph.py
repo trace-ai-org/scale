@@ -56,8 +56,9 @@ DAY = re.compile(r"^\d{4}-\d{2}-\d{2}$")
 # the stewardship keys that say who may see a record (the others, licence, note and curated_by, do not)
 AUDIENCE_KEYS = ("access", "project", "contributed_by", "embargo_until", "access_after_embargo")
 # kernel structures (beyond the value object, evidence, record reference and stewardship) that a property may
-# name as its type: a top-level block with fields and required
-STRUCTURES = ("status_check", "record_check")
+# name as its type: a top-level block with fields and required (the dataset ones, 0.8.4 on: a cell of a tabular Dataset,
+# a row key, a table's layout and one of its columns)
+STRUCTURES = ("status_check", "record_check", "dataset_cell", "dataset_key", "dataset_table", "dataset_column")
 
 
 def follows(doc: dict | None) -> set[str]:
@@ -556,6 +557,9 @@ class Validator:
             check_document(doc, self.spec, rep)
         from .results import check_document as check_results   # result entries (0.4.0 on): ids, variables, repetitions
         check_results(doc, self.spec, rep)
+        if isinstance(self.spec.get("dataset_cell"), dict):     # dataset cells and tables (0.8.4 on)
+            from .datatable import check_document as check_cells
+            check_cells(doc, self.spec, rep)
         if "Hypothesis" in self.nodes and "TESTS" in self.edges:
             from .pgraph_science import science_checks
             science_checks(doc, self.spec, rep)
@@ -1065,6 +1069,9 @@ def _strip(props: dict, keep: set, gone: set, dropped: set, moved, removed: list
     out = {}
     for k, v in props.items():
         ptr = f"/{_esc(k)}"
+        if k == "table" and isinstance(v, dict) and isinstance(v.get("columns"), list):
+            out[k] = _strip_table(v, gone, removed, ptr, dropped)   # names and keys are text, only a column's variable a ref
+            continue
         y = v if k in ("evidence", "stewardship") else _drop_refs(v, gone, removed, ptr, dropped, lost, moved, untraced,
                                                                   kept_ev)
         if y is _GONE or y is _WITHHELD:
@@ -1077,6 +1084,20 @@ def _strip(props: dict, keep: set, gone: set, dropped: set, moved, removed: list
         else:
             out[k] = y
     return out
+
+
+def _strip_table(t: dict, gone: set, removed: list[int], at: str, dropped: set) -> dict:
+    """A Dataset's table (``dataset_table``) as a view keeps it: its column names, primary key and profile are text,
+    never references, so a name that happens to equal a withheld id stays; a column's ``variable`` naming a withheld
+    Variable goes (counted)."""
+    cols = []
+    for i, c in enumerate(t["columns"]):
+        if isinstance(c, dict) and isinstance(c.get("variable"), str) and c["variable"] in gone:
+            c = {k: x for k, x in c.items() if k != "variable"}
+            removed[0] += 1
+            dropped.add(f"{at}/columns/{i}/variable")
+        cols.append(c)
+    return {**t, "columns": cols}
 
 
 def _subset_pass(kept_nodes: list[dict], links_kept: list[dict], keep: set, gone: set, original: dict,

@@ -149,7 +149,7 @@ The kernel and the catalysis domain share **one version number**, set in `domain
 they agree. Every schema change raises it: the second number for a breaking change, the third for an additive
 one. The old version is frozen in `graph/frozen/`, so a document stays readable under the version it names.
 
-The schema is at **0.8.3**; 0.1.0 (2026-10-08) was the first version of this repository's numbering. The schema was
+The schema is at **0.8.4**; 0.1.0 (2026-10-08) was the first version of this repository's numbering. The schema was
 named `scale-graph` until 0.1.0 and is `scale-catal` from 0.2.0 on (a breaking change: documents pin the name):
 
 <details>
@@ -179,7 +179,8 @@ named `scale-graph` until 0.1.0 and is `scale-catal` from 0.2.0 on (a breaking c
 | scale-catal 0.8.0 (frozen) | `7cc40d129e77e771254a5b48576b1f0c4f239bc3d7ccbc63adc200bb4eff749b` |
 | scale-catal 0.8.1 (frozen) | `45243ccc5c376783bcfafdfc14413b31a1993d1704d61857b83d69d45f5c47dd` |
 | scale-catal 0.8.2 (frozen) | `bda8a94c9a16841beddf4f52a94c40bf4903d4f63593258089c3f3a3c4d6553b` |
-| scale-catal 0.8.3 | `b6f276168d3346d4c9acf0da518a6c9e0fc0cb470c83c284aaf59824b29c2787` |
+| scale-catal 0.8.3 (frozen) | `b6f276168d3346d4c9acf0da518a6c9e0fc0cb470c83c284aaf59824b29c2787` |
+| scale-catal 0.8.4 | `7e479bc0027e13117e520695aa9cef4b5d141c8f6e3c4e8f787e4fd115dec026` |
 
 </details>
 
@@ -214,7 +215,7 @@ This sets up the environment and runs every check CI runs. Add `--fast` to skip 
 ## Documentation
 
 [Commands](docs/commands.md) · [Using SCALE with agents](docs/integrate.md) · [Architecture](docs/architecture.md) ·
-[Curation](docs/curation.md) · [Querying](docs/querying.md) · [Schema evolution](docs/evolution.md) · [Mappings to ontologies](docs/mappings.md) ·
+[Curation](docs/curation.md) · [Tabular data](docs/data.md) · [Querying](docs/querying.md) · [Schema evolution](docs/evolution.md) · [Mappings to ontologies](docs/mappings.md) ·
 [The catalysis domain](domain/README.md) · [The science kernel](core/graph/README.md) · [Tools](tools/README.md) ·
 [Governance](governance/README.md) · [Changelog](CHANGELOG.md)
 
