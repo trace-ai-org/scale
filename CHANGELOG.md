@@ -2,6 +2,17 @@
 
 ## Unreleased
 
+- **plan-synthesis is SAR 0.3.1: query-graph 0.3.1's proposal workflow, frozen (skills; no schema change, no
+  migration).** The skill keeps its name and becomes version 0.3.1: its text is query-graph 0.3.1's, with a synthesis
+  description, and its scripts are query-graph 0.3.1's `precedents.py` and `check_quotes.py`. The requirements of a
+  target are listed and each is met by a record, transferred from one or left unresolved; the closest records are
+  found by one plan and their routes, precursors and conditions counted; a route is chosen by chemistry; every step is
+  tagged retrieved, adapted (with each change and its reason) or hypothesis; every quotation is checked against its
+  record by code; and the draft is reviewed once by a second agent. The adaptive layer of 0.1.0 (sub-goals graded
+  direct, analog or none, the variant-pairs plan, `check_chemistry.py`, the failure plan) is withdrawn: on the
+  benchmarks it was measured on, it did not improve on query-graph's own proposals. query-graph goes on as the
+  general skill (0.3.2); plan-synthesis stays at 0.3.1 so that its benchmarks describe it as distributed.
+
 - **An optional passage index for re-reading after a schema upgrade (skills; no schema change, no migration).**
   `skills/curate-corpus/scripts/passage_index.py` indexes a source folder's page texts into SQLite (FTS5), passages of
   whole paragraphs that keep their page and character span, so each is a verbatim substring of the page the graph's
