@@ -1,0 +1,375 @@
+{
+  "nodes": [
+    {
+      "id": "ex:di/species/co2",
+      "label": "ChemicalSpecies",
+      "props": {
+        "name": "CO2",
+        "charge": 0,
+        "elemental_composition": {
+          "C": 1,
+          "O": 2
+        },
+        "formula": "CO2",
+        "origin": "synthetic"
+      }
+    },
+    {
+      "id": "ex:di/species/co",
+      "label": "ChemicalSpecies",
+      "props": {
+        "name": "CO",
+        "charge": 0,
+        "elemental_composition": {
+          "C": 1,
+          "O": 1
+        },
+        "formula": "CO",
+        "origin": "synthetic"
+      }
+    },
+    {
+      "id": "ex:di/species/h2",
+      "label": "ChemicalSpecies",
+      "props": {
+        "name": "H2",
+        "charge": 0,
+        "elemental_composition": {
+          "H": 2
+        },
+        "formula": "H2",
+        "origin": "synthetic"
+      }
+    },
+    {
+      "id": "ex:di/species/h",
+      "label": "ChemicalSpecies",
+      "props": {
+        "name": "H",
+        "charge": 0,
+        "elemental_composition": {
+          "H": 1
+        },
+        "formula": "H",
+        "origin": "synthetic"
+      }
+    },
+    {
+      "id": "ex:di/species/h2o",
+      "label": "ChemicalSpecies",
+      "props": {
+        "name": "H2O",
+        "charge": 0,
+        "elemental_composition": {
+          "H": 2,
+          "O": 1
+        },
+        "formula": "H2O",
+        "origin": "synthetic"
+      }
+    },
+    {
+      "id": "ex:di/species/hydroxide",
+      "label": "ChemicalSpecies",
+      "props": {
+        "name": "OH-",
+        "charge": -1,
+        "elemental_composition": {
+          "H": 1,
+          "O": 1
+        },
+        "formula": "OH-",
+        "origin": "synthetic",
+        "species_kind": "ion"
+      }
+    },
+    {
+      "id": "ex:di/species/formate",
+      "label": "ChemicalSpecies",
+      "props": {
+        "name": "HCOO-",
+        "charge": -1,
+        "elemental_composition": {
+          "C": 1,
+          "H": 1,
+          "O": 2
+        },
+        "formula": "HCOO-",
+        "origin": "synthetic",
+        "species_kind": "ion"
+      }
+    },
+    {
+      "id": "ex:di/species/electron",
+      "label": "ChemicalSpecies",
+      "props": {
+        "name": "e-",
+        "charge": -1,
+        "elemental_composition": {},
+        "formula": "e-",
+        "origin": "synthetic",
+        "species_kind": "other"
+      }
+    },
+    {
+      "id": "ex:di/reaction/co2-to-co",
+      "label": "Reaction",
+      "props": {
+        "name": "CO2 + H2O + 2 e- -> CO + 2 OH-",
+        "balance_status": "balanced",
+        "direction": "forward",
+        "equation": "CO2 + H2O + 2 e- -> CO + 2 OH-",
+        "origin": "synthetic"
+      }
+    },
+    {
+      "id": "ex:di/reaction/co-adsorption",
+      "label": "Reaction",
+      "props": {
+        "name": "CO(g) + * -> CO*",
+        "balance_status": "balanced",
+        "direction": "forward",
+        "equation": "CO(g) + * -> CO*",
+        "origin": "synthetic"
+      }
+    },
+    {
+      "id": "ex:di/reaction/h-adsorption",
+      "label": "Reaction",
+      "props": {
+        "name": "1/2 H2(g) + * -> H*",
+        "balance_status": "balanced",
+        "direction": "forward",
+        "equation": "1/2 H2(g) + * -> H*",
+        "origin": "synthetic"
+      }
+    },
+    {
+      "id": "ex:di/catalyst/ag",
+      "label": "Catalyst",
+      "props": {
+        "name": "Ag nanoparticles",
+        "catalyst_family": "metal",
+        "nominal_formula": "Ag",
+        "origin": "synthetic"
+      }
+    },
+    {
+      "id": "ex:di/sample/ag",
+      "label": "CatalystSample",
+      "props": {
+        "name": "Ag nanoparticles, batch 1",
+        "origin": "synthetic",
+        "sample_kind": "powder"
+      }
+    },
+    {
+      "id": "ex:di/electrolyte/khco3",
+      "label": "Electrolyte",
+      "props": {
+        "name": "0.1 M KHCO3, CO2-saturated",
+        "origin": "synthetic",
+        "pH": {
+          "status": "present",
+          "unit": "1",
+          "value": 6.8
+        }
+      }
+    },
+    {
+      "id": "ex:di/assay/gc",
+      "label": "Characterization",
+      "props": {
+        "name": "Online GC of the outlet gas",
+        "origin": "synthetic",
+        "technique": "gas chromatography"
+      }
+    },
+    {
+      "id": "ex:di/assay/nmr",
+      "label": "Characterization",
+      "props": {
+        "name": "1H NMR of the catholyte after electrolysis",
+        "origin": "synthetic",
+        "technique": "1H NMR"
+      }
+    },
+    {
+      "id": "ex:di/variable/faradaic-efficiency",
+      "label": "Variable",
+      "props": {
+        "name": "Faradaic efficiency",
+        "origin": "synthetic",
+        "quantity_kind": "faradaic_efficiency",
+        "scale": "quantitative",
+        "unit": "%"
+      }
+    },
+    {
+      "id": "ex:di/variable/adsorption-energy",
+      "label": "Variable",
+      "props": {
+        "name": "adsorption energy (electronic)",
+        "origin": "synthetic",
+        "quantity_kind": "reaction_energy",
+        "scale": "quantitative",
+        "unit": "eV"
+      }
+    },
+    {
+      "id": "ex:di/dataset/dft-inputs",
+      "label": "Dataset",
+      "props": {
+        "name": "DFT input files (invented)",
+        "availability": "available",
+        "data_kind": "configuration",
+        "origin": "synthetic",
+        "sha256": "5f0d0c9e7a35d5a4c3d0f5f8e0b7a1b2c3d4e5f60718293a4b5c6d7e8f901234",
+        "uri": "https://example.org/invented/dft-inputs",
+        "version": "1"
+      }
+    },
+    {
+      "id": "ex:di/dataset/dft-environment",
+      "label": "Dataset",
+      "props": {
+        "name": "DFT container image (invented)",
+        "availability": "available",
+        "data_kind": "environment",
+        "origin": "synthetic",
+        "sha256": "0a1b2c3d4e5f60718293a4b5c6d7e8f9f0e1d2c3b4a5968778695a4b3c2d1e0f",
+        "uri": "https://example.org/invented/dft-environment",
+        "version": "1"
+      }
+    }
+  ],
+  "links": [
+    {
+      "id": "ex:di/link/1",
+      "type": "HAS_PARTICIPANT",
+      "props": {
+        "coefficient": 1,
+        "origin": "synthetic",
+        "role": "reactant"
+      },
+      "source": "ex:di/reaction/co2-to-co",
+      "target": "ex:di/species/co2"
+    },
+    {
+      "id": "ex:di/link/2",
+      "type": "HAS_PARTICIPANT",
+      "props": {
+        "coefficient": 1,
+        "origin": "synthetic",
+        "role": "reactant"
+      },
+      "source": "ex:di/reaction/co2-to-co",
+      "target": "ex:di/species/h2o"
+    },
+    {
+      "id": "ex:di/link/3",
+      "type": "HAS_PARTICIPANT",
+      "props": {
+        "coefficient": 2,
+        "origin": "synthetic",
+        "role": "reactant"
+      },
+      "source": "ex:di/reaction/co2-to-co",
+      "target": "ex:di/species/electron"
+    },
+    {
+      "id": "ex:di/link/4",
+      "type": "HAS_PARTICIPANT",
+      "props": {
+        "coefficient": 1,
+        "origin": "synthetic",
+        "role": "product"
+      },
+      "source": "ex:di/reaction/co2-to-co",
+      "target": "ex:di/species/co"
+    },
+    {
+      "id": "ex:di/link/5",
+      "type": "HAS_PARTICIPANT",
+      "props": {
+        "coefficient": 2,
+        "origin": "synthetic",
+        "role": "product"
+      },
+      "source": "ex:di/reaction/co2-to-co",
+      "target": "ex:di/species/hydroxide"
+    },
+    {
+      "id": "ex:di/link/6",
+      "type": "HAS_PARTICIPANT",
+      "props": {
+        "coefficient": 1,
+        "origin": "synthetic",
+        "phase": "gas",
+        "role": "reactant"
+      },
+      "source": "ex:di/reaction/co-adsorption",
+      "target": "ex:di/species/co"
+    },
+    {
+      "id": "ex:di/link/7",
+      "type": "HAS_PARTICIPANT",
+      "props": {
+        "coefficient": 1,
+        "origin": "synthetic",
+        "phase": "adsorbed",
+        "role": "product"
+      },
+      "source": "ex:di/reaction/co-adsorption",
+      "target": "ex:di/species/co"
+    },
+    {
+      "id": "ex:di/link/8",
+      "type": "HAS_PARTICIPANT",
+      "props": {
+        "coefficient": 0.5,
+        "origin": "synthetic",
+        "phase": "gas",
+        "role": "reactant"
+      },
+      "source": "ex:di/reaction/h-adsorption",
+      "target": "ex:di/species/h2"
+    },
+    {
+      "id": "ex:di/link/9",
+      "type": "HAS_PARTICIPANT",
+      "props": {
+        "coefficient": 1,
+        "origin": "synthetic",
+        "phase": "adsorbed",
+        "role": "product"
+      },
+      "source": "ex:di/reaction/h-adsorption",
+      "target": "ex:di/species/h"
+    },
+    {
+      "id": "ex:di/link/10",
+      "type": "HAS_FORMULATION",
+      "props": {
+        "origin": "synthetic"
+      },
+      "source": "ex:di/sample/ag",
+      "target": "ex:di/catalyst/ag"
+    }
+  ],
+  "directed": true,
+  "graph": {
+    "data_status": "synthetic_example",
+    "follows_domains": [
+      "catalysis"
+    ],
+    "graph_id": "ex:di/graph",
+    "schema": "scale-catal",
+    "schema_version": "0.8.4",
+    "stewardship": {
+      "access": "public"
+    },
+    "title": "Faradaic efficiencies of CO2 electroreduction and DFT adsorption energies imported from two tables (synthetic)"
+  },
+  "multigraph": true
+}

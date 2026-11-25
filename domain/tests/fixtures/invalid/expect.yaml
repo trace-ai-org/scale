@@ -297,3 +297,13 @@ fixtures:
     reason: An input that supplies a halogen kept in the material is a halogen_source, the listed value, so that every
       halogen source (HCl, NH4F, KBr) is found as one; another spelling (halide_source) is not a function the schema
       lists and would hide the input from a query for it.
+  - file: dataset-cell-without-its-whole-key.json
+    base: domain/examples/scale-catal/data-ingest-examples/data-ingest.json
+    error: "not every primary-key column of ex:di/dataset/co2rr-fe once"
+    reason: A cell is found again in its table by the row's key; part of the key (run_id only) names three rows of
+      the table, so the value could stand for any of them.
+  - file: dataset-cell-in-another-unit.json
+    base: domain/examples/scale-catal/data-ingest-examples/data-ingest.json
+    error: "is in '%', the value in '1'; nothing is converted"
+    reason: A value cites the cell that states it; a Faradaic efficiency recorded as a fraction (0.625) while its
+      column holds percent (62.5) says the cell holds what it does not, and no conversion is ever implied.

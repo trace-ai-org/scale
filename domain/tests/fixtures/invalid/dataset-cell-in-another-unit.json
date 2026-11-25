@@ -1,0 +1,2593 @@
+{
+  "nodes": [
+    {
+      "id": "ex:di/species/co2",
+      "label": "ChemicalSpecies",
+      "props": {
+        "name": "CO2",
+        "charge": 0,
+        "elemental_composition": {
+          "C": 1,
+          "O": 2
+        },
+        "formula": "CO2",
+        "origin": "synthetic"
+      }
+    },
+    {
+      "id": "ex:di/species/co",
+      "label": "ChemicalSpecies",
+      "props": {
+        "name": "CO",
+        "charge": 0,
+        "elemental_composition": {
+          "C": 1,
+          "O": 1
+        },
+        "formula": "CO",
+        "origin": "synthetic"
+      }
+    },
+    {
+      "id": "ex:di/species/h2",
+      "label": "ChemicalSpecies",
+      "props": {
+        "name": "H2",
+        "charge": 0,
+        "elemental_composition": {
+          "H": 2
+        },
+        "formula": "H2",
+        "origin": "synthetic"
+      }
+    },
+    {
+      "id": "ex:di/species/h",
+      "label": "ChemicalSpecies",
+      "props": {
+        "name": "H",
+        "charge": 0,
+        "elemental_composition": {
+          "H": 1
+        },
+        "formula": "H",
+        "origin": "synthetic"
+      }
+    },
+    {
+      "id": "ex:di/species/h2o",
+      "label": "ChemicalSpecies",
+      "props": {
+        "name": "H2O",
+        "charge": 0,
+        "elemental_composition": {
+          "H": 2,
+          "O": 1
+        },
+        "formula": "H2O",
+        "origin": "synthetic"
+      }
+    },
+    {
+      "id": "ex:di/species/hydroxide",
+      "label": "ChemicalSpecies",
+      "props": {
+        "name": "OH-",
+        "charge": -1,
+        "elemental_composition": {
+          "H": 1,
+          "O": 1
+        },
+        "formula": "OH-",
+        "origin": "synthetic",
+        "species_kind": "ion"
+      }
+    },
+    {
+      "id": "ex:di/species/formate",
+      "label": "ChemicalSpecies",
+      "props": {
+        "name": "HCOO-",
+        "charge": -1,
+        "elemental_composition": {
+          "C": 1,
+          "H": 1,
+          "O": 2
+        },
+        "formula": "HCOO-",
+        "origin": "synthetic",
+        "species_kind": "ion"
+      }
+    },
+    {
+      "id": "ex:di/species/electron",
+      "label": "ChemicalSpecies",
+      "props": {
+        "name": "e-",
+        "charge": -1,
+        "elemental_composition": {},
+        "formula": "e-",
+        "origin": "synthetic",
+        "species_kind": "other"
+      }
+    },
+    {
+      "id": "ex:di/reaction/co2-to-co",
+      "label": "Reaction",
+      "props": {
+        "name": "CO2 + H2O + 2 e- -> CO + 2 OH-",
+        "balance_status": "balanced",
+        "direction": "forward",
+        "equation": "CO2 + H2O + 2 e- -> CO + 2 OH-",
+        "origin": "synthetic"
+      }
+    },
+    {
+      "id": "ex:di/reaction/co-adsorption",
+      "label": "Reaction",
+      "props": {
+        "name": "CO(g) + * -> CO*",
+        "balance_status": "balanced",
+        "direction": "forward",
+        "equation": "CO(g) + * -> CO*",
+        "origin": "synthetic"
+      }
+    },
+    {
+      "id": "ex:di/reaction/h-adsorption",
+      "label": "Reaction",
+      "props": {
+        "name": "1/2 H2(g) + * -> H*",
+        "balance_status": "balanced",
+        "direction": "forward",
+        "equation": "1/2 H2(g) + * -> H*",
+        "origin": "synthetic"
+      }
+    },
+    {
+      "id": "ex:di/catalyst/ag",
+      "label": "Catalyst",
+      "props": {
+        "name": "Ag nanoparticles",
+        "catalyst_family": "metal",
+        "nominal_formula": "Ag",
+        "origin": "synthetic"
+      }
+    },
+    {
+      "id": "ex:di/sample/ag",
+      "label": "CatalystSample",
+      "props": {
+        "name": "Ag nanoparticles, batch 1",
+        "origin": "synthetic",
+        "sample_kind": "powder"
+      }
+    },
+    {
+      "id": "ex:di/electrolyte/khco3",
+      "label": "Electrolyte",
+      "props": {
+        "name": "0.1 M KHCO3, CO2-saturated",
+        "origin": "synthetic",
+        "pH": {
+          "status": "present",
+          "unit": "1",
+          "value": 6.8
+        }
+      }
+    },
+    {
+      "id": "ex:di/assay/gc",
+      "label": "Characterization",
+      "props": {
+        "name": "Online GC of the outlet gas",
+        "origin": "synthetic",
+        "technique": "gas chromatography"
+      }
+    },
+    {
+      "id": "ex:di/assay/nmr",
+      "label": "Characterization",
+      "props": {
+        "name": "1H NMR of the catholyte after electrolysis",
+        "origin": "synthetic",
+        "technique": "1H NMR"
+      }
+    },
+    {
+      "id": "ex:di/variable/faradaic-efficiency",
+      "label": "Variable",
+      "props": {
+        "name": "Faradaic efficiency",
+        "origin": "synthetic",
+        "quantity_kind": "faradaic_efficiency",
+        "scale": "quantitative",
+        "unit": "%"
+      }
+    },
+    {
+      "id": "ex:di/variable/adsorption-energy",
+      "label": "Variable",
+      "props": {
+        "name": "adsorption energy (electronic)",
+        "origin": "synthetic",
+        "quantity_kind": "reaction_energy",
+        "scale": "quantitative",
+        "unit": "eV"
+      }
+    },
+    {
+      "id": "ex:di/dataset/dft-inputs",
+      "label": "Dataset",
+      "props": {
+        "name": "DFT input files (invented)",
+        "availability": "available",
+        "data_kind": "configuration",
+        "origin": "synthetic",
+        "sha256": "5f0d0c9e7a35d5a4c3d0f5f8e0b7a1b2c3d4e5f60718293a4b5c6d7e8f901234",
+        "uri": "https://example.org/invented/dft-inputs",
+        "version": "1"
+      }
+    },
+    {
+      "id": "ex:di/dataset/dft-environment",
+      "label": "Dataset",
+      "props": {
+        "name": "DFT container image (invented)",
+        "availability": "available",
+        "data_kind": "environment",
+        "origin": "synthetic",
+        "sha256": "0a1b2c3d4e5f60718293a4b5c6d7e8f9f0e1d2c3b4a5968778695a4b3c2d1e0f",
+        "uri": "https://example.org/invented/dft-environment",
+        "version": "1"
+      }
+    },
+    {
+      "id": "ex:di/dataset/co2rr-fe",
+      "label": "Dataset",
+      "props": {
+        "name": "Faradaic efficiencies of CO2 electroreduction on Ag, three potentials (synthetic)",
+        "availability": "available",
+        "data_kind": "table",
+        "licence": "CC-BY-4.0",
+        "media_type": "text/csv",
+        "origin": "synthetic",
+        "sha256": "531598e6249b6aa0b8ae3a1a5f684b3a6e57dc657aedac7391b84f2ffc74023c",
+        "table": {
+          "columns": [
+            {
+              "name": "run_id",
+              "datatype": "string"
+            },
+            {
+              "name": "result_id",
+              "datatype": "string"
+            },
+            {
+              "name": "recorded_at",
+              "datatype": "datetime"
+            },
+            {
+              "name": "potential_V",
+              "datatype": "number",
+              "unit": "V vs RHE"
+            },
+            {
+              "name": "product_id",
+              "datatype": "string"
+            },
+            {
+              "name": "assay_id",
+              "datatype": "string"
+            },
+            {
+              "name": "phase",
+              "datatype": "string"
+            },
+            {
+              "name": "stream",
+              "datatype": "string"
+            },
+            {
+              "name": "fe_percent",
+              "datatype": "number",
+              "unit": "%",
+              "variable": "ex:di/variable/faradaic-efficiency"
+            }
+          ],
+          "ingest": {
+            "mapping_sha256": "3b7861af2757a3c9613ac5b217462486861cb0a621f4e66724267b6ae9f108a2",
+            "schema_sha256": "7e479bc0027e13117e520695aa9cef4b5d141c8f6e3c4e8f787e4fd115dec026",
+            "schema_version": "0.8.4",
+            "tool": "scale-catal 0.4.0"
+          },
+          "primary_key": [
+            "run_id",
+            "result_id"
+          ],
+          "profile": "scale_csv_v1",
+          "rows": 9
+        },
+        "uri": "co2rr-fe.csv",
+        "version": "1"
+      }
+    },
+    {
+      "id": "ex:di/test/R1",
+      "label": "CatalyticTest",
+      "props": {
+        "name": "CO2 electroreduction on Ag, run_id=R1",
+        "control_mode": "potentiostatic",
+        "driving_forces": [
+          "electro"
+        ],
+        "electrode_potential": {
+          "status": "present",
+          "evidence_ids": [
+            "potential_V.R1,fe_co"
+          ],
+          "unit": "V vs RHE",
+          "value": -0.8
+        },
+        "evidence": [
+          {
+            "id": "assay_id.R1,fe_co",
+            "kind": "dataset_row",
+            "dataset_cell": {
+              "column": "assay_id",
+              "row_key": [
+                {
+                  "column": "run_id",
+                  "value": "R1"
+                },
+                {
+                  "column": "result_id",
+                  "value": "fe_co"
+                }
+              ]
+            },
+            "locator": "row run_id=R1, result_id=fe_co; column assay_id",
+            "quote": "ex:di/assay/gc",
+            "source": "ex:di/dataset/co2rr-fe"
+          },
+          {
+            "id": "assay_id.R1,fe_formate",
+            "kind": "dataset_row",
+            "dataset_cell": {
+              "column": "assay_id",
+              "row_key": [
+                {
+                  "column": "run_id",
+                  "value": "R1"
+                },
+                {
+                  "column": "result_id",
+                  "value": "fe_formate"
+                }
+              ]
+            },
+            "locator": "row run_id=R1, result_id=fe_formate; column assay_id",
+            "quote": "ex:di/assay/nmr",
+            "source": "ex:di/dataset/co2rr-fe"
+          },
+          {
+            "id": "assay_id.R1,fe_h2",
+            "kind": "dataset_row",
+            "dataset_cell": {
+              "column": "assay_id",
+              "row_key": [
+                {
+                  "column": "run_id",
+                  "value": "R1"
+                },
+                {
+                  "column": "result_id",
+                  "value": "fe_h2"
+                }
+              ]
+            },
+            "locator": "row run_id=R1, result_id=fe_h2; column assay_id",
+            "quote": "ex:di/assay/gc",
+            "source": "ex:di/dataset/co2rr-fe"
+          },
+          {
+            "id": "fe_percent.R1,fe_co",
+            "kind": "dataset_row",
+            "dataset_cell": {
+              "column": "fe_percent",
+              "row_key": [
+                {
+                  "column": "run_id",
+                  "value": "R1"
+                },
+                {
+                  "column": "result_id",
+                  "value": "fe_co"
+                }
+              ]
+            },
+            "locator": "row run_id=R1, result_id=fe_co; column fe_percent",
+            "quote": "62.5",
+            "source": "ex:di/dataset/co2rr-fe"
+          },
+          {
+            "id": "fe_percent.R1,fe_formate",
+            "kind": "dataset_row",
+            "dataset_cell": {
+              "column": "fe_percent",
+              "row_key": [
+                {
+                  "column": "run_id",
+                  "value": "R1"
+                },
+                {
+                  "column": "result_id",
+                  "value": "fe_formate"
+                }
+              ]
+            },
+            "locator": "row run_id=R1, result_id=fe_formate; column fe_percent",
+            "quote": "4.2",
+            "source": "ex:di/dataset/co2rr-fe"
+          },
+          {
+            "id": "fe_percent.R1,fe_h2",
+            "kind": "dataset_row",
+            "dataset_cell": {
+              "column": "fe_percent",
+              "row_key": [
+                {
+                  "column": "run_id",
+                  "value": "R1"
+                },
+                {
+                  "column": "result_id",
+                  "value": "fe_h2"
+                }
+              ]
+            },
+            "locator": "row run_id=R1, result_id=fe_h2; column fe_percent",
+            "quote": "30.1",
+            "source": "ex:di/dataset/co2rr-fe"
+          },
+          {
+            "id": "phase.R1,fe_co",
+            "kind": "dataset_row",
+            "dataset_cell": {
+              "column": "phase",
+              "row_key": [
+                {
+                  "column": "run_id",
+                  "value": "R1"
+                },
+                {
+                  "column": "result_id",
+                  "value": "fe_co"
+                }
+              ]
+            },
+            "locator": "row run_id=R1, result_id=fe_co; column phase",
+            "quote": "gas",
+            "source": "ex:di/dataset/co2rr-fe"
+          },
+          {
+            "id": "phase.R1,fe_formate",
+            "kind": "dataset_row",
+            "dataset_cell": {
+              "column": "phase",
+              "row_key": [
+                {
+                  "column": "run_id",
+                  "value": "R1"
+                },
+                {
+                  "column": "result_id",
+                  "value": "fe_formate"
+                }
+              ]
+            },
+            "locator": "row run_id=R1, result_id=fe_formate; column phase",
+            "quote": "liquid",
+            "source": "ex:di/dataset/co2rr-fe"
+          },
+          {
+            "id": "phase.R1,fe_h2",
+            "kind": "dataset_row",
+            "dataset_cell": {
+              "column": "phase",
+              "row_key": [
+                {
+                  "column": "run_id",
+                  "value": "R1"
+                },
+                {
+                  "column": "result_id",
+                  "value": "fe_h2"
+                }
+              ]
+            },
+            "locator": "row run_id=R1, result_id=fe_h2; column phase",
+            "quote": "gas",
+            "source": "ex:di/dataset/co2rr-fe"
+          },
+          {
+            "id": "potential_V.R1,fe_co",
+            "kind": "dataset_row",
+            "dataset_cell": {
+              "column": "potential_V",
+              "row_key": [
+                {
+                  "column": "run_id",
+                  "value": "R1"
+                },
+                {
+                  "column": "result_id",
+                  "value": "fe_co"
+                }
+              ]
+            },
+            "locator": "row run_id=R1, result_id=fe_co; column potential_V",
+            "quote": "-0.8",
+            "source": "ex:di/dataset/co2rr-fe"
+          },
+          {
+            "id": "product_id.R1,fe_co",
+            "kind": "dataset_row",
+            "dataset_cell": {
+              "column": "product_id",
+              "row_key": [
+                {
+                  "column": "run_id",
+                  "value": "R1"
+                },
+                {
+                  "column": "result_id",
+                  "value": "fe_co"
+                }
+              ]
+            },
+            "locator": "row run_id=R1, result_id=fe_co; column product_id",
+            "quote": "ex:di/species/co",
+            "source": "ex:di/dataset/co2rr-fe"
+          },
+          {
+            "id": "product_id.R1,fe_formate",
+            "kind": "dataset_row",
+            "dataset_cell": {
+              "column": "product_id",
+              "row_key": [
+                {
+                  "column": "run_id",
+                  "value": "R1"
+                },
+                {
+                  "column": "result_id",
+                  "value": "fe_formate"
+                }
+              ]
+            },
+            "locator": "row run_id=R1, result_id=fe_formate; column product_id",
+            "quote": "ex:di/species/formate",
+            "source": "ex:di/dataset/co2rr-fe"
+          },
+          {
+            "id": "product_id.R1,fe_h2",
+            "kind": "dataset_row",
+            "dataset_cell": {
+              "column": "product_id",
+              "row_key": [
+                {
+                  "column": "run_id",
+                  "value": "R1"
+                },
+                {
+                  "column": "result_id",
+                  "value": "fe_h2"
+                }
+              ]
+            },
+            "locator": "row run_id=R1, result_id=fe_h2; column product_id",
+            "quote": "ex:di/species/h2",
+            "source": "ex:di/dataset/co2rr-fe"
+          },
+          {
+            "id": "stream.R1,fe_co",
+            "kind": "dataset_row",
+            "dataset_cell": {
+              "column": "stream",
+              "row_key": [
+                {
+                  "column": "run_id",
+                  "value": "R1"
+                },
+                {
+                  "column": "result_id",
+                  "value": "fe_co"
+                }
+              ]
+            },
+            "locator": "row run_id=R1, result_id=fe_co; column stream",
+            "quote": "outlet gas",
+            "source": "ex:di/dataset/co2rr-fe"
+          },
+          {
+            "id": "stream.R1,fe_formate",
+            "kind": "dataset_row",
+            "dataset_cell": {
+              "column": "stream",
+              "row_key": [
+                {
+                  "column": "run_id",
+                  "value": "R1"
+                },
+                {
+                  "column": "result_id",
+                  "value": "fe_formate"
+                }
+              ]
+            },
+            "locator": "row run_id=R1, result_id=fe_formate; column stream",
+            "quote": "catholyte",
+            "source": "ex:di/dataset/co2rr-fe"
+          },
+          {
+            "id": "stream.R1,fe_h2",
+            "kind": "dataset_row",
+            "dataset_cell": {
+              "column": "stream",
+              "row_key": [
+                {
+                  "column": "run_id",
+                  "value": "R1"
+                },
+                {
+                  "column": "result_id",
+                  "value": "fe_h2"
+                }
+              ]
+            },
+            "locator": "row run_id=R1, result_id=fe_h2; column stream",
+            "quote": "outlet gas",
+            "source": "ex:di/dataset/co2rr-fe"
+          }
+        ],
+        "experiment_kind": "physical",
+        "origin": "synthetic",
+        "recorded_at": "2026-03-02T10:00:00Z",
+        "reference_scale": "rhe",
+        "result_values": [
+          {
+            "id": "fe_co",
+            "status": "present",
+            "evidence_ids": [
+              "fe_percent.R1,fe_co",
+              "product_id.R1,fe_co",
+              "assay_id.R1,fe_co",
+              "phase.R1,fe_co",
+              "stream.R1,fe_co"
+            ],
+            "phase": "gas",
+            "produced_by": "ex:di/assay/gc",
+            "stream": "outlet gas",
+            "target": "ex:di/species/co",
+            "unit": "1",
+            "value": 0.625,
+            "variable": "ex:di/variable/faradaic-efficiency"
+          },
+          {
+            "id": "fe_formate",
+            "status": "present",
+            "evidence_ids": [
+              "fe_percent.R1,fe_formate",
+              "product_id.R1,fe_formate",
+              "assay_id.R1,fe_formate",
+              "phase.R1,fe_formate",
+              "stream.R1,fe_formate"
+            ],
+            "phase": "liquid",
+            "produced_by": "ex:di/assay/nmr",
+            "stream": "catholyte",
+            "target": "ex:di/species/formate",
+            "unit": "%",
+            "value": 4.2,
+            "variable": "ex:di/variable/faradaic-efficiency"
+          },
+          {
+            "id": "fe_h2",
+            "status": "present",
+            "evidence_ids": [
+              "fe_percent.R1,fe_h2",
+              "product_id.R1,fe_h2",
+              "assay_id.R1,fe_h2",
+              "phase.R1,fe_h2",
+              "stream.R1,fe_h2"
+            ],
+            "phase": "gas",
+            "produced_by": "ex:di/assay/gc",
+            "stream": "outlet gas",
+            "target": "ex:di/species/h2",
+            "unit": "%",
+            "value": 30.1,
+            "variable": "ex:di/variable/faradaic-efficiency"
+          }
+        ],
+        "test_kind": "activity"
+      }
+    },
+    {
+      "id": "ex:di/test/R2",
+      "label": "CatalyticTest",
+      "props": {
+        "name": "CO2 electroreduction on Ag, run_id=R2",
+        "control_mode": "potentiostatic",
+        "driving_forces": [
+          "electro"
+        ],
+        "electrode_potential": {
+          "status": "present",
+          "evidence_ids": [
+            "potential_V.R2,fe_co"
+          ],
+          "unit": "V vs RHE",
+          "value": -1.0
+        },
+        "evidence": [
+          {
+            "id": "assay_id.R2,fe_co",
+            "kind": "dataset_row",
+            "dataset_cell": {
+              "column": "assay_id",
+              "row_key": [
+                {
+                  "column": "run_id",
+                  "value": "R2"
+                },
+                {
+                  "column": "result_id",
+                  "value": "fe_co"
+                }
+              ]
+            },
+            "locator": "row run_id=R2, result_id=fe_co; column assay_id",
+            "quote": "ex:di/assay/gc",
+            "source": "ex:di/dataset/co2rr-fe"
+          },
+          {
+            "id": "assay_id.R2,fe_formate",
+            "kind": "dataset_row",
+            "dataset_cell": {
+              "column": "assay_id",
+              "row_key": [
+                {
+                  "column": "run_id",
+                  "value": "R2"
+                },
+                {
+                  "column": "result_id",
+                  "value": "fe_formate"
+                }
+              ]
+            },
+            "locator": "row run_id=R2, result_id=fe_formate; column assay_id",
+            "quote": "ex:di/assay/nmr",
+            "source": "ex:di/dataset/co2rr-fe"
+          },
+          {
+            "id": "assay_id.R2,fe_h2",
+            "kind": "dataset_row",
+            "dataset_cell": {
+              "column": "assay_id",
+              "row_key": [
+                {
+                  "column": "run_id",
+                  "value": "R2"
+                },
+                {
+                  "column": "result_id",
+                  "value": "fe_h2"
+                }
+              ]
+            },
+            "locator": "row run_id=R2, result_id=fe_h2; column assay_id",
+            "quote": "ex:di/assay/gc",
+            "source": "ex:di/dataset/co2rr-fe"
+          },
+          {
+            "id": "fe_percent.R2,fe_co",
+            "kind": "dataset_row",
+            "dataset_cell": {
+              "column": "fe_percent",
+              "row_key": [
+                {
+                  "column": "run_id",
+                  "value": "R2"
+                },
+                {
+                  "column": "result_id",
+                  "value": "fe_co"
+                }
+              ]
+            },
+            "locator": "row run_id=R2, result_id=fe_co; column fe_percent",
+            "quote": "48.0",
+            "source": "ex:di/dataset/co2rr-fe"
+          },
+          {
+            "id": "fe_percent.R2,fe_formate",
+            "kind": "dataset_row",
+            "dataset_cell": {
+              "column": "fe_percent",
+              "row_key": [
+                {
+                  "column": "run_id",
+                  "value": "R2"
+                },
+                {
+                  "column": "result_id",
+                  "value": "fe_formate"
+                }
+              ]
+            },
+            "locator": "row run_id=R2, result_id=fe_formate; column fe_percent",
+            "quote": "<0.5",
+            "source": "ex:di/dataset/co2rr-fe"
+          },
+          {
+            "id": "fe_percent.R2,fe_h2",
+            "kind": "dataset_row",
+            "dataset_cell": {
+              "column": "fe_percent",
+              "row_key": [
+                {
+                  "column": "run_id",
+                  "value": "R2"
+                },
+                {
+                  "column": "result_id",
+                  "value": "fe_h2"
+                }
+              ]
+            },
+            "locator": "row run_id=R2, result_id=fe_h2; column fe_percent",
+            "quote": "44.3",
+            "source": "ex:di/dataset/co2rr-fe"
+          },
+          {
+            "id": "phase.R2,fe_co",
+            "kind": "dataset_row",
+            "dataset_cell": {
+              "column": "phase",
+              "row_key": [
+                {
+                  "column": "run_id",
+                  "value": "R2"
+                },
+                {
+                  "column": "result_id",
+                  "value": "fe_co"
+                }
+              ]
+            },
+            "locator": "row run_id=R2, result_id=fe_co; column phase",
+            "quote": "gas",
+            "source": "ex:di/dataset/co2rr-fe"
+          },
+          {
+            "id": "phase.R2,fe_formate",
+            "kind": "dataset_row",
+            "dataset_cell": {
+              "column": "phase",
+              "row_key": [
+                {
+                  "column": "run_id",
+                  "value": "R2"
+                },
+                {
+                  "column": "result_id",
+                  "value": "fe_formate"
+                }
+              ]
+            },
+            "locator": "row run_id=R2, result_id=fe_formate; column phase",
+            "quote": "liquid",
+            "source": "ex:di/dataset/co2rr-fe"
+          },
+          {
+            "id": "phase.R2,fe_h2",
+            "kind": "dataset_row",
+            "dataset_cell": {
+              "column": "phase",
+              "row_key": [
+                {
+                  "column": "run_id",
+                  "value": "R2"
+                },
+                {
+                  "column": "result_id",
+                  "value": "fe_h2"
+                }
+              ]
+            },
+            "locator": "row run_id=R2, result_id=fe_h2; column phase",
+            "quote": "gas",
+            "source": "ex:di/dataset/co2rr-fe"
+          },
+          {
+            "id": "potential_V.R2,fe_co",
+            "kind": "dataset_row",
+            "dataset_cell": {
+              "column": "potential_V",
+              "row_key": [
+                {
+                  "column": "run_id",
+                  "value": "R2"
+                },
+                {
+                  "column": "result_id",
+                  "value": "fe_co"
+                }
+              ]
+            },
+            "locator": "row run_id=R2, result_id=fe_co; column potential_V",
+            "quote": "-1.0",
+            "source": "ex:di/dataset/co2rr-fe"
+          },
+          {
+            "id": "product_id.R2,fe_co",
+            "kind": "dataset_row",
+            "dataset_cell": {
+              "column": "product_id",
+              "row_key": [
+                {
+                  "column": "run_id",
+                  "value": "R2"
+                },
+                {
+                  "column": "result_id",
+                  "value": "fe_co"
+                }
+              ]
+            },
+            "locator": "row run_id=R2, result_id=fe_co; column product_id",
+            "quote": "ex:di/species/co",
+            "source": "ex:di/dataset/co2rr-fe"
+          },
+          {
+            "id": "product_id.R2,fe_formate",
+            "kind": "dataset_row",
+            "dataset_cell": {
+              "column": "product_id",
+              "row_key": [
+                {
+                  "column": "run_id",
+                  "value": "R2"
+                },
+                {
+                  "column": "result_id",
+                  "value": "fe_formate"
+                }
+              ]
+            },
+            "locator": "row run_id=R2, result_id=fe_formate; column product_id",
+            "quote": "ex:di/species/formate",
+            "source": "ex:di/dataset/co2rr-fe"
+          },
+          {
+            "id": "product_id.R2,fe_h2",
+            "kind": "dataset_row",
+            "dataset_cell": {
+              "column": "product_id",
+              "row_key": [
+                {
+                  "column": "run_id",
+                  "value": "R2"
+                },
+                {
+                  "column": "result_id",
+                  "value": "fe_h2"
+                }
+              ]
+            },
+            "locator": "row run_id=R2, result_id=fe_h2; column product_id",
+            "quote": "ex:di/species/h2",
+            "source": "ex:di/dataset/co2rr-fe"
+          },
+          {
+            "id": "stream.R2,fe_co",
+            "kind": "dataset_row",
+            "dataset_cell": {
+              "column": "stream",
+              "row_key": [
+                {
+                  "column": "run_id",
+                  "value": "R2"
+                },
+                {
+                  "column": "result_id",
+                  "value": "fe_co"
+                }
+              ]
+            },
+            "locator": "row run_id=R2, result_id=fe_co; column stream",
+            "quote": "outlet gas",
+            "source": "ex:di/dataset/co2rr-fe"
+          },
+          {
+            "id": "stream.R2,fe_formate",
+            "kind": "dataset_row",
+            "dataset_cell": {
+              "column": "stream",
+              "row_key": [
+                {
+                  "column": "run_id",
+                  "value": "R2"
+                },
+                {
+                  "column": "result_id",
+                  "value": "fe_formate"
+                }
+              ]
+            },
+            "locator": "row run_id=R2, result_id=fe_formate; column stream",
+            "quote": "catholyte",
+            "source": "ex:di/dataset/co2rr-fe"
+          },
+          {
+            "id": "stream.R2,fe_h2",
+            "kind": "dataset_row",
+            "dataset_cell": {
+              "column": "stream",
+              "row_key": [
+                {
+                  "column": "run_id",
+                  "value": "R2"
+                },
+                {
+                  "column": "result_id",
+                  "value": "fe_h2"
+                }
+              ]
+            },
+            "locator": "row run_id=R2, result_id=fe_h2; column stream",
+            "quote": "outlet gas",
+            "source": "ex:di/dataset/co2rr-fe"
+          }
+        ],
+        "experiment_kind": "physical",
+        "origin": "synthetic",
+        "recorded_at": "2026-03-02T14:00:00Z",
+        "reference_scale": "rhe",
+        "result_values": [
+          {
+            "id": "fe_co",
+            "status": "present",
+            "evidence_ids": [
+              "fe_percent.R2,fe_co",
+              "product_id.R2,fe_co",
+              "assay_id.R2,fe_co",
+              "phase.R2,fe_co",
+              "stream.R2,fe_co"
+            ],
+            "phase": "gas",
+            "produced_by": "ex:di/assay/gc",
+            "stream": "outlet gas",
+            "target": "ex:di/species/co",
+            "unit": "%",
+            "value": 48.0,
+            "variable": "ex:di/variable/faradaic-efficiency"
+          },
+          {
+            "id": "fe_formate",
+            "status": "below_detection_limit",
+            "as_reported": "<0.5",
+            "evidence_ids": [
+              "fe_percent.R2,fe_formate",
+              "product_id.R2,fe_formate",
+              "assay_id.R2,fe_formate",
+              "phase.R2,fe_formate",
+              "stream.R2,fe_formate"
+            ],
+            "phase": "liquid",
+            "produced_by": "ex:di/assay/nmr",
+            "stream": "catholyte",
+            "target": "ex:di/species/formate",
+            "unit": "%",
+            "value": 0.5,
+            "variable": "ex:di/variable/faradaic-efficiency"
+          },
+          {
+            "id": "fe_h2",
+            "status": "present",
+            "evidence_ids": [
+              "fe_percent.R2,fe_h2",
+              "product_id.R2,fe_h2",
+              "assay_id.R2,fe_h2",
+              "phase.R2,fe_h2",
+              "stream.R2,fe_h2"
+            ],
+            "phase": "gas",
+            "produced_by": "ex:di/assay/gc",
+            "stream": "outlet gas",
+            "target": "ex:di/species/h2",
+            "unit": "%",
+            "value": 44.3,
+            "variable": "ex:di/variable/faradaic-efficiency"
+          }
+        ],
+        "test_kind": "activity"
+      }
+    },
+    {
+      "id": "ex:di/test/R3",
+      "label": "CatalyticTest",
+      "props": {
+        "name": "CO2 electroreduction on Ag, run_id=R3",
+        "control_mode": "potentiostatic",
+        "driving_forces": [
+          "electro"
+        ],
+        "electrode_potential": {
+          "status": "present",
+          "evidence_ids": [
+            "potential_V.R3,fe_co"
+          ],
+          "unit": "V vs RHE",
+          "value": -1.2
+        },
+        "evidence": [
+          {
+            "id": "assay_id.R3,fe_co",
+            "kind": "dataset_row",
+            "dataset_cell": {
+              "column": "assay_id",
+              "row_key": [
+                {
+                  "column": "run_id",
+                  "value": "R3"
+                },
+                {
+                  "column": "result_id",
+                  "value": "fe_co"
+                }
+              ]
+            },
+            "locator": "row run_id=R3, result_id=fe_co; column assay_id",
+            "quote": "ex:di/assay/gc",
+            "source": "ex:di/dataset/co2rr-fe"
+          },
+          {
+            "id": "assay_id.R3,fe_formate",
+            "kind": "dataset_row",
+            "dataset_cell": {
+              "column": "assay_id",
+              "row_key": [
+                {
+                  "column": "run_id",
+                  "value": "R3"
+                },
+                {
+                  "column": "result_id",
+                  "value": "fe_formate"
+                }
+              ]
+            },
+            "locator": "row run_id=R3, result_id=fe_formate; column assay_id",
+            "quote": "ex:di/assay/nmr",
+            "source": "ex:di/dataset/co2rr-fe"
+          },
+          {
+            "id": "assay_id.R3,fe_h2",
+            "kind": "dataset_row",
+            "dataset_cell": {
+              "column": "assay_id",
+              "row_key": [
+                {
+                  "column": "run_id",
+                  "value": "R3"
+                },
+                {
+                  "column": "result_id",
+                  "value": "fe_h2"
+                }
+              ]
+            },
+            "locator": "row run_id=R3, result_id=fe_h2; column assay_id",
+            "quote": "ex:di/assay/gc",
+            "source": "ex:di/dataset/co2rr-fe"
+          },
+          {
+            "id": "fe_percent.R3,fe_co",
+            "kind": "dataset_row",
+            "dataset_cell": {
+              "column": "fe_percent",
+              "row_key": [
+                {
+                  "column": "run_id",
+                  "value": "R3"
+                },
+                {
+                  "column": "result_id",
+                  "value": "fe_co"
+                }
+              ]
+            },
+            "locator": "row run_id=R3, result_id=fe_co; column fe_percent",
+            "quote": "21.7",
+            "source": "ex:di/dataset/co2rr-fe"
+          },
+          {
+            "id": "fe_percent.R3,fe_formate",
+            "kind": "dataset_row",
+            "dataset_cell": {
+              "column": "fe_percent",
+              "row_key": [
+                {
+                  "column": "run_id",
+                  "value": "R3"
+                },
+                {
+                  "column": "result_id",
+                  "value": "fe_formate"
+                }
+              ]
+            },
+            "locator": "row run_id=R3, result_id=fe_formate; column fe_percent",
+            "source": "ex:di/dataset/co2rr-fe"
+          },
+          {
+            "id": "fe_percent.R3,fe_h2",
+            "kind": "dataset_row",
+            "dataset_cell": {
+              "column": "fe_percent",
+              "row_key": [
+                {
+                  "column": "run_id",
+                  "value": "R3"
+                },
+                {
+                  "column": "result_id",
+                  "value": "fe_h2"
+                }
+              ]
+            },
+            "locator": "row run_id=R3, result_id=fe_h2; column fe_percent",
+            "quote": "71.9",
+            "source": "ex:di/dataset/co2rr-fe"
+          },
+          {
+            "id": "phase.R3,fe_co",
+            "kind": "dataset_row",
+            "dataset_cell": {
+              "column": "phase",
+              "row_key": [
+                {
+                  "column": "run_id",
+                  "value": "R3"
+                },
+                {
+                  "column": "result_id",
+                  "value": "fe_co"
+                }
+              ]
+            },
+            "locator": "row run_id=R3, result_id=fe_co; column phase",
+            "quote": "gas",
+            "source": "ex:di/dataset/co2rr-fe"
+          },
+          {
+            "id": "phase.R3,fe_formate",
+            "kind": "dataset_row",
+            "dataset_cell": {
+              "column": "phase",
+              "row_key": [
+                {
+                  "column": "run_id",
+                  "value": "R3"
+                },
+                {
+                  "column": "result_id",
+                  "value": "fe_formate"
+                }
+              ]
+            },
+            "locator": "row run_id=R3, result_id=fe_formate; column phase",
+            "quote": "liquid",
+            "source": "ex:di/dataset/co2rr-fe"
+          },
+          {
+            "id": "phase.R3,fe_h2",
+            "kind": "dataset_row",
+            "dataset_cell": {
+              "column": "phase",
+              "row_key": [
+                {
+                  "column": "run_id",
+                  "value": "R3"
+                },
+                {
+                  "column": "result_id",
+                  "value": "fe_h2"
+                }
+              ]
+            },
+            "locator": "row run_id=R3, result_id=fe_h2; column phase",
+            "quote": "gas",
+            "source": "ex:di/dataset/co2rr-fe"
+          },
+          {
+            "id": "potential_V.R3,fe_co",
+            "kind": "dataset_row",
+            "dataset_cell": {
+              "column": "potential_V",
+              "row_key": [
+                {
+                  "column": "run_id",
+                  "value": "R3"
+                },
+                {
+                  "column": "result_id",
+                  "value": "fe_co"
+                }
+              ]
+            },
+            "locator": "row run_id=R3, result_id=fe_co; column potential_V",
+            "quote": "-1.2",
+            "source": "ex:di/dataset/co2rr-fe"
+          },
+          {
+            "id": "product_id.R3,fe_co",
+            "kind": "dataset_row",
+            "dataset_cell": {
+              "column": "product_id",
+              "row_key": [
+                {
+                  "column": "run_id",
+                  "value": "R3"
+                },
+                {
+                  "column": "result_id",
+                  "value": "fe_co"
+                }
+              ]
+            },
+            "locator": "row run_id=R3, result_id=fe_co; column product_id",
+            "quote": "ex:di/species/co",
+            "source": "ex:di/dataset/co2rr-fe"
+          },
+          {
+            "id": "product_id.R3,fe_formate",
+            "kind": "dataset_row",
+            "dataset_cell": {
+              "column": "product_id",
+              "row_key": [
+                {
+                  "column": "run_id",
+                  "value": "R3"
+                },
+                {
+                  "column": "result_id",
+                  "value": "fe_formate"
+                }
+              ]
+            },
+            "locator": "row run_id=R3, result_id=fe_formate; column product_id",
+            "quote": "ex:di/species/formate",
+            "source": "ex:di/dataset/co2rr-fe"
+          },
+          {
+            "id": "product_id.R3,fe_h2",
+            "kind": "dataset_row",
+            "dataset_cell": {
+              "column": "product_id",
+              "row_key": [
+                {
+                  "column": "run_id",
+                  "value": "R3"
+                },
+                {
+                  "column": "result_id",
+                  "value": "fe_h2"
+                }
+              ]
+            },
+            "locator": "row run_id=R3, result_id=fe_h2; column product_id",
+            "quote": "ex:di/species/h2",
+            "source": "ex:di/dataset/co2rr-fe"
+          },
+          {
+            "id": "stream.R3,fe_co",
+            "kind": "dataset_row",
+            "dataset_cell": {
+              "column": "stream",
+              "row_key": [
+                {
+                  "column": "run_id",
+                  "value": "R3"
+                },
+                {
+                  "column": "result_id",
+                  "value": "fe_co"
+                }
+              ]
+            },
+            "locator": "row run_id=R3, result_id=fe_co; column stream",
+            "quote": "outlet gas",
+            "source": "ex:di/dataset/co2rr-fe"
+          },
+          {
+            "id": "stream.R3,fe_formate",
+            "kind": "dataset_row",
+            "dataset_cell": {
+              "column": "stream",
+              "row_key": [
+                {
+                  "column": "run_id",
+                  "value": "R3"
+                },
+                {
+                  "column": "result_id",
+                  "value": "fe_formate"
+                }
+              ]
+            },
+            "locator": "row run_id=R3, result_id=fe_formate; column stream",
+            "quote": "catholyte",
+            "source": "ex:di/dataset/co2rr-fe"
+          },
+          {
+            "id": "stream.R3,fe_h2",
+            "kind": "dataset_row",
+            "dataset_cell": {
+              "column": "stream",
+              "row_key": [
+                {
+                  "column": "run_id",
+                  "value": "R3"
+                },
+                {
+                  "column": "result_id",
+                  "value": "fe_h2"
+                }
+              ]
+            },
+            "locator": "row run_id=R3, result_id=fe_h2; column stream",
+            "quote": "outlet gas",
+            "source": "ex:di/dataset/co2rr-fe"
+          }
+        ],
+        "experiment_kind": "physical",
+        "origin": "synthetic",
+        "recorded_at": "2026-03-03T09:30:00Z",
+        "reference_scale": "rhe",
+        "result_values": [
+          {
+            "id": "fe_co",
+            "status": "present",
+            "evidence_ids": [
+              "fe_percent.R3,fe_co",
+              "product_id.R3,fe_co",
+              "assay_id.R3,fe_co",
+              "phase.R3,fe_co",
+              "stream.R3,fe_co"
+            ],
+            "phase": "gas",
+            "produced_by": "ex:di/assay/gc",
+            "stream": "outlet gas",
+            "target": "ex:di/species/co",
+            "unit": "%",
+            "value": 21.7,
+            "variable": "ex:di/variable/faradaic-efficiency"
+          },
+          {
+            "id": "fe_formate",
+            "status": "not_measured",
+            "evidence_ids": [
+              "fe_percent.R3,fe_formate",
+              "product_id.R3,fe_formate",
+              "assay_id.R3,fe_formate",
+              "phase.R3,fe_formate",
+              "stream.R3,fe_formate"
+            ],
+            "note": "the catholyte of this run was not analysed",
+            "phase": "liquid",
+            "produced_by": "ex:di/assay/nmr",
+            "stream": "catholyte",
+            "target": "ex:di/species/formate",
+            "variable": "ex:di/variable/faradaic-efficiency"
+          },
+          {
+            "id": "fe_h2",
+            "status": "present",
+            "evidence_ids": [
+              "fe_percent.R3,fe_h2",
+              "product_id.R3,fe_h2",
+              "assay_id.R3,fe_h2",
+              "phase.R3,fe_h2",
+              "stream.R3,fe_h2"
+            ],
+            "phase": "gas",
+            "produced_by": "ex:di/assay/gc",
+            "stream": "outlet gas",
+            "target": "ex:di/species/h2",
+            "unit": "%",
+            "value": 71.9,
+            "variable": "ex:di/variable/faradaic-efficiency"
+          }
+        ],
+        "test_kind": "activity"
+      }
+    },
+    {
+      "id": "ex:di/dataset/dft-adsorption",
+      "label": "Dataset",
+      "props": {
+        "name": "CO and H adsorption energies on close-packed metals, RPBE (synthetic)",
+        "availability": "available",
+        "data_kind": "table",
+        "licence": "CC-BY-4.0",
+        "media_type": "text/csv",
+        "origin": "synthetic",
+        "sha256": "6f49beee35142e962c1052d6bf3a810d1512ca58507033ef1a27d8ba55facf1f",
+        "table": {
+          "columns": [
+            {
+              "name": "calculation_id",
+              "datatype": "string"
+            },
+            {
+              "name": "result_id",
+              "datatype": "string"
+            },
+            {
+              "name": "surface",
+              "datatype": "string"
+            },
+            {
+              "name": "functional",
+              "datatype": "string"
+            },
+            {
+              "name": "charge_treatment",
+              "datatype": "string"
+            },
+            {
+              "name": "run_status",
+              "datatype": "string"
+            },
+            {
+              "name": "status_reason",
+              "datatype": "string"
+            },
+            {
+              "name": "input_dataset_id",
+              "datatype": "string"
+            },
+            {
+              "name": "environment_dataset_id",
+              "datatype": "string"
+            },
+            {
+              "name": "reaction_id",
+              "datatype": "string"
+            },
+            {
+              "name": "adsorption_energy_eV",
+              "datatype": "number",
+              "unit": "eV",
+              "variable": "ex:di/variable/adsorption-energy"
+            }
+          ],
+          "ingest": {
+            "mapping_sha256": "013db9224597f55996c693e4092957513ee9790dfbb265c45411a999ca93ef86",
+            "schema_sha256": "7e479bc0027e13117e520695aa9cef4b5d141c8f6e3c4e8f787e4fd115dec026",
+            "schema_version": "0.8.4",
+            "tool": "scale-catal 0.4.0"
+          },
+          "primary_key": [
+            "calculation_id",
+            "result_id"
+          ],
+          "profile": "scale_csv_v1",
+          "rows": 6
+        },
+        "uri": "dft-adsorption.csv",
+        "version": "1"
+      }
+    },
+    {
+      "id": "ex:di/computation/C1",
+      "label": "Computation",
+      "props": {
+        "name": "Adsorption energies, Cu(111)",
+        "charge_treatment": "constant_charge",
+        "computation_kind": "electronic_structure",
+        "configuration": "ex:di/dataset/dft-inputs",
+        "evidence": [
+          {
+            "id": "adsorption_energy_eV.C1,co_adsorption",
+            "kind": "dataset_row",
+            "dataset_cell": {
+              "column": "adsorption_energy_eV",
+              "row_key": [
+                {
+                  "column": "calculation_id",
+                  "value": "C1"
+                },
+                {
+                  "column": "result_id",
+                  "value": "co_adsorption"
+                }
+              ]
+            },
+            "locator": "row calculation_id=C1, result_id=co_adsorption; column adsorption_energy_eV",
+            "quote": "-0.52",
+            "source": "ex:di/dataset/dft-adsorption"
+          },
+          {
+            "id": "adsorption_energy_eV.C1,h_adsorption",
+            "kind": "dataset_row",
+            "dataset_cell": {
+              "column": "adsorption_energy_eV",
+              "row_key": [
+                {
+                  "column": "calculation_id",
+                  "value": "C1"
+                },
+                {
+                  "column": "result_id",
+                  "value": "h_adsorption"
+                }
+              ]
+            },
+            "locator": "row calculation_id=C1, result_id=h_adsorption; column adsorption_energy_eV",
+            "quote": "0.11",
+            "source": "ex:di/dataset/dft-adsorption"
+          },
+          {
+            "id": "charge_treatment.C1,co_adsorption",
+            "kind": "dataset_row",
+            "dataset_cell": {
+              "column": "charge_treatment",
+              "row_key": [
+                {
+                  "column": "calculation_id",
+                  "value": "C1"
+                },
+                {
+                  "column": "result_id",
+                  "value": "co_adsorption"
+                }
+              ]
+            },
+            "locator": "row calculation_id=C1, result_id=co_adsorption; column charge_treatment",
+            "quote": "constant_charge",
+            "source": "ex:di/dataset/dft-adsorption"
+          },
+          {
+            "id": "environment_dataset_id.C1,co_adsorption",
+            "kind": "dataset_row",
+            "dataset_cell": {
+              "column": "environment_dataset_id",
+              "row_key": [
+                {
+                  "column": "calculation_id",
+                  "value": "C1"
+                },
+                {
+                  "column": "result_id",
+                  "value": "co_adsorption"
+                }
+              ]
+            },
+            "locator": "row calculation_id=C1, result_id=co_adsorption; column environment_dataset_id",
+            "quote": "ex:di/dataset/dft-environment",
+            "source": "ex:di/dataset/dft-adsorption"
+          },
+          {
+            "id": "functional.C1,co_adsorption",
+            "kind": "dataset_row",
+            "dataset_cell": {
+              "column": "functional",
+              "row_key": [
+                {
+                  "column": "calculation_id",
+                  "value": "C1"
+                },
+                {
+                  "column": "result_id",
+                  "value": "co_adsorption"
+                }
+              ]
+            },
+            "locator": "row calculation_id=C1, result_id=co_adsorption; column functional",
+            "quote": "RPBE",
+            "source": "ex:di/dataset/dft-adsorption"
+          },
+          {
+            "id": "input_dataset_id.C1,co_adsorption",
+            "kind": "dataset_row",
+            "dataset_cell": {
+              "column": "input_dataset_id",
+              "row_key": [
+                {
+                  "column": "calculation_id",
+                  "value": "C1"
+                },
+                {
+                  "column": "result_id",
+                  "value": "co_adsorption"
+                }
+              ]
+            },
+            "locator": "row calculation_id=C1, result_id=co_adsorption; column input_dataset_id",
+            "quote": "ex:di/dataset/dft-inputs",
+            "source": "ex:di/dataset/dft-adsorption"
+          },
+          {
+            "id": "reaction_id.C1,co_adsorption",
+            "kind": "dataset_row",
+            "dataset_cell": {
+              "column": "reaction_id",
+              "row_key": [
+                {
+                  "column": "calculation_id",
+                  "value": "C1"
+                },
+                {
+                  "column": "result_id",
+                  "value": "co_adsorption"
+                }
+              ]
+            },
+            "locator": "row calculation_id=C1, result_id=co_adsorption; column reaction_id",
+            "quote": "ex:di/reaction/co-adsorption",
+            "source": "ex:di/dataset/dft-adsorption"
+          },
+          {
+            "id": "reaction_id.C1,h_adsorption",
+            "kind": "dataset_row",
+            "dataset_cell": {
+              "column": "reaction_id",
+              "row_key": [
+                {
+                  "column": "calculation_id",
+                  "value": "C1"
+                },
+                {
+                  "column": "result_id",
+                  "value": "h_adsorption"
+                }
+              ]
+            },
+            "locator": "row calculation_id=C1, result_id=h_adsorption; column reaction_id",
+            "quote": "ex:di/reaction/h-adsorption",
+            "source": "ex:di/dataset/dft-adsorption"
+          },
+          {
+            "id": "run_status.C1,co_adsorption",
+            "kind": "dataset_row",
+            "dataset_cell": {
+              "column": "run_status",
+              "row_key": [
+                {
+                  "column": "calculation_id",
+                  "value": "C1"
+                },
+                {
+                  "column": "result_id",
+                  "value": "co_adsorption"
+                }
+              ]
+            },
+            "locator": "row calculation_id=C1, result_id=co_adsorption; column run_status",
+            "quote": "completed",
+            "source": "ex:di/dataset/dft-adsorption"
+          }
+        ],
+        "execution_environment": "ex:di/dataset/dft-environment",
+        "experiment_status": "completed",
+        "level_of_theory": {
+          "status": "present",
+          "evidence_ids": [
+            "functional.C1,co_adsorption"
+          ],
+          "text_value": "RPBE"
+        },
+        "origin": "synthetic",
+        "result_values": [
+          {
+            "id": "co_adsorption",
+            "status": "present",
+            "evidence_ids": [
+              "adsorption_energy_eV.C1,co_adsorption",
+              "reaction_id.C1,co_adsorption"
+            ],
+            "target": "ex:di/reaction/co-adsorption",
+            "unit": "eV",
+            "value": -0.52,
+            "variable": "ex:di/variable/adsorption-energy"
+          },
+          {
+            "id": "h_adsorption",
+            "status": "present",
+            "evidence_ids": [
+              "adsorption_energy_eV.C1,h_adsorption",
+              "reaction_id.C1,h_adsorption"
+            ],
+            "target": "ex:di/reaction/h-adsorption",
+            "unit": "eV",
+            "value": 0.11,
+            "variable": "ex:di/variable/adsorption-energy"
+          }
+        ]
+      }
+    },
+    {
+      "id": "ex:di/computation/C2",
+      "label": "Computation",
+      "props": {
+        "name": "Adsorption energies, Ag(111)",
+        "charge_treatment": "constant_charge",
+        "computation_kind": "electronic_structure",
+        "configuration": "ex:di/dataset/dft-inputs",
+        "evidence": [
+          {
+            "id": "adsorption_energy_eV.C2,co_adsorption",
+            "kind": "dataset_row",
+            "dataset_cell": {
+              "column": "adsorption_energy_eV",
+              "row_key": [
+                {
+                  "column": "calculation_id",
+                  "value": "C2"
+                },
+                {
+                  "column": "result_id",
+                  "value": "co_adsorption"
+                }
+              ]
+            },
+            "locator": "row calculation_id=C2, result_id=co_adsorption; column adsorption_energy_eV",
+            "quote": "-0.08",
+            "source": "ex:di/dataset/dft-adsorption"
+          },
+          {
+            "id": "adsorption_energy_eV.C2,h_adsorption",
+            "kind": "dataset_row",
+            "dataset_cell": {
+              "column": "adsorption_energy_eV",
+              "row_key": [
+                {
+                  "column": "calculation_id",
+                  "value": "C2"
+                },
+                {
+                  "column": "result_id",
+                  "value": "h_adsorption"
+                }
+              ]
+            },
+            "locator": "row calculation_id=C2, result_id=h_adsorption; column adsorption_energy_eV",
+            "quote": "0.47",
+            "source": "ex:di/dataset/dft-adsorption"
+          },
+          {
+            "id": "charge_treatment.C2,co_adsorption",
+            "kind": "dataset_row",
+            "dataset_cell": {
+              "column": "charge_treatment",
+              "row_key": [
+                {
+                  "column": "calculation_id",
+                  "value": "C2"
+                },
+                {
+                  "column": "result_id",
+                  "value": "co_adsorption"
+                }
+              ]
+            },
+            "locator": "row calculation_id=C2, result_id=co_adsorption; column charge_treatment",
+            "quote": "constant_charge",
+            "source": "ex:di/dataset/dft-adsorption"
+          },
+          {
+            "id": "environment_dataset_id.C2,co_adsorption",
+            "kind": "dataset_row",
+            "dataset_cell": {
+              "column": "environment_dataset_id",
+              "row_key": [
+                {
+                  "column": "calculation_id",
+                  "value": "C2"
+                },
+                {
+                  "column": "result_id",
+                  "value": "co_adsorption"
+                }
+              ]
+            },
+            "locator": "row calculation_id=C2, result_id=co_adsorption; column environment_dataset_id",
+            "quote": "ex:di/dataset/dft-environment",
+            "source": "ex:di/dataset/dft-adsorption"
+          },
+          {
+            "id": "functional.C2,co_adsorption",
+            "kind": "dataset_row",
+            "dataset_cell": {
+              "column": "functional",
+              "row_key": [
+                {
+                  "column": "calculation_id",
+                  "value": "C2"
+                },
+                {
+                  "column": "result_id",
+                  "value": "co_adsorption"
+                }
+              ]
+            },
+            "locator": "row calculation_id=C2, result_id=co_adsorption; column functional",
+            "quote": "RPBE",
+            "source": "ex:di/dataset/dft-adsorption"
+          },
+          {
+            "id": "input_dataset_id.C2,co_adsorption",
+            "kind": "dataset_row",
+            "dataset_cell": {
+              "column": "input_dataset_id",
+              "row_key": [
+                {
+                  "column": "calculation_id",
+                  "value": "C2"
+                },
+                {
+                  "column": "result_id",
+                  "value": "co_adsorption"
+                }
+              ]
+            },
+            "locator": "row calculation_id=C2, result_id=co_adsorption; column input_dataset_id",
+            "quote": "ex:di/dataset/dft-inputs",
+            "source": "ex:di/dataset/dft-adsorption"
+          },
+          {
+            "id": "reaction_id.C2,co_adsorption",
+            "kind": "dataset_row",
+            "dataset_cell": {
+              "column": "reaction_id",
+              "row_key": [
+                {
+                  "column": "calculation_id",
+                  "value": "C2"
+                },
+                {
+                  "column": "result_id",
+                  "value": "co_adsorption"
+                }
+              ]
+            },
+            "locator": "row calculation_id=C2, result_id=co_adsorption; column reaction_id",
+            "quote": "ex:di/reaction/co-adsorption",
+            "source": "ex:di/dataset/dft-adsorption"
+          },
+          {
+            "id": "reaction_id.C2,h_adsorption",
+            "kind": "dataset_row",
+            "dataset_cell": {
+              "column": "reaction_id",
+              "row_key": [
+                {
+                  "column": "calculation_id",
+                  "value": "C2"
+                },
+                {
+                  "column": "result_id",
+                  "value": "h_adsorption"
+                }
+              ]
+            },
+            "locator": "row calculation_id=C2, result_id=h_adsorption; column reaction_id",
+            "quote": "ex:di/reaction/h-adsorption",
+            "source": "ex:di/dataset/dft-adsorption"
+          },
+          {
+            "id": "run_status.C2,co_adsorption",
+            "kind": "dataset_row",
+            "dataset_cell": {
+              "column": "run_status",
+              "row_key": [
+                {
+                  "column": "calculation_id",
+                  "value": "C2"
+                },
+                {
+                  "column": "result_id",
+                  "value": "co_adsorption"
+                }
+              ]
+            },
+            "locator": "row calculation_id=C2, result_id=co_adsorption; column run_status",
+            "quote": "completed",
+            "source": "ex:di/dataset/dft-adsorption"
+          }
+        ],
+        "execution_environment": "ex:di/dataset/dft-environment",
+        "experiment_status": "completed",
+        "level_of_theory": {
+          "status": "present",
+          "evidence_ids": [
+            "functional.C2,co_adsorption"
+          ],
+          "text_value": "RPBE"
+        },
+        "origin": "synthetic",
+        "result_values": [
+          {
+            "id": "co_adsorption",
+            "status": "present",
+            "evidence_ids": [
+              "adsorption_energy_eV.C2,co_adsorption",
+              "reaction_id.C2,co_adsorption"
+            ],
+            "target": "ex:di/reaction/co-adsorption",
+            "unit": "eV",
+            "value": -0.08,
+            "variable": "ex:di/variable/adsorption-energy"
+          },
+          {
+            "id": "h_adsorption",
+            "status": "present",
+            "evidence_ids": [
+              "adsorption_energy_eV.C2,h_adsorption",
+              "reaction_id.C2,h_adsorption"
+            ],
+            "target": "ex:di/reaction/h-adsorption",
+            "unit": "eV",
+            "value": 0.47,
+            "variable": "ex:di/variable/adsorption-energy"
+          }
+        ]
+      }
+    },
+    {
+      "id": "ex:di/computation/C3",
+      "label": "Computation",
+      "props": {
+        "name": "Adsorption energies, Au(111)",
+        "charge_treatment": "constant_charge",
+        "computation_kind": "electronic_structure",
+        "configuration": "ex:di/dataset/dft-inputs",
+        "evidence": [
+          {
+            "id": "adsorption_energy_eV.C3,co_adsorption",
+            "kind": "dataset_row",
+            "dataset_cell": {
+              "column": "adsorption_energy_eV",
+              "row_key": [
+                {
+                  "column": "calculation_id",
+                  "value": "C3"
+                },
+                {
+                  "column": "result_id",
+                  "value": "co_adsorption"
+                }
+              ]
+            },
+            "locator": "row calculation_id=C3, result_id=co_adsorption; column adsorption_energy_eV",
+            "source": "ex:di/dataset/dft-adsorption"
+          },
+          {
+            "id": "adsorption_energy_eV.C3,h_adsorption",
+            "kind": "dataset_row",
+            "dataset_cell": {
+              "column": "adsorption_energy_eV",
+              "row_key": [
+                {
+                  "column": "calculation_id",
+                  "value": "C3"
+                },
+                {
+                  "column": "result_id",
+                  "value": "h_adsorption"
+                }
+              ]
+            },
+            "locator": "row calculation_id=C3, result_id=h_adsorption; column adsorption_energy_eV",
+            "source": "ex:di/dataset/dft-adsorption"
+          },
+          {
+            "id": "charge_treatment.C3,co_adsorption",
+            "kind": "dataset_row",
+            "dataset_cell": {
+              "column": "charge_treatment",
+              "row_key": [
+                {
+                  "column": "calculation_id",
+                  "value": "C3"
+                },
+                {
+                  "column": "result_id",
+                  "value": "co_adsorption"
+                }
+              ]
+            },
+            "locator": "row calculation_id=C3, result_id=co_adsorption; column charge_treatment",
+            "quote": "constant_charge",
+            "source": "ex:di/dataset/dft-adsorption"
+          },
+          {
+            "id": "environment_dataset_id.C3,co_adsorption",
+            "kind": "dataset_row",
+            "dataset_cell": {
+              "column": "environment_dataset_id",
+              "row_key": [
+                {
+                  "column": "calculation_id",
+                  "value": "C3"
+                },
+                {
+                  "column": "result_id",
+                  "value": "co_adsorption"
+                }
+              ]
+            },
+            "locator": "row calculation_id=C3, result_id=co_adsorption; column environment_dataset_id",
+            "quote": "ex:di/dataset/dft-environment",
+            "source": "ex:di/dataset/dft-adsorption"
+          },
+          {
+            "id": "functional.C3,co_adsorption",
+            "kind": "dataset_row",
+            "dataset_cell": {
+              "column": "functional",
+              "row_key": [
+                {
+                  "column": "calculation_id",
+                  "value": "C3"
+                },
+                {
+                  "column": "result_id",
+                  "value": "co_adsorption"
+                }
+              ]
+            },
+            "locator": "row calculation_id=C3, result_id=co_adsorption; column functional",
+            "quote": "RPBE",
+            "source": "ex:di/dataset/dft-adsorption"
+          },
+          {
+            "id": "input_dataset_id.C3,co_adsorption",
+            "kind": "dataset_row",
+            "dataset_cell": {
+              "column": "input_dataset_id",
+              "row_key": [
+                {
+                  "column": "calculation_id",
+                  "value": "C3"
+                },
+                {
+                  "column": "result_id",
+                  "value": "co_adsorption"
+                }
+              ]
+            },
+            "locator": "row calculation_id=C3, result_id=co_adsorption; column input_dataset_id",
+            "quote": "ex:di/dataset/dft-inputs",
+            "source": "ex:di/dataset/dft-adsorption"
+          },
+          {
+            "id": "reaction_id.C3,co_adsorption",
+            "kind": "dataset_row",
+            "dataset_cell": {
+              "column": "reaction_id",
+              "row_key": [
+                {
+                  "column": "calculation_id",
+                  "value": "C3"
+                },
+                {
+                  "column": "result_id",
+                  "value": "co_adsorption"
+                }
+              ]
+            },
+            "locator": "row calculation_id=C3, result_id=co_adsorption; column reaction_id",
+            "quote": "ex:di/reaction/co-adsorption",
+            "source": "ex:di/dataset/dft-adsorption"
+          },
+          {
+            "id": "reaction_id.C3,h_adsorption",
+            "kind": "dataset_row",
+            "dataset_cell": {
+              "column": "reaction_id",
+              "row_key": [
+                {
+                  "column": "calculation_id",
+                  "value": "C3"
+                },
+                {
+                  "column": "result_id",
+                  "value": "h_adsorption"
+                }
+              ]
+            },
+            "locator": "row calculation_id=C3, result_id=h_adsorption; column reaction_id",
+            "quote": "ex:di/reaction/h-adsorption",
+            "source": "ex:di/dataset/dft-adsorption"
+          },
+          {
+            "id": "run_status.C3,co_adsorption",
+            "kind": "dataset_row",
+            "dataset_cell": {
+              "column": "run_status",
+              "row_key": [
+                {
+                  "column": "calculation_id",
+                  "value": "C3"
+                },
+                {
+                  "column": "result_id",
+                  "value": "co_adsorption"
+                }
+              ]
+            },
+            "locator": "row calculation_id=C3, result_id=co_adsorption; column run_status",
+            "quote": "failed",
+            "source": "ex:di/dataset/dft-adsorption"
+          },
+          {
+            "id": "status_reason.C3,co_adsorption",
+            "kind": "dataset_row",
+            "dataset_cell": {
+              "column": "status_reason",
+              "row_key": [
+                {
+                  "column": "calculation_id",
+                  "value": "C3"
+                },
+                {
+                  "column": "result_id",
+                  "value": "co_adsorption"
+                }
+              ]
+            },
+            "locator": "row calculation_id=C3, result_id=co_adsorption; column status_reason",
+            "quote": "SCF not converged after 300 steps",
+            "source": "ex:di/dataset/dft-adsorption"
+          }
+        ],
+        "execution_environment": "ex:di/dataset/dft-environment",
+        "experiment_status": "failed",
+        "level_of_theory": {
+          "status": "present",
+          "evidence_ids": [
+            "functional.C3,co_adsorption"
+          ],
+          "text_value": "RPBE"
+        },
+        "origin": "synthetic",
+        "result_values": [
+          {
+            "id": "co_adsorption",
+            "status": "not_measured",
+            "evidence_ids": [
+              "adsorption_energy_eV.C3,co_adsorption",
+              "reaction_id.C3,co_adsorption"
+            ],
+            "note": "the calculation failed; no energy was obtained",
+            "target": "ex:di/reaction/co-adsorption",
+            "variable": "ex:di/variable/adsorption-energy"
+          },
+          {
+            "id": "h_adsorption",
+            "status": "not_measured",
+            "evidence_ids": [
+              "adsorption_energy_eV.C3,h_adsorption",
+              "reaction_id.C3,h_adsorption"
+            ],
+            "note": "the calculation failed; no energy was obtained",
+            "target": "ex:di/reaction/h-adsorption",
+            "variable": "ex:di/variable/adsorption-energy"
+          }
+        ],
+        "status_reason": "SCF not converged after 300 steps"
+      }
+    }
+  ],
+  "links": [
+    {
+      "id": "ex:di/link/1",
+      "type": "HAS_PARTICIPANT",
+      "props": {
+        "coefficient": 1,
+        "origin": "synthetic",
+        "role": "reactant"
+      },
+      "source": "ex:di/reaction/co2-to-co",
+      "target": "ex:di/species/co2"
+    },
+    {
+      "id": "ex:di/link/2",
+      "type": "HAS_PARTICIPANT",
+      "props": {
+        "coefficient": 1,
+        "origin": "synthetic",
+        "role": "reactant"
+      },
+      "source": "ex:di/reaction/co2-to-co",
+      "target": "ex:di/species/h2o"
+    },
+    {
+      "id": "ex:di/link/3",
+      "type": "HAS_PARTICIPANT",
+      "props": {
+        "coefficient": 2,
+        "origin": "synthetic",
+        "role": "reactant"
+      },
+      "source": "ex:di/reaction/co2-to-co",
+      "target": "ex:di/species/electron"
+    },
+    {
+      "id": "ex:di/link/4",
+      "type": "HAS_PARTICIPANT",
+      "props": {
+        "coefficient": 1,
+        "origin": "synthetic",
+        "role": "product"
+      },
+      "source": "ex:di/reaction/co2-to-co",
+      "target": "ex:di/species/co"
+    },
+    {
+      "id": "ex:di/link/5",
+      "type": "HAS_PARTICIPANT",
+      "props": {
+        "coefficient": 2,
+        "origin": "synthetic",
+        "role": "product"
+      },
+      "source": "ex:di/reaction/co2-to-co",
+      "target": "ex:di/species/hydroxide"
+    },
+    {
+      "id": "ex:di/link/6",
+      "type": "HAS_PARTICIPANT",
+      "props": {
+        "coefficient": 1,
+        "origin": "synthetic",
+        "phase": "gas",
+        "role": "reactant"
+      },
+      "source": "ex:di/reaction/co-adsorption",
+      "target": "ex:di/species/co"
+    },
+    {
+      "id": "ex:di/link/7",
+      "type": "HAS_PARTICIPANT",
+      "props": {
+        "coefficient": 1,
+        "origin": "synthetic",
+        "phase": "adsorbed",
+        "role": "product"
+      },
+      "source": "ex:di/reaction/co-adsorption",
+      "target": "ex:di/species/co"
+    },
+    {
+      "id": "ex:di/link/8",
+      "type": "HAS_PARTICIPANT",
+      "props": {
+        "coefficient": 0.5,
+        "origin": "synthetic",
+        "phase": "gas",
+        "role": "reactant"
+      },
+      "source": "ex:di/reaction/h-adsorption",
+      "target": "ex:di/species/h2"
+    },
+    {
+      "id": "ex:di/link/9",
+      "type": "HAS_PARTICIPANT",
+      "props": {
+        "coefficient": 1,
+        "origin": "synthetic",
+        "phase": "adsorbed",
+        "role": "product"
+      },
+      "source": "ex:di/reaction/h-adsorption",
+      "target": "ex:di/species/h"
+    },
+    {
+      "id": "ex:di/link/10",
+      "type": "HAS_FORMULATION",
+      "props": {
+        "origin": "synthetic"
+      },
+      "source": "ex:di/sample/ag",
+      "target": "ex:di/catalyst/ag"
+    },
+    {
+      "id": "ex:di/test/R1/uses-catalyst/ex%3Adi%2Fsample%2Fag",
+      "type": "USES_CATALYST",
+      "props": {
+        "origin": "synthetic",
+        "state": "as_prepared"
+      },
+      "source": "ex:di/test/R1",
+      "target": "ex:di/sample/ag"
+    },
+    {
+      "id": "ex:di/test/R1/of-reaction/ex%3Adi%2Freaction%2Fco2-to-co",
+      "type": "OF_REACTION",
+      "props": {
+        "origin": "synthetic"
+      },
+      "source": "ex:di/test/R1",
+      "target": "ex:di/reaction/co2-to-co"
+    },
+    {
+      "id": "ex:di/test/R1/in-electrolyte/ex%3Adi%2Felectrolyte%2Fkhco3",
+      "type": "IN_ELECTROLYTE",
+      "props": {
+        "origin": "synthetic"
+      },
+      "source": "ex:di/test/R1",
+      "target": "ex:di/electrolyte/khco3"
+    },
+    {
+      "id": "ex:di/test/R1/reported-in/co2rr-fe",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "row run_id=R1, result_id=fe_co",
+          "row run_id=R1, result_id=fe_formate",
+          "row run_id=R1, result_id=fe_h2"
+        ],
+        "origin": "synthetic"
+      },
+      "source": "ex:di/test/R1",
+      "target": "ex:di/dataset/co2rr-fe"
+    },
+    {
+      "id": "ex:di/test/R2/uses-catalyst/ex%3Adi%2Fsample%2Fag",
+      "type": "USES_CATALYST",
+      "props": {
+        "origin": "synthetic",
+        "state": "as_prepared"
+      },
+      "source": "ex:di/test/R2",
+      "target": "ex:di/sample/ag"
+    },
+    {
+      "id": "ex:di/test/R2/of-reaction/ex%3Adi%2Freaction%2Fco2-to-co",
+      "type": "OF_REACTION",
+      "props": {
+        "origin": "synthetic"
+      },
+      "source": "ex:di/test/R2",
+      "target": "ex:di/reaction/co2-to-co"
+    },
+    {
+      "id": "ex:di/test/R2/in-electrolyte/ex%3Adi%2Felectrolyte%2Fkhco3",
+      "type": "IN_ELECTROLYTE",
+      "props": {
+        "origin": "synthetic"
+      },
+      "source": "ex:di/test/R2",
+      "target": "ex:di/electrolyte/khco3"
+    },
+    {
+      "id": "ex:di/test/R2/reported-in/co2rr-fe",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "row run_id=R2, result_id=fe_co",
+          "row run_id=R2, result_id=fe_formate",
+          "row run_id=R2, result_id=fe_h2"
+        ],
+        "origin": "synthetic"
+      },
+      "source": "ex:di/test/R2",
+      "target": "ex:di/dataset/co2rr-fe"
+    },
+    {
+      "id": "ex:di/test/R3/uses-catalyst/ex%3Adi%2Fsample%2Fag",
+      "type": "USES_CATALYST",
+      "props": {
+        "origin": "synthetic",
+        "state": "as_prepared"
+      },
+      "source": "ex:di/test/R3",
+      "target": "ex:di/sample/ag"
+    },
+    {
+      "id": "ex:di/test/R3/of-reaction/ex%3Adi%2Freaction%2Fco2-to-co",
+      "type": "OF_REACTION",
+      "props": {
+        "origin": "synthetic"
+      },
+      "source": "ex:di/test/R3",
+      "target": "ex:di/reaction/co2-to-co"
+    },
+    {
+      "id": "ex:di/test/R3/in-electrolyte/ex%3Adi%2Felectrolyte%2Fkhco3",
+      "type": "IN_ELECTROLYTE",
+      "props": {
+        "origin": "synthetic"
+      },
+      "source": "ex:di/test/R3",
+      "target": "ex:di/electrolyte/khco3"
+    },
+    {
+      "id": "ex:di/test/R3/reported-in/co2rr-fe",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "row run_id=R3, result_id=fe_co",
+          "row run_id=R3, result_id=fe_formate",
+          "row run_id=R3, result_id=fe_h2"
+        ],
+        "origin": "synthetic"
+      },
+      "source": "ex:di/test/R3",
+      "target": "ex:di/dataset/co2rr-fe"
+    },
+    {
+      "id": "ex:di/computation/C1/reported-in/dft-adsorption",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "row calculation_id=C1, result_id=co_adsorption",
+          "row calculation_id=C1, result_id=h_adsorption"
+        ],
+        "origin": "synthetic"
+      },
+      "source": "ex:di/computation/C1",
+      "target": "ex:di/dataset/dft-adsorption"
+    },
+    {
+      "id": "ex:di/computation/C2/reported-in/dft-adsorption",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "row calculation_id=C2, result_id=co_adsorption",
+          "row calculation_id=C2, result_id=h_adsorption"
+        ],
+        "origin": "synthetic"
+      },
+      "source": "ex:di/computation/C2",
+      "target": "ex:di/dataset/dft-adsorption"
+    },
+    {
+      "id": "ex:di/computation/C3/reported-in/dft-adsorption",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "row calculation_id=C3, result_id=co_adsorption",
+          "row calculation_id=C3, result_id=h_adsorption"
+        ],
+        "origin": "synthetic"
+      },
+      "source": "ex:di/computation/C3",
+      "target": "ex:di/dataset/dft-adsorption"
+    }
+  ],
+  "directed": true,
+  "graph": {
+    "data_status": "synthetic_example",
+    "follows_domains": [
+      "catalysis"
+    ],
+    "graph_id": "ex:invalid/dataset-cell-in-another-unit",
+    "schema": "scale-catal",
+    "schema_version": "0.8.4",
+    "stewardship": {
+      "access": "public"
+    },
+    "title": "INVALID FIXTURE (dataset-cell-in-another-unit): a Faradaic efficiency in fraction citing a column in percent"
+  },
+  "multigraph": true
+}

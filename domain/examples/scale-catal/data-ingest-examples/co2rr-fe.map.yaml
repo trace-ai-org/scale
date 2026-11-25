@@ -1,0 +1,59 @@
+# Faradaic efficiencies of a CO2-electroreduction series (synthetic) into CatalyticTest records: one record per run_id,
+# one result entry per row. `scale data add co2rr-fe.csv --map co2rr-fe.map.yaml --into seed.json`.
+# The destination here is a synthetic example, so the records are origin synthetic; a laboratory's own mapping says
+# origin: recorded (recorded_at_column is then required) and writes into its own research_data document.
+mapping_version: 1
+dataset:
+  id: ex:di/dataset/co2rr-fe
+  name: Faradaic efficiencies of CO2 electroreduction on Ag, three potentials (synthetic)
+  version: "1"
+  uri: co2rr-fe.csv
+  profile: scale_csv_v1
+  primary_key: [run_id, result_id]
+  licence: CC-BY-4.0
+record:
+  label: CatalyticTest
+  id_prefix: ex:di/test/
+  key: [run_id]
+  name: CO2 electroreduction on Ag
+  origin: synthetic
+  recorded_at_column: recorded_at
+  properties:
+    driving_forces:
+      literal: [electro]
+    experiment_kind:
+      literal: physical
+    test_kind:
+      literal: activity
+    control_mode:
+      literal: potentiostatic
+    reference_scale:
+      literal: rhe
+    electrode_potential:
+      column: potential_V
+      unit: V vs RHE
+result:
+  id_column: result_id
+  column: fe_percent
+  variable: ex:di/variable/faradaic-efficiency
+  unit: "%"
+  target_column: product_id
+  produced_by_column: assay_id
+  phase_column: phase
+  stream_column: stream
+  censor:
+    - prefix: "<"
+      as: below_detection_limit
+  missing:
+    "":
+      status: not_measured
+      note: the catholyte of this run was not analysed
+links:
+  - type: USES_CATALYST
+    target: ex:di/sample/ag
+    props:
+      state: as_prepared
+  - type: OF_REACTION
+    target: ex:di/reaction/co2-to-co
+  - type: IN_ELECTROLYTE
+    target: ex:di/electrolyte/khco3

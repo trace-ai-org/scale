@@ -2,6 +2,26 @@
 
 ## Unreleased
 
+- **A value's link to its data cell, and tabular data into documents (schema 0.8.4, additive, provisional; no
+  migration).** The kernel's evidence item gains `dataset_cell` (a column, and the row by its key, every primary-key
+  column once, or by an opted-in zero-based position) and Dataset gains `table` (profile `scale_csv_v1`, primary key,
+  typed columns with the Variable, unit and basis of a quantity, the row count and what compiled it), as the kernel
+  structures `dataset_cell`, `dataset_key`, `dataset_table` and `dataset_column`. One route from a value to its data,
+  for literature, experimental and computational values alike: `value.evidence_ids` -> `evidence.dataset_cell` ->
+  `evidence.source`, a Dataset named by version or uri and the sha256 of its bytes. The validator checks a cell's
+  evidence kind, its Dataset (a table, a version or uri, a 64-hex sha256), its row selector and column, and that a
+  numeric value is in its column's unit, variable and basis, a result's column naming a quantitative Variable whose
+  kind the column's unit fits; the schema diff now compares the kernel structures. `scale data add FILE.csv --map
+  MAP.yaml --into DOC [--dry-run]` compiles a table by a declarative mapping (`mapping_version: 1`, unknown keys
+  refused, no code) into a Dataset, records with stable ids, result entries each citing its cells, REPORTED_IN and the
+  links named; it refuses duplicate keys, conflicting run-level properties, unresolved references, malformed numbers,
+  unnamed blanks and tokens and any new validation error, maps tokens only to missingness or bounds (never zero),
+  records the mapping, tool and schema digests and is idempotent. `scale data verify` checks the bytes and each cited
+  cell against a local copy (unverified without one; nothing fetched); the agent tools `scale_data_add` and
+  `scale_data_verify` do the same. Worked example `data-ingest-examples/` (a CO2RR Faradaic-efficiency table and a
+  DFT adsorption-energy table, synthetic), counterexamples `dataset-cell-without-its-whole-key.json` and
+  `dataset-cell-in-another-unit.json`, docs/data.md. Documents pinning 0.8.3 stay valid.
+
 - **An optional passage index for re-reading after a schema upgrade (skills; no schema change, no migration).**
   `skills/curate-corpus/scripts/passage_index.py` indexes a source folder's page texts into SQLite (FTS5), passages of
   whole paragraphs that keep their page and character span, so each is a verbatim substring of the page the graph's

@@ -285,7 +285,9 @@ evidence: true
   target, counted as `unresolved_target`, never taken for one species.
 - **Evidence.** A row cites the evidence items its bound entry names (`evidence_ids`), labelled with the entry's
   variable and `entry` path, and never an item of its record that only other results cite; an item no value cites
-  stays the record's. The assay's evidence comes with it when a field step binds it.
+  stays the record's. The assay's evidence comes with it when a field step binds it. A value imported from a table (`scale data add`) cites its cells: each
+  item names its Dataset and its `dataset_cell` (column and row key), and its quote is the cell's text
+  ([data.md](data.md)).
 - **Repetition.** Two results of one record that nothing tells apart (one variable, target, producer, phase, stream,
   basis, definition and normalization) are an ambiguous repetition: an ordinary answer returns both, each row flagged
   (`ambiguous_repetition`), and a scientific comparison leaves them out (counted in `coverage.comparison.left_out`).
