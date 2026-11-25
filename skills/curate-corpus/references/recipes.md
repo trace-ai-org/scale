@@ -841,3 +841,52 @@ queries). A value is in the unit printed; a fitted or derived value names its pr
 5. A digitizing tool's run is a computational Experiment (`USES_SOFTWARE` with its version) and the
    value's `produced_by`.
 6. A point you cannot read reliably is not recorded: list an `extraction_error` gap.
+
+## Reading a figure panel by panel
+
+The digitizing steps above read one value. A figure usually holds many, in several panels; read them in this order.
+
+1. **Find the figure by its own caption.** The figure is the one whose printed caption starts "Figure N" (or
+   "Fig. N") on the page image. Body text sometimes cites the wrong number; never locate a figure from a citation.
+2. **Look closely.** Crop each panel with `scale pages region` (about 400 dpi) and read the crop, not the page.
+3. **List the panels** before reading: for each, its kind (micrograph, histogram, spectrum or pattern, curve or
+   scatter, bar chart, inset table, scheme) and what it shows.
+4. **Record every quantity each panel reports** about the materials or their synthesis:
+   - printed numbers (labels, insets, inset and legend tables, a stated mean ± SD, d-spacings) as printed;
+   - histograms: the printed mean and SD, and the height of every bar at its bin, digitized;
+   - spectra and patterns: the position of every labelled or clearly resolved peak or band, with its sample;
+   - curves, scatter and bar charts: each plotted point at its x position, digitized as above.
+
+   Axis ticks, scale bars, panel letters, Miller indices, formula subscripts and sample names are not values.
+   Read the axes before any point: note the first and last numbered tick of each axis and the tick spacing, and give
+   each point the x value of the tick it sits on (a time axis from -60 to 300 min is not one to 480). In a panel with
+   many series, identify each by its marker and colour from the legend, and read a series only where its markers can
+   be told apart; where series overlap so that a point cannot be assigned, leave it out as a gap. Never write a value
+   because it is what you expect (a textbook band position, a typical size): what you cannot read on the image is a gap.
+   Never measure a micrograph yourself: a size, length or spacing that the panel does not print (as a label, an
+   inset or a histogram) is not reported, however clear the scale bar; record nothing from such a panel, or a gap.
+   In a 3D or offset (waterfall) plot, read only the trace that sits on the axis; the others are shifted by the
+   perspective and are left out, as a gap.
+5. **Judge readability panel by panel, neither strict nor loose.** Read a panel when its axis has at least two
+   numbered ticks and a unit or quantity name, and the series you read can be told apart. Leave a panel (or one
+   series) out when its axis has no numbers or no unit (arbitrary units serve for peak positions, not heights), the
+   image is too blurred to place a point within about a tenth of the axis range, or curves overlap so that a point
+   cannot be assigned to its series. Record what was left out as an `extraction_error` gap naming the panel and the
+   reason, never a guessed value; a partly readable panel gives the part that is.
+6. **State conditions once.** A time, temperature or amount stated once in the caption or a legend goes on the record
+   of the series it covers (its Experiment or sample), never copied onto each point. One record per series, with
+   that series' points on it.
+7. **One value, several forms.** A number printed in the figure and also in a table or the text is one value with
+   both evidence items. A number found only in the caption is evidence `kind: text`, locator
+   "p. <page>, Figure <n> caption", not `kind: figure`.
+8. **Save as you go.** Write each panel's values into the document as soon as they are read, so a run that stops
+   early keeps what it read.
+9. **Check before finishing:**
+
+   ```
+   python3 -I ${CLAUDE_SKILL_DIR}/scripts/check_figures.py <document.graph.json> <figure>[,<figure>...]
+   ```
+
+   It reports a caption value copied onto several records, a named figure that no value cites yet (record its values,
+   or the gaps that explain why there are none) and figure evidence without a transcription. Then run
+   `scale source check`.
