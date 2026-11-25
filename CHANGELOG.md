@@ -10,6 +10,16 @@
   figure that no value or gap cites, and figure evidence without a transcription. On held-out open-access papers
   curated with an open-weight model, every value in 101 figures (86 with data) was checked by hand against the image: 1,595 of 1,609 were right (99.1%),
   and 59 of 60 hand-audited figure values were recorded (98.3%; 53 of 60 before the recipe).
+- **The agent team's roles say what the team does (governance; no schema change, no migration).** The evidence
+  verifier is given the sources a patch cites but not the proposer's reasoning, reads the sources before the
+  proposer's explanation, lists every source it could not read as not checked against the source, and names the commit
+  it verified; the systems engineer packages (version, migration assessment, checks) before verification and opens the
+  pull request only on the head the verifier passed (work in progress on an open pull request goes to `agent/…-wip`);
+  the data scientist saves the evidence record in `docs/changes/`, which the verifier reads after the sources and the
+  thread; the protocol compiler hands back a procedure per requirement with
+  its expected and observed outcomes; the change set and the pull-request template add the verification and say how a
+  reviewer accepts, requests revision or rejects (closes unmerged). A test checks the five roles and these
+  instructions; the implementation status records that the workflow runs.
 
 - **Explorer feedback: CO is not Co, one hit per quote, opt-in unit conversion, example questions (tools, site; no
   schema change, no migration).** From a reader's first questions:
