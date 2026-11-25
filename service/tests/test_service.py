@@ -18,7 +18,7 @@ import pytest
 from conftest import REPO
 
 sys.path.insert(0, str(REPO / "service"))                 # the scaleweb package, not installed with scale-catal
-from scale import curate
+from scale import curate, modelview
 from scale.util import load_doc, write_canonical
 from scaleweb import agent, auth, fetch, runner  # noqa: E402
 from scaleweb.inbox import SETTLE_S, Inbox  # noqa: E402
@@ -148,7 +148,8 @@ def test_a_question_is_answered_with_the_tools_own_query(tmp_path):
                             json.dumps({"graph": graph, "question": "Which catalysts?"}).encode())
     assert st == 200 and body["answer"] == "Three catalysts [rows]." and body["plans"][0]["status"] == "answered"
     asked = json.loads(model.seen[1]["messages"][2]["content"][0]["content"])
-    assert asked["rows"] == direct[1]["rows"]                       # the model saw exactly what scale query returns
+    assert asked["view"]["name"] == "model"                         # the model view of what scale query returns,
+    assert modelview.expand(asked)["rows"] == direct[1]["rows"]     # which gives back exactly its rows
     assert "# Query scale-catal documents" in model.seen[0]["system"][0]["text"]
 
 

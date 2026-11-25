@@ -1429,9 +1429,36 @@ def _units_in(path: str, v: Any, into: dict[str, Counter]) -> None:
             _units_in(f"{path}.*", x, into)
 
 
-def stats(doc: dict) -> dict:
+def stats(doc: dict, labels: list[str] | None = None, properties: list[str] | None = None) -> dict:
     """Counts of node labels, edge types and evidence, the properties in use per label, the units in use per
-    label (or edge type) and property path, and the link patterns (source label, edge type, target label)."""
+    label (or edge type) and property path, and the link patterns (source label, edge type, target label).
+
+    ``labels`` (labels or edge types) keeps of the properties, units and link patterns only those of these labels
+    (a link pattern that has one of them at either end, or as its type); ``properties`` keeps of the properties and
+    units only these properties (a unit's path by its first property: ``conditions`` keeps ``conditions.space_velocity``).
+    The counts stay the whole document's; ``filtered`` says what was kept."""
+    full = _stats(doc)
+    if not labels and not properties:
+        return full
+    want_l = set(labels or [])
+    want_p = set(properties or [])
+    head = lambda path: re.split(r"[.\[]", path, maxsplit=1)[0]   # noqa: E731
+    keep_l = (lambda x: x in want_l) if want_l else (lambda x: True)
+    keep_p = (lambda x: head(x) in want_p) if want_p else (lambda x: True)
+    full["properties_by_label"] = {lab: {p: n for p, n in ps.items() if keep_p(p)}
+                                   for lab, ps in full["properties_by_label"].items() if keep_l(lab)}
+    full["units_in_use"] = {o: kept for o, paths in full["units_in_use"].items() if keep_l(o)
+                            for kept in [{p: u for p, u in paths.items() if keep_p(p)}] if kept}
+    if want_l:
+        full["link_patterns"] = [x for x in full["link_patterns"] if {x["source"], x["type"], x["target"]} & want_l]
+    full["filtered"] = {**({"labels": sorted(want_l)} if want_l else {}),
+                        **({"properties": sorted(want_p)} if want_p else {}),
+                        "note": "properties_by_label, units_in_use and link_patterns are kept for these only; the "
+                                "counts are the whole document's"}
+    return full
+
+
+def _stats(doc: dict) -> dict:
     nodes = doc.get("nodes") or []
     links = doc.get("links") or []
     props: dict[str, Counter] = {}

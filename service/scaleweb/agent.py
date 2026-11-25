@@ -13,12 +13,13 @@ import json
 from pathlib import Path
 from typing import Callable
 
-from scale import curate, pgraph
+from scale import curate
 from scale.curation_tools import STOP, CurationTools, short_check, skill
 from scale.api import ScaleToolkit
-from scale.util import find_repo_root, load_doc
+from scale.util import find_repo_root
 
 RESULT_CHARS = 40_000          # the longest tool result handed back to the model
+PAGE_CHARS = 25_000            # a query's page of rows and their evidence (the model view), within it
 
 
 _skill = skill                 # a skill's procedure, without its front matter (runner.py too)
@@ -120,26 +121,34 @@ def answer(graph_path: Path, question: str, client, model: str, max_turns: int, 
     plans: list[dict] = []
 
     def run_query(a: dict):
-        res = kit.call("query", {"path": graph_path.name, "plan": a["plan"]})
+        # the model view: the result without its repetition, its rows in pages a tool result holds (page.next)
+        res = kit.call("query", {"path": graph_path.name, "plan": a["plan"], "view": "model",
+                                 "offset": int(a.get("offset") or 0), "page_chars": PAGE_CHARS})
         plans.append({"plan": a["plan"], "status": res.get("status") or res.get("error"),
                       "rows": res.get("row_count", 0)})
         return res
 
     tools = [
-        _tool("describe", "The schema: labels and edge types with their properties (scale describe).",
-              {"names": {"type": "array", "items": {"type": "string"}}}),
-        _tool("stats", "The graph's units in use per property and its link patterns (scale graph stats)."),
+        _tool("describe", "The schema: labels and edge types with their properties (scale describe; without the "
+              "curation checklist).", {"names": {"type": "array", "items": {"type": "string"}}}),
+        _tool("stats", "The graph's units in use per property and its link patterns (scale graph stats); labels and "
+              "properties keep only those named.", {"labels": {"type": "array", "items": {"type": "string"}},
+                                                    "properties": {"type": "array", "items": {"type": "string"}}}),
         _tool("search", "Search the graph's evidence by words and meaning (scale graph search); hits lead to the "
               "records that cite them.", {"query": {"type": "string"}, "k": {"type": "integer"},
                                           "published_before": {"type": "string"}}, ["query"]),
         _tool("query", "Run a graph query plan (scale graph query): match, steps, where, return, evidence, order_by, "
-              "limit, text, published_before. Returns rows, the kind of answer and the coverage.",
-              {"plan": {"type": "object"}}, ["plan"]),
+              "limit, text, published_before. Returns rows, the kind of answer and the coverage, in the model view "
+              "(view.legend says how to read it; each evidence item once, as E1..En); offset fetches the page "
+              "page.next names.", {"plan": {"type": "object"}, "offset": {"type": "integer"}}, ["plan"]),
     ]
     handlers = {
-        "describe": lambda a: kit.call("describe", {"names": a.get("names") or [], "domain": "catalysis"}),
-        "stats": lambda a: pgraph.stats(load_doc(graph_path)),
+        "describe": lambda a: kit.call("describe", {"names": a.get("names") or [], "domain": "catalysis",
+                                                    "checklist": False}),
+        "stats": lambda a: kit.call("stats", {"path": graph_path.name,
+                                              **{k: a[k] for k in ("labels", "properties") if a.get(k)}}),
         "search": lambda a: kit.call("search", {"path": graph_path.name, "query": a["query"], "k": int(a.get("k") or 10),
+                                                "view": "model",
                                                 **({"published_before": a["published_before"]}
                                                    if a.get("published_before") else {})}),
         "query": run_query,

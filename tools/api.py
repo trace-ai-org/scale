@@ -29,6 +29,7 @@ Design rules
 from __future__ import annotations
 
 import copy
+import json
 import os
 import re
 import shutil
@@ -55,6 +56,12 @@ _DOMAIN = {"domain": {"type": "string", "description": "Whose schema to use: cat
                                                        "domain/), or core for the science kernel alone. "
                                                        "Default: catalysis."}}
 
+_VIEW = {"view": {"type": "string", "enum": ["full", "model"], "default": "full",
+                  "description": "model: the same result with its repetition written once, for a model to read "
+                                 "(each evidence item once as E1..En with whose evidence it is, each source once, ids "
+                                 "with the graph's prefix as ~; a query's rows in pages): lossless, versioned "
+                                 "(view.version), its legend in view.legend; docs/querying.md, 'The model view'."}}
+
 TOOLS: list[dict] = [
     {
         "name": "scale_status",
@@ -79,7 +86,11 @@ TOOLS: list[dict] = [
         "input_schema": {"type": "object", "properties": {
             "names": {"type": "array", "items": {"type": "string"}, "description": "Labels or edge types, e.g. CatalyticTest."},
             **_DOMAIN,
-            "schema_version": {"type": "string", "description": "A frozen schema version to describe (default: current)."}}},
+            "schema_version": {"type": "string", "description": "A frozen schema version to describe (default: current)."},
+            "checklist": {"type": "boolean", "default": True,
+                          "description": "With names and domain catalysis: include the catalysis checklist (what a "
+                                         "record must and should report; for curating). false leaves it out (for "
+                                         "writing query plans)."}}},
     },
     {
         "name": "scale_template",
@@ -160,7 +171,29 @@ TOOLS: list[dict] = [
         "input_schema": {"type": "object", "required": ["plan"], "properties": {
             "plan": {"type": "object", "description": "Query plan; see the query-graph skill and example_plans in scale_domains."},
             **_DOC, **_DOMAIN,
-            "format": {"type": "string", "enum": ["json", "markdown"], "description": "markdown adds a readable rendering."}}},
+            "format": {"type": "string", "enum": ["json", "markdown"], "description": "markdown adds a readable rendering."},
+            **_VIEW,
+            "offset": {"type": "integer", "minimum": 0, "default": 0,
+                       "description": "With view model: the first row of the page (page.next gives the next one's)."},
+            "page_size": {"type": "integer", "minimum": 1, "maximum": 500, "default": 100,
+                          "description": "With view model: at most this many rows in a page."},
+            "page_chars": {"type": "integer", "minimum": 1000, "default": 40000,
+                           "description": "With view model: past its first row, a page holds about this many "
+                                          "characters of rows and their evidence at most; page.next continues."}}},
+    },
+    {
+        "name": "scale_stats",
+        "description": "What a document holds, to write query plans against: counts of labels, edge types and distinct "
+                       "quotes, the properties in use per label, the units in use per label (or edge type) and property "
+                       "path (a numeric filter states one of them), and the link patterns (source label, edge type, "
+                       "target label). labels and properties narrow the properties, units and link patterns to "
+                       "those named (the counts stay the whole document's). Writes nothing.",
+        "input_schema": {"type": "object", "properties": {**_DOC,
+            "labels": {"type": "array", "items": {"type": "string"},
+                       "description": "Labels or edge types whose properties, units and link patterns to keep, e.g. "
+                                      "CatalyticTest."},
+            "properties": {"type": "array", "items": {"type": "string"},
+                           "description": "Properties whose units to keep, e.g. temperature, pressure, conditions."}}},
     },
     {
         "name": "scale_trace_ai",
@@ -197,7 +230,8 @@ TOOLS: list[dict] = [
         "input_schema": {"type": "object", "required": ["path", "query"], "properties": {
             "path": _DOC["path"], "query": {"type": "string"}, "k": {"type": "integer", "minimum": 1, "default": 10},
             "mode": {"type": "string", "enum": ["hybrid", "vector", "keyword", "rrf"], "default": "hybrid"},
-            "published_before": {"type": "string", "description": "Only evidence from sources published before this year."}}},
+            "published_before": {"type": "string", "description": "Only evidence from sources published before this year."},
+            **_VIEW}},
     },
     {
         "name": "scale_migrate",
@@ -247,6 +281,11 @@ HUMAN_ONLY = {
     "apply the repository settings (ruleset, environments, secrets)": "governance/repository-settings.md (gh api commands)",
     "file a GitHub issue": "scale gap issue GAP-....json --submit",
 }
+
+
+def _check_view(view) -> None:
+    if view not in ("full", "model"):
+        raise ScaleError(f"view is full or model, not {view!r}")
 
 
 def template(domain: str | None, version: str) -> dict:
@@ -481,13 +520,19 @@ class ScaleToolkit:
             return None
 
     def _scale_describe(self, names: list[str] | None = None, domain: str | None = None,
-                        schema_version: str | None = None) -> dict:
+                        schema_version: str | None = None, checklist: bool = True) -> dict:
         from . import pgraph
+        if not isinstance(checklist, bool):
+            raise ScaleError(f"checklist is true or false, not {checklist!r}")
         hint = {"graph": {"follows_domains": [domain]}} if domain and domain != "core" else None
         spec = self._spec(self._manifest(domain, hint), schema_version)
         profile = domain if domain and domain in (spec.get("profiles") or {}) else None
         if names:
-            return pgraph.describe(spec, list(names), profile, self._mapping_index())
+            out = pgraph.describe(spec, [names] if isinstance(names, str) else list(names), profile, self._mapping_index())
+            if not checklist and "checklist" in out:
+                del out["checklist"]
+                out["checklist_left_out"] = "checklist: true adds what a record must and should report (for curating)"
+            return out
         first = lambda t: (t or "").strip().split("\n")[0]   # noqa: E731
         return copy.deepcopy({"schema_version": spec["version"], "domain": domain,
                 "labels": {n: {"is_a": d.get("ancestors") or [], "description": first(d.get("description"))}
@@ -545,7 +590,26 @@ class ScaleToolkit:
         return curate.finish(self._path(folder), public=public, bundle=bundle, title=title, repo=self.repo)
 
     def _scale_query(self, plan: dict, document: dict | None = None, path: str | None = None, domain: str | None = None,
-                     format: str = "json") -> dict:
+                     format: str = "json", view: str = "full", offset: int = 0, page_size: int | None = None,
+                     page_chars: int | None = None) -> dict:
+        from . import pgraph_query
+        _check_view(view)
+        if isinstance(plan, str):                     # a plan sent as JSON text
+            try:
+                plan = json.loads(plan)
+            except ValueError:
+                raise ScaleError("plan is a JSON object, not text that does not parse as one. A plan looks like "
+                                 + pgraph_query.PLAN_EXAMPLE) from None
+        pgraph_query.check_plan_shape(plan)          # a plan of the wrong shape: an error that says how to repair it
+        res, doc = self._run_query(plan, document, path, domain)
+        if format == "markdown":
+            res["markdown"] = pgraph_query.render_markdown(res)
+        if view == "model":
+            from .modelview import pack_query
+            return pack_query(res, offset, page_size, doc, page_chars)
+        return res
+
+    def _run_query(self, plan: dict, document: dict | None, path: str | None, domain: str | None) -> tuple[dict, dict]:
         from . import pgraph_query
         if document is None and path:
             hit = self._load(path)
@@ -558,9 +622,16 @@ class ScaleToolkit:
         else:
             doc = self._doc(document, path)
             res = pgraph_query.run(doc, self._doc_spec(doc, domain), plan, self._index(path, doc) if plan.get("text") else None)
-        if format == "markdown":
-            res["markdown"] = pgraph_query.render_markdown(res)
-        return res
+        return res, doc
+
+    def _scale_stats(self, document: dict | None = None, path: str | None = None, labels: list[str] | None = None,
+                     properties: list[str] | None = None) -> dict:
+        from . import pgraph
+        for k, v in (("labels", labels), ("properties", properties)):
+            if v is not None and not (isinstance(v, list) and all(isinstance(x, str) for x in v)):
+                raise ScaleError(f"{k} is a list of names, not {v!r}")
+        doc = self._load(path)["doc"] if document is None and path else self._doc(document, path)
+        return pgraph.stats(doc, labels, properties)
 
     def _scale_trace_ai(self, document: dict | None = None, path: str | None = None, domain: str | None = None,
                         source: str | None = None, format: str = "json") -> dict:
@@ -610,7 +681,8 @@ class ScaleToolkit:
         return hit["index"]
 
     def _scale_search(self, path: str, query: str, k: int = 10, mode: str = "hybrid",
-                      published_before: str | None = None) -> dict:
+                      published_before: str | None = None, view: str = "full") -> dict:
+        _check_view(view)
         from . import pgraph
         from .pgraph_query import document_access
         hit = self._load(path)
@@ -630,8 +702,12 @@ class ScaleToolkit:
         for h in hits:
             h["source_year"] = years.get(h.get("source"))
         # the hits are the document's verbatim quotes: they go only where the whole document may go (scale_query's access)
-        return {"query": query, "mode": mode, "embedder": ix.embedder_id, "hits": hits,
-                "access": document_access(doc, pgraph.embargo_today())}
+        res = {"query": query, "mode": mode, "embedder": ix.embedder_id, "hits": hits,
+               "access": document_access(doc, pgraph.embargo_today())}
+        if view == "model":
+            from .modelview import pack_search
+            return pack_search(res, doc)
+        return res
 
     def _scale_migrate(self, document: dict | None = None, path: str | None = None, domain: str | None = None,
                        to_version: str | None = None, save_as: str | None = None) -> dict:
