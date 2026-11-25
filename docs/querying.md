@@ -78,6 +78,8 @@ meaningful: `formula eq Co` finds cobalt, never CO (carbon monoxide), and `conta
 does the same: the default embedder, `scale-hash-v2`, keeps formulas in their case (CO and Co are two words, each with
 its alias, carbon monoxide and cobalt); an index built with `scale-hash-v1` is still read with its own words.
 
+How an answer is found, written and checked from these results (in the graph explorer and for any agent): [answering.md](answering.md).
+
 ## Units
 
 A numeric filter compares numbers in the unit it states: `lt`, `le`, `gt`, `ge`, and `eq`, `ne`

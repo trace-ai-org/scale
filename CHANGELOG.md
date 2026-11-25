@@ -2,6 +2,19 @@
 
 ## Unreleased
 
+- **Answers from the graph: principles, a leaner prompt, citations a reader can check (site, docs; no schema
+  change).** A design review (three advocates for the reader, rigor and cost, a researcher's critique, Codex as
+  arbiter) settled twelve principles (`docs/answering.md`): support first; find by two routes and say how; result
+  identity; compatible comparisons; relevance before counting; observations, authors' reading and inference apart;
+  typed absences; answer first; inspectable citations; proportionate investigation; reversible compression; checks
+  labelled for what they are. In the explorer:
+  - the prompt is the query-graph skill without its proposal procedure (about half the length); a question that asks
+    what to do fetches the procedure (`proposal_procedure`, `data/query-graph-propose.md`);
+  - the answering rules ask for two routes, a table where records share columns, typed absences, a Found by line and
+    `[record id, locator]` citations;
+  - each citation becomes a short link (source, year, kind, locator) showing the quote, and the page runs reference
+    checks: the id is a record of the graph, a tool returned it while answering, a quoted phrase is in its evidence.
+
 - **The agent team's roles say what the team does (governance; no schema change, no migration).** The evidence
   verifier is given the sources a patch cites but not the proposer's reasoning, reads the sources before the
   proposer's explanation, lists every source it could not read as not checked against the source, and names the commit

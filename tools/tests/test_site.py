@@ -391,3 +391,23 @@ def test_the_build_names_the_schema_version_catal_commons_pins(built):
     out, _ = built
     header = json.loads((REPO / "graphs/catal-commons/parts/header.json").read_text())
     assert json.loads((out / "data/graphs.json").read_text())["commons_schema_version"] == header["graph"]["schema_version"]
+
+
+def test_the_answering_prompt_leaves_the_proposal_procedure_to_a_tool(built):
+    """The page's prompt is the query-graph skill without its proposal procedure (fetched by proposal_procedure when a
+    question asks what to do) and without the command-line route; the answering rules ask for two routes, typed
+    absences, a Found by line and [record id, locator] citations, which the page checks."""
+    out, _ = built
+    answering = (out / "data/query-graph.md").read_text()
+    propose = (out / "data/query-graph-propose.md").read_text()
+    assert "call the proposal_procedure tool" in answering and "A proposal's layout" not in answering
+    assert "scale gap from-query" not in answering and "## Rules" in answering
+    assert "**Propose, when the question asks what to do**" in propose and "A proposal's layout" in propose
+    assert len(answering) < 0.6 * (len(answering) + len(propose))
+    js = (REPO / "site/explorer.js").read_text()
+    for part in ('name: "proposal_procedure"', 'fetch("data/query-graph-propose.md")', "at least two routes",
+                 "**Found by:**", "**What is missing:**", "[record id, locator]", "function citeLinks", "Reference checks",
+                 "returnedIds(res, seen)"):
+        assert part in js, part
+    assert "verified" not in js[js.index("function checksLine"):js.index("function checksLine") + 1500].replace(
+        "never that the answer is verified", "")
