@@ -103,6 +103,12 @@ def member(alias: str, *, doc: dict | None = None, spec: dict | None = None, err
         raise ScaleError(f"a graph alias is letters, digits, _ or -, starting with a letter (got {alias!r})")
     m = {"alias": alias, "doc": doc, "spec": spec, "path": path, "graph": graph, "index": index,
          "status": status, "error": error}
+    if doc is not None and status is None and not ((doc.get("graph") or {}).get("schema_version") if
+                                                   isinstance(doc.get("graph"), dict) else None):
+        m.update(status="unsupported_version", spec=None, graph=None,
+                 error="the document pins no schema version (graph.schema_version): in a federated call each graph is "
+                       "read under the version it pins, never the head by default")
+        return m
     if spec is not None:
         digest = pgraph.spec_sha256(spec)
         want = (recorded or {}).get(str(spec.get("version")))
@@ -241,6 +247,16 @@ class Identity:
                 self.refused.append({"mapping": m["id"], "reason": why})
             else:
                 pending.append(m)
+        # a record two mappings name: neither is used (an identity is never chosen between two claims of it)
+        named: dict[tuple, list] = {}
+        for m in pending:
+            for r in m["records"]:
+                named.setdefault((r["graph"], r["record"]), []).append(m["id"])
+        twice = {mid for ids in named.values() if len(ids) > 1 for mid in ids}
+        for m in [m for m in pending if m["id"] in twice]:
+            other = sorted({x for r in m["records"] for x in named[(r["graph"], r["record"])]} - {m["id"]})
+            self.refused.append({"mapping": m["id"], "reason": f"mapped_twice: a record of it is also in {', '.join(other)}"})
+        pending = [m for m in pending if m["id"] not in twice]
         for m in pending:                             # first the species, so that reactions compare by them
             if all(self.graphs[r["graph"]].nodes[r["record"]]["label"] != "Reaction" for r in m["records"]):
                 self._admit(m)
@@ -288,8 +304,9 @@ class Identity:
                 if d["participants"] is None:
                     d["participants"] = "a participant neither mapped nor with a formula"
             defs.append((r, d))
-        first_r, first = defs[0]
-        diffs = sorted({k for _, d in defs[1:] for k in _differences(first, d, first["label"])})
+        first = defs[0][1]
+        diffs = sorted({k for i, (_, a) in enumerate(defs) for _, b in defs[i + 1:]      # every pair, not the first
+                        for k in _differences(a, b, first["label"])})
         if any(isinstance(d.get("participants"), str) for _, d in defs):
             diffs = sorted(set(diffs) | {"participants"})
         if diffs:
@@ -314,6 +331,9 @@ class Identity:
                 for nid in sorted(set(ga.nodes) & set(gb.nodes)):
                     self.shared_ids += 1
                     da, db = _definition(ga, nid), _definition(gb, nid)
+                    if da["label"] == db["label"] == "Reaction":     # a reaction is its participants and coefficients
+                        da["participants"] = _participants(ga, nid, a, self.class_of) or "not comparable"
+                        db["participants"] = _participants(gb, nid, b, self.class_of) or "not comparable"
                     diffs = _differences(da, db, da["label"]) if da["label"] == db["label"] else ["label"]
                     if diffs:
                         self.conflicts.append({"kind": "equal_id", "record": nid, "graphs": [a, b],
@@ -370,12 +390,15 @@ def federated_access(members: list[dict], as_of: str) -> dict:
     levels, requires, per = [], [], {}
     for m in members:
         doc = m.get("doc")
-        if doc is None:
+        acc = auds = None
+        if doc is not None:
+            try:
+                acc, auds = pgraph_query.document_access(doc, as_of), graph_audiences(doc, as_of)
+            except (KeyError, TypeError, ValueError, AttributeError):
+                acc = auds = None
+        if acc is None:                              # unread or unreadable: its access is unknown, so it fails closed
             acc = {"level": "institution", "note": "the graph could not be read; its access is unknown and read as institution"}
             auds = [{"level": "institution", "institutions": []}]
-        else:
-            acc = pgraph_query.document_access(doc, as_of)
-            auds = graph_audiences(doc, as_of)
         per[m["alias"]] = acc
         levels.append(acc["level"])
         requires += [{"graph": m["alias"], **a} for a in auds]
@@ -476,7 +499,11 @@ def run(members: list[dict], plan: dict, identity_map: dict | None = None, limit
 
     for m in members:
         if m["status"] is None and m.get("graph") is None:
-            m["graph"] = pgraph_query.Graph(m["doc"], m["spec"])
+            try:
+                m["graph"] = pgraph_query.Graph(m["doc"], m["spec"])
+            except (KeyError, TypeError, ValueError, AttributeError) as exc:     # a malformed graph is its own status
+                m.update(status="unavailable", error=f"the document cannot be read as a graph ({type(exc).__name__}: "
+                                                     f"{exc}); validate it")
     identity = Identity(members, identity_map)
     conflicted = identity.conflicted()
 
@@ -555,13 +582,16 @@ def run(members: list[dict], plan: dict, identity_map: dict | None = None, limit
         rows.sort(key=lambda r: r["comparison_group"])            # stable: each group keeps its ranking
     if graphs and all(g["status"] == "plan_error" for g in graphs):
         raise ScaleError(graphs[0]["error"])              # the plan itself is wrong, as for one graph
-    joined = _joins(joins, rows, identity, aliases)
     for r in rows:
         r.pop("_keys", None)
         r.pop("_m", None)
     total = len(rows)
     cap = limit if limit is not None else plan.get("limit", 200)
     page = rows[:cap]
+    joined = _joins(joins, page, identity, aliases)        # joins name only rows the answer returns
+    if total > len(page):
+        for j in joined:
+            j["over_returned_rows_only"] = True
 
     evaluated = [g for g in graphs if g.get("evaluated")]
     partial = [g["alias"] for g in graphs if not g.get("evaluated")]
@@ -583,7 +613,7 @@ def run(members: list[dict], plan: dict, identity_map: dict | None = None, limit
                    + "; ".join(f"{g['alias']} {g['status']}" for g in graphs if not g.get("evaluated"))
                    + "): an absence there is unknown, not no_matching_record.")
     if total > len(page):
-        lim.append(f"The limit {cap} applied after federation: {len(page)} of {total} rows are returned (truncated).")
+        lim.append(f"The limit {cap} applied after federation: {len(page)} of {total} rows are returned (truncated)" + ("; joins pair only the rows returned" if joins else "") + ".")
     if obs:
         lim.append("order_by ranked the rows of every graph together, by the numbers as reported"
                    + (", within each comparison group only" if scientific else "") + ".")
@@ -660,7 +690,7 @@ def search(members: list[dict], query: str, k: int = 10, mode: str = "hybrid", p
     before = int(str(published_before)[:4]) if published_before else None
     graphs, hits = [], []
     for order, m in enumerate(members):
-        if m["status"] in LEAVES_GRAPH_UNREAD and m.get("doc") is None:
+        if m["status"] in LEAVES_GRAPH_UNREAD:        # a graph rejected for its schema is not searched either
             graphs.append({"alias": m["alias"], "status": m["status"], "error": m["error"], "evaluated": False})
             continue
         doc = m["doc"]

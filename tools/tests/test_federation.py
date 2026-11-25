@@ -112,7 +112,9 @@ def test_one_id_with_two_definitions_is_an_identity_conflict_never_one_picked(pu
     sp["props"]["charge"] = 1
     res = federation.run(members(public=public, private=other), FE_PLAN)
     c = [x for x in res["identity_conflicts"] if x["kind"] == "equal_id"]
-    assert [(x["record"], x["differ_in"]) for x in c] == [("ex:pm/species/co", ["charge"])]
+    # the species, and the reaction it takes part in (its participants are no longer the same species)
+    assert sorted((x["record"], x["differ_in"]) for x in c) == [("ex:pm/reaction/co2rr", ["participants"]),
+                                                               ("ex:pm/species/co", ["charge"])]
     flagged = [r for r in res["rows"] if r.get("identity_conflict")]
     assert flagged and {r["graph"] for r in flagged} == {"public", "private"}         # both, neither taken for the other
     assert all(r["identity_conflict"] == ["ex:pm/species/co"] for r in flagged)
@@ -293,3 +295,51 @@ def test_toolkit_cli_and_search_federate_and_single_graph_calls_are_unchanged(tm
     assert json.loads(capsys.readouterr().out)["hits"][0]["graph"] == "public"
     assert main(["--repo", str(REPO), "graph", "query", str(tmp_path / "public.json"), str(tmp_path / "plan.json")]) == 0
     assert "federated" not in json.loads(capsys.readouterr().out)
+
+
+def test_identity_admission_is_strict_and_a_malformed_or_unpinned_graph_stays_its_own(public):
+    """A mapping's definitions are compared pairwise; overlapping mappings are refused; a reaction's stoichiometry is
+    part of its definition for equal ids; a graph without a pin or with a malformed node is never read and never
+    stops the others; a rejected graph is never searched; joins name only the rows returned."""
+    priv, third = private_copy(public), private_copy(public, prefix="lab3:pm/", project="lab3:project/p")
+    pub = copy.deepcopy(public)
+    del next(n for n in pub["nodes"] if n["id"] == "ex:pm/species/co")["props"]["formula"]
+    next(n for n in third["nodes"] if n["id"] == "lab3:pm/species/co")["props"]["formula"] = "CO2"
+    three = {"identity_map": 1, "mappings": [{"id": "co", "evidence": [{"basis": "x"}], "records": [
+        {"graph": "public", "record": "ex:pm/species/co"}, {"graph": "private", "record": "lab:pm/species/co"},
+        {"graph": "third", "record": "lab3:pm/species/co"}]}]}
+    res = federation.run(members(public=pub, private=priv, third=third), FE_PLAN, federation.load_identity_map(three))
+    assert res["identity"]["refused"] == [{"mapping": "co", "reason": "identity_conflict: formula"}]
+    overlap = {"identity_map": 1, "mappings": [
+        {"id": "a", "evidence": [{"basis": "x"}], "records": [{"graph": "public", "record": "ex:pm/species/co"},
+                                                             {"graph": "private", "record": "lab:pm/species/co"}]},
+        {"id": "b", "evidence": [{"basis": "x"}], "records": [{"graph": "public", "record": "ex:pm/species/co"},
+                                                             {"graph": "third", "record": "lab3:pm/species/co"}]}]}
+    res = federation.run(members(public=public, private=priv, third=private_copy(public, prefix="lab3:pm/")), FE_PLAN,
+                         federation.load_identity_map(overlap))
+    assert res["identity"]["mappings_used"] == []
+    assert {r["reason"].split(":")[0] for r in res["identity"]["refused"]} == {"mapped_twice"}
+    same = private_copy(public, prefix="ex:pm/")
+    h2 = next(e for e in same["links"] if e["type"] == "HAS_PARTICIPANT" and e["source"] == "ex:pm/reaction/co2-meoh"
+              and e["target"] == "ex:pm/species/h2")
+    h2["props"]["coefficient"] = 2
+    res = federation.run(members(public=public, private=same), FE_PLAN)
+    assert any(c.get("record") == "ex:pm/reaction/co2-meoh" and "participants" in c["differ_in"]
+               for c in res["identity_conflicts"])
+    unpinned, broken = copy.deepcopy(priv), copy.deepcopy(priv)
+    del unpinned["graph"]["schema_version"]
+    del broken["nodes"][0]["id"]
+    ms = members(public=public) + [federation.member("unpinned", doc=unpinned, spec=spec_of(public)),
+                                   federation.member("broken", doc=broken, spec=spec_of(broken))]
+    res = federation.run(ms, FE_PLAN)
+    assert {g["alias"]: g["status"] for g in res["graphs"]} == {
+        "public": "answered", "unpinned": "unsupported_version", "broken": "unavailable"}
+    assert res["partial"] and res["rows"] and res["access"]["level"] == "project"
+    m = federation.member("private", doc=priv, spec=spec_of(priv), expect_spec="0" * 64)
+    hits = federation.search(members(public=public) + [m], "Faradaic efficiency")
+    assert hits["partial"] and all(h["graph"] == "public" for h in hits["hits"])
+    res = federation.run(members(public=public, private=priv), {**FE_PLAN, "limit": 1, "join": [{"var": "product"}]},
+                         federation.load_identity_map(CO_MAP))
+    keys = {r["row_key"] for r in res["rows"]}
+    assert all(x["row_key"] in keys for mt in res["joins"][0]["matches"] for xs in mt["graphs"].values() for x in xs)
+    assert res["joins"][0]["over_returned_rows_only"]

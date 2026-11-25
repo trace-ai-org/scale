@@ -196,7 +196,14 @@ def _cell(v: Any, col: dict, run_status: str, problems: list[str], where: str) -
             out = {"status": st}
             if st in ("below_detection_limit", "below_quantification_limit"):
                 lim = v.get("upper") if _number(v.get("upper")) else v.get("value")
-                if _number(lim):
+                if _number(lim):                     # a limit is a number in a unit: checked like a value
+                    unit = v.get("unit")
+                    if t == "quantity" and (not isinstance(unit, str) or not unit.strip()):
+                        return {"status": "unit_unstated"}
+                    if t == "quantity" and " ".join(unit.split()) != " ".join(col["unit"].split()):
+                        problems.append(f"{where}: {col['name']}'s limit is in {unit!r}, the contract's unit is "
+                                        f"{col['unit']!r} (never converted)")
+                        return {"status": "incompatible_unit"}
                     out["upper"] = lim
             return out
         if t == "quantity":
@@ -228,6 +235,22 @@ def _cell(v: Any, col: dict, run_status: str, problems: list[str], where: str) -
     if t == "boolean":
         return {"status": "present", "value": v} if isinstance(v, bool) else {"status": "not_a_boolean"}
     return {"status": "present", "value": v if isinstance(v, str) else json.dumps(v, sort_keys=True)}
+
+
+def _owner(g: Any, r: dict, path: str) -> dict | None:
+    """The record a cell's value belongs to: the node its variable binds (a result entry's record)."""
+    b = r["bound"].get(path.partition(".")[0])
+    rid = b.get("record") if isinstance(b, dict) else b
+    return g.nodes.get(rid) if isinstance(rid, str) else None
+
+
+def _same_context(got: Any, want: Any) -> bool:
+    """A context the contract asks for: a record-valued one (``alias::id``, ``identity:<mapping>``) exactly, any other
+    as the comparison reads it (its value before a qualifier)."""
+    got, want = str(got), str(want)
+    if "::" in got or got.startswith("identity:"):
+        return got == want
+    return got == want or got.split(":")[0] == want
 
 
 def _read_context(m: dict, r: dict, path: str, v: Any, classes: dict, cache: dict) -> dict | None:
@@ -344,7 +367,12 @@ def build(members: list[dict], plan: dict, contract: dict, identity_map: dict | 
                 continue
             r = next(iter(seen.values()), None)
             raw = _value(r, c["path"]) if r else None
-            cell = _cell(raw, c, status, problems, rid)
+            owner = _owner(by_alias[alias]["graph"], r, c["path"]) if r else None
+            if owner is not None and (owner.get("label") == "Prediction"
+                                      or (owner.get("props") or {}).get("origin") == "hypothesized"):
+                cell = {"status": "prediction_not_observation"}       # what a prediction or proposal expects
+            else:
+                cell = _cell(raw, c, status, problems, rid)
             has_number = any(k in cell for k in ("value", "lower", "upper"))
             tag = _read_context(by_alias[alias], r, c["path"], raw[0] if isinstance(raw, list) and len(raw) == 1 else raw,
                                 classes, read_cache) if r and c.get("type", "quantity") == "quantity" and has_number else None
@@ -354,8 +382,7 @@ def build(members: list[dict], plan: dict, contract: dict, identity_map: dict | 
                 if bad:                                   # a context not stated, or stated two ways: never assumed
                     name, why = next(iter(sorted(bad.items())))
                     cell = {"status": f"{next(iter(why))}:{name}"}
-                elif any(k not in tag["context"] or str(tag["context"][k]).split(":")[0] != str(v)
-                         for k, v in want.items()):
+                elif any(k not in tag["context"] or not _same_context(tag["context"][k], v) for k, v in want.items()):
                     problems.append(f"{rid}: {c['name']} is a {tag['kind']} on {tag['context']}, not on the contract's "
                                     f"{want} (never converted)")
                 else:

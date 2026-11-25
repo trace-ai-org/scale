@@ -254,7 +254,7 @@ def test_proposals_and_results_round_trip_as_an_auditable_campaign():
         late = campaign.propose(doc, design="ex:camp/design", iteration=2, agent="ex:camp/agent",
                                 proposed_at="2026-11-05T09:00:00+00:00", proposals=[proposal(3, -0.9)])
         campaign.record_result(late, proposal="ex:camp/run/3", result_id="ex:camp/run/3/result",
-                               recorded_at="2026-11-01T00:00:00+00:00")
+                               recorded_at="2026-11-05T08:00:00+00:00", props={"results": {}})   # an hour before
     with pytest.raises(ScaleError, match="states why"):
         campaign.record_result(late, proposal="ex:camp/run/3", result_id="ex:camp/run/3/result",
                                recorded_at="2026-11-06T00:00:00+00:00", status="failed")
@@ -268,3 +268,42 @@ def test_proposals_and_results_round_trip_as_an_auditable_campaign():
                                                     "features": [], "groups": [],
                                                     "outcomes": [{"name": "x", "path": "test.expected", "type": "quantity",
                                                                   "unit": "%"}]})
+    with pytest.raises(ScaleError, match="states what was measured"):    # nothing taken from the proposal
+        campaign.record_result(late, proposal="ex:camp/run/3", result_id="ex:camp/run/3/result",
+                               recorded_at="2026-11-06T00:00:00+00:00")
+    with pytest.raises(ScaleError, match="never a result"):
+        p = proposal(4, -0.7)
+        p["props"]["result_values"] = [{"id": "x", "status": "present", "value": 90, "unit": "%"}]
+        campaign.propose(doc, design="ex:camp/design", iteration=2, agent="ex:camp/agent",
+                         proposed_at="2026-11-05T09:00:00+00:00", proposals=[p])
+    # a predicted value read through a linked Prediction is never an observation
+    linked = copy.deepcopy(MATRIX_PLAN)
+    linked["steps"].append({"from": "test", "edge": "TESTS", "to": "Prediction", "as": "pred", "optional": True})
+    text, _ = designmatrix.build(members(camp=doc), linked, {**MATRIX_CONTRACT, "outcomes": [
+        {"name": "expected", "path": "pred.expected", "type": "quantity", "unit": "%"}]})
+    assert {r["expected__status"] for r in rows_of(text)} == {"prediction_not_observation"}
+
+
+def test_a_restricted_proposal_keeps_its_audience_on_everything_written_for_it():
+    st = {"access": "project", "project": "ex:camp/project/p"}
+    p = dict(proposal(1, -0.8), stewardship=st)
+    doc = campaign.propose(synthetic_campaign(), design="ex:camp/design", iteration=1, agent="ex:camp/agent",
+                           proposed_at="2026-11-02T09:00:00+00:00", proposals=[p])
+    assert next(n for n in doc["nodes"] if n["id"] == "ex:camp/prediction/1")["props"]["stewardship"] == st
+    assert all(e["props"].get("stewardship") == st for e in doc["links"])
+    view = pgraph.filter_for(doc, [], "2026-11-25")                   # the public view keeps none of it
+    assert not any(n["id"].startswith(("ex:camp/prediction/", "ex:camp/run/")) for n in view["nodes"])
+
+
+def test_detection_limits_and_record_valued_contexts_are_checked(public):
+    doc = copy.deepcopy(public)
+    t = next(n for n in doc["nodes"] if n["id"] == "ex:pm/test/co2rr")
+    co = [v for v in t["props"]["result_values"] if v.get("target") == "ex:pm/species/co"]
+    co[0].update(status="below_detection_limit", unit="ppm", upper=26)
+    co[0].pop("value", None)
+    with pytest.raises(ScaleError, match="limit is in 'ppm'"):
+        designmatrix.build(members(public=doc), CO_PLAN, CONTRACT)
+    exact = copy.deepcopy(CONTRACT)
+    exact["outcomes"][0]["context"] = {"species": "public::ex:pm/species/co"}
+    _, man = designmatrix.build(members(public=public), CO_PLAN, exact)
+    assert man["files"]["matrix.csv"]["rows"] == 4

@@ -30,6 +30,24 @@ AGENT_LABELS = ("Software", "Model", "StructureModel", "Person", "Institution")
 EXPERIMENT_LABELS = ("Experiment", "Characterization", "Computation", "Analysis", "CatalyticTest",
                      "ThermalContributionAnalysis")
 DONE = ("completed", "failed", "aborted")
+# what a run measured (never copied from a proposal into its result, never stated by a proposal)
+RESULT_KEYS = {"result_values", "results", "evidence", "yield", "selectivity", "conversion", "faradaic_efficiency",
+               "partial_current_density", "apparent_quantum_yield", "quantum_yield", "energy_yield", "finished_at"}
+
+
+def _before(a: str, b: str) -> bool:
+    """Whether the time ``a`` is earlier than ``b`` (ISO; with offsets compared as instants, else by date)."""
+    from datetime import datetime
+
+    def parse(x):
+        try:
+            return datetime.fromisoformat(str(x).replace("Z", "+00:00"))
+        except ValueError:
+            return None
+    pa, pb = parse(a), parse(b)
+    if pa and pb and pa.tzinfo is not None and pb.tzinfo is not None:
+        return pa < pb
+    return str(a)[:10] < str(b)[:10]
 
 
 def _index(doc: dict) -> tuple[dict, set]:
@@ -74,6 +92,15 @@ def propose(doc: dict, *, design: str, iteration: int, agent: str, proposed_at: 
             _need(nodes, pred["variable"], ("Variable",), "prediction variable")
         props = {k: v for k, v in (p.get("props") or {}).items()
                  if k not in ("origin", "experiment_status", "record_version", "recorded_at")}
+        if set(props) & RESULT_KEYS:
+            raise ScaleError(f"proposal {p.get('id')}: a proposal states its conditions; what it expects is its "
+                             f"prediction's, never a result ({', '.join(sorted(set(props) & RESULT_KEYS))})")
+        # who may see the proposal may see what it expects and who proposed it: its stewardship goes on every record
+        # and link written for it (a public header never opens a restricted proposal's prediction)
+        st = p.get("stewardship") or props.get("stewardship")
+        if st is not None:
+            props["stewardship"] = st
+        own = {"stewardship": st} if st is not None else {}
         eid = _new_id(ids, p["id"])
         out["nodes"].append({"id": eid, "label": label, "props": {
             "name": p.get("name") or eid, **props, "origin": "hypothesized", "experiment_status": "proposed",
@@ -81,13 +108,13 @@ def propose(doc: dict, *, design: str, iteration: int, agent: str, proposed_at: 
         pid = _new_id(ids, pred["id"])
         expected = dict(pred["expected"], origin="predicted") if isinstance(pred.get("expected"), dict) else None
         out["nodes"].append({"id": pid, "label": "Prediction", "props": {
-            "name": pred.get("name") or pid, "origin": "hypothesized", "proposed_at": day,
+            "name": pred.get("name") or pid, "origin": "hypothesized", "proposed_at": day, **own,
             **({"statement": pred["statement"]} if pred.get("statement") else {}),
             **({"variable": pred["variable"]} if pred.get("variable") else {}),
             **({"expected": expected} if expected else {}),
             **({"direction": pred["direction"]} if pred.get("direction") else {})}})
         why = {k: p[k] for k in ("rationale", "acquisition_value", "human_decision") if p.get(k) is not None}
-        rec = {"origin": "recorded", "recorded_at": proposed_at}
+        rec = {"origin": "recorded", "recorded_at": proposed_at, **own}
         out["links"] += [
             {"id": _new_id(ids, f"{eid}/proposed-by"), "type": "PROPOSED_BY", "source": eid, "target": agent,
              "props": {**rec, "proposed_at": proposed_at, **why}},
@@ -127,14 +154,22 @@ def record_result(doc: dict, *, proposal: str, result_id: str, recorded_at: str,
         raise ScaleError(f"{proposal} is not a proposal (experiment_status {pp.get('experiment_status')!r})")
     if any(e["type"] == "REVISES" and e["target"] == proposal for e in out["links"]):
         raise ScaleError(f"{proposal} already has a result (a record REVISES it); a repeat is a new proposal")
+    if status == "completed" and not (set(props or {}) & {"result_values", "results"}):
+        raise ScaleError("a completed run states what was measured (result_values or results in props); nothing is "
+                         "taken from the proposal or its prediction")
     preds = [e["target"] for e in out["links"] if e["type"] == "AIMS_TO_TEST" and e["source"] == proposal]
     for pid in preds:
-        when = (nodes[pid].get("props") or {}).get("proposed_at")
-        if when and str(recorded_at)[:10] < str(when)[:10]:
-            raise ScaleError(f"the result is recorded on {recorded_at[:10]}, before the prediction {pid} was proposed "
+        # the time the prediction was proposed: its PROPOSED_BY link's (a datetime), else its own date
+        whens = [(e.get("props") or {}).get("proposed_at") for e in out["links"]
+                 if e["type"] == "PROPOSED_BY" and e["source"] == pid] + [(nodes[pid].get("props") or {}).get("proposed_at")]
+        when = next((w for w in whens if w), None)
+        if when and _before(recorded_at, when):
+            raise ScaleError(f"the result is recorded at {recorded_at}, before the prediction {pid} was proposed "
                              f"({when}): a prediction proposed after its result is post hoc")
     design = [e for e in out["links"] if e["type"] == "PART_OF_DESIGN" and e["source"] == proposal]
-    base = {k: v for k, v in pp.items() if k not in ("origin", "experiment_status", "record_version", "name")}
+    # the proposal's conditions only: never its results, evidence or what it was expected to give
+    base = {k: v for k, v in pp.items()
+            if k not in ("origin", "experiment_status", "record_version", "name", "status_reason") and k not in RESULT_KEYS}
     rid = _new_id(ids, result_id)
     new_props: dict[str, Any] = {**base, **(props or {}), "name": (props or {}).get("name") or f"{pp.get('name', proposal)} (run)",
                                  "origin": "recorded", "recorded_at": recorded_at, "experiment_status": status,
@@ -144,7 +179,8 @@ def record_result(doc: dict, *, proposal: str, result_id: str, recorded_at: str,
     if evidence:
         new_props["evidence"] = list(new_props.get("evidence") or []) + list(evidence)
     out["nodes"].append({"id": rid, "label": prop["label"], "props": new_props})
-    rec = {"origin": "recorded", "recorded_at": recorded_at}
+    rec = {"origin": "recorded", "recorded_at": recorded_at,
+           **({"stewardship": new_props["stewardship"]} if new_props.get("stewardship") is not None else {})}
     out["links"].append({"id": _new_id(ids, f"{rid}/revises"), "type": "REVISES", "source": rid, "target": proposal,
                          "props": dict(rec)})
     cited: dict[str, list] = {}                      # the run log (a Dataset) or source each evidence item cites
@@ -154,7 +190,8 @@ def record_result(doc: dict, *, proposal: str, result_id: str, recorded_at: str,
     for src, locs in sorted(cited.items()):
         out["links"].append({"id": _new_id(ids, f"{rid}/reported-in/{src.rsplit('/', 1)[-1]}"), "type": "REPORTED_IN",
                              "source": rid, "target": src,
-                             "props": {"origin": "derived", "locators": sorted({x for x in locs if isinstance(x, str)})}})
+                             "props": {"origin": "derived", "locators": sorted({x for x in locs if isinstance(x, str)}),
+                                       **{k: v for k, v in rec.items() if k == "stewardship"}}})
     for e in design:
         out["links"].append({"id": _new_id(ids, f"{rid}/part-of-design"), "type": "PART_OF_DESIGN", "source": rid,
                              "target": e["target"], "props": {**rec, **{k: v for k, v in (e.get("props") or {}).items()

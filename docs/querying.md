@@ -501,7 +501,8 @@ document and no `graphs` is unchanged.
   (`spec_sha256`), whether it is the digest this repository records for the version (`spec_verified`, README.md's
   table), its `graph_sha256`, its status, its row count and its own `coverage` and `limitations`. A caller who binds
   a graph to a digest (`--spec-sha256 ALIAS=SHA256`, or `spec_sha256`) gets `spec_mismatch` for another one, never a
-  read under it. A version the tools do not hold is `unsupported_version`, a file that cannot be read `unavailable`,
+  read under it. A version the tools do not hold, or none pinned, is `unsupported_version` (never the head by
+  default), a file that cannot be read or a malformed graph `unavailable`,
   and a plan a graph's schema cannot express that graph's `schema_gap`: the other graphs still answer, and the answer
   is `partial` (`partial_graphs`), with an absence in those graphs unknown, not `no_matching_record`. Nothing is
   migrated or read under another version.
@@ -533,7 +534,10 @@ document and no `graphs` is unchanged.
   ```
 
   `joins` lists, per mapping, the rows of each graph whose variable binds one of its records (grouped by mapping,
-  never a cartesian product); equal ids that no mapping names are counted (`equal_ids_not_mapped`), never joined.
+  never a cartesian product) among the rows returned (`over_returned_rows_only` when the limit cut some); equal ids
+  that no mapping names are counted (`equal_ids_not_mapped`), never joined. Two mappings that name one record are
+  both refused (`mapped_twice`), and a mapping's records are compared pairwise. One reaction id in two graphs with
+  other participants or coefficients is an `identity_conflict`.
 - **Ranking and limits after federation.** `order_by` ranks the rows of every graph together, by the numbers as
   reported; `limit` applies to the union, and `truncated` and `coverage.limit` say how many rows were cut. With
   `comparison: scientific` each graph compares its own values under its own contracts first; the union then groups
@@ -617,13 +621,17 @@ that a campaign stays auditable (TRACE-AI):
   an experiment (`experiment_status: proposed`, `origin: hypothesized`, `record_version: 1`) PART_OF_DESIGN the
   Design with its `iteration`, PROPOSED_BY the agent (`proposed_at`, rationale, acquisition value, the person's
   decision when there is one) and AIMS_TO_TEST a Prediction (`proposed_at`, the variable, the expected value with
-  `origin: predicted`), itself PROPOSED_BY the agent and, when a hypothesis is named, DERIVED from it.
+  `origin: predicted`), itself PROPOSED_BY the agent and, when a hypothesis is named, DERIVED from it. A proposal
+  states conditions only (results are refused); its stewardship goes on its prediction and on every link written for
+  it, so a restricted proposal never leaves a public prediction.
 - `campaign.record_result(doc, proposal=..., result_id=..., recorded_at=..., status=..., ...)` appends the result as a
   new record of the proposal's label (`origin: recorded`, `recorded_at`, `record_version` one more) that REVISES the
   proposal, which stays as it was proposed; PART_OF_DESIGN the same iteration; REPORTED_IN the run log its evidence
   cites; and TESTS every Prediction the proposal aimed to test, with the outcome and the results it rests on. A
-  failed or aborted run is recorded with its reason, never dropped (its TESTS is inconclusive, incomplete data); a
-  second result for one proposal and a result recorded before its prediction was proposed are refused.
+  failed or aborted run is recorded with its reason, never dropped (its TESTS is inconclusive, incomplete data). The
+  result takes the proposal's conditions, never its results or evidence: a completed run states what was measured. A
+  second result for one proposal and a result recorded before its prediction was proposed (instants compared with
+  their offsets) are refused.
 
 The design matrix reads results only, so predictions and proposals never train a model as observations. Record the
 matrix a proposal was chosen from (its `sha256` in the manifest) with the agent's version, seed and configuration;
