@@ -484,6 +484,71 @@ reported.
 where: [{prop: temperature, op: le, value: 250, unit: °C, convert: true}]
 ```
 
+## The model view
+
+A full result repeats itself: each row carries every evidence item whole, with its source's year, kind, status and
+peer review, the same passage once per record and link that cites it, and every id spells the graph's prefix. A
+model that reads the result pays for each repetition. `scale_query` and `scale_search` (the toolkit, `scale call`,
+HTTP and MCP) take `view: "model"` to return the same answer with each repetition written once
+(`tools/modelview.py`). The default stays the full result.
+
+```json
+{"view": {"name": "model", "of": "query", "version": 1, "legend": "…"},
+ "id_prefix": "ex:msyn/",
+ "status": "answered", "row_count": 58,
+ "counts": {"rows_matched": 58, "rows_returned": 58, "distinct_bound": {"test": 58, "sample": 40}, "sources_cited": 12},
+ "page": {"offset": 0, "rows": 25, "of": 58, "next": {"offset": 25, "page_size": 100, "page_chars": 40000}, "how": "…"},
+ "columns": ["test.name", "sample.name", "test.temperature", "test.pressure"],
+ "rows": [{"bound": {"test": "~10.1021-ie50225a025/test/table1-bzc-305", "sample": "~10.1021-ie50225a025/sample/bzc-no4"},
+           "links": ["~10.1021-ie50225a025/link/127"],
+           "values": ["pressure-time run, …", "basic zinc chromate, …",
+                      {"status": "present", "value": 305, "unit": "°C", "as_reported": "305", "note": "Table I, column (2)"},
+                      {"status": "present", "lower": 100, "upper": 280, "unit": "atm", "as_reported": "…", "note": "…"}],
+           "evidence": [{"var": "test", "items": "0:E4 1:E5 2:E6"},
+                        {"var": "sample", "items": "0:E9"},
+                        {"var": "USES_CATALYST", "items": "0:E4"}]}],
+ "evidence": {"E4": {"source": "~source/10.1021-ie50225a025", "locator": "p. 3, Table I", "kind": "table",
+                     "passage": "10.1021-ie50225a025/p3/5", "quote": "305 127.9 119 115.7 97.2 90"}},
+ "sources": {"~source/10.1021-ie50225a025": {"year": 1928, "status": "current_or_unknown", "kind": "article",
+                                             "peer_reviewed": null, "title": "…", "doi": "10.1021/ie50225a025"}},
+ "access": {}, "excluded": [], "missing_context": [], "coverage": {}, "limitations": []}
+```
+
+- **Lossless.** Every row's values (as reported: value, bounds, unit, basis, status, `as_reported`, note), its
+  bindings and record ids, the coverage, the records left out and why, the missing context, the limitations, the
+  access and the graph's identity (id, schema version, digest) are the full result's. `scale.modelview.expand(view)`
+  gives back the full result (a page's rows), and `tools/tests/test_modelview.py` checks it on every competency
+  question and on the methanol graph.
+- **Evidence once, with its owner.** Each distinct evidence item is written once in `evidence` as `E1` … `En`
+  (numbered over the whole result: an id means the same item on every page; a quote (or transcription) two items share is
+  written once, `quote_of: E3` / `transcription_of: E3` naming the item that holds it in the same field). A row says whose evidence each item is: per record, `var` (the plan variable, or
+  the link type) and `items` (`"0:E4 1:E5"`: item 0 of that record's evidence is E4), with `record` (and `entry`)
+  only when they are not the row's binding of `var`, in the full result's order. An item two records cite (a test
+  and its link) is one entry, owned by both.
+- **Sources once.** `sources` holds the fields every item of a source repeats (`year`, `status`, `kind`,
+  `peer_reviewed`), and to name it its shortened `title`, `name` and `doi` from the document. A field that differs
+  between items of a source (a partial retraction) stays on the items.
+- **Ids.** An id starting with `~` is `id_prefix` and the rest; no prefix is used when a string of the result already
+  starts with `~`. Each filter records were left out by is written once in `filters` (`excluded[].filter_ref`).
+- **Pages, never truncation.** A page holds the rows from `offset`, at most `page_size` (default 100) and, past its
+  first row, about `page_chars` (default 40,000) characters of rows and the evidence items they bring.
+  `page.next` holds the arguments that fetch the next page (`null` on the last). `counts.rows_matched` counts every
+  match, `rows_returned` the rows the plan's `limit` kept (default 200); when they differ, `not_returned_by_limit`
+  says how many and how to reach them (a larger `limit`); `distinct_bound` counts what each variable binds (a record,
+  or an entry of one). With `format: markdown` the rendering is of the page's rows.
+- **Versioned.** `view.version` is the format's version; `expand` refuses a version it does not read.
+
+A search's model view (`view: "model"` on `scale_search`) drops each hit's id where it is `record#evidence/i`,
+moves each source's year to `sources`, and names an `also` entry by its label when its name is the label.
+
+To write a plan a model needs only part of the schema and the graph: `scale_describe` with `checklist: false`
+leaves out the curation checklist, and `scale_stats` (or `scale graph stats --label … --property …`) with `labels`
+and `properties` keeps only those properties' units and those labels' link patterns.
+
+A plan of the wrong shape (`match: "Hypothesis"` for `match: {label: Hypothesis, as: h}`, a filter given as text, a
+`limit` given as text) is an error that says what was expected and shows a plan (`plan shape: …`), never a Python
+error.
+
 ## Competency questions
 
 The catalysis competency questions (`domain/competency/*.yaml`) are plans with the public
