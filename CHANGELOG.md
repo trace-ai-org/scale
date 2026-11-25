@@ -7,8 +7,8 @@
   panel reports (printed numbers, histogram bars, peaks, plotted points), judge readability per panel and record an
   unreadable one as an `extraction_error` gap with its reason, state a caption condition once per series, and save
   each panel as it is read. `scripts/check_figures.py` reports a caption value copied onto several records, a named
-  figure that no value or gap cites, and figure evidence without a transcription. On held-out open-access papers curated with an open-weight model,
-  every value in 101 figures (86 with data) was checked by hand against the image: 1,595 of 1,609 were right (99.1%),
+  figure that no value or gap cites, and figure evidence without a transcription. On held-out open-access papers
+  curated with an open-weight model, every value in 101 figures (86 with data) was checked by hand against the image: 1,595 of 1,609 were right (99.1%),
   and 59 of 60 hand-audited figure values were recorded (98.3%; 53 of 60 before the recipe).
 
 - **Explorer feedback: CO is not Co, one hit per quote, opt-in unit conversion, example questions (tools, site; no
