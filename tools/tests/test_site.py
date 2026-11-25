@@ -411,3 +411,36 @@ def test_the_answering_prompt_leaves_the_proposal_procedure_to_a_tool(built):
         assert part in js, part
     assert "verified" not in js[js.index("function checksLine"):js.index("function checksLine") + 1500].replace(
         "never that the answer is verified", "")
+
+
+def test_citations_become_links_and_the_page_checks_their_references(tmp_path):
+    """An answer's [record id, locator] citations become links showing the quote; the reference checks flag an id
+    the graph does not hold, a record no tool returned, and a quoted phrase that is not in the cited record's evidence
+    (line-break hyphens, page marks, spacing and ellipses aside; a word split across two quotes still found)."""
+    import shutil
+    import subprocess
+    if not shutil.which("node"):
+        pytest.skip("node is not installed")
+    js = (REPO / "site/explorer.js").read_text()
+    code = js[js.index("const ID_RE"):js.index("\n}\n", js.index("function checksLine")) + 3]
+    harness = tmp_path / "t.js"
+    harness.write_text("""
+global.esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({"&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;"}[c]));
+global.idLinks = (h) => h;
+const src = {id: "ex:t/source/s", label: "Source", props: {title: "A study of copper catalysts", year: 1928, kind: "patent"}};
+const rec = {id: "ex:t/test/1", label: "CatalyticTest", props: {name: "run 1", evidence: [
+  {source: "ex:t/source/s", locator: "p. 3", quote: "sensitive to poison-"},
+  {source: "ex:t/source/s", locator: "p. 3", quote: "ing by carbonyl at 400\\u00b0 C. | and later"}]}};
+global.G = {doc: {nodes: [src, rec], links: []}, byId: new Map([[src.id, src], [rec.id, rec]])};
+""" + code + """
+const seen = new Set(["ex:t/test/1"]);
+const ok = citeLinks('<p>It was \\u201csensitive to poisoning by carbonyl at 400\\u00b0C\\u201d [ex:t/test/1, p. 3].</p>', seen);
+const bad = citeLinks('<p>Also \\u201cnot in the quote at all\\u201d [ex:t/test/1, p. 3]; and [ex:t/nope/2, p. 1]; [ex:t/source/s].</p>', seen);
+console.log(JSON.stringify({ok: ok.checks, bad: bad.checks, html: ok.html, line: checksLine(ok.checks)}));
+""")
+    out = json.loads(subprocess.run(["node", str(harness)], capture_output=True, text=True, check=True).stdout)
+    assert out["ok"]["cited"] == 1 and not out["ok"]["quotesMissing"] and not out["ok"]["unknown"]
+    assert 'class="gx-cite"' in out["html"] and "A study of copper catalysts · 1928 · patent · p. 3" in out["html"]
+    assert "sensitive to poison-" in out["html"] and "all resolve" in out["line"] and "verified" not in out["line"]
+    assert out["bad"]["unknown"] == ["ex:t/nope/2"] and out["bad"]["unreturned"] == ["ex:t/source/s"]
+    assert len(out["bad"]["quotesMissing"]) == 1

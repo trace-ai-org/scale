@@ -1746,7 +1746,17 @@ function returnedIds(res, seen) {                         // every record id of 
   const text = typeof res === "string" ? res : JSON.stringify(res);
   for (const m of text.matchAll(/(?:ex|scale|[a-z][a-z0-9-]*):[A-Za-z0-9_.\/#-]+/g)) if (G.byId.has(m[0])) seen.add(m[0]);
 }
-const squash = (t) => String(t || "").toLowerCase().replace(/[\s\u00ad-]+/g, " ").trim();
+// text as the quote check compares it: case, line-break hyphens ("poison- ing"), page marks (|) and spacing aside
+const squash = (t) => String(t || "").toLowerCase().replace(/\u00ad/g, "").replace(/(\w)-\s+(\w)/g, "$1$2")
+  .replace(/[|]/g, " ").replace(/\s+/g, " ").trim();
+// a quoted phrase is in the evidence when each part between ellipses (of two words or more) is, compared with spaces,
+// hyphens and closing punctuation aside ("400°C" is "400° C", "cata- lyst-" is "catalyst")
+const bare = (t) => squash(t).replace(/[\s-]+/g, "").replace(/[.,;:]+$/, "");
+const quotedIn = (quoted, evs) => {
+  const parts = String(quoted).split(/\s*(?:…|\.\.\.)\s*/).filter((x) => x.trim().split(/\s+/).length >= 2).map(bare);
+  const all = evs.map((e) => bare(e.quote)).join("");          // the record's quotes in order (a word may be split across two)
+  return parts.length === 0 || parts.every((x) => all.includes(x));
+};
 function sourceOf(rec, locator) {                         // the evidence item at the cited locator, and its source
   const evs = rec?.props?.evidence || [];
   const want = squash(locator);
@@ -1776,7 +1786,7 @@ function citeLinks(html, seen) {
       const { ev, src } = sourceOf(rec, locator);
       if (quoted) {
         checks.quotes += 1;
-        const inEv = (rec.props?.evidence || []).some((e) => squash(e.quote).includes(squash(quoted)));
+        const inEv = quotedIn(quoted, rec.props?.evidence || []);
         if (!inEv) checks.quotesMissing.push(`“${quoted}” (${id})`);
       }
       const tip = [ev.quote ? `“${ev.quote}”` : "(quote withheld or not kept)", ev.locator, rec.props?.name, id].filter(Boolean).join("\n");
