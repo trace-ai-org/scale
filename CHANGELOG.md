@@ -6,7 +6,9 @@
   verifier is given the sources a patch cites but not the proposer's reasoning, reads the sources before the
   proposer's explanation, lists every source it could not read as not checked against the source, and names the commit
   it verified; the systems engineer packages (version, migration assessment, checks) before verification and opens the
-  pull request only on the head the verifier passed; the protocol compiler hands back a procedure per requirement with
+  pull request only on the head the verifier passed (work in progress on an open pull request goes to `agent/…-wip`);
+  the data scientist saves the evidence record in `docs/changes/`, which the verifier reads after the sources and the
+  thread; the protocol compiler hands back a procedure per requirement with
   its expected and observed outcomes; the change set and the pull-request template add the verification and say how a
   reviewer accepts, requests revision or rejects (closes unmerged). A test checks the five roles and these
   instructions; the implementation status records that the workflow runs.
