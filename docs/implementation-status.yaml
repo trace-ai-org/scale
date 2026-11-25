@@ -443,9 +443,9 @@ capabilities:
   notes: IRIs use https://w3id.org/scale/ but the w3id registration has not been made.
 - name: Archived releases with DOIs (e.g., Zenodo)
   status: planned
-- name: Unit conversion and basis reading in queries (a value in another unit of the same quantity compared after conversion, now that the quantity contracts read each unit's dimension; a basis read from a reported text or a note)
+- name: Unit conversion and basis reading in queries beyond the filter's `convert` (every quantity the contracts read, conversion without asking; a basis read from a reported text or a note)
   status: planned
-  notes: Planned with the units change. Until then a numeric filter compares only values in the unit it states, spelled the same, case included, once runs of whitespace count as one space, and on the basis the value states in basis (or none on both sides); every other value is left out with its reason and counted. The kg-bundle export's own conversions are unchanged.
+  notes: Planned with the units change. Until then a numeric filter compares only values in the unit it states, spelled the same, case included, once runs of whitespace count as one space, and on the basis the value states in basis (or none on both sides), unless it asks for conversion (`convert` true), which converts temperature (K, °C, °F), absolute pressure and time exactly (pgraph_query.CONVERSIONS; test_a_filter_converts_only_when_asked_and_only_exact_units); every other value is left out with its reason and counted. The kg-bundle export's own conversions are unchanged.
 - name: Mappings of labels and properties to external vocabularies (QUDT, ChEBI, Voc4Cat), verified live
   status: planned
 - name: LinkML / JSON Schema generation from SCALE specifications

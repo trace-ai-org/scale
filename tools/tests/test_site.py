@@ -29,6 +29,9 @@ def test_the_site_lists_the_curated_graphs(built):
     # the curated graphs, built from their parts; a parts folder with no source yet is left out, examples are not offered
     assert set(ids) == {g.name for g in (REPO / "graphs").iterdir() if any((g / "parts" / "sources").glob("*.json"))}
     assert "methanol-synthesis-pre1966" in ids
+    # example questions (graphs/<id>/questions.yaml) go with their graph, for the explorer to offer
+    meth = next(e for e in entries if e["id"] == "methanol-synthesis-pre1966")
+    assert meth["questions"] and all(q["question"].endswith("?") for q in meth["questions"])
     for e in entries:
         doc = json.loads((out / e["path"]).read_text())
         assert (len(doc["nodes"]), len(doc["links"])) == (e["nodes"], e["links"]), e["id"]

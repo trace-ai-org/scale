@@ -1301,7 +1301,7 @@ def build_parser() -> argparse.ArgumentParser:
     sp.add_argument("--spec", help="a schema manifest (default: chosen by the document)"); out_opts(sp, ("markdown", "json"))
     sp = add("index", cmd_graph_index, "build the evidence index: a vector and term statistics per evidence quote", gr)
     sp.add_argument("file"); sp.add_argument("--index", help="index path stem (default: <graph>.evidence)")
-    sp.add_argument("--embedder", default="scale-hash-v1"); out_opts(sp)
+    sp.add_argument("--embedder", default="scale-hash-v2"); out_opts(sp)
     sp = add("search", cmd_graph_search, "search evidence by words and meaning; hits lead to the records that cite them", gr)
     sp.add_argument("file"); sp.add_argument("query"); sp.add_argument("--index"); sp.add_argument("-k", type=_positive, default=10)
     sp.add_argument("--mode", choices=["hybrid", "vector", "keyword", "rrf"], default="hybrid")

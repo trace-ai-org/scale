@@ -1679,14 +1679,14 @@ async function search(q) {
     const r = await scale("search", { query: q, k: 25 });
     if (r.error) throw new Error(r.error);
     const hits = r.hits || [];
-    S.match = new Set(hits.map((h) => h.record));
+    S.match = new Set(hits.flatMap((h) => [h.record, ...(h.also || []).map((a) => a.record)]));
     const missing = [...S.match].filter((id) => G.byId.has(id) && !S.nodes.some((n) => n.id === id));
     if (missing.length) { missing.forEach((id) => S.extra.add(id)); draw(); } else markMatches();
     const shown = S.nodes.filter((n) => S.match.has(n.id));               // the view goes to what matched
     if (shown.length) setTimeout(() => { S.viewMoved = true; fit(false, shown); }, missing.length ? 900 : 0);
     card(`Matching evidence · ${hits.length}`, (hits.length ? hits.map((h) => `<div class="gx-hit" data-id="${esc(h.record)}">
         <div class="gx-quote">“${esc(h.text)}”</div>
-        <div class="gx-meta">${esc(h.label || "")}: ${esc(h.record_name || h.record)} · ${esc(name(G.byId.get(h.source)))}${h.source_year ? ` (${esc(h.source_year)})` : ""}, ${esc(h.locator || "")} · ${Number(h.score || 0).toFixed(3)}</div></div>`).join("")
+        <div class="gx-meta">${esc(h.label || "")}: ${esc(h.record_name || h.record)}${h.also?.length ? ` <span title="${esc(h.also.slice(0, 20).map((a) => `${a.label || ""}: ${a.record_name || a.record}`).join("\n") + (h.also.length > 20 ? `\n… and ${h.also.length - 20} more` : ""))}">and ${h.also.length} more citing it</span>` : ""} · ${esc(name(G.byId.get(h.source)))}${h.source_year ? ` (${esc(h.source_year)})` : ""}, ${esc(h.locator || "")} · ${Number(h.score || 0).toFixed(3)}</div></div>`).join("")
       : `<p>No evidence matches “${esc(q)}”.</p>`) + (!ownKey && !(SERVICE && token) ? `<p class="gx-meta">These are the quotes that
         match, found in this browser. ${SERVICE ? `<a href="#" role="button" data-signin="search">Sign in with GitHub</a> to have
         questions answered in words (free, no API key), or <a href="#" role="button" data-ownkey="search">use your own API
@@ -1791,9 +1791,9 @@ const OWN_TOOLS = [
     input_schema: { type: "object", properties: { names: { type: "array", items: { type: "string" } } }, required: [] } },
   { name: "stats", description: "The graph's units in use per property and its link patterns (scale graph stats).",
     input_schema: { type: "object", properties: {}, required: [] } },
-  { name: "search", description: "Search the graph's evidence by words and meaning (scale graph search); hits lead to the records that cite them.",
+  { name: "search", description: "Search the graph's evidence by words and meaning (scale graph search); hits lead to the records that cite them, one hit per quote (the other records citing it in `also`). Formulas keep their case: CO is carbon monoxide, Co cobalt.",
     input_schema: { type: "object", properties: { query: { type: "string" }, k: { type: "integer" }, published_before: { type: "string" } }, required: ["query"] } },
-  { name: "query", description: "Run a graph query plan (scale graph query): match, steps, where, return, evidence, order_by, limit, text, published_before. Returns rows, the kind of answer and the coverage.",
+  { name: "query", description: "Run a graph query plan (scale graph query): match, steps, where, return, evidence, order_by, limit, text, published_before. Returns rows, the kind of answer and the coverage. A numeric filter states its unit; add convert: true to also compare values in another unit of the same quantity, converted exactly (temperature K, °C, °F; absolute pressure; time), e.g. {prop: temperature, op: le, value: 250, unit: °C, convert: true}. Text filters ignore case except formulas (Co is cobalt, CO carbon monoxide).",
     input_schema: { type: "object", properties: { plan: { type: "object" } }, required: ["plan"] } },
 ];
 const WORKING_HERE = "\n\n# Working here\n\nYou answer in a web page, through the tools given (no shell). The graph is the one the user is viewing. "
@@ -2048,8 +2048,31 @@ function openOwnKeyMenu() {
   ($("ownkey-input") || $("ownkey-menu").querySelector("[data-use]:checked")).focus();
 }
 
+// ------------------------------------------------------------------------------------------ example questions
+// A graph's example questions (graphs/<id>/questions.yaml, carried by the site build): shown under the empty question
+// box, so a reader sees what the graph answers well. A click asks it.
+function showExamples() {
+  const box = $("examples"), qs = G?.entry?.questions || [];
+  if (!qs.length || $("search-input").value.trim()) { box.hidden = true; return; }
+  box.innerHTML = `<div class="gx-examples-head">Try a question this graph answers</div>` + qs.map((q, i) =>
+    `<button type="button" class="gx-example" role="option" data-i="${i}">${esc(q.question)}${q.kind ? `<span class="gx-example-kind">${esc(q.kind)}</span>` : ""}</button>`).join("")
+    + `<div class="gx-examples-note">Best for what the sources report: conditions and outcomes, preparations, what failed and why. A question that chains reasoning across many sources works better asked in parts.</div>`;
+  box.querySelectorAll(".gx-example").forEach((b) => b.onmousedown = (ev) => {      // before the input's blur hides it
+    ev.preventDefault();
+    $("search-input").value = qs[Number(b.dataset.i)].question;
+    box.hidden = true;
+    $("search-form").requestSubmit();
+  });
+  box.hidden = false;
+}
+$("search-input").addEventListener("focus", showExamples);
+$("search-input").addEventListener("input", showExamples);
+$("search-input").addEventListener("blur", () => { $("examples").hidden = true; });
+$("search-input").addEventListener("keydown", (e) => { if (e.key === "Escape") $("examples").hidden = true; });
+
 // ------------------------------------------------------------------------------------------ controls
 $("search-form").onsubmit = (e) => {
+  $("examples").hidden = true;
   e.preventDefault();
   const q = $("search-input").value.trim();
   if (!q || !G) return;

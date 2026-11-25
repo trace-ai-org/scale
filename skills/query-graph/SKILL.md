@@ -58,7 +58,8 @@ A generated explanation is a presentation of the retrieved evidence, not a repla
 3. **Write a plan** (`tools/pgraph_query.py` and docs/querying.md document the format):
    `match` a label, follow `steps` along edges (`direction: in` for incoming ones; `edge_as` binds
    the link), `where` filters on value objects with a `unit` (and a `basis` when the values state
-   one; nothing is converted, so one plan per unit and basis), paths into maps and lists
+   one; nothing is converted unless the filter says `convert: true`, which compares temperature, absolute pressure
+   and time in another unit after an exact conversion; else one plan per unit and basis), paths into maps and lists
    (`results.*[target=<species id>]`), optional `text` search over the evidence (it ranks only the evidence of the
    records its `vars` name and of the links the rows bind: name the records that carry the quotes), `published_before`
    for a dated question, `own_work_only` to leave out second-hand rows, `return` fields,
@@ -272,7 +273,7 @@ A generated explanation is a presentation of the retrieved evidence, not a repla
 
 ## Rules
 
-- Never compute with a missing input, and never convert units: a numeric filter (`eq`, `ne` and `in` with numbers too) states its unit and compares only values in that unit, spelled the same, case included, once runs of whitespace count as one space (`mPa` is not `MPa`, `mol%` is not `%`, `barg` is not `bar`), on the basis it states (`basis`) or, when it states none, values that state none. Run one plan per unit and basis and report each apart. `not stated` (any case and spacing) is the placeholder for a number printed without a unit, not a unit: `scale graph stats` counts it under `(no unit)`, its values are left out as `unit_unstated`, and a filter in it is a plan error; never plan on it. A value left out as `unit_unstated`, `incompatible_unit`, `other_basis` or `not_a_number` is there but not compared: never an absence.
+- Never compute with a missing input, and never convert units yourself: a numeric filter (`eq`, `ne` and `in` with numbers too) states its unit and compares only values in that unit, spelled the same, case included, once runs of whitespace count as one space (`mPa` is not `MPa`, `mol%` is not `%`, `barg` is not `bar`), on the basis it states (`basis`) or, when it states none, values that state none. Run one plan per unit and basis and report each apart, or, for a temperature, an absolute pressure or a time, give the filter `convert: true` (exact conversions only: K, °C, °F; Pa to GPa, bar, mbar, atm, Torr, mmHg, psi, never `barg` or `psig`; s, min, h, d), which returns each value as reported. `not stated` (any case and spacing) is the placeholder for a number printed without a unit, not a unit: `scale graph stats` counts it under `(no unit)`, its values are left out as `unit_unstated`, and a filter in it is a plan error; never plan on it. A value left out as `unit_unstated`, `incompatible_unit`, `other_basis` or `not_a_number` is there but not compared: never an absence.
 - A filter reads only a value's number, unit and `basis`: before stating a filtered value, return it and read its `as_reported` and `note` for a basis or condition written only there (gauge, on hydrogen, per pass), and say so when there is one.
 - Read the units in use (`scale graph stats`) before a numeric filter, and cite the coverage block in the Limits line.
 - Traverse every link type the question names; a link type not queried is never reported as absent.

@@ -46,6 +46,20 @@ def _entry(doc: dict, gid: str, origin: str) -> dict:
             "path": f"data/graphs/{gid}.json"}
 
 
+def questions(folder: Path) -> list[dict]:
+    """A graph folder's example questions (``questions.yaml``: ``questions``, each a ``question`` and a ``kind``), the
+    explorer's suggestions for what to ask; none when there is no such file."""
+    from .util import load_yaml
+    f = Path(folder) / "questions.yaml"
+    if not f.is_file():
+        return []
+    qs = (load_yaml(f) or {}).get("questions") or []
+    bad = [q for q in qs if not (isinstance(q, dict) and isinstance(q.get("question"), str) and q["question"].strip())]
+    if bad:
+        raise ScaleError(f"{f}: every entry of questions is a mapping with a question (text) and a kind")
+    return [{"question": q["question"].strip(), **({"kind": q["kind"]} if q.get("kind") else {})} for q in qs]
+
+
 def graphs(repo: Path) -> list[tuple[str, str, dict]]:
     """(id, origin, document) for every graph the site offers: the curated graphs (``graphs/*``), each built from its
     parts. A folder of parts with no source yet is left out; the examples (``examples/``, the domain's synthetic ones)
@@ -140,7 +154,7 @@ def build(repo: Path, out: Path) -> dict:
     entries = []
     for gid, origin, doc in graphs(repo):
         write_canonical(out / "data" / "graphs" / f"{gid}.json", doc)
-        entries.append(_entry(doc, gid, origin))
+        entries.append({**_entry(doc, gid, origin), **({"questions": qs} if (qs := questions(repo / origin)) else {})})
     # the schema version catal-commons pins: a source curated in the page is curated under it, so that it folds in
     # (catal-commons stays behind a schema bump until a person migrates it)
     header = repo / layout.GRAPHS / "catal-commons" / "parts" / "header.json"

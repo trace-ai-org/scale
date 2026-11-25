@@ -82,11 +82,32 @@ def test_tokens_know_formulas_and_spellings():
     assert {"copper", "zinc", "oxide", "carbon", "monoxide", "cobalt", "sulfur"} <= set(t)
 
 
+def test_co_is_not_co_in_search_and_in_filters():
+    """CO (carbon monoxide) and Co (cobalt) are two words in the default embedder (scale-hash-v2) and in a text filter;
+    an English word that is an element symbol at a sentence start (In, No) is still a word; v1 keeps its words."""
+    from scale.passages import Index
+    assert tokens("CO over Co", formulas=True)[:4] == ["CO", "carbon", "monoxide", "over"] and "Co" in tokens("Co", True)
+    assert "co" in tokens("CO over Co") and "CO" not in tokens("CO over Co")                # v1: lower-cased
+    assert tokens("In the run, No change", True)[:2] == ["in", "the"]
+    items = [{"id": "a", "record": "r1", "text": "CO hydrogenation over copper"},
+             {"id": "b", "record": "r2", "text": "a Co catalyst for Fischer-Tropsch"}]
+    ix = Index.build(items)
+    assert ix.embedder_id == "scale-hash-v2"
+    assert [h["id"] for h in ix.search("Co", k=5, mode="keyword")] == ["b"]
+    assert [h["id"] for h in ix.search("CO", k=5, mode="keyword")] == ["a"]
+    assert sorted(h["id"] for h in Index.build(items, "scale-hash-v1").search("Co", k=5, mode="keyword")) == ["a", "b"]
+    one = pgraph_query._one
+    assert one("CO", {"value": "Co"}, "eq") == (False, None) and one("Co", {"value": "Co"}, "eq") == (True, None)
+    assert one("Co3O4", {"value": "CO"}, "contains") == (False, None) and one("cobalt", {"value": "Cobalt"}, "eq") == (True, None)
+    assert one("Cu/ZnO", {"value": "cu/zno"}, "eq") == (True, None) and one("Cu/ZnO", {"value": "Cu/ZnO"}, "eq") == (True, None)
+    assert one("CU/ZNO", {"value": "Cu/ZnO"}, "eq") == (False, None)
+
+
 def test_vectors_are_deterministic_int8(tmp_path, doc):
     items = evidence_items(doc)
     a, b = Index.build(items), Index.build(copy.deepcopy(items))
     assert a.vectors.dtype.name == "int8" and a.vectors.shape == (len(items), 512)
-    assert a.vectors.tobytes() == b.vectors.tobytes() and a.embedder_id == "scale-hash-v1"
+    assert a.vectors.tobytes() == b.vectors.tobytes() and a.embedder_id == "scale-hash-v2"
     a.save(tmp_path / "ix")
     c = Index.load(tmp_path / "ix")
     assert c.vectors.tobytes() == a.vectors.tobytes() and [i["id"] for i in c.items] == [i["id"] for i in a.items]
@@ -374,6 +395,37 @@ def test_filters_compare_only_in_the_stated_unit(doc, spec):
     k["where"][0]["unit"] = "K"
     res = pgraph_query.run(doc, spec, k)
     assert res["status"] == "missing_context" and all(x["reason"].startswith("incompatible_unit") for x in res["excluded"])
+
+
+def test_a_filter_converts_only_when_asked_and_only_exact_units(doc, spec):
+    """convert: true on a numeric filter compares a value in another unit of the same quantity after an exact
+    conversion (380 °C is 653.15 K, 716 °F is 380 °C); without it nothing is converted; a gauge pressure, another
+    quantity and a convert on a text filter or on the plan are never converted."""
+    d = copy.deepcopy(doc)
+    temps = {"ex:t/cu/test": V(380, "°C"), "ex:t/cr/test": V(716, "°F"), "ex:t/late/test": V(653.15, "K")}
+    for n in d["nodes"]:
+        if n["id"] in temps:
+            n["props"]["temperature"] = temps[n["id"]]
+    plan = {"match": {"label": "CatalyticTest", "as": "t"}, "return": ["t.name", "t.temperature"]}
+
+    def rows(f):
+        res = pgraph_query.run(d, spec, {**plan, "where": [{"var": "t", "prop": "temperature", **f}]})
+        return sorted(r["bound"]["t"] for r in res["rows"]), res
+    assert rows({"op": "eq", "value": 380, "unit": "°C"})[0] == ["ex:t/cu/test"]
+    found, res = rows({"op": "eq", "value": 380, "unit": "°C", "convert": True})
+    assert found == ["ex:t/cr/test", "ex:t/cu/test", "ex:t/late/test"]
+    assert {json.dumps(r, ensure_ascii=False).count('"_converted_from"') for r in res["rows"]} == {0}   # as reported
+    assert rows({"op": "lt", "value": 600, "unit": "K", "convert": True})[0] == []
+    assert pgraph_query.converted(V(2, "barg"), "bar") is None and pgraph_query.converted(V(2, "h"), "K") is None
+    assert pgraph_query.converted(V(1, "atm"), "kPa")["value"] == 101.325
+    assert pgraph_query.converted({"status": "present", "lower": 0, "upper": 100, "unit": "°C", "uncertainty": 5},
+                                  "K") == {"status": "present", "lower": 273.15, "upper": 373.15, "unit": "K",
+                                           "uncertainty": 5.0, "_converted_from": "°C"}
+    for bad in ({"op": "contains", "value": "x", "convert": True}, {"op": "eq", "value": 380, "unit": "°C", "convert": "yes"}):
+        with pytest.raises(ScaleError, match="convert"):
+            pgraph_query.run(d, spec, {**plan, "where": [{"var": "t", "prop": "name", **bad}]})
+    with pytest.raises(ScaleError, match="convert"):
+        pgraph_query.run(d, spec, {**plan, "convert": True})
 
 
 def test_eq_ne_and_in_on_a_number_compare_in_the_filters_unit(doc, spec):
@@ -874,19 +926,21 @@ def test_a_gauge_value_in_the_filters_unit_is_not_an_absolute_pressure(doc, spec
                                                                                        "value": 50}]})["rows"]] == ["ex:t/cr/test"]
 
 
-def test_convert_is_refused_and_nothing_is_converted(doc, spec):
-    """Unit conversion is not available (planned with the units proposal): a plan or filter that asks for it is refused,
-    `convert: false` is accepted, and a value in another unit of the same quantity is left out, never converted. A
-    misstated basis or filter number is a plan error, never an exception."""
+def test_nothing_is_converted_unless_a_filter_asks(doc, spec):
+    """Without a filter's `convert: true` (`convert: false` is the same) a value in another unit of the same quantity is
+    left out, never converted; a plan-level convert or one that is not true or false is refused. A misstated basis or
+    filter number is a plan error, never an exception."""
     plan = {**CU_PLAN, "where": [{"var": "test", "prop": "temperature", "op": "le", "value": 600, "unit": "K"}]}
     off = pgraph_query.run(doc, spec, plan)
     assert off["status"] == "missing_context" and off["coverage"]["excluded"]["by_reason"] == {"incompatible_unit": 2}
     assert "convertible_left_out" not in off["coverage"] and not any("convert:" in x for x in off["limitations"])
     assert pgraph_query.run(doc, spec, {**plan, "convert": False})["coverage"] == off["coverage"]
-    for asked in ({**plan, "convert": True}, {**plan, "where": [{**plan["where"][0], "convert": True}]},
-                  {**plan, "convert": "yes"}):
-        with pytest.raises(ScaleError, match="convert is not available"):
+    for asked in ({**plan, "convert": True}, {**plan, "convert": "yes"},
+                  {**plan, "where": [{**plan["where"][0], "convert": "yes"}]}):
+        with pytest.raises(ScaleError, match="convert is a filter's own choice"):
             pgraph_query.run(doc, spec, asked)
+    on = pgraph_query.run(doc, spec, {**plan, "where": [{**plan["where"][0], "convert": True}]})
+    assert on["status"] == "answered" and on["row_count"] >= 1          # the °C values, converted to K for the filter
     for f, msg in (({"basis": ""}, "states a basis"), ({"basis": 5}, "states a basis"), ({"basis": None}, "states a basis"),
                    ({"basis": "carbon", "unit": None}, "states a basis"), ({"value": "abc"}, "compares with a number"),
                    ({"value": None}, "compares with a number"), ({"value": float("nan")}, "compares with a number")):
