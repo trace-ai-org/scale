@@ -127,6 +127,9 @@ def check_steps(repo: Path, fast: bool = False) -> list[dict]:
         {"name": "documentation links resolve", "cmds": [scale + ["links"]]},
         {"name": "every committed document is public (stewardship access)", "cmds": [scale + ["evidence", "access"]]},
         {"name": "quoted text respects the copyright cap", "cmds": [scale + ["evidence", "report", "--all"]]},
+        # the data guard over every tracked file (docs/private-data.md): what the hooks refuse, CI refuses too
+        {"name": "no undeclared raw data, no document the public may not read (scale guard)",
+         "cmds": [scale + ["guard", "check", "--all", "--path", str(repo)]]},
         # REUSE.toml gives every file a licence and LICENSES/ holds each licence it names (the dev extra installs
         # reuse; it reads the git checkout, so files git ignores are not checked)
         {"name": "licence annotations are complete (reuse lint)", "cmds": [[sys.executable, "-m", "reuse", "--root", str(repo), "lint"]]},

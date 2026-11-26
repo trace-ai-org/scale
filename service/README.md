@@ -162,6 +162,7 @@ members.
 | `SCALE_WEB_INBOX_TURNS`, `SCALE_WEB_INBOX_MINUTES` | Claude Code's turns and minutes for one source | 200, 90 |
 | `SCALE_WEB_INBOX_WORKERS` | sources Claude Code curates at once in the inbox, each in its own folder | 1 |
 | `SCALE_WEB_ASK` | `claude-code`: questions in words are answered on the service's computer by Claude Code, confined as the inbox's curation is, two at a time ([The inbox](#the-inbox-claude-code-on-a-computer-of-your-own)) | empty: the service's model (the API key) |
+| `SCALE_WEB_EGRESS_POLICY`, `SCALE_WEB_EGRESS_ENDPOINT` | egress ([docs/private-data.md](../docs/private-data.md)): a file (`egress: {endpoints: [{id, access: [levels]}]}`) approving model endpoints for access levels, and the endpoint the question loop sends to; a graph whose records are not public is answered (`/ask`) only when the file approves that endpoint for their levels, else refused (403) before any model is called | empty: public graphs only; endpoint `anthropic` |
 | `SCALE_WEB_PYTHON`, `SCALE_WEB_PORT` | for `service/launchd/scale-web.sh`: the Python with scale-catal's dependencies, and the service's port | `python3`, 8080 |
 
 ## The inbox: Claude Code on a computer of your own

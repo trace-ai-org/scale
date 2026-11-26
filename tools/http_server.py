@@ -96,7 +96,8 @@ def make_handler(toolkit: ScaleToolkit, base_url: str):
 
 
 def serve(host: str = "127.0.0.1", port: int = 8765, workspace: str | None = None) -> None:
-    toolkit = ScaleToolkit(workspace=workspace)
+    from .egress import EgressGate
+    toolkit = ScaleToolkit(workspace=workspace, egress=EgressGate.from_env())
     base = f"http://{host}:{port}"
     httpd = ThreadingHTTPServer((host, port), make_handler(toolkit, base))
     print(f"SCALE tools at {base}/tools (OpenAPI: {base}/openapi.json) — working directory {toolkit.workspace}", file=sys.stderr)
