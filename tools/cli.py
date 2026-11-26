@@ -690,6 +690,63 @@ def cmd_graph_query(args):
     return 0 if res["status"] in ("answered", "no_matching_record", "missing_context", "schema_gap") else 1
 
 
+def cmd_graph_plot_data(args):
+    from . import federation, plotdata
+    if args.graph:
+        if args.spec_file is not None:
+            raise ScaleError("with --graph, give only the plot spec (the graphs are named by --graph)")
+        members, spec_path = _federated_members(args), (None if args.suggest else args.file)
+    else:
+        if args.identity_map:
+            raise ScaleError("--identity-map identifies records across graphs: name them with --graph alias=file")
+        if not args.file:
+            raise ScaleError("give a graph file and a plot spec (or --graph alias=file ... and the spec)")
+        members = [federation.load_member("graph", args.file, lambda doc: _graph_spec(args, doc),
+                                          recorded=federation.recorded_digests(_repo(args)))]
+        if members[0].get("status") in ("unavailable", "unsupported_version"):
+            raise ScaleError(members[0].get("error") or f"{args.file}: cannot be read")
+        spec_path = args.spec_file
+    if args.suggest:
+        if spec_path is not None and not args.graph:
+            raise ScaleError("--suggest returns plot specs: give no spec with it")
+        _emit(plotdata.suggest(members), args)
+        return 0
+    if spec_path is None:
+        raise ScaleError("give a plot spec (YAML or JSON), or --suggest for suggested charts")
+    imap = federation.load_identity_map(args.identity_map) if args.identity_map else None
+    res = plotdata.plot_data(members, load_doc(spec_path), imap)
+    if args.csv:
+        Path(args.csv).parent.mkdir(parents=True, exist_ok=True)
+        Path(args.csv).write_text(plotdata.to_csv(res), encoding="utf-8")
+        print(f"wrote {args.csv}", file=sys.stderr)
+    _emit(res, args)
+    return 0
+
+
+def cmd_data_plot_table(args):
+    import hashlib
+    from . import plotdata
+    raw = Path(args.table).read_bytes()
+    want, cited = args.sha256, None
+    if args.dataset:
+        if not args.graph_file:
+            raise ScaleError("--dataset names a Dataset of a graph: give the graph with --graph-file")
+        doc = load_doc(args.graph_file)
+        node = next((n for n in doc.get("nodes") or [] if n.get("id") == args.dataset), None)
+        if node is None or node.get("label") not in ("Dataset", "TimeSeries"):
+            raise ScaleError(f"{args.dataset}: no Dataset (or TimeSeries) of that id in {args.graph_file}")
+        want = want or (node.get("props") or {}).get("sha256")
+        cited = plotdata.cited_cells(doc, args.dataset)
+    res = plotdata.table_data(raw.decode("utf-8-sig"), load_doc(args.spec_file), want, cited,
+                              hashlib.sha256(raw).hexdigest())
+    if args.csv:
+        Path(args.csv).parent.mkdir(parents=True, exist_ok=True)
+        Path(args.csv).write_text(plotdata.table_csv(res), encoding="utf-8")
+        print(f"wrote {args.csv}", file=sys.stderr)
+    _emit(res, args)
+    return 0
+
+
 def cmd_gap_issue(args):
     from .gaps import not_public, render_issue, submit_issue
     gap = load_doc(args.gap)
@@ -1426,6 +1483,15 @@ def build_parser() -> argparse.ArgumentParser:
     sp.add_argument("file", help="the graph (or, with --graph, the plan)"); sp.add_argument("plan", nargs="?")
     sp.add_argument("--index"); sp.add_argument("--spec")
     federation_opts(sp); out_opts(sp, ("json", "markdown"))
+    sp = add("plot-data", cmd_graph_plot_data, "the data of a chart (docs/analyze.md): typed points as reported, by "
+             "panel (never two units or contexts on one axis), with their records, evidence and what was left out; "
+             "--suggest proposes charts", gr)
+    sp.add_argument("file", nargs="?", help="the graph (or, with --graph, the plot spec)")
+    sp.add_argument("spec_file", nargs="?", metavar="spec", help="the plot spec (YAML or JSON)")
+    sp.add_argument("--suggest", action="store_true", help="suggest charts (ready plot specs) from what the graph holds")
+    sp.add_argument("--csv", help="also write the points as CSV with provenance columns")
+    sp.add_argument("--spec", help="a schema manifest (default: chosen by each document)")
+    federation_opts(sp); out_opts(sp)
 
     gap = sub.add_parser("gap", help="gap reports and GitHub issues").add_subparsers(dest="sub", required=True)
     sp = add("list", cmd_gap_list, "list gap reports in a directory", gap)
@@ -1723,6 +1789,16 @@ def build_parser() -> argparse.ArgumentParser:
     sp.add_argument("--out", required=True, help="the directory to write matrix.csv and matrix.manifest.json into")
     sp.add_argument("--spec", help="a schema manifest (default: chosen by each document)")
     federation_opts(sp)
+    sp = add("plot-table", cmd_data_plot_table, "the data of a chart of a linked data file (CSV): its columns' units read "
+             "from the headers, each cell a number, a bound or text, the file's sha256 checked against the graph's "
+             "record and the rows the graph cites marked (docs/analyze.md)", da)
+    sp.add_argument("table", help="the data file (CSV)")
+    sp.add_argument("spec_file", metavar="spec", help="the table plot spec (YAML or JSON): x, y, series, facet name columns")
+    sp.add_argument("--graph-file", help="the graph that records the file (with --dataset)")
+    sp.add_argument("--dataset", help="the Dataset (or TimeSeries) record of the file: its sha256 and the rows cited")
+    sp.add_argument("--sha256", help="the digest the file should have (default: the Dataset's)")
+    sp.add_argument("--csv", help="also write the points as CSV")
+    out_opts(sp)
 
     st = sub.add_parser("site", help="the static site: the graph explorer, published by GitHub Pages").add_subparsers(
         dest="sub", required=True)

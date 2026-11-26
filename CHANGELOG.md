@@ -2,6 +2,20 @@
 
 ## Unreleased
 
+- **Plot data and the explorer's Analyze view (tools, explorer; no schema change, no migration).** `tools/plotdata.py`
+  turns a plot spec (a label with filters or a query plan; x and y a property path, a linked record's value through
+  named links or a path of edges, a result entry or a count; series, facet, mark) into typed chart points over one or
+  several graphs: each value as reported (a value with its uncertainty, a one-sided bound, a range), read under its
+  graph's quantity contracts as a scientific comparison reads it (`Comparison.compared_as`), values of two units,
+  contexts or contracts in separate panels, never converted or averaged, two result entries paired only through one
+  assay, proposals and predictions left out by default, everything left out counted by reason, counts, histogram bins
+  and box statistics computed once; suggested charts; a linked data file read with its sha256 checked against its
+  Dataset record and the rows records cite marked. `scale graph plot-data`, `scale data plot-table` and the
+  `scale_plot_data` tool (behind the egress gate) give it; the graph explorer's Analyze panel draws it (Vega-Lite,
+  pinned and checked), selects a point's record on click, downloads SVG, PNG, CSV and JSON, reads a local file attached
+  to a Dataset in the browser only, and gives a reader's own model a plot tool. The query-graph skill points agents to
+  it (docs/analyze.md).
+
 - **Querying across knowledge graphs, a design matrix and a write-back convention (tools; no schema change, no
   migration).** `scale graph query` and `scale graph search` take several graphs (`--graph ALIAS=FILE`, repeated), as do
   the agent tools (`graphs`): each graph is queried on its own under the schema version it pins, with its spec digest

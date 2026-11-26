@@ -7,7 +7,8 @@
 // Search, query plans and descriptions run SCALE's own code in a worker (worker.js).
 import { readBundle } from "./bundle.js";
 import { closedLevels, gate as egressGate, approve as egressApprove } from "./egress.js";
-const $ = (id) => document.getElementById(id);
+import { draw as drawChart, specFrom, choices, csvHeader, sha256Hex, digestCheck } from "./analyze.js";
+const $ =(id) => document.getElementById(id);
 const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
 const md = (s) => DOMPurify.sanitize(marked.parse(String(s || "")));
 const KIND_PALETTE = ["#5b8def", "#f59e0b", "#10b981", "#ef4444", "#8b5cf6", "#06b6d4", "#f43f5e", "#84cc16", "#0ea5e9", "#d946ef", "#fbbf24", "#22c55e"];
@@ -1220,6 +1221,7 @@ async function openGraph(entry, text, doc = null) {
   [...labels].sort((a, b) => b[1] - a[1]).forEach(([l]) => colourForKind(l));
   [...rels].sort((a, b) => b[1] - a[1]).forEach(([t]) => colourForEdge(t));
   G = { entry, file: `${entry.id}.json`, doc, byId, out, inn, labels, rels, props, sha: "" };
+  resetAnalyze();
   folded = false;
   Object.assign(S, { kind: null, rel: null, sources: false, hidden: new Set(), extra: new Set(), match: null, selected: null, pos: new Map(), nodes: [] });
   $("card").hidden = true;
@@ -1234,6 +1236,7 @@ async function openGraph(entry, text, doc = null) {
     .catch((err) => status(`SCALE could not load the graph: ${err.message}`));
   if (G !== g) return;
   status(ready());
+  if (!$("analyze").hidden) renderAnalyze();       // Analyze, open, reads the graph now loaded
   warm(g);
 }
 async function sha256(text) {
@@ -1636,11 +1639,13 @@ function showDetails(rec) {
   $("record").innerHTML = `${head}
     <table class="gx-props"><thead><tr><th>Key</th><th>Value</th><th></th></tr></thead><tbody>${rows}</tbody></table>
     ${ev ? `<section class="gx-inspector-section"><h3>Provenance <span class="gx-count">${(p.evidence || []).length}</span></h3>${ev}</section>` : ""}
+    ${!isLink && LINKED_FILE_LABELS.includes(rec.label) ? linkedFileSection(rec) : ""}
     ${neighbours}
     ${isLink ? "" : `<footer class="gx-inspector-actions"><button class="gx-btn gx-btn-tiny" id="act-expand">Expand neighbourhood</button>
       <button class="gx-btn gx-btn-tiny" id="act-focus">Focus</button><button class="gx-btn gx-btn-tiny" id="act-pin" aria-pressed="${!!node?.pinned}">${node?.pinned ? "Unpin" : "Pin"}</button>
       <button class="gx-btn gx-btn-tiny" id="act-hide" title="Remove from this view (the graph is not changed)">Hide</button></footer>`}`;
   wireIds($("record"));
+  if (!isLink && LINKED_FILE_LABELS.includes(rec.label)) wireLinkedFile(rec);
   $("record").querySelectorAll(".gx-copy").forEach((b) => (b.onclick = () => { const v = entries[Number(b.dataset.i)][1]; navigator.clipboard?.writeText(typeof v === "string" ? v : JSON.stringify(v)); }));
   if (!isLink) {
     $("act-expand").onclick = () => expand(rec.id);
@@ -1750,10 +1755,16 @@ function answerCard(r, cost) {
   card("Answer", `${cited.html}
     ${cited.checks ? checksLine(cited.checks) : ""}
     ${r.stopped ? `<p class="gx-card-warn">Stopped early: ${esc(r.stopped)}.</p>` : ""}
+    ${(r.charts || []).map((_, i) => `<section class="gx-answer-chart" data-chart="${i}"></section>`).join("")}
     ${(r.plans || []).length ? `<details><summary>How it was answered (${r.plans.length} plan${r.plans.length > 1 ? "s" : ""}, ${r.plans.reduce((n, p) => n + (p.rows || 0), 0)} rows)</summary>${r.plans.map((p, i) =>
       `<p class="gx-meta">Plan ${i + 1}: ${esc(p.status || "?")}, ${p.rows ?? 0} rows</p><pre>${esc(JSON.stringify(p.plan, null, 1))}</pre>`).join("")}</details>` : ""}
     <p class="gx-meta">${esc(cost)}</p>`);
   $("card-body").querySelectorAll(".gx-cite[data-id]").forEach((a) => (a.onclick = (e) => { e.preventDefault(); goTo(a.dataset.id); }));
+  // the charts the model drew (its plot tool), each point linked to its record; the full data for download
+  (r.charts || []).forEach((res, i) => {
+    const el = $("card-body").querySelector(`[data-chart="${i}"]`);
+    if (el) showResult(res, el, { dark: true, compact: true, onPick: pickGraph });
+  });
 }
 
 // ------------------------------------------------------------------------------------------ citations
@@ -1907,6 +1918,8 @@ const OWN_TOOLS = [
     input_schema: { type: "object", properties: {}, required: [] } },
   { name: "query", description: "Run a graph query plan (scale graph query): match, steps, where, return, evidence, order_by, limit, text, published_before. Returns rows, the kind of answer and the coverage, in a compact model view (its legend says how: each quote once as E1..En, sources once, ids shortened with ~ for id_prefix; cite the full id). Rows come in pages: fetch the next with page = the result's page.next; never answer from one page as if it were all. A numeric filter states its unit; add convert: true to also compare values in another unit of the same quantity, converted exactly (temperature K, °C, °F; absolute pressure; time), e.g. {prop: temperature, op: le, value: 250, unit: °C, convert: true}. Text filters ignore case except formulas (Co is cobalt, CO carbon monoxide).",
     input_schema: { type: "object", properties: { plan: { type: "object" }, page: { type: "object", description: "the result's page.next, passed back whole, for its next page of rows" } }, required: ["plan"] } },
+  { name: "plot", description: "Draw a chart for the reader from the graph's numbers (scale_plot_data); it appears under your answer, each point linked to its record. spec: {label (e.g. CatalyticTest), where (filters on the record), x and y (a property path such as temperature, electrode_potential or source.year; catalyst, sample or source as a category; {entries: faradaic_efficiency, target, variable} for one result entry per point; {via: [{edge, to, direction}], path} for a linked record's value; y count for records per x), series and facet (product, catalyst, sample, source, graph or a property path), mark point|line|bar|box}. Values are never converted: two units or contexts are two panels, a bound stays a bound, what was left out is counted by reason. You get the panels, counts, left_out and the points in pages (page: the result's page.next). Use it when the reader asks for a plot, a trend or a distribution.",
+    input_schema: { type: "object", properties: { spec: { type: "object" }, page: { type: "integer", description: "the result's page.next, for the next page of points" } }, required: ["spec"] } },
 ];
 // How an answer is written in this page: the principles the design review settled on (docs/answering.md).
 const WORKING_HERE = `
@@ -1922,6 +1935,7 @@ You answer in a web page, through the tools given (no shell). The graph is the o
 - Separate candidates from relevant records: read each row and drop what does not answer the question. Count sources and independent works, not records; identical wording in sibling patents is one claim repeated.
 - Check counter-evidence (CONTRADICTS, competing hypotheses, controls) when the answer is causal, a consensus, an earliest record or an absence. Stop when every distinction the question asks for has support or an explicit unresolved status.
 - Tool results come back whole: base the answer on all the relevant rows the plans return.
+- When the reader asks for a plot, a trend or a distribution, call plot with a plot spec once query plans found the values: the chart appears under your answer; describe it from the panels and points plot returns, never from the picture.
 
 ## Write the answer (Markdown)
 - Lead with the answer in 1-3 sentences. Keep the whole answer short (about 400 words) unless the question asks for a full list; put a full list in a table, not in prose.
@@ -1973,7 +1987,15 @@ async function chat(provider, body) {
   throw new Error(`${p.name}'s API answered: ${why}`);
 }
 let proposeText = null;
-async function ownTool(name, a, plans) {
+async function ownTool(name, a, plans, charts = []) {
+  if (name === "plot") {                        // the chart is drawn in the answer card; the model reads it in pages
+    if (!a.page) {
+      const full = await scale("plot_data", { spec: a.spec });
+      if (full.error) return full;
+      charts.push(full);
+    }
+    return scale("plot_data", { spec: a.spec, view: "model", offset: Number(a.page) || 0, page_size: 40 });
+  }
   if (name === "proposal_procedure") {
     if (proposeText === null) {
       const r = await fetch("data/query-graph-propose.md");
@@ -2086,8 +2108,8 @@ async function askOwnKey(question) {
     if (b) b.onclick = () => { answerNow = true; b.disabled = true; b.textContent = "Answering from the rows so far…"; };
   };
   progress("");
-  const plans = [], seen = new Set();                     // the plans run, and every record id a tool returned
-  const run = async (name, input) => { const res = await ownTool(name, input, plans); returnedIds(res, seen); return res; };
+  const plans = [], seen = new Set(), charts = [];        // the plans run, every record id a tool returned, the charts drawn
+  const run = async (name, input) => { const res = await ownTool(name, input, plans, charts); returnedIds(res, seen); return res; };
   try {
     if (skillText === null) {
       const s = await fetch("data/query-graph.md");
@@ -2098,7 +2120,7 @@ async function askOwnKey(question) {
       run, wrapUp: WRAP_UP, stopNow: () => answerNow, progress, alive: () => G === g, gate: check });
     if (!r) return;                                         // another graph was opened meanwhile
     const stopped = r.stopped === "finished early, on request" ? ANSWERED_EARLY : r.stopped;
-    answerCard({ answer: r.text, plans, stopped, seen }, accountLine(r));
+    answerCard({ answer: r.text, plans, stopped, seen, charts }, accountLine(r));
   } catch (err) {
     if (G === g) card("Answer", `<p class="gx-card-warn">${esc(err.message || err)}</p>`);
   }
@@ -2197,6 +2219,277 @@ function openOwnKeyMenu() {
   ownForm = { editing: "", provider: "" };
   ownKeyMenu();
   ($("ownkey-input") || $("ownkey-menu").querySelector("[data-use]:checked")).focus();
+}
+
+// ------------------------------------------------------------------------------------------ Analyze
+// The graph's numbers as charts (docs/analyze.md). The points come from SCALE's own code in the worker (scale_plot_data:
+// scale.plotdata), as `scale graph plot-data` gives them: each value as reported, a bound as a bound, values in two
+// units or two comparison contexts in two panels, never one axis, and everything left out counted by reason. The panel
+// offers the charts SCALE suggests for the graph and a builder (records, y, x, series, facet, mark); a click on a point
+// selects its record in the graph and shows its evidence. A Dataset (or TimeSeries) record's own file can be attached
+// in the inspector: it is read in this browser (its sha256 checked against the record), plotted by its columns, and sent
+// nowhere, kept only while the tab is open.
+const LINKED_FILE_LABELS = ["Dataset", "TimeSeries"];
+const A = { from: "graph", stats: null, suggestions: null, label: "", files: new Map(), result: null, spec: null, run: 0,
+  with: new Set(), loaded: new Set() };
+const REASONS = {
+  absent: "the record states no such value", not_linked: "no linked record", unit_unstated: "no unit stated",
+  ambiguous_multiple_values: "several values where one is needed", missing_context: "a context its comparison needs is not stated",
+  incompatible_context: "its contexts are stated two ways", incompatible_unit: "a unit its kind cannot be in, or one the contracts do not read",
+  proposal_not_observation: "a proposal, not an observation", prediction_not_observation: "a prediction, not an observation",
+  superseded: "superseded by a newer version", not_reported: "not reported", not_measured: "not measured", not_applicable: "not applicable",
+  empty: "an empty cell", unpaired_entries: "two result entries of one record that no assay pairs (never paired by position)",
+  not_bound: "nothing bound",
+};
+const reasonText = (key) => {
+  const [axis, code, ...rest] = key.split(":");
+  return `${axis}: ${REASONS[code] || code.replace(/_/g, " ")}${rest.length ? ` (${rest.join(":").replace(/_/g, " ")})` : ""}`;
+};
+function resetAnalyze() {
+  Object.assign(A, { from: "graph", stats: null, suggestions: null, label: "", files: new Map(), result: null, spec: null, run: A.run + 1,
+    with: new Set() });
+  if (!$("analyze").hidden) renderAnalyze();
+}
+function openAnalyze(on = $("analyze").hidden) {
+  $("analyze").hidden = !on;
+  $("analyze-btn").setAttribute("aria-pressed", String(on));
+  if (on) renderAnalyze();
+}
+$("analyze-btn").onclick = () => openAnalyze();
+$("analyze-close").onclick = () => openAnalyze(false);
+function chartColours(dark = false) {
+  if (dark) return { fg: "#f4f4f6", muted: "#a3a6b1", line: "#2c3040", bg: "#0f121c" };
+  const cs = getComputedStyle(document.documentElement), v = (n) => cs.getPropertyValue(n).trim();
+  return { fg: v("--fg"), muted: v("--muted"), line: v("--line"), bg: v("--bg") };
+}
+const option = (value, label, selected) => `<option value="${esc(value)}"${selected ? " selected" : ""}>${esc(label)}</option>`;
+const nice = (s) => String(s).replace(/^results\./, "results: ").replace(/_/g, " ");
+
+async function renderAnalyze() {
+  const body = $("analyze-body"), run = A.run;
+  const files = [...A.files.entries()];
+  $("analyze-from").innerHTML = [`<button type="button" role="tab" class="gx-an-tab" data-from="graph" aria-selected="${A.from === "graph"}">The graph</button>`,
+    ...files.map(([id, f]) => `<button type="button" role="tab" class="gx-an-tab" data-from="${esc(id)}" aria-selected="${A.from === id}" title="${esc(f.name)}, attached to ${esc(name(G.byId.get(id)))}">${esc(trunc(f.name, 28))}</button>`)].join("");
+  $("analyze-from").querySelectorAll("[data-from]").forEach((b) => (b.onclick = () => { A.from = b.dataset.from; A.result = null; renderAnalyze(); }));
+  if (A.from !== "graph" && A.files.has(A.from)) return renderFileBuilder(body, A.from);
+  if (!G || !G.loaded) {
+    body.innerHTML = `<p class="gx-muted">${G ? "This graph is drawn a window at a time and is not loaded into SCALE here: Analyze reads a graph opened whole." : "Open a graph first."}</p>`;
+    return;
+  }
+  if (!A.stats) {
+    body.innerHTML = `<p class="gx-muted">Reading what the graph holds…</p>`;
+    try {
+      const [stats, sug] = await Promise.all([scale("stats", {}), scale("plot_data", { suggest: true })]);
+      if (run !== A.run) return;
+      if (stats.error) throw new Error(stats.error);
+      A.stats = stats; A.suggestions = sug.error ? { suggestions: [], error: sug.error } : sug;
+      const labels = Object.keys(stats.units_in_use || {}).filter((l) => (stats.node_labels || {})[l]);
+      A.label = A.suggestions.suggestions[0]?.label || (labels.includes("CatalyticTest") ? "CatalyticTest" : labels[0] || "");
+    } catch (err) { body.innerHTML = `<p class="gx-card-warn">${esc(err.message || err)}</p>`; return; }
+  }
+  const labels = Object.keys(A.stats.node_labels || {}).filter((l) => !["Institution", "Project"].includes(l)).sort();
+  const ch = choices(A.stats, A.label);
+  const yOpts = [["count", "count of records (bars, or a histogram of x)"], ...ch.entries.map((p) => [`e:${p}`, `${nice(p)} (one result entry per point)`]),
+    ...ch.numeric.map((p) => [`p:${p}`, nice(p)])];
+  const xOwn = [...ch.numeric.map((p) => [`p:${p}`, nice(p)]), ...ch.entries.map((p) => [`e:${p}`, `${nice(p)} (one result entry per point)`]),
+    ...ch.linked.map((p) => [`c:${p}`, `${p} (category)`]), ...ch.text.map((p) => [`p:${p}`, `${nice(p)} (category)`]),
+    ...(ch.linked.includes("source") ? [["p:source.year", "source year"]] : [])];
+  const groups = [["", "none"], ...ch.linked.map((p) => [`c:${p}`, p]), ...(ch.linked.includes("source") ? [["p:source.year", "source year"]] : []),
+    ["graph", "graph"], ...ch.text.map((p) => [`p:${p}`, nice(p)])];
+  const s = A.spec || {};
+  const pick = (v) => (v === "count" ? "count" : typeof v === "object" && v ? (v.via ? `v:${JSON.stringify({ via: v.via, path: v.path || "" })}` : `e:${v.entries}`)
+    : v ? (["catalyst", "sample", "source"].includes(v) ? `c:${v}` : `p:${v}`) : "");
+  const sel = { y: pick(s.y), x: pick(s.x), series: s.series ? (s.series === "product" ? "product" : pick(s.series)) : "", facet: s.facet ? pick(s.facet) : "" };
+  const xVia = ch.via.map((o) => [o.value, o.text]);
+  if (sel.x && ![...xOwn, ...xVia].some(([v]) => v === sel.x)) xOwn.push([sel.x, typeof s.x === "string" ? nice(s.x) : "the chart's x"]);
+  if (sel.y && !yOpts.some(([v]) => v === sel.y)) yOpts.push([sel.y, typeof s.y === "string" ? nice(s.y) : "the chart's y"]);
+  const others = manifest.filter((e) => e.id !== G.entry.id && e.path);
+  const sugg = (A.suggestions.suggestions || []);
+  body.innerHTML = `
+    <section class="gx-an-suggest"><h3>Suggested charts</h3>${sugg.length ? `<div class="gx-an-chips">${sugg.map((x, i) =>
+      `<button type="button" class="gx-pill" data-tone="neutral" data-sug="${i}" title="${esc(`${x.records} records with both values; ${x.panels} panel${x.panels === 1 ? "" : "s"} (units and contexts kept apart)`)}">${esc(x.title)} <span class="gx-pill-count">${x.records}</span></button>`).join("")}</div>`
+      : `<p class="gx-muted">${esc(A.suggestions.error || "No chart to suggest: no records state an outcome and a varying condition together. Build one below.")}</p>`}</section>
+    <form class="gx-an-build" id="an-form">
+      <label>Records<select id="an-label">${labels.map((l) => option(l, l, l === A.label)).join("")}</select></label>
+      <label>Y<select id="an-y">${yOpts.map(([v, t]) => option(v, t, v === sel.y)).join("")}</select></label>
+      <label>X<select id="an-x"><optgroup label="The record's own">${xOwn.map(([v, t]) => option(v, t, v === sel.x)).join("")}</optgroup>${
+        xVia.length ? `<optgroup label="Through its links">${xVia.map(([v, t]) => option(v, t, v === sel.x)).join("")}</optgroup>` : ""}</select></label>
+      <label>Series<select id="an-series">${groups.map(([v, t]) => option(v, t, v === sel.series)).join("")}${option("product", "product (of a result entry)", sel.series === "product")}</select></label>
+      <label>Facet<select id="an-facet">${groups.map(([v, t]) => option(v, t, v === sel.facet)).join("")}</select></label>
+      <label>Mark<select id="an-mark">${["point", "line", "bar", "box"].map((m) => option(m, m, m === (s.mark || "point"))).join("")}</select></label>
+      <label class="gx-check" title="By default proposals, predictions and superseded records are left out (observations only); tick to count every record, as an inventory"><span><input type="checkbox" id="an-all"${s.population === "all" ? " checked" : ""}> every record</span></label>
+      <button type="submit" class="gx-btn gx-btn-primary">Plot</button>
+      ${others.length ? `<fieldset class="gx-an-with"><legend>With other graphs (each read on its own, never merged)</legend>${others.map((e) =>
+        `<label class="gx-check"><input type="checkbox" data-with="${esc(e.id)}"${A.with.has(e.id) ? " checked" : ""}> ${esc(trunc(e.title || e.id, 50))}</label>`).join("")}</fieldset>` : ""}
+    </form>
+    <div class="gx-an-out" id="an-out"></div>`;
+  body.querySelectorAll("[data-with]").forEach((b) => (b.onchange = () => { if (b.checked) A.with.add(b.dataset.with); else A.with.delete(b.dataset.with); }));
+  body.querySelectorAll("[data-sug]").forEach((b) => (b.onclick = () => { const x = sugg[Number(b.dataset.sug)]; A.label = x.label; plotGraph(x.spec); }));
+  $("an-label").onchange = () => { A.label = $("an-label").value; A.spec = null; renderAnalyze(); };
+  $("an-form").onsubmit = (e) => {
+    e.preventDefault();
+    if (!$("an-y").value || !$("an-x").value) return;
+    plotGraph({ ...specFrom({ label: $("an-label").value, x: $("an-x").value, y: $("an-y").value, series: $("an-series").value,
+      facet: $("an-facet").value, mark: $("an-mark").value }), ...($("an-all").checked ? { population: "all" } : {}) });
+  };
+  if (A.result && A.result.kind === "graph") showResult(A.result.res, $("an-out"), { onPick: pickGraph, csv: () => graphCsv(A.result.spec) });
+}
+const pickGraph = (row) => {
+  if (row.record && G.byId.has(row.record) && (!A.result?.aliased || String(row.id).startsWith(`${aliasOf(G.entry.id)}::`))) goTo(row.record);
+  else if (row.record) status(`${row.record} is a record of another graph: open that graph to see it.`);
+};
+// A graph's alias in a call across graphs: its id as letters, digits, _ and -, starting with a letter.
+const aliasOf = (id) => { const a = String(id).replace(/[^A-Za-z0-9_-]/g, "-").replace(/^[^A-Za-z]+/, ""); return (a || "graph").slice(0, 40); };
+// The graphs to plot together: this one, and the others the reader ticked, each loaded into SCALE here once.
+async function plotGraphs() {
+  if (!A.with.size) return null;
+  const list = [{ alias: aliasOf(G.entry.id), path: G.file }];
+  for (const id of [...A.with].sort()) {
+    const e = manifest.find((x) => x.id === id);
+    if (!e) continue;
+    if (!A.loaded.has(id)) {
+      const r = await fetch(e.path);
+      if (!r.ok) throw new Error(`${e.path}: HTTP ${r.status}`);
+      await rpc({ op: "put", name: `${id}.json`, text: await r.text() });
+      A.loaded.add(id);
+    }
+    list.push({ alias: aliasOf(id), path: `${id}.json` });
+  }
+  return list;
+}
+// plot_data on this graph, or across the graphs ticked (federation: no graph's records merged with another's)
+async function plotCall(args) {
+  const graphs = await plotGraphs();
+  return graphs ? rpc({ op: "call", tool: "plot_data", args: { ...args, graphs } }) : scale("plot_data", args);
+}
+async function graphCsv(spec) {
+  const r = await plotCall({ spec, format: "csv" });
+  if (r.error) throw new Error(r.error);
+  return r.csv;
+}
+async function plotGraph(spec) {
+  const run = A.run;
+  A.spec = spec;
+  A.result = null;                                  // the builder shows this chart's choices; its result follows
+  if (spec.label && spec.label !== A.label) A.label = spec.label;
+  await renderAnalyze();
+  const out = $("an-out");
+  out.innerHTML = `<p class="gx-muted">Plotting… SCALE reads each value under its quantity contract.</p>`;
+  try {
+    const res = await plotCall({ spec });
+    if (run !== A.run) return;
+    if (res.error) throw new Error(res.error);
+    A.result = { kind: "graph", res, spec, aliased: A.with.size > 0 };
+    showResult(res, out, { onPick: pickGraph, csv: () => graphCsv(spec) });
+  } catch (err) { out.innerHTML = `<p class="gx-card-warn">${esc(err.message || err)}</p>`; }
+}
+// A chart's result: what was plotted and left out, one chart per panel (each with its SVG and PNG), the data as CSV
+// (with record ids, units and sources) and as JSON (the result itself: graphs, access, what was left out).
+async function showResult(res, el, { onPick = null, csv = null, dark = false, compact = false } = {}) {
+  const c = res.counts || {}, left = res.left_out || {};
+  const reasons = Object.entries(left.by_reason || {}).sort((a, b) => b[1] - a[1]);
+  const digest = res.digest_check ? `<p class="gx-an-digest is-${esc(res.digest_check)}">${esc({ verified: "The file is the one the record names (its sha256 matches): the rows the graph cites are ringed.",
+    mismatch: "The file is not the one the record names (its sha256 differs): no row is shown as cited.", not_recorded: "The record states no sha256: the file cannot be checked against it, and no row is shown as cited." }[res.digest_check])}</p>` : "";
+  el.innerHTML = `${digest}
+    <p class="gx-an-summary"><b>${esc(res.title || "")}</b> · ${c.points ?? 0} point${c.points === 1 ? "" : "s"} in ${c.panels ?? 0} panel${c.panels === 1 ? "" : "s"}${
+      (left.total ?? c.left_out) ? ` · ${left.total ?? c.left_out} left out` : ""}${res.access && res.access.level && res.access.level !== "public" ? ` · access: ${esc(res.access.level)}` : ""}</p>
+    ${reasons.length ? `<details class="gx-an-left"><summary>What was left out, and why</summary><ul>${reasons.map(([k, n]) => `<li>${esc(reasonText(k))}: ${n}</li>`).join("")}</ul></details>` : ""}
+    ${(res.panels || []).length > 1 ? `<p class="gx-subtle">${res.panels.length} panels: their values differ in unit, comparison context or contract, so they never share an axis.</p>` : ""}
+    ${(res.panels || []).map((p, i) => `<figure class="gx-an-chart"><figcaption>${esc(p.title)} <span class="gx-subtle">· ${p.counts.points} point${p.counts.points === 1 ? "" : "s"}${p.counts.bounds ? `, ${p.counts.bounds} bound${p.counts.bounds === 1 ? "" : "s"}` : ""}${p.counts.ranges ? `, ${p.counts.ranges} range${p.counts.ranges === 1 ? "" : "s"}` : ""}${p.counts.cited ? `, ${p.counts.cited} cited` : ""}</span></figcaption>
+      <div class="gx-an-vega" data-panel="${i}"></div>
+      ${compact ? "" : `<div class="gx-an-dl"><button type="button" class="gx-btn gx-btn-tiny" data-svg="${i}">SVG</button><button type="button" class="gx-btn gx-btn-tiny" data-png="${i}">PNG</button></div>`}</figure>`).join("")}
+    ${(res.limitations || []).length && !compact ? `<details class="gx-an-left"><summary>How to read these charts</summary><ul>${res.limitations.map((l) => `<li>${esc(l)}</li>`).join("")}<li>Filled circles are values (bars: error bars), open triangles one-sided bounds pointing the way the value lies, lines from one end to the other ranges.</li></ul></details>` : ""}
+    <div class="gx-an-dl">${csv ? `<button type="button" class="gx-btn gx-btn-tiny" data-csv>Data (CSV)</button>` : ""}<button type="button" class="gx-btn gx-btn-tiny" data-json>Data (JSON)</button></div>`;
+  const base = (res.title || "chart").replace(/[^A-Za-z0-9]+/g, "-").replace(/^-|-$/g, "").slice(0, 60) || "chart";
+  el.querySelector("[data-json]").onclick = () => download(`${base}.json`, new Blob([JSON.stringify(res, null, 1)], { type: "application/json" }));
+  if (csv) el.querySelector("[data-csv]").onclick = async () => {
+    try { download(`${base}.csv`, new Blob([await csv()], { type: "text/csv" })); } catch (err) { status(err.message || String(err)); }
+  };
+  const views = [];
+  for (const [i, p] of (res.panels || []).entries()) {
+    const box = el.querySelector(`[data-panel="${i}"]`);
+    if (!box || !box.isConnected) return;            // another result replaced this one while it was drawn
+    try {
+      views[i] = await drawChart(box, p, { colors: chartColours(dark), height: compact ? 180 : 240 }, onPick && ((row) => {
+        if (row.bucket === undefined && row.bin === undefined) return onPick(row);
+        // a bar of a count (or a histogram's bin): the records under it, each a link to the record in the graph
+        const last = row.bin && p.histogram && p.histogram.bins.length && row.bin[1] === p.histogram.bins[p.histogram.bins.length - 1].hi;
+        const recs = row.bin ? p.points.filter((q) => ["value", "number"].includes(q.x.type) && q.x.value >= row.bin[0] && (q.x.value < row.bin[1] || (last && q.x.value === row.bin[1])))
+          : p.points.filter((q) => String(q.x.value) === String(row.bucket) && (row.series === null || (q.series || "") === row.series));
+        if (row.bin) row.bucket = `${row.bin[0]}–${row.bin[1]}`;
+        let list = box.parentElement.querySelector(".gx-an-bucket");
+        if (!list) { list = document.createElement("div"); list.className = "gx-an-bucket"; box.after(list); }
+        list.innerHTML = `<p class="gx-subtle">${recs.length} record${recs.length === 1 ? "" : "s"} at ${esc(row.bucket)}${row.series ? ` (${esc(row.series)})` : ""}:</p><ul>${
+          recs.slice(0, 200).map((q) => `<li><a href="#" data-id="${esc(q.record)}">${esc(trunc(q.name || q.record, 90))}</a></li>`).join("")}</ul>`;
+        if (G && G.byId) list.querySelectorAll("a[data-id]").forEach((a) => (a.onclick = (e) => { e.preventDefault(); if (G.byId.has(a.dataset.id)) goTo(a.dataset.id); }));
+      }));
+    } catch (err) { box.innerHTML = `<p class="gx-card-warn">${esc(err.message || err)}</p>`; }
+  }
+  el.querySelectorAll("[data-svg]").forEach((b) => (b.onclick = async () => {
+    const v = views[Number(b.dataset.svg)]; if (v) download(`${base}-${Number(b.dataset.svg) + 1}.svg`, new Blob([await v.toSVG()], { type: "image/svg+xml" }));
+  }));
+  el.querySelectorAll("[data-png]").forEach((b) => (b.onclick = async () => {
+    const v = views[Number(b.dataset.png)]; if (v) { const url = await v.toImageURL("png", 2); const a = document.createElement("a"); a.href = url; a.download = `${base}-${Number(b.dataset.png) + 1}.png`; a.click(); }
+  }));
+}
+
+// A linked file (a Dataset's or TimeSeries' own data), attached in the inspector: read here, its sha256 compared with the
+// record's, plotted by its columns. It is kept in this tab's memory only and sent nowhere (not to the worker's disk,
+// the service or a model).
+function linkedFileSection(rec) {
+  const f = A.files.get(rec.id), recorded = rec.props?.sha256;
+  const state = f ? `<p class="gx-an-digest is-${esc(f.check)}">${esc(f.name)}: ${esc({ verified: "the file is the one this record names (sha256 matches)",
+    mismatch: "the file is not the one this record names (its sha256 differs)", not_recorded: "this record states no sha256 to check it against" }[f.check])}</p>
+    <button type="button" class="gx-btn gx-btn-tiny" id="act-plot-file">Plot its columns</button>` : "";
+  return `<section class="gx-inspector-section"><h3>Linked file</h3>
+    <p class="gx-subtle">${rec.props?.uri ? `Kept at <a href="${esc(rec.props.uri)}" target="_blank" rel="noopener">${esc(trunc(rec.props.uri, 60))}</a>. ` : ""}${recorded ? "The record states its sha256. " : ""}Attach your copy (CSV) to plot it: it is read in this browser and sent nowhere.</p>
+    <label class="gx-btn gx-btn-tiny gx-attach">Attach local file<input type="file" id="act-attach" accept=".csv,text/csv,text/plain" hidden></label>
+    ${state}</section>`;
+}
+function wireLinkedFile(rec) {
+  $("act-attach").onchange = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    try {
+      const buf = await file.arrayBuffer();
+      const hex = await sha256Hex(buf);
+      const text = new TextDecoder("utf-8").decode(buf);
+      A.files.set(rec.id, { name: file.name, text, sha: hex, check: digestCheck(rec.props?.sha256, hex), recorded: rec.props?.sha256 || null,
+        columns: csvHeader(text) });
+      showDetails(rec);
+      if (!$("analyze").hidden && A.from === rec.id) renderAnalyze();   // a chart of the file it replaced is gone
+    } catch (err) { status(`The file could not be read: ${err.message || err}`); }
+  };
+  const plot = $("act-plot-file");
+  if (plot) plot.onclick = () => { A.from = rec.id; A.result = null; openAnalyze(true); };
+}
+function renderFileBuilder(body, id) {
+  const f = A.files.get(id), cols = f.columns, s = f.spec || {};
+  const opts = (cur, none = false) => (none ? option("", "none", !cur) : "") + cols.map((c) => option(c, c, c === cur)).join("");
+  body.innerHTML = `<p class="gx-muted">${esc(f.name)}, attached to <a href="#" data-id="${esc(id)}">${esc(name(G.byId.get(id)))}</a>: read in this browser, sent nowhere.</p>
+    <form class="gx-an-build" id="an-file-form">
+      <label>Y<select id="an-fy">${opts(s.y || cols[1])}</select></label>
+      <label>X<select id="an-fx">${opts(s.x || cols[0])}</select></label>
+      <label>Series<select id="an-fs">${opts(s.series, true)}</select></label>
+      <label>Facet<select id="an-ff">${opts(s.facet, true)}</select></label>
+      <label>Mark<select id="an-fm">${["point", "line", "bar"].map((m) => option(m, m, m === (s.mark || "point"))).join("")}</select></label>
+      <button type="submit" class="gx-btn gx-btn-primary">Plot</button>
+    </form><div class="gx-an-out" id="an-out"></div>`;
+  wireIds(body);
+  $("an-file-form").onsubmit = async (e) => {
+    e.preventDefault();
+    const spec = { x: $("an-fx").value, y: $("an-fy").value, mark: $("an-fm").value, title: `${$("an-fy").value} vs ${$("an-fx").value} (${f.name})`,
+      ...($("an-fs").value ? { series: $("an-fs").value } : {}), ...($("an-ff").value ? { facet: $("an-ff").value } : {}) };
+    f.spec = spec;
+    const out = $("an-out"), run = A.run;
+    out.innerHTML = `<p class="gx-muted">Reading the file…</p>`;
+    try {
+      const res = await rpc({ op: "table", args: { text: f.text, spec, path: G.loaded ? G.file : "", dataset: id, sha256: f.recorded, file_sha256: f.sha } });
+      if (run !== A.run) return;
+      if (res.error) throw new Error(res.error);
+      showResult(res, out, { onPick: (row) => { if (row.citedBy) goTo(row.citedBy); else status(`Row ${row.row} of ${f.name}: no record of the graph cites it.`); }, csv: async () => res.csv });
+    } catch (err) { out.innerHTML = `<p class="gx-card-warn">${esc(err.message || err)}</p>`; }
+  };
 }
 
 // ------------------------------------------------------------------------------------------ example questions

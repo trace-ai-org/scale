@@ -3,7 +3,8 @@
 // Messages: {id, op: "put", name, text} stores a graph; {id, op: "call", tool, args} runs a tool on it. Curating with a
 // reader's own key: {id, op: "curate_start", text, name, version} starts a source folder from its page texts (scale source
 // start), {id, op: "curate_call", tool, args} runs one of scale.curation_tools on it, {id, op: "curate_graph"} returns
-// the graph; {id, op: "contribution", text} the graph as it is contributed, every quote withheld.
+// the graph; {id, op: "contribution", text} the graph as it is contributed, every quote withheld. {id, op: "table", args:
+// {text, spec, path, dataset, sha256, file_sha256}} reads a linked data file the reader attached (scale.plotdata), here.
 const PYODIDE = "https://cdn.jsdelivr.net/pyodide/v0.26.4/full/";
 importScripts(PYODIDE + "pyodide.js");
 
@@ -58,8 +59,21 @@ def contribution(text):                      # the graph as it is contributed: n
 
 def scale_call(tool, args_json):             # every tool, stats included, through the toolkit (scale.api)
     return json.dumps(_kit.call(tool, json.loads(args_json)), default=str)
+
+def plot_table(args_json):                   # a linked data file, read here: its chart data and the rows the graph cites
+    from scale import plotdata
+    from scale.util import ScaleError
+    a = json.loads(args_json)
+    try:
+        doc = json.loads((Path("/work") / a["path"]).read_text(encoding="utf-8")) if a.get("path") else {"nodes": [], "links": []}
+        cited = plotdata.cited_cells(doc, a["dataset"]) if a.get("dataset") else []
+        res = plotdata.table_data(a["text"], a["spec"], a.get("sha256"), cited, a.get("file_sha256"))
+        return json.dumps({**res, "csv": plotdata.table_csv(res)}, default=str)
+    except ScaleError as exc:
+        return json.dumps({"error": str(exc)})
 `);
   call = py.globals.get("scale_call");
+  self.plotTable = py.globals.get("plot_table");
   self.curate = { start: py.globals.get("curate_start"), call: py.globals.get("curate_call"), graph: py.globals.get("curate_graph"),
     contribution: py.globals.get("contribution") };
   self.py = py;
@@ -76,6 +90,8 @@ onmessage = async (e) => {
       postMessage({ id, ok: true });
     } else if (op === "call") {
       postMessage({ id, ok: true, result: JSON.parse(call(e.data.tool, JSON.stringify(e.data.args || {}))) });
+    } else if (op === "table") {
+      postMessage({ id, ok: true, result: JSON.parse(self.plotTable(JSON.stringify(e.data.args || {}))) });
     } else if (op === "curate_start") {
       postMessage({ id, ok: true, result: JSON.parse(self.curate.start(JSON.stringify({ text: e.data.text, name: e.data.name, version: e.data.version || "" }))) });
     } else if (op === "curate_call") {
