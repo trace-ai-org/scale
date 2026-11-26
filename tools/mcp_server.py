@@ -116,4 +116,5 @@ class _RPCError(Exception):
 
 
 def main(workspace: str | None = None) -> None:
-    MCPServer(ScaleToolkit(workspace=workspace)).serve()
+    from .egress import EgressGate
+    MCPServer(ScaleToolkit(workspace=workspace, egress=EgressGate.from_env())).serve()

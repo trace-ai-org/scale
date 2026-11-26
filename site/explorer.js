@@ -6,6 +6,7 @@
 // provider's API itself (the key goes nowhere else) and runs the model's query plans here, by the same skill. Curating needs the service.
 // Search, query plans and descriptions run SCALE's own code in a worker (worker.js).
 import { readBundle } from "./bundle.js";
+import { closedLevels, gate as egressGate, approve as egressApprove } from "./egress.js";
 const $ = (id) => document.getElementById(id);
 const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
 const md = (s) => DOMPurify.sanitize(marked.parse(String(s || "")));
@@ -716,6 +717,8 @@ const base64 = (text) => {
 };
 async function contributeWithToken(win = null) {   // win: the sign-in window, which then shows GitHub's pull request page
   const B = G.base || G;
+  // the graph open now (another may have been opened during the sign-in) is checked again: only a public one goes
+  if (graphLevels().length) { contribBusy = false; renderGraphs(); status("Not contributed: the graph open now holds records that are not public; only a public graph goes to catal-commons."); return; }
   contribBusy = true; renderGraphs();
   const step = (t) => status(`Contributing to catal-commons: ${t}…`);
   try {
@@ -788,6 +791,8 @@ async function contributeSignedIn() {
 async function contribute() {
   const B = G.base || G;
   if (contribBusy) return;
+  const closed = graphLevels();                   // catal-commons is public: a graph with closed records never goes there
+  if (closed.length) { status(`Not contributed: this graph holds records whose access is ${closed.join(", ")}; only a public graph goes to catal-commons, a public repository.`); return; }
   if (!SERVICE) return GH_LOGIN ? contributeSignedIn() : contributeOnGitHub();
   if (!token) { store.set(CONTRIB_PENDING, B.entry.id); signIn("contribute"); return; }
   contribBusy = true; renderGraphs();
@@ -1712,12 +1717,29 @@ const store = {
     inStore("sessionStorage", (s) => s.removeItem(k));
     return v;
   } };
+// Egress (egress.js, docs/private-data.md): nothing drawn from a graph whose records are not all public goes to a model
+// provider or to the service unless the reader approves that destination for those access levels here. Approvals
+// live in this page only (never stored): a reload denies again.
+const egressApprovals = new Set();
+function graphLevels() {                          // the open graph's access levels that are not public ([]: all public)
+  const B = G.base || G;
+  if (!B.closedLevels) B.closedLevels = closedLevels(B.doc);
+  return B.closedLevels;
+}
+function egressCard(err, levels, destination, retry) {
+  card("Answer", `<p class="gx-card-warn">${esc(err.message || err)}</p>
+    <button type="button" class="gx-btn gx-btn-tiny" id="egress-approve" title="Approve for this page only; a reload denies again">Approve sending ${esc(levels.join(", "))} records to it from this page</button>`);
+  $("egress-approve").onclick = () => { egressApprove(levels, destination, egressApprovals); retry(); };
+}
 // A question is answered by the service (the query-graph skill over this graph, within the service's budget) for a
 // signed-in reader; anyone else sees the matching evidence, found in this browser.
 async function ask(question) {
   leaveSchema();
+  const levels = graphLevels(), check = egressGate(levels, "service", "the SCALE service", egressApprovals);
+  try { check(); } catch (err) { return egressCard(err, levels, "service", () => ask(question)); }
   card("Answer", `<p class="gx-meta">Answering… the service runs query plans over this graph.</p>`);
   try {
+    check();                                        // the whole graph goes to the service: only where it may go
     const r = await call("POST", "/ask", { graph: (G.base || G).doc, question });
     answerCard(r, `about ${Number(r.tokens || 0).toLocaleString()} tokens, from the service's budget`);
   } catch (err) { card("Answer", `<p class="gx-card-warn">${esc(err.message || err)}</p>`); search(question); }
@@ -1976,7 +1998,7 @@ async function ownTool(name, a, plans) {
 // result cut short. In Anthropic's format the conversation is cached as it grows (markCache), the tools and the
 // system prompt staying the same throughout (the last turn keeps the tools, so the cache holds); in the chat
 // completions format (OpenAI, OpenRouter) the provider caches the repeated prefix itself.
-async function modelLoop({ system, tools, first, run, stop = "", wrapUp, stopNow, progress, alive }) {
+async function modelLoop({ system, tools, first, run, stop = "", wrapUp, stopNow, progress, alive, gate = () => {} }) {
   const provider = ownProvider, model = ownModel;
   const out = { text: "", stopInput: null, stopped: "", inTok: 0, cacheTok: 0, outTok: 0 };
   const chatTools = tools.map((t) => ({ type: "function", function: { name: t.name, description: t.description, parameters: t.input_schema } }));
@@ -1987,6 +2009,7 @@ async function modelLoop({ system, tools, first, run, stop = "", wrapUp, stopNow
     const last = !!out.stopped;                             // the reader asked to finish: this reply ends the loop
     let calls, cut;                                         // [{id, name, input}], and whether the reply ran out of room
     if (provider === "anthropic") {
+      gate(provider);                                       // egress: throws before a request it may not send
       markCache(messages);
       const r = await claude({ model, max_tokens: OWN_OUTPUT, system: sys, tools, messages });
       if (!alive()) return null;
@@ -2000,6 +2023,7 @@ async function modelLoop({ system, tools, first, run, stop = "", wrapUp, stopNow
       calls = blocks.filter((b) => b.type === "tool_use").map((c) => ({ id: c.id, name: c.name, input: c.input || {} }));
       cut = r.stop_reason === "max_tokens";
     } else {
+      gate(provider);
       const r = await chat(provider, { model, messages, tools: chatTools, [PROVIDERS[provider].limit]: OWN_OUTPUT });
       if (!alive()) return null;
       out.inTok += r.usage?.prompt_tokens || 0; out.cacheTok += r.usage?.prompt_tokens_details?.cached_tokens || 0;
@@ -2047,6 +2071,12 @@ const accountLine = (r) => `${tokenLine(r.inTok, r.cacheTok, r.outTok)} on your 
 async function askOwnKey(question) {
   leaveSchema();
   const g = G, modelName = modelLabel();
+  // egress: the tool results are drawn from this graph; a graph with closed records reaches the provider only once the
+  // reader approves it for their levels (checked here and again before every request of the loop)
+  const levels = graphLevels(), destination = `provider:${ownProvider}`;
+  // the loop gates each request by the provider it actually sends to (the reader may switch keys meanwhile)
+  const check = (provider = ownProvider) => egressGate(levels, `provider:${provider}`, PROVIDERS[provider].name, egressApprovals)();
+  try { check(); } catch (err) { return egressCard(err, levels, destination, () => askOwnKey(question)); }
   answerNow = false;
   const progress = (line) => {
     if (G !== g) return;
@@ -2065,7 +2095,7 @@ async function askOwnKey(question) {
       skillText = await s.text();
     }
     const r = await modelLoop({ system: skillText + WORKING_HERE, tools: OWN_TOOLS, first: question,
-      run, wrapUp: WRAP_UP, stopNow: () => answerNow, progress, alive: () => G === g });
+      run, wrapUp: WRAP_UP, stopNow: () => answerNow, progress, alive: () => G === g, gate: check });
     if (!r) return;                                         // another graph was opened meanwhile
     const stopped = r.stopped === "finished early, on request" ? ANSWERED_EARLY : r.stopped;
     answerCard({ answer: r.text, plans, stopped, seen }, accountLine(r));

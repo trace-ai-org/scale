@@ -1,0 +1,8 @@
+# Reviewed public fixtures: files this repository carries although the data guard (scale guard, docs/private-data.md)
+# takes their kind for raw data (a PDF, a table, an archive, a file over 5 MiB). A pattern is added in a pull request
+# that a person reviews, with the reason the files are public; `**` matches any run of folders, `*` one name.
+fixtures:
+- paths:
+  - examples/methanol-synthesis-public/pdfs/*.pdf
+  reason: the public-domain (US) source PDFs of the methanol synthesis example, each listed with its sha256 in the
+    example's README

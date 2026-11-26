@@ -95,7 +95,12 @@ what they may see).
   neither licence of this repository applies to it. The tools may read inputs that may not be committed
   from an optional restricted copy outside the repository (named by an environment variable only, with no
   default location); a tool that reads such inputs writes its full reports there and keeps public
-  summaries in the repository.
+  summaries in the repository. `scale data init` makes such a data repository (its readers, its remotes and the model
+  endpoints that may receive its records in a policy file), `scale guard install` puts hooks in a clone that refuse
+  a commit or a push carrying what the repository's readers may not read or undeclared raw data, and the agent
+  tools, the service and the graph explorer send records that are not public to no model endpoint the policy does
+  not approve. Hooks prevent accidents and can be bypassed; isolation is the boundary
+  ([docs/private-data.md](../docs/private-data.md)).
 - **Publishing it** needs the partners' clearance, then: access set to `public`, the copyright cap applied
   (`scale evidence cap`), the claim statements reviewed, and a pull request that `scale check` passes and
   a reviewer approves.

@@ -298,7 +298,13 @@ def _ledger_text(folder: Path, contributor: str, slug: str, on: str, records: di
 def contribute(doc: dict, folder: str | Path, entry: dict, repo: str | Path | None = None,
                contributor: str | None = None, on: str | None = None) -> dict:
     """The files that add a one-source graph to a parts folder (module docstring), or the matches that show it is
-    there already: ``{"already": [...]}`` or ``{"source": id, "slug": s, "files": {relative path: text}, ...}``."""
+    there already: ``{"already": [...]}`` or ``{"source": id, "slug": s, "files": {relative path: text}, ...}``.
+    A graph whose header or records are not public is refused: its records would take the commons' public header."""
+    from .audience import payload_levels
+    closed = sorted(payload_levels(doc) - {"public"})
+    if closed:
+        raise ScaleError(f"the graph holds records whose access is {', '.join(closed)}: only a public graph is "
+                         "contributed to a public commons (clear it with its project first, then set access: public)")
     folder = Path(folder)
     parts = graphparts.read_parts(folder)
     hits = find(doc, parts)

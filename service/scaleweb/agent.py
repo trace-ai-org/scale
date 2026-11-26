@@ -16,7 +16,8 @@ from typing import Callable
 from scale import curate
 from scale.curation_tools import STOP, CurationTools, short_check, skill
 from scale.api import ScaleToolkit
-from scale.util import find_repo_root
+from scale.egress import EgressGate
+from scale.util import find_repo_root, load_doc
 
 RESULT_CHARS = 40_000          # the longest tool result handed back to the model
 PAGE_CHARS = 25_000            # a query's page of rows and their evidence (the model view)
@@ -57,10 +58,12 @@ class Loop:
     at the price of an input token: a token read from the cache counts a tenth, one written to it a quarter more."""
 
     def __init__(self, client, model: str, system: str, tools: list[dict], handlers: dict[str, Callable[[dict], object]],
-                 max_turns: int, max_tokens: int, log: Callable[[str], None] = lambda s: None):
+                 max_turns: int, max_tokens: int, log: Callable[[str], None] = lambda s: None,
+                 before_send: Callable[[list[dict]], None] | None = None):
         self.client, self.model, self.tools, self.handlers = client, model, tools, handlers
         self.system = [{"type": "text", "text": system, "cache_control": {"type": "ephemeral"}}]
         self.max_turns, self.max_tokens, self.log = max_turns, max_tokens, log
+        self.before_send = before_send          # raises (scale.egress.EgressDenied) before tool results may not leave
         self.tokens = 0
 
     def run(self, first: str, stop_tool: str | None = None) -> tuple[str, dict | None]:
@@ -91,6 +94,8 @@ class Loop:
                 except Exception as e:                        # a tool's failure goes back to the model as data
                     results.append({"type": "tool_result", "tool_use_id": c["id"], "is_error": True,
                                     "content": f"{type(e).__name__}: {e}"})
+            if self.before_send is not None:
+                self.before_send(results)
             messages.append({"role": "user", "content": results})
             if self.tokens >= self.max_tokens:
                 return text, {"stopped": f"token budget reached ({self.tokens} tokens)"}
@@ -118,9 +123,16 @@ def curate_folder(folder: Path, client, model: str, max_turns: int, max_tokens: 
 
 
 def answer(graph_path: Path, question: str, client, model: str, max_turns: int, max_tokens: int,
-           log: Callable[[str], None] = lambda s: None, repo: Path | None = None) -> dict:
+           log: Callable[[str], None] = lambda s: None, repo: Path | None = None, egress: EgressGate | None = None) -> dict:
     """Answer a question from one graph by the query-graph skill: plans run by ``scale query``, evidence by
-    ``scale search``; returns the answer, the plans run with their results' kinds, and the tokens spent."""
+    ``scale search``; returns the answer, the plans run with their results' kinds, and the tokens spent.
+
+    ``egress`` (default: a gate for the endpoint ``anthropic`` with no endpoint approved) refuses, before the model is
+    called at all, a graph whose records are not public unless its policy approves the endpoint for their levels; and
+    it is asked again before each batch of tool results leaves (scale.egress.EgressDenied)."""
+    gate = egress if egress is not None else EgressGate("anthropic", [])
+    doc = load_doc(graph_path)
+    gate.check(doc, "the graph asked about")
     repo = Path(repo) if repo else find_repo_root()
     kit = ScaleToolkit(workspace=graph_path.parent, repo=repo)
     plans: list[dict] = []
@@ -162,6 +174,7 @@ def answer(graph_path: Path, question: str, client, model: str, max_turns: int, 
               "(no shell). The graph is the one the user is viewing. Write the answer in Markdown: every factual "
               "sentence from returned rows, citing record ids and evidence locators in brackets, then a **Limits** "
               "line. Keep your own extrapolations in a separate, labelled paragraph.")
-    loop = Loop(client, model, system, tools, handlers, max_turns, max_tokens, log)
+    loop = Loop(client, model, system, tools, handlers, max_turns, max_tokens, log,
+                before_send=lambda results: gate.check(doc, "the graph asked about"))
     text, stop = loop.run(question)
     return {"answer": text, "plans": plans, "stopped": (stop or {}).get("stopped"), "tokens": loop.tokens}
