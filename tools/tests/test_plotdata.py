@@ -372,3 +372,59 @@ def test_review_regressions_selection_grouping_identity_and_the_gate(pm, tmp_pat
     (ws / "p.json").write_text(json.dumps(pm))
     kit = ScaleToolkit(workspace=ws, repo=REPO)
     assert "not both" in kit.call("plot_data", {"document": pm, "path": "p.json", "spec": CO_FE})["error"]
+
+
+def test_condition_filters_compare_as_a_scientific_comparison_and_are_said(pm):
+    # a range in the unit it states: a potential on a stated reference scale only; the filter is in the title and CSV
+    node(pm, "ex:pm/test/co2rr-repeat")["props"]["reference_scale"] = "not_reported"
+    spec = {**CO_FE, "filters": [{"path": "electrode_potential", "min": -1.1, "max": -0.9, "unit": "V", "label": "potential"}]}
+    res = plotdata.plot_data(members(pm=pm), spec)
+    assert res["filters"] == ["potential -1.1–-0.9 V"] and res["title"].endswith("· potential -1.1–-0.9 V")
+    assert res["plan"]["comparison"] == "scientific"
+    assert {q["record"] for p in res["panels"] for q in p["points"]} == {"ex:pm/test/co2rr"}
+    rows = list(csv.DictReader(io.StringIO(plotdata.to_csv(res))))
+    assert all(r["filters"] == "potential -1.1–-0.9 V" for r in rows)
+    # a category: the values kept, of the record or of a linked record (its name)
+    res = plotdata.plot_data(members(pm=load_doc(PM)), {**CO_FE, "filters": [{"path": "control_mode", "values": ["potentiostatic"]}]})
+    assert res["counts"]["points"] >= 1
+    none = plotdata.plot_data(members(pm=load_doc(PM)), {**CO_FE, "filters": [
+        {"via": [{"edge": "USES_CATALYST", "to": "CatalystSample"}], "path": "", "values": ["no such sample"]}]})
+    assert none["counts"]["points"] == 0
+    for bad in ({"path": "temperature"}, {"path": "temperature", "values": ["a"], "min": 1}, {"path": "temperature.value", "min": 1},
+                {"path": "x", "values": []}):
+        with pytest.raises(ScaleError):
+            plotdata.load_spec({**CO_FE, "filters": [bad]})
+    # what a filter can keep: the values present, or the units with how many values a comparison can compare
+    fv = plotdata.field_values(members(pm=pm), "CatalyticTest", "electrode_potential")
+    (u,) = fv["units"]
+    assert fv["kind"] == "quantity" and u["unit"] == "V" and u["records"] == 2 and u["comparable"] == 1
+    assert u["not_comparable"] == {"missing_context:potential_reference": 1}
+    assert {v["value"] for v in plotdata.field_values(members(pm=pm), "CatalyticTest", "test_kind")["values"]} == {"activity"}
+
+
+def test_each_point_carries_its_measurement_context_and_series_by_condition_tells_runs_apart(pm):
+    res = plotdata.plot_data(members(pm=pm), CO_FE)
+    q = next(q for p in res["panels"] for q in p["points"] if q["entry"] == "/result_values/co_fe_30min")
+    assert q["assay"] and q["target"] == "CO"
+    assert q["conditions"]["electrode potential"].endswith("vs RHE") and "source" in q["conditions"]
+    res = plotdata.plot_data(members(pm=pm), {**CO_FE, "x": "control_mode", "series": "conditions"})
+    series = {q["record"]: q["series"] for p in res["panels"] for q in p["points"]}
+    assert series["ex:pm/test/co2rr"] != series["ex:pm/test/co2rr-repeat"]        # run for 60 min, and for no stated time
+    assert "duration 60 min" in series["ex:pm/test/co2rr"]
+
+
+def test_result_entries_of_a_linked_record_are_typed_and_kept_apart_as_the_records_own(pm):
+    # a test's CO efficiency against the sample's characterization results, through a path of links
+    char = {"id": "ex:pm/char/xps", "label": "Characterization", "props": {"name": "XPS", "technique": "XPS", "result_values": [
+        {"id": "surface_cu", "status": "present", "value": 60, "unit": "%", "variable": "ex:pm/variable/conversion",
+         "target": "ex:pm/species/co"}]}}
+    pm["nodes"].append(char)
+    sample = next(e["target"] for e in pm["links"] if e["source"] == "ex:pm/test/co2rr" and e["type"] == "USES_CATALYST")
+    pm["links"].append({"id": "ex:pm/link/xps", "type": "CHARACTERIZES", "source": "ex:pm/char/xps", "target": sample,
+                        "props": {"origin": "synthetic"}})
+    x = {"via": [{"edge": "USES_CATALYST", "to": "CatalystSample"}, {"edge": "CHARACTERIZES", "to": "Characterization",
+                                                                      "direction": "in"}], "entries": "result_values"}
+    res = plotdata.plot_data(members(pm=pm), {**CO_FE, "x": x})
+    pts = [q for p in res["panels"] for q in p["points"]]
+    assert pts and all(q["x_record"] == "ex:pm/char/xps" and q["x_entry"] == "/result_values/surface_cu" for q in pts)
+    assert all(p["x"]["title"].startswith("CatalystSample → Characterization result values") for p in res["panels"])

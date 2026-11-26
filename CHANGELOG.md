@@ -3,9 +3,10 @@
 ## Unreleased
 
 - **Plot data and the explorer's Analyze view (tools, explorer; no schema change, no migration).** `tools/plotdata.py`
-  turns a plot spec (a label with filters or a query plan; x and y a property path, a linked record's value through
-  named links or a path of edges, a result entry or a count; series, facet, mark) into typed chart points over one or
-  several graphs: each value as reported (a value with its uncertainty, a one-sided bound, a range), read under its
+  turns a plot spec (a label with condition filters or a query plan; x and y a property path, a linked record's value or
+  result entries through named links or a path of edges, a result entry or a count; series, by condition too, facet,
+  mark) into typed chart points over one or several graphs, each with its measurement context (conditions, sample,
+  feed, electrolyte, source, assay, product): each value as reported (a value with its uncertainty, a one-sided bound, a range), read under its
   graph's quantity contracts as a scientific comparison reads it (`Comparison.compared_as`), values of two units,
   contexts or contracts in separate panels, never converted or averaged, two result entries paired only through one
   assay, proposals and predictions left out by default, everything left out counted by reason, counts, histogram bins

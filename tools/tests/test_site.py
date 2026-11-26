@@ -478,6 +478,10 @@ def test_the_analyze_view_draws_scale_plot_data_honestly_and_loads_vega_pinned()
     assert "Attach local file" in js and "sha256Hex(buf)" in js and 'LINKED_FILE_LABELS = ["Dataset", "TimeSeries"]' in js
     # the reader's model gets a plot tool; the chart is drawn in the answer card, the model reads it in pages
     assert '{ name: "plot",' in js and 'view: "model"' in js and "r.charts" in js
+    # condition filters read the values present from SCALE; the builder folds after a plot; many panels get a selector;
+    # each chart lists its points in a keyboard-reachable table; the last chart of a graph is remembered in the tab
+    assert "plotCall({ field:" in js and 'id="an-edit"' in js and "an-pick-" in js and "gx-an-table" in js
+    assert "scale-analyze:${G.entry.id}" in js and 'e.key === "Escape"' in js and '"conditions"' in js
     node = shutil.which("node")
     if not node:
         pytest.skip("node is not installed")

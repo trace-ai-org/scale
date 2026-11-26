@@ -55,6 +55,8 @@ export function rowsOf(panel) {
       xr: q.x.type === "range", yr: q.y.type === "range", xs: shown(q.x), ys: shown(q.y),
       cited: (q.cited_by || []).length ? q.cited_by.map((c) => `${c.record}${c.firm ? "" : " (tentative)"}`).join("; ") : "",
       citedBy: (q.cited_by || [])[0]?.record || null, citedFirm: (q.cited_by || []).some((c) => c.firm),
+      conditions: Object.entries(q.conditions || {}).filter(([k]) => k !== "source").map(([k, v]) => `${k}: ${v}`).join(" · "),
+      source: (q.conditions || {}).source || "", assay: q.assay || "", target: q.target || "",
       evidence: where.slice(0, 4).join(" | "),
     };
   });
@@ -83,7 +85,7 @@ function countLayers(panel, series) {
   const rows = (panel.buckets || []).map((b) => ({ x: b.x, records: b.records, sources: b.sources, series: b.series || "" }));
   return [{ data: { values: rows }, mark: { type: "bar", opacity: 0.85, ...(panel.x.type === "number" ? { width: { band: 0.9 }, size: 6 } : {}) },
     encoding: { x: panel.x.type === "number" ? { field: "x", type: "quantitative", title: panel.x.title, scale: { zero: false }, axis: { format: "d" } }
-      : { field: "x", type: "nominal", title: panel.x.title, sort: "ascending" },
+      : { field: "x", type: "nominal", title: panel.x.title, sort: "ascending", axis: CATEGORY_AXIS },
       y: { field: "records", type: "quantitative", title: yTitle, stack: "zero" },
       ...(series ? { color: { field: "series", type: "nominal", title: "Series", legend: { orient: "bottom", columns: 3, labelLimit: 220 } } } : {}),
       tooltip: [{ field: "x", title: panel.x.label || "x" }, { field: "records", title: "records" }, { field: "sources", title: "sources" },
@@ -93,7 +95,7 @@ function countLayers(panel, series) {
 // minimum to the maximum reported value); bounds and ranges are not in a box and stay markers.
 function boxLayers(panel, color) {
   const rows = (panel.boxes || []).filter((b) => b.n > 0).map((b) => ({ ...b, x: b.x, series: b.series || "" }));
-  const X = { field: "x", type: panel.x.type === "number" ? "ordinal" : "nominal", title: panel.x.title, sort: "ascending" };
+  const X = { field: "x", type: panel.x.type === "number" ? "ordinal" : "nominal", title: panel.x.title, sort: "ascending", axis: CATEGORY_AXIS };
   const tip = [{ field: "x", title: panel.x.label || "x" }, { field: "n", title: "values in the box" }, { field: "min" }, { field: "q1" }, { field: "median" },
     { field: "q3" }, { field: "max" }, { field: "n_bounds", title: "bounds (not in the box)" }, { field: "n_ranges", title: "ranges (not in the box)" }, { field: "sources" }];
   const Y = (f) => ({ field: f, type: "quantitative", title: panel.y.title, scale: { zero: false } });
@@ -105,17 +107,23 @@ function boxLayers(panel, color) {
   ];
 }
 
+// A category axis: labels angled and cut at 18 characters, the whole name in a tooltip on the label.
+const CATEGORY_AXIS = { labelAngle: -35, labelAlign: "right", labelLimit: 130,
+  labelExpr: "length(datum.label) > 18 ? slice(datum.label, 0, 17) + '…' : datum.label",
+  encode: { labels: { interactive: true, update: { tooltip: { signal: "datum.value" } } } } };
+
 // The Vega-Lite spec of one panel. opts: {mark, colors: {fg, muted, line, bg}, width, height}.
 export function vegaSpec(panel, opts = {}) {
   const c = { fg: "#0d0d0d", muted: "#6b6b72", line: "#e5e5e7", bg: "#ffffff", ...(opts.colors || {}) };
   const qx = NUMERIC.has(panel.x.type === "quantity" ? "value" : panel.x.type), qy = NUMERIC.has(panel.y.type === "quantity" ? "value" : panel.y.type);
   const mark = opts.mark || panel.mark || "point";
-  const X = (field = "x") => ({ field, type: qx ? "quantitative" : "nominal", title: panel.x.title, ...(qx ? { scale: { zero: false } } : { sort: "ascending" }) });
+  const X = (field = "x") => ({ field, type: qx ? "quantitative" : "nominal", title: panel.x.title, ...(qx ? { scale: { zero: false } } : { sort: "ascending", axis: CATEGORY_AXIS }) });
   const Y = (field = "y") => ({ field, type: qy ? "quantitative" : "nominal", title: panel.y.title, ...(qy ? { scale: { zero: false } } : {}) });
   const series = (panel.series || []).length > 0;
   const color = series ? { color: { field: "series", type: "nominal", title: "Series", legend: { orient: "bottom", columns: 3, labelLimit: 220 } } } : {};
   const tooltip = [{ field: "name", title: "Record" }, { field: "ys", title: panel.y.label || "y" }, { field: "unc", title: "uncertainty" }, { field: "xs", title: panel.x.label || "x" },
-    ...(series ? [{ field: "series", title: "Series" }] : []), { field: "evidence", title: "Evidence" }, { field: "cited", title: "Cited by" }];
+    ...(series ? [{ field: "series", title: "Series" }] : []), { field: "target", title: "product" }, { field: "assay", title: "assay" },
+    { field: "conditions", title: "conditions" }, { field: "source", title: "source" }, { field: "evidence", title: "evidence" }, { field: "cited", title: "cited by" }];
   const layer = [
     // error bars: a value's reported uncertainty or confidence interval
     { transform: [{ filter: "datum.ylo !== null && datum.yhi !== null" }], mark: { type: "rule", strokeWidth: 1.2, opacity: 0.8 },
@@ -158,7 +166,7 @@ export function vegaSpec(panel, opts = {}) {
   );
   if (panel.y.type === "count") layer.splice(0, layer.length, ...countLayers(panel, series));
   else if (mark === "box" && panel.boxes) {  // a box per category over its values; bounds and ranges stay markers on top
-    const boxX = { field: "x", type: panel.x.type === "number" ? "ordinal" : "nominal", title: panel.x.title, sort: "ascending" };
+    const boxX = { field: "x", type: panel.x.type === "number" ? "ordinal" : "nominal", title: panel.x.title, sort: "ascending", axis: CATEGORY_AXIS };
     for (const l of layer) if (l.encoding && l.encoding.x && l.encoding.x.field === "x") l.encoding.x = { ...boxX };
     layer.splice(layer.length - 5, 1, ...boxLayers(panel, color),
       { transform: [{ filter: "datum.kind === 'value'" }], mark: { type: "point", filled: true, size: 14, opacity: 0.45 }, encoding: { x: boxX, y: Y(), tooltip } });
@@ -218,12 +226,18 @@ export function csvHeader(text) {
 
 // A plot spec from the builder's choices: a value "p:<path>" (a property path), "e:<prop>" (one result entry per point)
 // or "c:<catalyst|sample|source>" (a linked record, a category).
-export function specFrom({ label, x, y, series, facet, mark, title }) {
+// A filter's target from a builder value: "p:<path>", "c:<link>" (a linked record, by name) or "v:<{via, path}>".
+export function targetOf(v) {
+  return v.startsWith("v:") ? JSON.parse(v.slice(2)) : { path: v.slice(2) };
+}
+
+export function specFrom({ label, x, y, series, facet, mark, title, filters }) {
   const axis = (v) => (v === "count" ? "count" : v.startsWith("e:") ? { entries: v.slice(2) } : v.startsWith("v:") ? JSON.parse(v.slice(2)) : v.slice(2));
   const group = (v) => (!v ? undefined : v.startsWith("p:") || v.startsWith("c:") ? v.slice(2) : v);
   const spec = { plot: 1, label, x: axis(x), y: axis(y), mark: mark || "point" };
   if (group(series)) spec.series = group(series);
   if (group(facet)) spec.facet = group(facet);
+  if (filters && filters.length) spec.filters = filters;
   if (title) spec.title = title;
   return spec;
 }
@@ -256,13 +270,14 @@ export function viaChoices(stats, label, max = 400) {
   ];
   const fields = (lab) => {
     const u = units[lab] || {};
+    const ents = Object.keys(u).filter((p) => /^\w+\.\*$/.test(p)).map((p) => p.slice(0, -2));
     const num = Object.keys(u).filter((p) => !p.includes("*") && !p.includes("[")).map((p) => [p, `${p.replace(/_/g, " ")} (${Object.keys(u[p]).slice(0, 2).join(", ")})`]);
     const txt = Object.keys(props[lab] || {}).filter((p) => !u[p] && !SKIP.includes(p) && !Object.keys(u).some((x) => x.startsWith(`${p}.`))).map((p) => [p, p.replace(/_/g, " ")]);
-    return [["", `the ${lab} itself`], ...num, ...txt];
+    return [["", `the ${lab} itself`], ...num, ...txt, ...ents.map((e) => [{ entries: e }, `${e.replace(/_/g, " ")} (one result entry per point)`])];
   };
   const out = [], seen = new Set();
   const add = (via, path, text) => {
-    const key = JSON.stringify({ via, path });
+    const key = JSON.stringify(typeof path === "object" ? { via, ...path } : { via, path });
     if (seen.has(key) || out.length >= max) return;
     seen.add(key);
     out.push({ value: `v:${key}`, text });
@@ -302,6 +317,8 @@ const NO_LOADER = {
 export async function draw(el, panel, opts = {}, onPick = null) {
   const embed = await loadVega();
   const { view } = await embed(el, vegaSpec(panel, opts), { actions: false, renderer: "svg", loader: NO_LOADER, tooltip: true });
+  el.setAttribute("role", "img");                    // the points are also listed in a table under the chart
+  el.setAttribute("aria-label", panel.title || "chart");
   if (onPick) view.addEventListener("click", (_, item) => {
     const d = item && item.datum;
     if (d && d.id) onPick(d);

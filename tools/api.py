@@ -234,6 +234,9 @@ TOOLS: list[dict] = [
             "identity_map": {"description": "With graphs: the evidenced identity map of shared reference records.",
                              "type": ["object", "string"]},
             "suggest": {"type": "boolean", "description": "Return suggested charts (ready specs) instead of a chart's data."},
+            "field": {"type": "object", "description": "Instead of a chart: what a condition filter on {label, target} can "
+                                                       "keep (target a path, sample.bet_area, or {via, path}): the text "
+                                                       "values present, or the units and ranges of the numbers."},
             "format": {"type": "string", "enum": ["json", "csv"], "description": "csv adds the points as CSV text."},
             **_VIEW,
             "offset": {"type": "integer", "minimum": 0, "default": 0,
@@ -818,7 +821,7 @@ class ScaleToolkit:
     def _scale_plot_data(self, spec: dict | None = None, document: dict | None = None, path: str | None = None,
                          domain: str | None = None, graphs: list | None = None, identity_map: Any = None,
                          suggest: bool = False, format: str = "json", view: str = "full", offset: int = 0,
-                         page_size: int = 50) -> dict:
+                         page_size: int = 50, field: dict | None = None) -> dict:
         from . import plotdata
         _check_view(view)
         if format not in ("json", "csv"):
@@ -837,6 +840,10 @@ class ScaleToolkit:
             members = self._members([{"alias": "graph", **({"path": path} if path else {"document": document})}], domain)
             if members[0].get("status") in ("unavailable", "unsupported_version"):
                 raise ScaleError(members[0].get("error") or "the document cannot be read")
+        if field is not None:
+            if not isinstance(field, dict) or not isinstance(field.get("label"), str) or "target" not in field:
+                raise ScaleError("field is {label, target}: the records and what a filter would read of them")
+            return plotdata.field_values(members, field["label"], field["target"])
         if suggest:
             if spec is not None:
                 raise ScaleError("suggest returns specs: give no spec with it")

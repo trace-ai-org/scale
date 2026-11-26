@@ -7,7 +7,7 @@
 // Search, query plans and descriptions run SCALE's own code in a worker (worker.js).
 import { readBundle } from "./bundle.js";
 import { closedLevels, gate as egressGate, approve as egressApprove } from "./egress.js";
-import { draw as drawChart, specFrom, choices, csvHeader, sha256Hex, digestCheck, splitFacets } from "./analyze.js";
+import { draw as drawChart, specFrom, choices, csvHeader, sha256Hex, digestCheck, splitFacets, targetOf, shown as shownValue } from "./analyze.js";
 const $ =(id) => document.getElementById(id);
 const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
 const md = (s) => DOMPurify.sanitize(marked.parse(String(s || "")));
@@ -2247,7 +2247,7 @@ const reasonText = (key) => {
 };
 function resetAnalyze() {
   Object.assign(A, { from: "graph", stats: null, suggestions: null, label: "", files: new Map(), result: null, spec: null, run: A.run + 1,
-    with: new Set() });
+    with: new Set(), filters: [], collapsed: false });
   if (!$("analyze").hidden) renderAnalyze();
 }
 function openAnalyze(on = $("analyze").hidden) {
@@ -2256,7 +2256,10 @@ function openAnalyze(on = $("analyze").hidden) {
   if (on) renderAnalyze();
 }
 $("analyze-btn").onclick = () => openAnalyze();
-$("analyze-close").onclick = () => openAnalyze(false);
+$("analyze-close").onclick = () => { openAnalyze(false); $("analyze-btn").focus(); };
+// keyboard: Escape closes the panel and returns to its button; opening it puts the focus inside
+$("analyze").addEventListener("keydown", (e) => { if (e.key === "Escape" && !e.target.closest("select")) { openAnalyze(false); $("analyze-btn").focus(); } });
+$("analyze-btn").addEventListener("click", () => { if (!$("analyze").hidden) setTimeout(() => $("analyze-close").focus(), 0); });
 function chartColours(dark = false) {
   if (dark) return { fg: "#f4f4f6", muted: "#a3a6b1", line: "#2c3040", bg: "#0f121c" };
   const cs = getComputedStyle(document.documentElement), v = (n) => cs.getPropertyValue(n).trim();
@@ -2286,53 +2289,127 @@ async function renderAnalyze() {
       const labels = Object.keys(stats.units_in_use || {}).filter((l) => (stats.node_labels || {})[l]);
       A.label = A.suggestions.suggestions[0]?.label || (labels.includes("CatalyticTest") ? "CatalyticTest" : labels[0] || "");
     } catch (err) { body.innerHTML = `<p class="gx-card-warn">${esc(err.message || err)}</p>`; return; }
+    let last = null;                                 // the chart last drawn of this graph, in this tab
+    try { last = JSON.parse(inStore("sessionStorage", (st) => st.getItem(`scale-analyze:${G.entry.id}`)) || "null"); } catch { last = null; }
+    if (last && !A.spec) { A.label = last.label || A.label; return plotGraph(last); }
   }
   const labels = Object.keys(A.stats.node_labels || {}).filter((l) => !["Institution", "Project"].includes(l)).sort();
   const ch = choices(A.stats, A.label);
+  const xVia = ch.via.map((o) => [o.value, o.text]);
+  const viaEntries = xVia.filter(([v]) => v.includes('"entries"'));
   const yOpts = [["count", "count of records (bars, or a histogram of x)"], ...ch.entries.map((p) => [`e:${p}`, `${nice(p)} (one result entry per point)`]),
     ...ch.numeric.map((p) => [`p:${p}`, nice(p)])];
   const xOwn = [...ch.numeric.map((p) => [`p:${p}`, nice(p)]), ...ch.entries.map((p) => [`e:${p}`, `${nice(p)} (one result entry per point)`]),
     ...ch.linked.map((p) => [`c:${p}`, `${p} (category)`]), ...ch.text.map((p) => [`p:${p}`, `${nice(p)} (category)`]),
     ...(ch.linked.includes("source") ? [["p:source.year", "source year"]] : [])];
-  const groups = [["", "none"], ...ch.linked.map((p) => [`c:${p}`, p]), ...(ch.linked.includes("source") ? [["p:source.year", "source year"]] : []),
-    ["graph", "graph"], ...ch.text.map((p) => [`p:${p}`, nice(p)])];
+  const groups = [["", "none"], ["conditions", "conditions (tests run differently apart)"], ...ch.linked.map((p) => [`c:${p}`, p]),
+    ...(ch.linked.includes("source") ? [["p:source.year", "source year"]] : []), ["graph", "graph"], ...ch.text.map((p) => [`p:${p}`, nice(p)])];
   const s = A.spec || {};
-  const pick = (v) => (v === "count" ? "count" : typeof v === "object" && v ? (v.via ? `v:${JSON.stringify({ via: v.via, path: v.path || "" })}` : `e:${v.entries}`)
+  const pick = (v) => (v === "count" ? "count" : typeof v === "object" && v
+    ? (v.via ? `v:${JSON.stringify(v.entries ? { via: v.via, entries: v.entries } : { via: v.via, path: v.path || "" })}` : `e:${v.entries}`)
     : v ? (["catalyst", "sample", "source"].includes(v) ? `c:${v}` : `p:${v}`) : "");
-  const sel = { y: pick(s.y), x: pick(s.x), series: s.series ? (s.series === "product" ? "product" : pick(s.series)) : "", facet: s.facet ? pick(s.facet) : "" };
-  const xVia = ch.via.map((o) => [o.value, o.text]);
+  const sel = { y: pick(s.y), x: pick(s.x), series: s.series ? (["product", "conditions", "graph"].includes(s.series) ? s.series : pick(s.series)) : "",
+    facet: s.facet ? (s.facet === "graph" ? "graph" : pick(s.facet)) : "" };
   if (sel.x && ![...xOwn, ...xVia].some(([v]) => v === sel.x)) xOwn.push([sel.x, typeof s.x === "string" ? nice(s.x) : "the chart's x"]);
-  if (sel.y && !yOpts.some(([v]) => v === sel.y)) yOpts.push([sel.y, typeof s.y === "string" ? nice(s.y) : "the chart's y"]);
+  if (sel.y && ![...yOpts, ...viaEntries].some(([v]) => v === sel.y)) yOpts.push([sel.y, typeof s.y === "string" ? nice(s.y) : "the chart's y"]);
+  A.filters = s.filters ? [...s.filters] : A.filters || [];
+  const filterTargets = [...xOwn.filter(([v]) => !v.startsWith("e:")), ...xVia.filter(([v]) => !v.includes('"entries"'))];
   const others = manifest.filter((e) => e.id !== G.entry.id && e.path);
   const sugg = (A.suggestions.suggestions || []);
+  const collapsed = !!(A.result && A.collapsed);
   body.innerHTML = `
     <section class="gx-an-suggest"><h3>Suggested charts</h3>${sugg.length ? `<div class="gx-an-chips">${sugg.map((x, i) =>
       `<button type="button" class="gx-pill" data-tone="neutral" data-sug="${i}" title="${esc(`${x.records} records with both values; ${x.panels} panel${x.panels === 1 ? "" : "s"} (units and contexts kept apart)`)}">${esc(x.title)} <span class="gx-pill-count">${x.records}</span></button>`).join("")}</div>`
       : `<p class="gx-muted">${esc(A.suggestions.error || "No chart to suggest: no records state an outcome and a varying condition together. Build one below.")}</p>`}</section>
-    <form class="gx-an-build" id="an-form">
+    <div class="gx-an-collapsed"${collapsed ? "" : " hidden"}><span class="gx-muted">${esc(A.result?.res?.title || "")}</span>
+      <button type="button" class="gx-btn gx-btn-tiny" id="an-edit" aria-expanded="false" aria-controls="an-form">Edit chart</button></div>
+    <form class="gx-an-build" id="an-form"${collapsed ? " hidden" : ""}>
       <label>Records<select id="an-label">${labels.map((l) => option(l, l, l === A.label)).join("")}</select></label>
-      <label>Y<select id="an-y">${yOpts.map(([v, t]) => option(v, t, v === sel.y)).join("")}</select></label>
+      <label>Y<select id="an-y"><optgroup label="The record's own">${yOpts.map(([v, t]) => option(v, t, v === sel.y)).join("")}</optgroup>${
+        viaEntries.length ? `<optgroup label="Results of linked records">${viaEntries.map(([v, t]) => option(v, t, v === sel.y)).join("")}</optgroup>` : ""}</select></label>
       <label>X<select id="an-x"><optgroup label="The record's own">${xOwn.map(([v, t]) => option(v, t, v === sel.x)).join("")}</optgroup>${
         xVia.length ? `<optgroup label="Through its links">${xVia.map(([v, t]) => option(v, t, v === sel.x)).join("")}</optgroup>` : ""}</select></label>
       <label>Series<select id="an-series">${groups.map(([v, t]) => option(v, t, v === sel.series)).join("")}${option("product", "product (of a result entry)", sel.series === "product")}</select></label>
-      <label>Facet<select id="an-facet">${groups.map(([v, t]) => option(v, t, v === sel.facet)).join("")}</select></label>
+      <label>Facet<select id="an-facet">${groups.filter(([v]) => v !== "conditions").map(([v, t]) => option(v, t, v === sel.facet)).join("")}</select></label>
       <label>Mark<select id="an-mark">${["point", "line", "bar", "box"].map((m) => option(m, m, m === (s.mark || "point"))).join("")}</select></label>
       <label class="gx-check" title="By default proposals, predictions and superseded records are left out (observations only); tick to count every record, as an inventory"><span><input type="checkbox" id="an-all"${s.population === "all" ? " checked" : ""}> every record</span></label>
       <button type="submit" class="gx-btn gx-btn-primary">Plot</button>
+      <fieldset class="gx-an-filters"><legend>Conditions (filters on the records or their links; numbers compared in their unit and context, never converted)</legend>
+        <div class="gx-an-fchips" id="an-fchips">${A.filters.map((f, i) => `<span class="gx-an-fchip">${esc(filterLabel(f))}<button type="button" class="gx-icon-btn" data-unfilter="${i}" aria-label="Remove the filter ${esc(filterLabel(f))}">×</button></span>`).join("") || `<span class="gx-subtle">none</span>`}</div>
+        <div class="gx-an-fadd"><label>Add a filter on<select id="an-ftarget">${option("", "choose…", true)}<optgroup label="The record's own">${
+          filterTargets.filter(([v]) => !v.startsWith("v:")).map(([v, t]) => option(v, t, false)).join("")}</optgroup><optgroup label="Through its links">${
+          filterTargets.filter(([v]) => v.startsWith("v:")).map(([v, t]) => option(v, t, false)).join("")}</optgroup></select></label><div id="an-fedit"></div></div>
+      </fieldset>
       ${others.length ? `<fieldset class="gx-an-with"><legend>With other graphs (each read on its own, never merged)</legend>${others.map((e) =>
         `<label class="gx-check"><input type="checkbox" data-with="${esc(e.id)}"${A.with.has(e.id) ? " checked" : ""}> ${esc(trunc(e.title || e.id, 50))}</label>`).join("")}</fieldset>` : ""}
     </form>
     <div class="gx-an-out" id="an-out"></div>`;
   body.querySelectorAll("[data-with]").forEach((b) => (b.onchange = () => { if (b.checked) A.with.add(b.dataset.with); else A.with.delete(b.dataset.with); }));
-  body.querySelectorAll("[data-sug]").forEach((b) => (b.onclick = () => { const x = sugg[Number(b.dataset.sug)]; A.label = x.label; plotGraph(x.spec); }));
-  $("an-label").onchange = () => { A.label = $("an-label").value; A.spec = null; renderAnalyze(); };
+  body.querySelectorAll("[data-sug]").forEach((b) => (b.onclick = () => { const x = sugg[Number(b.dataset.sug)]; A.label = x.label; A.filters = []; plotGraph(x.spec); }));
+  body.querySelectorAll("[data-unfilter]").forEach((b) => (b.onclick = () => { A.filters.splice(Number(b.dataset.unfilter), 1); A.spec = { ...currentSpec(), filters: [...A.filters] }; A.collapsed = false; renderAnalyze(); }));
+  $("an-edit").onclick = () => { A.collapsed = false; $("an-form").hidden = false; body.querySelector(".gx-an-suggest").hidden = false;
+    body.querySelector(".gx-an-collapsed").hidden = true; $("an-y").focus(); };
+  $("an-label").onchange = () => { A.label = $("an-label").value; A.spec = null; A.filters = []; A.collapsed = false; renderAnalyze(); };
+  $("an-ftarget").onchange = () => filterEditor($("an-ftarget").value, $("an-ftarget").selectedOptions[0]?.textContent || "");
   $("an-form").onsubmit = (e) => {
     e.preventDefault();
     if (!$("an-y").value || !$("an-x").value) return;
-    plotGraph({ ...specFrom({ label: $("an-label").value, x: $("an-x").value, y: $("an-y").value, series: $("an-series").value,
-      facet: $("an-facet").value, mark: $("an-mark").value }), ...($("an-all").checked ? { population: "all" } : {}) });
+    plotGraph(currentSpec());
   };
   if (A.result && A.result.kind === "graph") showResult(A.result.res, $("an-out"), { onPick: pickGraph, csv: () => graphCsv(A.result.spec, A.result.graphs) });
+}
+// The chart the builder describes now.
+function currentSpec() {
+  return { ...specFrom({ label: $("an-label").value, x: $("an-x").value, y: $("an-y").value, series: $("an-series").value,
+    facet: $("an-facet").value, mark: $("an-mark").value, filters: A.filters }), ...($("an-all").checked ? { population: "all" } : {}) };
+}
+function filterLabel(f) {
+  const what = f.label || [...(f.via || []).map((h) => h.to), f.path].filter(Boolean).join(" ").replace(/_/g, " ");
+  if (f.values) return `${what}: ${f.values.join(", ")}`;
+  const u = f.unit ? ` ${f.unit}` : "";
+  return "min" in f && "max" in f ? `${what} ${f.min}–${f.max}${u}` : `${what} ${"min" in f ? "≥" : "≤"} ${f.min ?? f.max}${u}`;
+}
+// A filter's editor: the values present (a category), or a range in one of the units in use (numbers), read by SCALE
+// from the graph (scale_plot_data field).
+async function filterEditor(value, text) {
+  const box = $("an-fedit");
+  if (!value) { box.innerHTML = ""; return; }
+  // the filter's name as the chart's title will say it: "Electrolyte", "CatalystSample bet area", "temperature"
+  const label = text.replace(/ \(category\)$/, "").replace(/\s*\([^)]*\)$/, "").replace(/[→←]\s*/g, "").replace(/:\s*the \w+ itself$/, "")
+    .replace(/:\s*/g, " ").trim();
+  const target = targetOf(value);
+  box.innerHTML = `<span class="gx-subtle">Reading the values present…</span>`;
+  try {
+    const r = await plotCall({ field: { label: $("an-label").value, target } }, A.with.size ? await plotGraphs() : null);
+    if (r.error) throw new Error(r.error);
+    if (r.kind === "quantity" && r.units.length) {
+      // each unit with how many of its values a filter can compare (the others state no convention, scale, ...)
+      const gaps = (u) => Object.keys(u.not_comparable || {}).map((k) => k.split(":").pop().replace(/_/g, " "));
+      box.innerHTML = `<label>Unit<select id="an-funit">${r.units.map((u) => option(u.unit || "", `${u.unit || "no unit"}: ${u.comparable ?? u.records} of ${u.records} records comparable, ${u.min}–${u.max}${
+        gaps(u).length ? ` (the others state no ${gaps(u).join(", ")})` : ""}`, false)).join("")}</select></label>
+        <label>From<input type="number" step="any" id="an-fmin" placeholder="${esc(r.units[0].min)}"></label>
+        <label>To<input type="number" step="any" id="an-fmax" placeholder="${esc(r.units[0].max)}"></label>
+        <button type="button" class="gx-btn gx-btn-tiny" id="an-fok">Add filter</button>`;
+      $("an-fok").onclick = () => {
+        const lo = $("an-fmin").value, hi = $("an-fmax").value;
+        if (lo === "" && hi === "") return;
+        A.filters.push({ ...target, label, ...(lo !== "" ? { min: Number(lo) } : {}), ...(hi !== "" ? { max: Number(hi) } : {}), ...($("an-funit").value ? { unit: $("an-funit").value } : {}) });
+        A.spec = { ...currentSpec(), filters: [...A.filters] }; A.collapsed = false;
+        renderAnalyze();
+      };
+    } else if (r.values.length) {
+      box.innerHTML = `<div class="gx-an-fvalues" role="group" aria-label="Values to keep">${r.values.slice(0, 60).map((v, i) =>
+        `<label class="gx-check"><input type="checkbox" data-fval="${i}"> ${esc(trunc(v.value, 60))} <span class="gx-subtle">${v.records}</span></label>`).join("")}</div>
+        <button type="button" class="gx-btn gx-btn-tiny" id="an-fok">Add filter</button>`;
+      $("an-fok").onclick = () => {
+        const vals = [...box.querySelectorAll("[data-fval]:checked")].map((c) => r.values[Number(c.dataset.fval)].value);
+        if (!vals.length) return;
+        A.filters.push({ ...target, label, values: vals });
+        A.spec = { ...currentSpec(), filters: [...A.filters] }; A.collapsed = false;
+        renderAnalyze();
+      };
+    } else box.innerHTML = `<span class="gx-subtle">No values to filter on.</span>`;
+  } catch (err) { box.innerHTML = `<span class="gx-card-warn">${esc(err.message || err)}</span>`; }
 }
 const pickGraph = (row) => {
   if (row.record && G.byId.has(row.record) && (!A.result?.aliased || String(row.id).startsWith(`${aliasOf(G.entry.id)}::`))) goTo(row.record);
@@ -2380,7 +2457,9 @@ async function plotGraph(spec) {
     if (run !== A.run) return;
     if (res.error) throw new Error(res.error);
     A.result = { kind: "graph", res, spec, graphs, aliased: !!graphs };
-    showResult(res, out, { onPick: pickGraph, csv: () => graphCsv(spec, graphs) });
+    A.collapsed = true;                             // the builder folds away; Edit chart opens it again
+    inStore("sessionStorage", (st) => st.setItem(`scale-analyze:${G.entry.id}`, JSON.stringify(spec)));
+    await renderAnalyze();
   } catch (err) { out.innerHTML = `<p class="gx-card-warn">${esc(err.message || err)}</p>`; }
 }
 // A chart's result: what was plotted and left out, one chart per panel (each with its SVG and PNG), the data as CSV
@@ -2395,8 +2474,9 @@ function caption(p) {
     p.counts.bounds || p.counts.ranges ? `; ${p.counts.bounds} bounds and ${p.counts.ranges} ranges drawn apart` : ""}`;
   return [n(p.counts.points, "point"), n(p.counts.bounds, "bound"), n(p.counts.ranges, "range"), p.counts.cited ? `${p.counts.cited} cited` : ""].filter(Boolean).join(", ");
 }
+let resultSeq = 0;
 async function showResult(res, el, { onPick = null, csv = null, dark = false, compact = false } = {}) {
-  const c = res.counts || {}, left = res.left_out || {};
+  const c = res.counts || {}, left = res.left_out || {}, uid = ++resultSeq;
   const charts = (res.panels || []).flatMap(splitFacets);
   const reasons = Object.entries(left.by_reason || {}).sort((a, b) => b[1] - a[1]);
   const digest = res.digest_check ? `<p class="gx-an-digest is-${esc(res.digest_check)}">${esc({ verified: "The file is the one the record names (its sha256 matches): the rows the graph cites are ringed.",
@@ -2412,10 +2492,16 @@ async function showResult(res, el, { onPick = null, csv = null, dark = false, co
       (left.total ?? c.left_out) ? ` · ${left.total ?? c.left_out} left out` : ""}${res.access && res.access.level && res.access.level !== "public" ? ` · access: ${esc(res.access.level)}` : ""}</p>
     ${reasons.length ? `<details class="gx-an-left"><summary>What was left out, and why</summary><ul>${reasons.map(([k, n]) => `<li>${esc(reasonText(k))}: ${n}</li>`).join("")}</ul></details>` : ""}
     ${(res.panels || []).length > 1 ? `<p class="gx-subtle">${res.panels.length} panels: their values differ in unit, comparison context or contract, so they never share an axis.</p>` : ""}
-    ${charts.map((p, i) => `<figure class="gx-an-chart"><figcaption>${esc(p.title)} <span class="gx-subtle">· ${caption(p)}</span>${
+    ${charts.length > 2 ? `<div class="gx-an-pick"><label>Show <select id="an-pick-${uid}"><option value="all">all ${charts.length} panels, side by side</option>${
+      charts.map((p, i) => `<option value="${i}">${esc(trunc(p.title, 90))}</option>`).join("")}</select></label></div>` : ""}
+    <div class="gx-an-grid${charts.length > 2 && !compact ? " is-multi" : ""}">
+    ${charts.map((p, i) => `<figure class="gx-an-chart" data-fig="${i}"><figcaption>${esc(p.title)} <span class="gx-subtle">· ${caption(p)}</span>${
       p.x.comparability || p.y.comparability ? ` <span class="gx-an-badge" title="${esc(p.y.comparability || p.x.comparability)}">comparability unknown</span>` : ""}</figcaption>
       <div class="gx-an-vega" data-panel="${i}"></div>
-      ${compact ? "" : `<div class="gx-an-dl"><button type="button" class="gx-btn gx-btn-tiny" data-svg="${i}">SVG</button><button type="button" class="gx-btn gx-btn-tiny" data-png="${i}">PNG</button></div>`}</figure>`).join("")}
+      ${compact ? "" : `<div class="gx-an-dl"><button type="button" class="gx-btn gx-btn-tiny" data-svg="${i}">SVG</button><button type="button" class="gx-btn gx-btn-tiny" data-png="${i}">PNG</button></div>`}
+      ${p.points.length && !(p.y.type === "count") ? `<details class="gx-an-table"><summary>Points as a table (${p.points.length})</summary><table><thead><tr><th>Record</th><th>${esc(p.y.label)}</th><th>${esc(p.x.label)}</th>${(p.series || []).length ? "<th>Series</th>" : ""}<th>Conditions</th></tr></thead><tbody>${
+        p.points.slice(0, 300).map((q) => `<tr><td>${q.record ? `<button type="button" class="gx-link-btn" data-goto="${esc(q.record)}">${esc(trunc(q.name || q.record, 60))}</button>` : esc(q.id)}</td><td>${esc(shownValue(q.y))}</td><td>${esc(shownValue(q.x))}</td>${(p.series || []).length ? `<td>${esc(q.series || "")}</td>` : ""}<td>${esc(Object.entries(q.conditions || {}).filter(([k]) => k !== "source").map(([k, v]) => `${k}: ${v}`).join("; "))}</td></tr>`).join("")}</tbody></table>${p.points.length > 300 ? `<p class="gx-subtle">The first 300 of ${p.points.length}; the CSV holds them all.</p>` : ""}</details>` : ""}</figure>`).join("")}
+    </div>
     ${(res.limitations || []).length && !compact ? `<details class="gx-an-left"><summary>How to read these charts</summary><ul>${res.limitations.map((l) => `<li>${esc(l)}</li>`).join("")}<li>Filled circles are values (bars: error bars), open triangles one-sided bounds pointing the way the value lies, lines from one end to the other ranges.</li></ul></details>` : ""}
     <div class="gx-an-dl">${csv ? `<button type="button" class="gx-btn gx-btn-tiny" data-csv>Data (CSV)</button>` : ""}<button type="button" class="gx-btn gx-btn-tiny" data-json>Data (JSON)</button></div>`;
   const base = (res.title || "chart").replace(/[^A-Za-z0-9]+/g, "-").replace(/^-|-$/g, "").slice(0, 60) || "chart";
@@ -2423,12 +2509,20 @@ async function showResult(res, el, { onPick = null, csv = null, dark = false, co
   if (csv) el.querySelector("[data-csv]").onclick = async () => {
     try { download(`${base}.csv`, new Blob([await csv()], { type: "text/csv" })); } catch (err) { status(err.message || String(err)); }
   };
+  el.querySelectorAll("[data-goto]").forEach((b) => (b.onclick = () => { if (G.byId.has(b.dataset.goto)) goTo(b.dataset.goto); }));
+  const picker = el.querySelector(`#an-pick-${uid}`);
+  if (picker) picker.onchange = () => {
+    const v = picker.value;
+    el.querySelector(".gx-an-grid").classList.toggle("is-multi", v === "all");
+    el.querySelectorAll("[data-fig]").forEach((f) => (f.hidden = v !== "all" && f.dataset.fig !== v));
+    for (const view of views) if (view) view.resize().runAsync();
+  };
   const views = [];
   for (const [i, p] of charts.entries()) {
     const box = el.querySelector(`[data-panel="${i}"]`);
     if (!box || !box.isConnected) return;            // another result replaced this one while it was drawn
     try {
-      views[i] = await drawChart(box, p, { colors: chartColours(dark), height: compact ? 180 : 240 }, onPick && ((row) => {
+      views[i] = await drawChart(box, p, { colors: chartColours(dark), height: compact || charts.length > 2 ? 190 : 240 }, onPick && ((row) => {
         if (row.bucket === undefined && row.bin === undefined) return onPick(row);
         // a bar of a count (or a histogram's bin): the records under it, each a link to the record in the graph
         const last = row.bin && p.histogram && p.histogram.bins.length && row.bin[1] === p.histogram.bins[p.histogram.bins.length - 1].hi;

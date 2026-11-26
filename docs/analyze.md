@@ -21,6 +21,9 @@ label: CatalyticTest            # the records a point is read from (the variable
 where: [{prop: driving_forces, op: contains, value: electro}]
 x: catalyst                     # what the point is placed at
 y: {entries: faradaic_efficiency}
+filters:                        # conditions, on the record or on records one or more links away
+  - {path: temperature, min: 200, max: 300, unit: °C}
+  - {via: [{edge: IN_ELECTROLYTE, to: Electrolyte}], path: "", values: [CO2-saturated 0.1 M KHCO3]}
 series: product                 # colour
 facet: test_kind                # small multiples within a panel
 mark: point                     # point, line, bar or box
@@ -38,10 +41,27 @@ An axis (`x`, `y`) is one of:
   direction: in}], path: results.surface_area}`: the value of a record one to six links away (`path` empty: the record
   itself, as a category);
 - a **result entry**: `{entries: result_values, variable: ..., target: ..., kind: ...}` or `{entries:
-  faradaic_efficiency}`, one entry per point, with its product, assay and evidence its own;
+  faradaic_efficiency}`, one entry per point, with its product, assay and evidence its own; with `via`, the result
+  entries of a linked record (a sample's characterization results: `{via: [{edge: USES_CATALYST, to: CatalystSample},
+  {edge: CHARACTERIZES, to: Characterization, direction: in}], entries: result_values, variable: ...}`), typed and kept
+  apart in panels as the record's own are;
 - on y, **count**: the records per x value (a bar per category or year, a histogram of a quantity).
 
-`series` and `facet` take `product` (the y entry's target), `catalyst`, `sample`, `source`, `graph` or a property path.
+`series` and `facet` take `product` (the y entry's target), `catalyst`, `sample`, `source`, `graph` or a property path;
+`series: conditions` colours each point by the numeric conditions its record states (pressure, flow, potential, time;
+the axes' own left out), so that tests run differently are told apart.
+
+A **condition filter** (`filters`) names a target as an axis does (a path, a named link's path, or `{via, path}`; an
+empty path is the linked record, by its name) and keeps either the values listed (`values`) or a range (`min`, `max` in
+`unit`, with `context` when the quantity compares by one). A range compares as a scientific comparison does: only
+values in its unit, on a stated context; a value whose context is not stated is not kept. The filters are said in the
+chart's title, in `filters` and in every CSV line. `scale_plot_data` with `field: {label, target}` lists what a filter
+can keep: the text values present with their records, or each unit's range and how many of its values a comparison can
+compare (the others state no convention, no reference scale, ...).
+
+Each point carries its **measurement context**: its record's stated conditions (temperature, pressure, space velocity
+or flow, potential with its reference scale, current density, duration), the records it ran with (sample and catalyst,
+feed, electrolyte, reactor, cell), its source and year, and for a result entry its assay and product.
 Instead of `label` and `where`, `plan` gives a whole query plan (docs/querying.md); the axes then name its returned
 paths (`t.temperature`, `fe`).
 
@@ -96,10 +116,17 @@ The explorer's **Analyze** button opens a panel over the canvas (the inspector s
 - **A builder**: records (any label), y (a count, a result entry or a numeric property), x (the record's own values or
   categories, or a value through its links, one or two links away either way), series, facet, mark, every record or
   observations only, and other graphs of the site to plot with it (each read on its own).
+- **Condition filters**: on any property of the records or of records one or two links away; a number's units are
+  listed with their ranges and how many values can be compared, a category's values with their records.
 - **Charts**, one per panel (Vega-Lite, loaded when first needed, pinned and checked against its digest, with no
-  external data). A click on a point selects its record in the graph and shows its evidence; a click on a bar lists its
-  records. Each chart downloads as SVG or PNG; the data as CSV (record ids, units, kinds, contexts, sources, locators)
-  or JSON (the whole result).
+  external data); several panels are small multiples, each on its own scales, with a selector to show one. The builder
+  folds away after a plot (Edit chart opens it). A tooltip gives a point's value as reported, its conditions, the
+  records it ran with, its assay and product and its source and locators; category labels are cut at 18 characters,
+  the whole name on hover. A click on a point selects its record in the graph and shows its evidence; a click on a bar
+  lists its records; each chart's points are also a table (keyboard reachable: Enter selects the record; Escape
+  closes the panel). Each chart downloads as SVG or PNG; the data as CSV (record ids, units, kinds, contexts,
+  conditions, filters, sources, locators) or JSON (the whole result). The last chart of each graph is remembered in the
+  tab.
 
 A reader's own model (Your API key) has a `plot` tool with the same spec: its chart appears under the answer, each point
 linked to its record, and the model reads the chart's panels and points in pages. The egress gate applies to it as to
@@ -122,7 +149,8 @@ against a digest you hold, never both.
 
 ## Limits
 
-A path of edges reaches a linked record's properties, not its result entries or an edge's own properties (write a
-query plan for those). A data file's units come from its header alone; its reference scales, normalizations and
+A path of edges reaches a linked record's properties and result entries, not an edge's own properties (write a query
+plan for those). The builder offers a linked record's result entries whole (every variable, each kind its own panel);
+`variable` and `target` select one in a spec. A data file's units come from its header alone; its reference scales, normalizations and
 uncertainty columns are not read. A line joins a series' values in x order to guide the eye; it says nothing of whether
 the source ran them as one sweep. Nothing is averaged, fitted or converted.

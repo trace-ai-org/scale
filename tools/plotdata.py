@@ -67,7 +67,8 @@ from . import federation, pgraph_query, quantities
 from .util import ScaleError, dump_canonical
 
 PLOT_VERSION = 1
-SPEC_KEYS = {"plot", "title", "description", "plan", "label", "where", "x", "y", "series", "facet", "mark", "population"}
+SPEC_KEYS = {"plot", "title", "description", "plan", "label", "where", "filters", "x", "y", "series", "facet", "mark",
+             "population"}
 POPULATIONS = ("observations", "all")
 AXIS_KEYS = {"path", "entries", "kind", "variable", "target", "label", "via", "count"}
 MARKS = ("point", "line", "bar", "box")
@@ -87,7 +88,7 @@ LIMIT_STATUSES = ("below_detection_limit", "below_quantification_limit")
 # what a point keeps of its value object, as reported
 KEEP = ("as_reported", "status", "qualifier", "basis", "definition", "origin", "uncertainty", "uncertainty_kind",
         "uncertainty_evaluation", "interval_lower", "interval_upper", "confidence_level", "coverage_factor", "produced_by",
-        "phase", "stream", "evidence_ids")
+        "phase", "stream", "evidence_ids", "target", "variable")
 NOT_OBSERVED = ("proposed", "planned")
 # what makes two x values one bucket of a count (the value as reported, never its metadata)
 BUCKET_KEYS = ("type", "value", "lower", "upper", "bound", "unit", "id")
@@ -129,17 +130,18 @@ def _axis(a: Any, where: str, with_plan: bool) -> dict:
     if isinstance(a, str) and a.strip():
         a = {"count": True} if a.strip() == "count" and where == "y" else {"path": a.strip()}
     if not isinstance(a, dict) or set(a) - AXIS_KEYS:
-        raise ScaleError(f"{where} is a path, or {{path, via}} or {{entries, kind, variable, target}} (and label)"
+        raise ScaleError(f"{where} is a path, or {{path, via}} or {{entries, kind, variable, target, via}} (and label)"
                          f"{', or count (y)' if where == 'y' else ''}; got {a!r}")
     if a.get("count"):
         if where != "y" or set(a) - {"count", "label"}:
             raise ScaleError("count is a y axis of its own: the records per x value (a bar), or a histogram of x")
         return dict(a)
     if "via" in a:
-        if with_plan or "entries" in a:
-            raise ScaleError(f"{where}.via follows links from the record: not with a plan or entries")
+        if with_plan:
+            raise ScaleError(f"{where}.via follows links from the record: not with a plan (write the plan's steps)")
         a = {**a, "via": _via(a["via"], where)}
-        a.setdefault("path", "")
+        if "entries" not in a:
+            a.setdefault("path", "")
     if ("path" in a) == ("entries" in a):
         raise ScaleError(f"{where} names a path or entries (one result entry per point), not both or neither")
     if "entries" in a and with_plan:
@@ -151,6 +153,36 @@ def _axis(a: Any, where: str, with_plan: bool) -> dict:
         raise ScaleError(f"{where}: {a['path']!r} names a field of a value object; name the value itself "
                          f"({a['path'].rsplit('.', 1)[0]!r}), so that its unit, bound and context stay with it")
     return dict(a)
+
+
+FILTER_KEYS = {"path", "via", "values", "min", "max", "unit", "context", "label"}
+
+
+def _filter(f: Any, i: int) -> dict:
+    """A condition filter: a target (a path of the record, a named link's path, or {via, path}) and either the values it
+    keeps (``values``: text, a category) or a range (``min`` and/or ``max`` in ``unit``, with ``context`` when the
+    quantity compares by one), compared as a scientific comparison compares (never converted)."""
+    where = f"filters[{i}]"
+    if not isinstance(f, dict) or set(f) - FILTER_KEYS or ("path" not in f and "via" not in f):
+        raise ScaleError(f"{where} is {{path (or via and path), values}} or {{path, min, max, unit, context}}; got {f!r}")
+    out = dict(f)
+    if "via" in f:
+        out["via"] = _via(f["via"], where)
+        out.setdefault("path", "")
+    if not isinstance(out["path"], str) or _scalar_of_value(out["path"]):
+        raise ScaleError(f"{where}.path names a property (never a field of a value object)")
+    has_values, has_range = "values" in f, "min" in f or "max" in f
+    if has_values == has_range:
+        raise ScaleError(f"{where} keeps values (a list) or a range (min, max), one of them")
+    if has_values and not (isinstance(f["values"], list) and f["values"] and
+                           all(isinstance(v, (str, int, float)) and not isinstance(v, bool) for v in f["values"])):
+        raise ScaleError(f"{where}.values is a list of the values kept")
+    for k in ("min", "max"):
+        if k in f and not _num(f[k]):
+            raise ScaleError(f"{where}.{k} is a number")
+    if "context" in f and not isinstance(f["context"], dict):
+        raise ScaleError(f"{where}.context is a map of the contexts the range is on (e.g. potential_reference: rhe)")
+    return out
 
 
 def _filters(plan: dict) -> list[dict]:
@@ -176,7 +208,7 @@ def load_spec(raw: Any) -> dict:
     with_plan = "plan" in raw
     if with_plan:
         pgraph_query.check_plan_shape(raw["plan"])
-        if "where" in raw:
+        if "where" in raw or "filters" in raw:
             raise ScaleError("with a plan, put the filters in the plan's where")
     elif not (isinstance(raw["label"], str) and raw["label"].strip()):
         raise ScaleError("label is a label of the schema, e.g. CatalyticTest")
@@ -187,6 +219,10 @@ def load_spec(raw: Any) -> dict:
     if conv:
         raise ScaleError("a plot filters values as reported: convert: true is not taken (a filter states its unit and "
                          "keeps the values in it)")
+    if raw.get("filters") is not None:
+        if not isinstance(raw["filters"], list):
+            raise ScaleError("filters is a list of condition filters")
+        out["filters"] = [_filter(f, i) for i, f in enumerate(raw["filters"])]
     for k in ("x", "y"):
         if k not in raw:
             raise ScaleError(f"a plot spec names its {k} axis")
@@ -194,7 +230,7 @@ def load_spec(raw: Any) -> dict:
     for k in ("series", "facet"):
         if raw.get(k) is not None:
             if not (isinstance(raw[k], str) and raw[k].strip()):
-                raise ScaleError(f"{k} is a path, or one of {', '.join(GROUPS)}")
+                raise ScaleError(f"{k} is a path, or one of {', '.join(GROUPS)}, or conditions")
             out[k] = raw[k].strip()
             if _scalar_of_value(out[k]):
                 raise ScaleError(f"{k}: {out[k]!r} names a field of a value object; name the value itself")
@@ -208,10 +244,87 @@ def load_spec(raw: Any) -> dict:
     return out
 
 
+class _Binder:
+    """Builds a shorthand spec's plan: the steps that bind each axis, filter and group to a variable of the plan."""
+
+    def __init__(self, plan: dict):
+        self.steps, self.have = plan["steps"], set()
+
+    def link(self, name: str) -> None:
+        for st in LINKED[name]:
+            if st["as"] not in self.have:
+                self.steps.append(dict(st))
+                self.have.add(st["as"])
+
+    def via(self, hops: list[dict], prefix: str, optional: bool = True) -> str:
+        prev = REC
+        for i, st in enumerate(hops, 1):
+            var = f"{prefix}_via{i}"
+            self.steps.append({"from": prev, "edge": st["edge"], "to": st["to"], "as": var, "optional": optional,
+                               **({"direction": st["direction"]} if st.get("direction") else {})})
+            prev = var
+        return prev
+
+    def path(self, p: str) -> str:
+        """A path of the record, or through a named link (sample.bet_area, catalyst.catalyst_family, source.year)."""
+        head = p.split(".", 1)[0]
+        if head in LINKED and "." in p:
+            self.link(head)
+            return p
+        if p in LINKED:
+            self.link(p)
+            return p
+        return p if p.startswith(f"{REC}.") else f"{REC}.{p}"
+
+    def entries(self, a: dict, var: str, start: str = REC) -> str:
+        st = {"from": start, "entries": a["entries"], "as": var}
+        if a.get("kind"):
+            st["kind"] = a["kind"]
+        fs = [{"prop": q, "op": "eq", "value": a[q]} for q in ("variable", "target") if a.get(q)]
+        if fs:
+            st["where"] = fs
+        self.steps.append(st)
+        return var
+
+    def target(self, t: dict, prefix: str, optional: bool = True) -> str:
+        """The plan path of an axis-like target: {path}, {via, path} or {entries (, via)}."""
+        start = self.via(t["via"], prefix, optional) if t.get("via") else REC
+        if "entries" in t:
+            return self.entries(t, f"{prefix}_entry", start)
+        if t.get("via"):
+            return f"{start}.{t['path']}" if t["path"] else start
+        return self.path(t["path"])
+
+
+def _where_of(path: str, f: dict) -> list[dict]:
+    """The plan filters of a condition filter on a plan path (a variable's property, or a record by its name)."""
+    var, _, prop = path.partition(".")
+    if "values" in f:
+        return [{"var": var, "prop": prop or "name", "op": "in", "value": list(f["values"])}]
+    out = []
+    for k, op in (("min", "ge"), ("max", "le")):
+        if k in f:
+            out.append({"var": var, "prop": prop, "op": op, "value": f[k], **({"unit": f["unit"]} if f.get("unit") else {}),
+                        **({"context": f["context"]} if f.get("context") else {})})
+    return out
+
+
+def filter_text(f: dict) -> str:
+    """A condition filter as a reader reads it: ``temperature 200–300 °C``, ``electrolyte: KHCO3, KCl``."""
+    what = f.get("label") or _human((" → ".join(st["to"] for st in f.get("via") or []) + " " + f.get("path", "")).strip())
+    if "values" in f:
+        return f"{what}: {', '.join(str(v) for v in f['values'])}"
+    ctx = f" [{', '.join(f'{k}: {v}' for k, v in sorted((f.get('context') or {}).items()))}]" if f.get("context") else ""
+    u = f" {f['unit']}" if f.get("unit") else ""
+    if "min" in f and "max" in f:
+        return f"{what} {f['min']}–{f['max']}{u}{ctx}"
+    return f"{what} {'≥' if 'min' in f else '≤'} {f.get('min', f.get('max'))}{u}{ctx}"
+
+
 def compile_plan(spec: dict) -> tuple[dict, dict]:
     """(the query plan a spec runs, the plan path of each role: x, y, series, facet). A spec with a plan runs it with its
     axes' paths returned and its evidence, without order_by or limit; the shorthand builds the plan from the label, the
-    axes and the groups."""
+    axes, the condition filters and the groups."""
     roles: dict[str, str] = {}
     if "plan" in spec:
         plan = json.loads(json.dumps(spec["plan"], default=str))
@@ -221,53 +334,22 @@ def compile_plan(spec: dict) -> tuple[dict, dict]:
         roles["record"] = plan["match"].get("as", "self")
     else:
         plan = {"match": {"label": spec["label"], "as": REC}, "steps": []}
-        if spec.get("where"):
-            plan["where"] = [dict(f, var=f.get("var", REC)) for f in spec["where"]]
-        steps, have = plan["steps"], set()
-
-        def link(name: str) -> None:
-            for st in LINKED[name]:
-                if st["as"] not in have:
-                    steps.append(dict(st))
-                    have.add(st["as"])
-
-        def linked_path(p: str) -> str | None:
-            """A path through a named link (sample.bet_area, catalyst.composition, source.year), or None."""
-            head = p.split(".", 1)[0]
-            if head in LINKED and "." in p:
-                link(head)
-                return p
-            return None
-
+        where = [dict(f, var=f.get("var", REC)) for f in spec.get("where") or []]
+        bind = _Binder(plan)
         roles["record"] = REC
         entry_of: dict[str, str] = {}
         for k in ("x", "y"):
             a = spec[k]
             if a.get("count"):
                 roles[k] = "count"
-            elif "via" in a:
-                prev = REC
-                for i, st in enumerate(a["via"], 1):
-                    var = f"{k}_via{i}"
-                    steps.append({"from": prev, "edge": st["edge"], "to": st["to"], "as": var, "optional": True,
-                                  **({"direction": st["direction"]} if st.get("direction") else {})})
-                    prev = var
-                roles[k] = f"{prev}.{a['path']}" if a["path"] else prev
-            elif "entries" in a:
-                var = f"{k}_entry"
-                st = {"from": REC, "entries": a["entries"], "as": var}
-                if a.get("kind"):
-                    st["kind"] = a["kind"]
-                fs = [{"prop": q, "op": "eq", "value": a[q]} for q in ("variable", "target") if a.get(q)]
-                if fs:
-                    st["where"] = fs
-                steps.append(st)
-                roles[k] = entry_of[k] = var
-            elif a["path"] in LINKED:
-                link(a["path"])
-                roles[k] = a["path"]
-            else:
-                roles[k] = linked_path(a["path"]) or (a["path"] if a["path"].startswith(f"{REC}.") else f"{REC}.{a['path']}")
+                continue
+            roles[k] = bind.target(a, k)
+            if "entries" in a:
+                entry_of[k] = roles[k]
+        for i, f in enumerate(spec.get("filters") or []):      # a filter's links must be there: never optional
+            where += _where_of(bind.target(f, f"f{i + 1}", optional=False), f)
+        if where:
+            plan["where"] = where
         for k in ("series", "facet"):
             g = spec.get(k)
             if g is None:
@@ -276,18 +358,18 @@ def compile_plan(spec: dict) -> tuple[dict, dict]:
                 ent = entry_of.get("y") or entry_of.get("x")
                 if not ent:
                     raise ScaleError(f"{k} product names the product of a result entry: make y (or x) an entries axis")
-                if "product" not in have:
-                    steps.append({"from": ent, "field": "target", "to": "ChemicalSpecies", "as": "product", "optional": True})
-                    have.add("product")
+                if "product" not in bind.have:
+                    bind.steps.append({"from": ent, "field": "target", "to": "ChemicalSpecies", "as": "product",
+                                       "optional": True})
+                    bind.have.add("product")
                 roles[k] = "product"
-            elif g in LINKED:
-                link(g)
+            elif g in ("graph", "conditions"):
                 roles[k] = g
             else:
-                roles[k] = linked_path(g) or (g if g == "graph" or g.startswith(f"{REC}.") else f"{REC}.{g}")
-        if not steps:
+                roles[k] = bind.path(g)
+        if not plan["steps"]:
             plan.pop("steps")
-    want = [p for k, p in roles.items() if p not in ("graph", "count") and k != "record"]
+    want = [p for k, p in roles.items() if p not in ("graph", "count", "conditions") and k != "record"]
     have_ret = list(plan.get("return") or [])
     plan["return"] = have_ret + [p for p in want if p not in have_ret]
     plan["evidence"] = True
@@ -296,6 +378,117 @@ def compile_plan(spec: dict) -> tuple[dict, dict]:
     plan.pop("limit", None)
     plan.pop("order_by", None)
     return plan, roles
+
+
+def field_values(members: list[dict], label: str, target: Any) -> dict:
+    """What a filter on ``target`` (a path, a named link's path, or {via, path}) of the records of ``label`` can keep:
+    the text values present with their records (a category), or, for numbers, their units, contexts and ranges (each a
+    quantity's typing, as an axis reads it), so that a builder offers only what is there."""
+    t = _filter({**(target if isinstance(target, dict) else {"path": target}), "values": ["-"]}, 0)
+    t.pop("values")
+    plan = {"match": {"label": label, "as": REC}, "steps": []}
+    path = _Binder(plan).target(t, "v", optional=False)
+    if not plan["steps"]:
+        plan.pop("steps")
+    plan.update({"return": [path]})
+    res = federation.run(members, plan, None, limit=federation.NO_LIMIT)
+    by_alias = {m["alias"]: m for m in members}
+    cats: dict[str, set] = {}
+    nums: dict[str, dict] = {}
+    readers: dict[str, _Reader] = {}
+    for r in res["rows"]:
+        g = by_alias[r["graph"]]["graph"]
+        rd = readers.get(r["graph"]) or readers.setdefault(r["graph"], _Reader(by_alias[r["graph"]], {}))
+        v = r["values"].get(path) if path in r["values"] else r["bound"].get(path)
+        rid = r["bound"].get(REC)
+        if isinstance(v, str) and "." not in path and v in g.nodes:
+            v = _name(g, v)
+        form, _ = typed(v)
+        if form is None:
+            continue
+        if form["type"] in ("category",):
+            cats.setdefault(str(form["value"]), set()).add((r["graph"], rid))
+        elif form["type"] in ("value", "bound", "range", "number"):
+            lo = form.get("lower", form.get("value"))
+            hi = form.get("upper", form.get("value"))
+            n = nums.setdefault(form.get("unit") or "", {"records": set(), "min": lo, "max": hi, "comparable": set(),
+                                                         "why": {}})
+            n["records"].add((r["graph"], rid))
+            n["min"], n["max"] = min(n["min"], lo), max(n["max"], hi)
+            owner_id, entry = _owner(r, path)
+            prop = entry.strip("/").split("/")[0] if entry else pgraph_query.parse_path(path.partition(".")[2] or "name")[0]
+            _, why = rd.read(g.records.get(owner_id) or {}, prop, v[0] if isinstance(v, list) else v) \
+                if form["type"] != "number" else (None, None)
+            if why:                                     # a filter compares it only with its context stated
+                n["why"][why] = n["why"].get(why, 0) + 1
+            else:
+                n["comparable"].add((r["graph"], rid))
+    return {"label": label, "target": t, "path": path,
+            "kind": "quantity" if nums and len(nums) >= 1 and sum(len(x["records"]) for x in nums.values()) >=
+            sum(len(x) for x in cats.values()) else ("category" if cats else "none"),
+            "values": [{"value": v, "records": len(rs)} for v, rs in sorted(cats.items(), key=lambda kv: (-len(kv[1]), kv[0]))][:300],
+            "units": [{"unit": u or None, "records": len(x["records"]), "comparable": len(x["comparable"]),
+                       "not_comparable": dict(sorted(x["why"].items())), "min": x["min"], "max": x["max"]}
+                      for u, x in sorted(nums.items(), key=lambda kv: (-len(kv[1]["comparable"]), -len(kv[1]["records"]),
+                                                                       kv[0]))],
+            "note": "a range filter keeps only values its scientific comparison can compare (comparable): a value whose "
+                    "context (a pressure's convention, a potential's reference scale) is not stated is left out"}
+
+
+# what a point's tooltip says of its measurement: a test's conditions and the records it ran with
+CONDITION_SHOW = ("temperature", "pressure", "space_velocity", "flow_rate", "electrode_potential", "current_density",
+                  "duration", "time_on_stream", "feed_ratio", "ph")
+CONDITION_LINKS = (("USES_CATALYST", "sample"), ("FED_WITH", "feed"), ("IN_ELECTROLYTE", "electrolyte"),
+                   ("IN_REACTOR", "reactor"), ("IN_CELL", "cell"))
+
+
+def _shown_value(v: Any, compact: bool = False) -> str | None:
+    if not isinstance(v, dict) or "status" not in v or v.get("status") not in NUMBERED:
+        return None
+    if v.get("as_reported") and not compact:
+        return str(v["as_reported"])
+    form, _ = typed(v)
+    if form is None:
+        return None
+    u = f" {form['unit']}" if form.get("unit") else ""
+    if form["type"] == "range":
+        return f"{form['lower']}–{form['upper']}{u}"
+    if form["type"] == "bound":
+        return f"{'≥' if form['bound'] == 'lower' else '≤'} {form['value']}{u}"
+    return f"{form['value']}{u}"
+
+
+def conditions(g: Any, rid: str | None, compact: bool = False) -> dict:
+    """The measurement context of a record, for a point's tooltip and for series by condition: its conditions as
+    reported (temperature, pressure, space velocity or flow, potential with its reference scale, current density,
+    duration), the records it ran with (sample and its catalyst, feed, electrolyte, reactor, cell) and its source."""
+    node = g.nodes.get(rid) if rid else None
+    if node is None:
+        return {}
+    p = node.get("props") or {}
+    out: dict[str, str] = {}
+    for k in CONDITION_SHOW:
+        t = _shown_value(p.get(k), compact)
+        if t:
+            if k == "electrode_potential" and isinstance(p.get("reference_scale"), str) and \
+                    p["reference_scale"] not in ("not_reported", "other") and p["reference_scale"].lower() not in t.lower():
+                t = f"{t} vs {p['reference_scale'].upper()}"
+            out[_human(k)] = t
+    for edge, name in CONDITION_LINKS:
+        names = sorted({_name(g, e["target"]) or e["target"] for e in g.out.get(rid, []) if e["type"] == edge})
+        if names:
+            out[name] = "; ".join(names[:3]) + (" …" if len(names) > 3 else "")
+            if edge == "USES_CATALYST":
+                cats = sorted({_name(g, c["target"]) for e in g.out.get(rid, []) if e["type"] == edge
+                               for c in g.out.get(e["target"], []) if c["type"] == "HAS_FORMULATION"} - {None})
+                if cats:
+                    out["catalyst"] = "; ".join(cats[:3])
+    srcs = [e["target"] for e in g.out.get(rid, []) if e["type"] == "REPORTED_IN"]
+    if srcs:
+        s = g.nodes.get(sorted(srcs)[0]) or {}
+        year = (s.get("props") or {}).get("year")
+        out["source"] = f"{_name(g, s.get('id'))}{f' ({year})' if year else ''}"
+    return out
 
 
 # ------------------------------------------------------------------------------------------ typing a value
@@ -430,6 +623,8 @@ def _axis_label(spec_axis: dict, path: str) -> str:
         return "records"
     if spec_axis.get("via"):
         hops = " → ".join(st["to"] for st in spec_axis["via"])
+        if spec_axis.get("entries"):                # a linked record's results: say whose and which
+            return f"{hops} {_human(spec_axis['entries'])}"
         return f"{hops}{' ' + _human(spec_axis['path']) if spec_axis.get('path') else ''}"
     if spec_axis.get("entries"):
         return _human(spec_axis["entries"]) + (f" ({_human(spec_axis['kind'])})" if spec_axis.get("kind") else "")
@@ -482,6 +677,15 @@ class _Reader:
 def _why_detail(why: str) -> str:
     m = re.match(r"[a-z_]+ \((?:\S+ )?(\w+)", why)
     return m.group(1) if m else "?"
+
+
+def _conditions_key(g: Any, rid: str | None, roles: dict) -> str:
+    """A series by condition: the stated numeric conditions of a record, in their units (the axes' own left out), so
+    that tests run differently are told apart; the records it ran with are in each point's tooltip."""
+    axes = {_human(roles[k].rsplit(".", 1)[-1]) for k in ("x", "y") if roles.get(k)}
+    shown = {_human(k) for k in CONDITION_SHOW}
+    c = conditions(g, rid, compact=True)
+    return "; ".join(f"{k} {v}" for k, v in c.items() if k in shown and k not in axes) or "no condition stated"
 
 
 def plot_data(members: list[dict], spec: Any, identity_map: dict | None = None) -> dict:
@@ -574,8 +778,15 @@ def plot_data(members: list[dict], spec: Any, identity_map: dict | None = None) 
                                 "_ev": {}}
             if xrid != yrid or xent != yent:
                 pt["x_record"], pt["x_entry"] = xrid, xent or None
+            pt["conditions"] = conditions(g, counted or yrid)
+            for k, f in (("y", fy), ("x", fx)):          # a result entry's assay and product, by name
+                if f.get("produced_by"):
+                    pt.setdefault("assay", _name(g, f["produced_by"]) or f["produced_by"])
+                if isinstance(f.get("target"), str):
+                    pt.setdefault("target", _name(g, f["target"]) or f["target"])
         for k in pt["_groups"]:
-            v = _group_value(g, r, roles[k], alias)
+            v = _conditions_key(g, counted or pt["record"], roles) if roles[k] == "conditions" \
+                else _group_value(g, r, roles[k], alias)
             if v is not None:
                 pt["_groups"][k].add(v)
         for k in ("x", "y"):
@@ -607,7 +818,9 @@ def plot_data(members: list[dict], spec: Any, identity_map: dict | None = None) 
     n_points = sum(len(p["points"]) for p in panels)
     return {
         "plot": PLOT_VERSION,
-        "title": spec.get("title") or f"{_axis_label(spec['y'], roles['y'])} vs {_axis_label(spec['x'], roles['x'])}",
+        "title": (spec.get("title") or f"{_axis_label(spec['y'], roles['y'])} vs {_axis_label(spec['x'], roles['x'])}")
+        + (f" · {'; '.join(filter_text(f) for f in spec['filters'])}" if spec.get("filters") else ""),
+        "filters": [filter_text(f) for f in spec.get("filters") or []],
         "status": "plotted" if n_points else ("no_points" if res["rows"] else res["status"]),
         "spec": spec,
         "plan": plan,
@@ -845,7 +1058,8 @@ def to_csv(result: dict) -> str:
     head = ["panel", "point", "graph", "record", "entry", "x_record", "x_entry", "name", "run_status", "series", "facet"]
     for k in ("x", "y"):
         head += [f"{k}_title", f"{k}_kind", f"{k}_context"] + [f"{k}_{c}" for c in CSV_AXIS]
-    head += ["sources", "locators"]
+    head += ["assay", "target", "conditions", "sources", "locators", "filters"]
+    filters = "; ".join(result.get("filters") or [])
     buf = io.StringIO()
     w = csv.writer(buf, lineterminator="\n")
     w.writerow(head)
@@ -860,7 +1074,9 @@ def to_csv(result: dict) -> str:
             srcs = sorted({f"{e.get('source_name') or e.get('source')}" + (f" ({e['source_year']})" if e.get("source_year")
                                                                             else "") for e in q["evidence"]})
             locs = sorted({f"{e['axis']}: {e.get('locator')}" for e in q["evidence"] if e.get("locator")})
-            w.writerow(line + ["; ".join(srcs), "; ".join(locs)])
+            w.writerow(line + [q.get("assay") or "", q.get("target") or "",
+                               "; ".join(f"{k}: {v}" for k, v in (q.get("conditions") or {}).items()),
+                               "; ".join(srcs), "; ".join(locs), filters])
     return buf.getvalue()
 
 
@@ -871,11 +1087,12 @@ def model_view(result: dict, offset: int = 0, page_size: int = 50) -> dict:
     flat = [(p["id"], q) for p in result.get("panels") or [] for q in p["points"]]
     page = flat[offset:offset + page_size]
     return {"title": result.get("title"), "status": result.get("status"), "counts": result.get("counts"),
+            "filters": result.get("filters"),
             "panels": [{k: p[k] for k in ("id", "title", "x", "y", "series", "facets", "counts", "buckets", "histogram",
                                           "boxes", "counted") if k in p}
                        for p in result.get("panels") or []],
             "points": [{"panel": pid, **{k: q[k] for k in ("id", "record", "entry", "x_record", "name", "x", "y", "series",
-                                                           "facet") if q.get(k) is not None},
+                                                           "facet", "assay", "target", "conditions") if q.get(k)},
                         "evidence": sorted({(e.get("record"), e.get("source"), e.get("locator")) for e in q["evidence"]},
                                            key=str)}
                        for pid, q in page],
