@@ -426,6 +426,27 @@ def test_the_agent_tools_given_a_gate_never_return_canary_records_to_an_unapprov
     assert CANARY in json.dumps(srv.handle(msg))
 
 
+def test_a_query_across_graphs_is_gated_graph_by_graph(tmp_path):
+    """A call across graphs (graphs: [{alias, path | document}]) is checked graph by graph, as one document is: a
+    private graph among public ones is refused to an unapproved endpoint, its records never returned."""
+    ws = tmp_path / "ws"
+    ws.mkdir()
+    private = doc("project", PROJECT_A, name=CANARY)
+    (ws / "p.json").write_text(json.dumps(private))
+    (ws / "pub.json").write_text(json.dumps(doc("public")))
+    plan = {"match": {"label": "CatalyticTest", "as": "t"}, "return": ["t.name"]}
+    kit = ScaleToolkit(workspace=ws, repo=REPO, egress=EgressGate("anthropic", []))
+    for graphs in ([{"alias": "pub", "path": "pub.json"}, {"alias": "priv", "path": "p.json"}],
+                   [{"alias": "pub", "path": "pub.json"}, {"alias": "priv", "document": private}],
+                   [{"alias": "pub", "path": "pub.json"}, {"alias": "none"}]):
+        for name, args in (("query", {"plan": plan}), ("search", {"query": "yield"})):
+            out = kit.call(name, {**args, "graphs": graphs})
+            assert "egress denied" in out.get("error", ""), (name, graphs, out)
+            assert CANARY not in json.dumps(out)
+    out = kit.call("query", {"plan": plan, "graphs": [{"alias": "a", "path": "pub.json"}, {"alias": "b", "path": "pub.json"}]})
+    assert "error" not in out
+
+
 def test_scale_call_is_gated_by_the_environment(tmp_path, monkeypatch, capsys):
     ws = tmp_path / "ws"
     ws.mkdir()

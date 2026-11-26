@@ -484,6 +484,161 @@ reported.
 where: [{prop: temperature, op: le, value: 250, unit: °C, convert: true}]
 ```
 
+## Querying across graphs
+
+One plan can run over several documents (a public commons and a project's private graph, say) without merging them,
+on disk or in memory (`tools/federation.py`):
+
+```bash
+scale graph query --graph public=commons.json --graph private=project.json plan.yaml --identity-map refs.json
+scale graph search --graph public=commons.json --graph private=project.json "copper zinc methanol" -k 10
+```
+
+From Python or an agent host, `scale_query` and `scale_search` take `graphs: [{alias, path}, ...]` (or `{alias,
+document}`; optionally `spec_sha256`) and `identity_map` (an object or a path) instead of `path`. A call with one
+document and no `graphs` is unchanged.
+
+- **Each graph on its own.** Every document is read under the schema version it pins (`pgraph.spec_for`). Each graph
+  in the result (`graphs`) states its alias, `graph_id`, `schema_version`, the spec digest of that version
+  (`spec_sha256`), whether it is the digest this repository records for the version (`spec_verified`, README.md's
+  table), its `graph_sha256`, its status, its row count and its own `coverage` and `limitations`. A caller who binds
+  a graph to a digest (`--spec-sha256 ALIAS=SHA256`, or `spec_sha256`) gets `spec_mismatch` for another one, never a
+  read under it. A version the tools do not hold, or none pinned, is `unsupported_version` (never the head by
+  default), a file that cannot be read or a malformed graph `unavailable`,
+  and a plan a graph's schema cannot express that graph's `schema_gap`: the other graphs still answer, and the answer
+  is `partial` (`partial_graphs`), with an absence in those graphs unknown, not `no_matching_record`. Nothing is
+  migrated or read under another version.
+- **A tagged union.** Every row carries `graph`, `graph_sha256` and `row_key` (`<alias>/<n>`); so does every record
+  left out and every missing field. A record is identified by its graph and its id: two graphs that use one id do not
+  share a record by it (CURIE prefixes are not a guarantee of uniqueness).
+- **Joins only through an identity map.** Shared reference records (ChemicalSpecies, ProductLump, Reaction, Variable,
+  Source, Method) are identified across graphs by an evidenced identity map:
+
+  ```json
+  {"identity_map": 1, "mappings": [
+    {"id": "species-co",
+     "records": [{"graph": "public", "record": "ex:pm/species/co"}, {"graph": "private", "record": "lab:species/co"}],
+     "evidence": [{"basis": "the same formula (CO), charge (0) and InChIKey"}]}]}
+  ```
+
+  A mapping without evidence, naming a record that is not in its graph, a graph twice, records of different labels, or
+  a label that is not a shared reference record (a sample, a test or a catalyst: a catalyst's formula does not
+  establish a specimen's identity) is refused, with its reason (`identity.refused`). A mapping whose records disagree on
+  what defines them (a species' formula, composition, charge or isotopic label, a charge stated in one graph only; a
+  reaction's direction and participants with their roles and coefficients, compared through the mapped species; a
+  variable's scale, kind and unit) is an `identity_conflict` and is not used. One id in two graphs whose definitions
+  differ is an `identity_conflict` too (`kind: equal_id`), and the rows that bind it carry `identity_conflict`:
+  neither definition is ever taken for the other. A plan's `join` steps pair rows across graphs only through the map:
+
+  ```yaml
+  join:
+    - {var: product, graphs: [private, public], as: same_product}
+  ```
+
+  `joins` lists, per mapping, the rows of each graph whose variable binds one of its records (grouped by mapping,
+  never a cartesian product) among the rows returned (`over_returned_rows_only` when the limit cut some); equal ids
+  that no mapping names are counted (`equal_ids_not_mapped`), never joined. Two mappings that name one record are
+  both refused (`mapped_twice`), and a mapping's records are compared pairwise. One reaction id in two graphs with
+  other participants or coefficients is an `identity_conflict`.
+- **Ranking and limits after federation.** `order_by` ranks the rows of every graph together, by the numbers as
+  reported; `limit` applies to the union, and `truncated` and `coverage.limit` say how many rows were cut. With
+  `comparison: scientific` each graph compares its own values under its own contracts first; the union then groups
+  rows by unit, kind and context, where a record-valued context (the species an efficiency counts) is the mapping of
+  the identity map or else the graph's own record, and where the quantity contract of the kind must be the same under
+  each graph's schema. A group with rows of several graphs lists them (`comparison.groups[].graphs`); nothing is
+  ranked across groups. Each row keeps its graph's own group as `graph_comparison_group`.
+- **Access is the intersection of the audiences.** The answer's `access` (`basis: intersection`) has the least open
+  `level` of every consulted graph (each read as for one document: the whole document, its header and every record,
+  whether or not a row shows it; a graph that could not be read counts as institution), `requires` every audience a
+  graph's records require (a project, the contributing institutions), and `disjoint` when the graphs name audiences
+  with no reader in common as far as they say (two projects, institutions with none in common). The answer, a count
+  or a record named as left out included, goes only to a reader every graph admits; a membership one graph states
+  never opens another graph's records, and an answer resting on a private graph is never relabelled public. For a
+  wider answer, query the views `scale graph filter` makes for that audience.
+- **Search.** `scale graph search --graph ...` searches each graph's evidence with its own index (the one beside it,
+  else built in memory); hits say their graph, are interleaved by their rank within their graph (the scores of
+  separate indexes are never compared) and `k` applies after federation (`truncated`); the access is the
+  intersection.
+
+## The design matrix
+
+`scale data matrix` turns a plan's answer, over one graph or several, into a typed table for experiment-design and
+Bayesian-optimization agents, under a contract (`tools/designmatrix.py`):
+
+```bash
+scale data matrix --graph public=commons.json --graph private=project.json --plan plan.yaml \
+  --contract contract.yaml --identity-map refs.json --out matrix/
+```
+
+```yaml
+contract: 1
+name: co2rr-co
+row: {var: fe, interval: assay.name}         # one row per record (or result entry) the variable binds
+runs: {include: [completed, failed]}         # run statuses kept (default: completed); failed runs stay
+features:
+  - {name: potential, path: test.electrode_potential, type: quantity, unit: V,
+     context: {potential_reference: rhe}, bounds: {lower: -1.5, upper: 0}}
+  - {name: control, path: test.control_mode, type: category}
+outcomes:
+  - {name: fe_co, path: fe, type: quantity, unit: "%", objective: maximize}
+groups:
+  - {name: specimen, path: sample}           # keys for leakage-safe train/test splits
+```
+
+It writes `matrix.csv` and `matrix.manifest.json` (canonical JSON), the same bytes for the same inputs:
+
+- **Row identity is explicit**: `row_id` is `<alias>::<record>` (with `#<entry path>` for a result entry), with the
+  graph, record, entry, run status and, when named, the replicate and interval. Several plan rows of one identity are a
+  pivot; a column must then bind one record or entry among them (`select: {product.formula: CO}`), else the matrix is
+  **refused as an ambiguous pivot**. Nothing is averaged, nothing multiplied out; results that nothing tells apart are
+  two rows, flagged (`ambiguous_repetition` in the manifest).
+- **Columns have roles**: each feature and outcome states its path, type (quantity, number, category, boolean, text,
+  record), unit, Variable, context, categories, bounds, objective (maximize, minimize, target) and fidelity, and has
+  `__status`, `__lower`, `__upper`, `__uncertainty` and `__uncertainty_kind` beside it. Groups are columns
+  `group:<name>`: a record's identity across graphs (its identity-map mapping) or `<alias>::<id>`.
+- **Incompatible values are refused, never converted**: a value in another unit than the column's, a quantity whose
+  context (read under its own graph's contract, as a scientific comparison reads it) is not the contract's, and a
+  column whose values span several contexts (CO and H2 efficiencies, or CO of two graphs not identified by the map)
+  refuse the matrix. A value whose context is not stated or contradictory is a typed cell (`missing_context:<name>`,
+  `incompatible_context:<name>`), never assumed.
+- **Typed missingness**: `present`, `range`, `censored_lower`/`censored_upper` (a one-sided bound, its number in
+  `__lower` or `__upper`), `below_detection_limit` (the limit in `__upper`), `not_reported:<reason>`, `not_measured`,
+  `not_applicable`, `not_bound` (the plan bound nothing), `failed_run` (an absent outcome of a failed or aborted run),
+  `prediction_not_observation` (a value of origin predicted) and `unit_unstated`. No cell is imputed or normalized
+  (`transformations` is empty).
+- **Observations only**: a proposal (origin hypothesized, or experiment_status proposed or planned), a record a newer
+  version REVISES and a run whose status the contract does not include are left out, each with its reason
+  (`excluded`); a Prediction is never a row.
+- **Provenance**: the manifest names each graph (alias, graph digest, schema version, spec digest and whether it is
+  verified), the plan's, contract's and identity map's digests, the table's digest, each row's plan rows and each
+  cell's evidence (source and locator), what the query left out by reason (`excluded_by_query`), the grouping keys
+  (`split`) and the `access`, the intersection of the graphs' audiences: the table goes only where it admits.
+
+## Writing proposals and results back
+
+An agent's proposals and their results go back into the project's graph as kernel records (`tools/campaign.py`), so
+that a campaign stays auditable (TRACE-AI):
+
+- `campaign.propose(doc, design=..., iteration=..., agent=..., proposed_at=..., proposals=[...])` adds each proposal as
+  an experiment (`experiment_status: proposed`, `origin: hypothesized`, `record_version: 1`) PART_OF_DESIGN the
+  Design with its `iteration`, PROPOSED_BY the agent (`proposed_at`, rationale, acquisition value, the person's
+  decision when there is one) and AIMS_TO_TEST a Prediction (`proposed_at`, the variable, the expected value with
+  `origin: predicted`), itself PROPOSED_BY the agent and, when a hypothesis is named, DERIVED from it. A proposal
+  states conditions only (results are refused); its stewardship goes on its prediction and on every link written for
+  it, so a restricted proposal never leaves a public prediction.
+- `campaign.record_result(doc, proposal=..., result_id=..., recorded_at=..., status=..., ...)` appends the result as a
+  new record of the proposal's label (`origin: recorded`, `recorded_at`, `record_version` one more) that REVISES the
+  proposal, which stays as it was proposed; PART_OF_DESIGN the same iteration; REPORTED_IN the run log its evidence
+  cites; and TESTS every Prediction the proposal aimed to test, with the outcome and the results it rests on. A
+  failed or aborted run is recorded with its reason, never dropped (its TESTS is inconclusive, incomplete data). The
+  result takes the proposal's conditions, never its results or evidence: a completed run states what was measured. A
+  second result for one proposal and a result recorded before its prediction was proposed (instants compared with
+  their offsets) are refused.
+
+The design matrix reads results only, so predictions and proposals never train a model as observations. Record the
+matrix a proposal was chosen from (its `sha256` in the manifest) with the agent's version, seed and configuration;
+a person's approval of a proposal is a separate decision (`PROPOSED_BY.human_decision`).
+
 ## The model view
 
 A full result repeats itself: each row carries every evidence item whole, with its source's year, kind, status and
