@@ -42,12 +42,14 @@ roles:
   status_reason:
     kind: text
     synonyms: [status reason, reason, error, failure reason, note, comment, remarks]
-confirm: ['the energy is an electronic adsorption (reaction) energy as the calculation gives it, of the adsorbate named;
-    its reference states are the laboratory''s (state them in the Variable''s description)', the adsorbate names the process
-    only in words (unresolved_target); link each energy to its Reaction (the adsorption with its reference states) when
-    the document holds one, charge_treatment constant_charge (an ordinary calculation at a fixed number of electrons); change
-    it for constant-potential calculations, 'a blank energy is recorded as not_measured (a failed or missing calculation),
-    never zero']
+confirm:
+- the energy is an electronic adsorption (reaction) energy as the calculation gives it, of the adsorbate named; its reference
+  states are the laboratory's (state them in the Variable's description)
+- the adsorbate names the process only in words (unresolved_target); link each energy to its Reaction (the adsorption with
+  its reference states) when the document holds one
+- charge_treatment constant_charge (an ordinary calculation at a fixed number of electrons); change it for constant-potential
+  calculations
+- a blank energy is recorded as not_measured (a failed or missing calculation), never zero
 mapping:
   mapping_version: 2
   input: '{{input}}'

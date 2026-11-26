@@ -185,8 +185,9 @@ def _snake(text: str) -> str:
 
 
 def _melt(role: str, r: dict, header: list[str], body: list[list[str]], free: list[int], spec: dict | None,
-          uncertain: list[dict]) -> list[dict]:
-    """The columns a wide role takes: header matches a pattern, unit of the right dimension, values numbers."""
+          uncertain: list[dict], others: dict) -> list[dict]:
+    """The columns a wide role takes: header matches a pattern, unit of the right dimension, values numbers, and no
+    single-column role names it as well (a column 'Sample' is a sample, never the selectivity to 'ample')."""
     pats = [re.compile(p, re.IGNORECASE) for p in r["patterns"]]
     excl = {x.lower() for x in r.get("exclude_targets") or []}
     out, ids = [], set()
@@ -198,6 +199,10 @@ def _melt(role: str, r: dict, header: list[str], body: list[list[str]], free: li
             continue
         target = m.group("target").strip()
         if not target or target.lower() in excl:
+            continue
+        rival = next((o for o, x in others.items() if name_score(h, x["synonyms"]) >= SURE), None)
+        if rival:
+            uncertain.append({"role": role, "column": h, "why": f"not taken: the header names the role {rival} as well"})
             continue
         if m.string == h.strip() and unit is not None:
             unit = None                              # the pattern read the whole header: its parenthesis is no unit
@@ -243,7 +248,8 @@ def _bind(t: dict, header: list[str], body: list[list[str]], spec: dict | None, 
         if r["kind"] != "melt":
             continue
         free = [j for j in range(len(header)) if j not in claimed]
-        cols = _melt(role, r, header, body, free, spec, uncertain)
+        others = {o: x for o, x in roles.items() if x["kind"] != "melt"}
+        cols = _melt(role, r, header, body, free, spec, uncertain, others)
         if cols:
             melts[role] = cols
             for c in cols:
@@ -547,6 +553,12 @@ def read(data: bytes, file_name: str, sheet: str | None = None, header_row: int 
         except ScaleError as exc:
             out.append({"sheet": sh, "error": str(exc), "recipe": o, "header": [], "body": []})
             continue
+        if gg["format"] == "xlsx" and "percent" not in o and any(
+                re.fullmatch(r"[+-]?\d+(?:\.\d+)?(?:[eE][+-]?\d+)?%", x) for r in e["body"] for x in r):
+            o["percent"] = "displayed"              # cells formatted as % are read as the numbers they show
+            e = extract(data, o, file_name)
+            notes.append({"role": None, "column": None, "why": "cells formatted as percentages are read as the numbers "
+                          "they show (60% as 60, never 0.6); the mapping records input.percent"})
         if e["ignored_after"]:
             notes.append({"role": None, "column": None, "why": f"{e['ignored_after']} non-empty rows after a blank row "
                           f"are not read (cells {e['rows_used']} are); give input.range to read another block"})
@@ -637,6 +649,22 @@ def match(data: bytes, file_name: str, templates: list[dict], spec: dict | None 
         reading.append(x)
     return {"file": file_name, "reading": reading, "candidates": candidates[:max(1, top)],
             "best": candidates[0]["template"] if candidates else None}
+
+
+def save(path: str | Path, text: str) -> Path:
+    """Write a mapping through a new file renamed into place: a link at ``path`` is replaced, never followed."""
+    import os
+    import tempfile
+    path = Path(path)
+    fd, tmp = tempfile.mkstemp(prefix=f".{path.name}.", suffix=".tmp", dir=path.parent)
+    try:
+        with os.fdopen(fd, "w", encoding="utf-8") as f:
+            f.write(text)
+        os.replace(tmp, path)
+    except BaseException:
+        Path(tmp).unlink(missing_ok=True)
+        raise
+    return path
 
 
 def _got(b: dict, role: str) -> float:

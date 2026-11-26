@@ -205,8 +205,8 @@ def load_mapping(data: bytes, where: str = "mapping") -> dict:
         _str(d, k, "dataset")
     if two:
         if ("id" in d) == ("id_prefix" in d):
-            _fail("mapping: dataset names its id, or an id_prefix (the id is then the prefix, the file's name and its "
-                  "sha256's first 12 characters)")
+            _fail("mapping: dataset names its id, or an id_prefix (the id is then made of the prefix, the file's name "
+                  "and its sha256, and, for a table extracted from it, the table's sha256)")
         d.setdefault("profile", "scale_csv_v1")
     elif not (d.get("version") or d.get("uri")):
         _fail("mapping: dataset names its version or its uri (a cell is found again only in the bytes cited)")
@@ -454,6 +454,12 @@ class _Compiler:
             if have is not None:
                 if have.get("label") != x["label"]:
                     _fail(f"references.{h}: {x['id']} is in the document as a {have.get('label')}, not a {x['label']}")
+                hp = have.get("props") or {}
+                differ = sorted(k for k, v in x["props"].items() if k not in ("name", "description") and hp.get(k) != v)
+                if differ:                          # one id, another meaning: refused, never reused
+                    _fail(f"references.{h}: {x['id']} is in the document with other "
+                          + ", ".join(f"{k} ({hp.get(k)!r}, the mapping {x['props'][k]!r})" for k in differ)
+                          + "; give the reference another id")
                 self.handles[h] = x["id"]
                 continue
             if x.get("reuse"):
@@ -525,8 +531,10 @@ class _Compiler:
         rid = c["id_prefix"] + _seg(t)
         if rid in self.nodes_by_id:
             have = self.nodes_by_id[rid]
-            if have.get("label") != lk["label"]:
-                _fail(f"{where}: lookup {name} would create {rid}, which the document holds as a {have.get('label')}")
+            hp = have.get("props") or {}
+            if have.get("label") != lk["label"] or hp.get(c["as"]) != t:
+                _fail(f"{where}: lookup {name} would create {rid} for {t!r}, and the document holds that id as a "
+                      f"{have.get('label')} whose {c['as']} is {hp.get(c['as'])!r}")
             return rid
         if rid in self.created:
             return rid
@@ -1027,14 +1035,20 @@ def plan(data: bytes, mapping: bytes, doc: dict, spec: dict, file_name: str = "t
     if m["_two"] and d["profile"] != "scale_csv_v1":
         _fail(f"mapping: dataset.profile {d['profile']!r}: the table a version 2 mapping reads is scale_csv_v1 (another "
               "dialect or a workbook is read by its input block)")
-    did = d.get("id") or f"{d['id_prefix']}{_slug(Path(file_name).stem)}-{file_digest[:12]}"
+    base = f"{d.get('id_prefix')}{_slug(Path(file_name).stem)}-{file_digest[:12]}"
+    if d.get("id"):
+        did = d["id"]
+    elif extracted is not None and not extracted["identity"]:
+        did = f"{base}/table-{sha256(table_bytes)[:12]}"   # one table of the file (a sheet, a range): its own id
+    else:
+        did = base
     if m["_two"] and not (d.get("version") or d.get("uri")):
         d = m["dataset"] = {**d, "uri": uri or file_name}
     comp = _Compiler(m, header, body, doc, spec, did)
     table, nodes, links = comp.compile()
     have = {n.get("id"): n for n in doc.get("nodes") or []} | {e.get("id"): e for e in doc.get("links") or []}
     derived = extracted is not None and not extracted["identity"]
-    fid = (d.get("file_id") or f"{did}/file") if derived else None
+    fid = (d.get("file_id") or (base if not d.get("id") else f"{did}/file")) if derived else None
     generated = {n["id"] for n in nodes} | {did} | set(comp.created) | ({fid} if fid else set())
     unresolved = sorted((x, w) for x, w in comp.refs.items() if x not in have and x not in generated)
     if unresolved:

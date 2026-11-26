@@ -52,26 +52,30 @@ roles:
     quantity: conversion
     default_unit: '%'
     exclude_targets: [total, sum]
-    patterns: ['^(?:x|conv\.?|conversion)[\s_:-]*(?:of[\s_]+)?(?P<target>[A-Za-z][A-Za-z0-9+\-]*)$']
+    patterns:
+    - ^(?:x|conv\.?|conversion)[\s_:-]+(?:of[\s_]+)?(?P<target>[A-Za-z][A-Za-z0-9+\-]*)$
   selectivity:
     kind: melt
     id: s
     quantity: selectivity
     default_unit: '%'
     exclude_targets: [total, sum, balance, others, other]
-    patterns: ['^(?:s|sel\.?|selectivity)[\s_:-]*(?:to[\s_]+|of[\s_]+)?(?P<target>[A-Za-z][A-Za-z0-9+\-]*)$']
+    patterns:
+    - ^(?:s|sel\.?|selectivity)[\s_:-]+(?:to[\s_]+|of[\s_]+)?(?P<target>[A-Za-z][A-Za-z0-9+\-]*)$
   yield:
     kind: melt
     id: 'y'
     quantity: product_yield
     default_unit: '%'
     exclude_targets: [total, sum]
-    patterns: ['^(?:y|yield)[\s_:-]*(?:of[\s_]+)?(?P<target>[A-Za-z][A-Za-z0-9+\-]*)$']
-confirm: [each row is one test condition (one CatalyticTest); rows of one run at several temperatures are several tests,
-  'a blank conversion, selectivity or yield is recorded as not_measured, and a cell such as <0.1 as below the detection
-    limit', 'selectivities are of the products named, on the basis the laboratory states (carbon or molar); add it as the
-    result''s basis if it is known', a sample the document does not hold is created as a CatalystSample of sample_kind other;
-    set its form]
+    patterns:
+    - ^(?:y|yield)[\s_:-]+(?:of[\s_]+)?(?P<target>[A-Za-z][A-Za-z0-9+\-]*)$
+confirm:
+- each row is one test condition (one CatalyticTest); rows of one run at several temperatures are several tests
+- a blank conversion, selectivity or yield is recorded as not_measured, and a cell such as <0.1 as below the detection limit
+- selectivities are of the products named, on the basis the laboratory states (carbon or molar); add it as the result's
+  basis if it is known
+- a sample the document does not hold is created as a CatalystSample of sample_kind other; set its form
 mapping:
   mapping_version: 2
   input: '{{input}}'

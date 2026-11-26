@@ -54,11 +54,13 @@ roles:
     kind: text
     synonyms: [site basis, sites, tof basis, site count, site counting, site titration, counted by, per site, normalized
         to, normalization, active site basis]
-confirm: [each row is one kinetic measurement (one CatalyticTest of test_kind kinetics); a run holds one rate and one TOF,
-  rates and TOFs are reported as measured; whether they are free of heat and mass transport limits is not stated by the
-    table (add the transport checks to the tests if they were made), 'a TOF keeps the cell of the site-basis column as its
-    basis; without that column it states no basis, and TOFs counted on other sites are not one quantity', a sample the document
-    does not hold is created as a CatalystSample of sample_kind other; set its form]
+confirm:
+- each row is one kinetic measurement (one CatalyticTest of test_kind kinetics); a run holds one rate and one TOF
+- rates and TOFs are reported as measured; whether they are free of heat and mass transport limits is not stated by the
+  table (add the transport checks to the tests if they were made)
+- a TOF keeps the cell of the site-basis column as its basis; without that column it states no basis, and TOFs counted on
+  other sites are not one quantity
+- a sample the document does not hold is created as a CatalystSample of sample_kind other; set its form
 mapping:
   mapping_version: 2
   input: '{{input}}'

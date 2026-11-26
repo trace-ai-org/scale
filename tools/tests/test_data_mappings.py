@@ -275,12 +275,13 @@ def test_a_workbook_with_several_sheets_and_a_preamble(templates, spec, seed, tm
     # two Datasets: the workbook's bytes, and its sheet as scale_csv_v1 with the recipe
     doc = plan(data, best["mapping_yaml"], seed, spec, "fe.xlsx")["document"]
     tab = next(n for n in doc["nodes"] if n["label"] == "Dataset" and n["props"].get("table"))
-    wb = node(doc, tab["id"] + "/file")["props"]
+    fid = tab["props"]["table"]["ingest"]["extracted_from"]
+    assert tab["id"].startswith(fid + "/table-")
+    wb = node(doc, fid)["props"]
     assert wb["sha256"] == datatable.sha256(data) and wb["media_type"] == datainput.XLSX_MEDIA and "table" not in wb
     ing = tab["props"]["table"]["ingest"]
-    assert ing["extracted_from"] == tab["id"] + "/file" and ing["input_sheet"] == "FE" and ing["input_header_row"] == "4"
-    assert any(ln["type"] == "INCLUDES" and ln["source"] == tab["id"] + "/file" and ln["target"] == tab["id"]
-               for ln in doc["links"])
+    assert ing["input_sheet"] == "FE" and ing["input_header_row"] == "4"
+    assert any(ln["type"] == "INCLUDES" and ln["source"] == fid and ln["target"] == tab["id"] for ln in doc["links"])
     canonical = datainput.extract(data, {"sheet": "FE", "header_row": 4})["canonical"]
     assert tab["props"]["sha256"] == datatable.sha256(canonical)
     # verification extracts the table again from the workbook, or reads the canonical table given as the file
@@ -288,6 +289,17 @@ def test_a_workbook_with_several_sheets_and_a_preamble(templates, spec, seed, tm
     assert datatable.verify(doc, base=tmp_path)["status"] == "verified"
     (tmp_path / "t.csv").write_bytes(canonical)
     assert datatable.verify(doc, files={tab["id"]: tmp_path / "t.csv"}, base=tmp_path / "none")["status"] == "verified"
+    # the workbook given as its own Dataset's file: checked by its bytes, its table extracted from it
+    got = datatable.verify(doc, files={fid: tmp_path / "fe.xlsx"}, base=tmp_path / "none")
+    assert got["status"] == "verified", got
+    # another sheet of the same workbook is another table, so another Dataset under the same file
+    m2 = {"mapping_version": 2, "input": {"format": "xlsx", "sheet": "GC calibration"},
+          "dataset": {"id_prefix": "ex-dm:data/", "primary_key": ["Gas"]},
+          "records": [{"as": "c", "label": "Characterization", "key": ["Gas"], "origin": "synthetic",
+                       "name_column": "Gas", "properties": {"technique": {"literal": "GC"}}}]}
+    doc2 = plan(data, yaml.safe_dump(m2), doc, spec, "fe.xlsx")["document"]
+    tabs = sorted(n["id"] for n in doc2["nodes"] if n["label"] == "Dataset" and n["id"].startswith(fid + "/table-"))
+    assert len(tabs) == 2
     other = datainput.write_xlsx([("FE", [["Run", "E (V vs RHE)"], ["R1", -0.9]])])
     (tmp_path / "fe.xlsx").write_bytes(other)
     got = datatable.verify(doc, base=tmp_path)
@@ -300,7 +312,7 @@ def test_the_xlsx_reader(tmp_path):
     wb = datainput.write_xlsx([("S", [["a", "b", "when"], ["x", 0.1 + 0.2, 46083.5], ["y", 3, None], [True, "<1", 7]])],
                               {("S", 1, 2)})
     g = datainput.grid(wb)
-    assert g["rows"] == [["a", "b", "when"], ["x", "0.3", "2026-03-02T12:00:00"], ["y", "3", ""], ["true", "<1", "7"]]
+    assert g["rows"] == [["a", "b", "when"], ["x", "0.30000000000000004", "2026-03-02T12:00:00"], ["y", "3", ""], ["true", "<1", "7"]]
     assert datainput.write_xlsx([("S", [["a"]])]) == datainput.write_xlsx([("S", [["a"]])])      # deterministic
     with pytest.raises(ScaleError, match="no sheet 'T'"):
         datainput.grid(wb, {"sheet": "T"})
@@ -312,6 +324,17 @@ def test_the_xlsx_reader(tmp_path):
         datainput.extract(datainput.write_xlsx([("S", [["a", None, "c"], ["1", "2", "3"]])]))
     e = datainput.extract(wb, {"range": "A1:B3"})
     assert e["header"] == ["a", "b"] and e["rows_used"] == "A1:B3" and e["recipe"]["range"] == "A1:B3"
+    # cell and row references are optional in a workbook: each then follows the last
+    import io
+    import re
+    import zipfile
+    src = zipfile.ZipFile(io.BytesIO(datainput.write_xlsx([("S", [["a", "b"], [1, 2]])])))
+    buf = io.BytesIO()
+    with zipfile.ZipFile(buf, "w") as z:
+        for n in src.namelist():
+            x = src.read(n)
+            z.writestr(n, re.sub(rb' r="[A-Z]*[0-9]+"', b"", x) if n.startswith("xl/worksheets/") else x)
+    assert datainput.grid(buf.getvalue())["rows"] == [["a", "b"], ["1", "2"]]
 
 
 def test_csv_dialects_are_read_and_recorded(templates, spec, seed):
@@ -475,5 +498,72 @@ def test_build_examples_rebuilds_the_same_files(tmp_path):
     script = tmp_path / "x" / "build_examples.py"
     script.write_text(src.replace("for p in [HERE, *HERE.parents]:", f"for p in [Path({str(REPO)!r})]:"))
     subprocess.run([sys.executable, str(script)], check=True, capture_output=True)
-    for f in sorted(p.name for p in X.iterdir() if p.is_file() and p.name != "build_examples.py"):
+    # the data files and the mappings match saves (the documents pin the head's version: the test above checks them)
+    for f in sorted(p.name for p in X.iterdir() if p.suffix in (".csv", ".xlsx", ".yaml")):
         assert (tmp_path / "x" / f).read_bytes() == (X / f).read_bytes(), f
+
+
+# ------------------------------------------------------------------------------------------ what review found
+def test_a_workbook_never_gives_a_value_it_does_not_hold():
+    import io
+    import zipfile
+    src = zipfile.ZipFile(io.BytesIO(datainput.write_xlsx([("S", [["run", "FE CO (%)"], ["R1", 60]])])))
+
+    def variant(old: bytes, new: bytes, styles: bytes | None = None) -> bytes:
+        buf = io.BytesIO()
+        with zipfile.ZipFile(buf, "w") as z:
+            for n in src.namelist():
+                x = src.read(n)
+                if n == "xl/worksheets/sheet1.xml":
+                    x = x.replace(old, new)
+                if n == "xl/styles.xml" and styles is not None:
+                    x = styles
+                z.writestr(n, x)
+        return buf.getvalue()
+    # a formula never calculated is refused, never read as a blank (and so as not measured)
+    with pytest.raises(ScaleError, match="B2: a formula without a computed value"):
+        datainput.grid(variant(b'<c r="B2"><v>60</v></c>', b'<c r="B2"><f>A1*2</f></c>'))
+    # a cell formatted as a percentage stores 0.6 and shows 60%: never read as 0.6
+    styles = (b'<?xml version="1.0" encoding="UTF-8"?><styleSheet xmlns="http://schemas.openxmlformats.org/'
+              b'spreadsheetml/2006/main"><cellXfs count="2"><xf numFmtId="0"/><xf numFmtId="9"/></cellXfs></styleSheet>')
+    wb = variant(b'<c r="B2"><v>60</v></c>', b'<c r="B2" s="1"><v>0.6</v></c>', styles)
+    assert datainput.grid(wb)["rows"][1] == ["R1", "60%"]
+    assert datainput.grid(wb, {"percent": "displayed"})["rows"][1] == ["R1", "60"]
+    templates = datamatch.load_templates(REPO)
+    spec = spec_of(load_doc(X / "seed.json"))
+    best = datamatch.match(wb, "p.xlsx", templates, spec, template="co2rr-faradaic-efficiency")["candidates"][0]
+    assert yaml.safe_load(best["mapping_yaml"])["input"]["percent"] == "displayed"
+    assert any("percentages are read as the numbers they show" in u["why"] for u in best["uncertain"])
+    # a workbook whose used area is a sheet's whole grid is refused before it is allocated
+    with pytest.raises(ScaleError, match="more than 20000000 cells"):
+        datainput.grid(variant(b"</sheetData>", b'<row r="1048576"><c r="XFD1048576"><v>1</v></c></row></sheetData>'))
+
+
+def test_an_existing_id_of_another_meaning_is_refused(spec, seed):
+    data = b"run,product,FE (%)\nR1,CO,60\n"
+    m = {"mapping_version": 2, "input": {"format": "csv"},
+         "dataset": {"id": "ex:m/d", "version": "1", "primary_key": ["run"]},
+         "references": {"fe": {"id": "ex-dm:variable/fe", "label": "Variable", "props": {
+             "name": "S", "scale": "quantitative", "quantity_kind": "selectivity", "unit": "%"}}},
+         "lookups": {"sp": {"label": "ChemicalSpecies", "match": ["formula"],
+                            "create": {"id_prefix": "ex-dm:species/", "as": "formula"}}},
+         "records": [{"as": "t", "label": "CatalyticTest", "key": ["run"], "origin": "synthetic",
+                      "properties": {"test_kind": {"literal": "activity"}},
+                      "results": [{"id": "fe", "column": "FE (%)", "unit_from_header": True, "variable": "@fe",
+                                   "target_column": "product", "target_lookup": "sp"}]}]}
+    with pytest.raises(ScaleError, match="ex-dm:variable/fe is in the document with other quantity_kind"):
+        plan(data, yaml.safe_dump(m), seed, spec)
+    m["references"]["fe"]["props"]["quantity_kind"] = "faradaic_efficiency"
+    clash = copy.deepcopy(seed)                             # the id a creation would take holds another species
+    clash["nodes"].append({"id": "ex-dm:species/CO", "label": "ChemicalSpecies",
+                           "props": {"name": "methane", "formula": "CH4", "origin": "synthetic"}})
+    del m["lookups"]["sp"]["match"]
+    with pytest.raises(ScaleError, match="would create ex-dm:species/CO for 'CO'.*whose formula is 'CH4'"):
+        plan(data, yaml.safe_dump(m), clash, spec)
+
+
+def test_a_sample_column_is_never_melted_as_a_selectivity(templates, spec):
+    data = b"Run,Sample,T (K),S CH4 (%)\nA,1,500,90\n"
+    best = match(data, "s.csv", templates, spec, template="thermal-catalytic-test")["candidates"][0]
+    assert best["bindings"]["sample"]["column"] == "Sample"
+    assert [c["column"] for c in best["melt"]["selectivity"]] == ["S CH4 (%)"]

@@ -403,6 +403,17 @@ def verify(doc: dict, files: dict[str, str | Path] | None = None, base: str | Pa
         d = datasets[did]
         items = cited.get(did, [])
         entry: dict = {"dataset": did, "cells": len(items), "recorded_sha256": d.get("sha256")}
+        if not isinstance(d.get("table"), dict) and did in files:
+            # a file no cell names (a workbook its tables were extracted from): its bytes, nothing else
+            got = sha256(Path(files[did]).read_bytes()) if files[did].is_file() else None
+            out.append({**entry, "file": str(files[did]), "file_sha256": got,
+                        **({"status": "verified", "reason": "checksum only: the file has no table of its own"}
+                           if got == d.get("sha256") else
+                           {"status": "unverified", "reason": f"no local copy of the file (looked for {files[did]})"}
+                           if got is None else
+                           {"status": "failed", "problems": ["checksum mismatch: the file is not the bytes the Dataset "
+                                                             "records (new bytes are a new Dataset)"]})})
+            continue
         t = d.get("table") if isinstance(d.get("table"), dict) else {}
         ingest = t.get("ingest") if isinstance(t.get("ingest"), dict) else {}
         path = files.get(did) or _local_file(d.get("uri"), Path(base))

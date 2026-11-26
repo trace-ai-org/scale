@@ -1365,7 +1365,7 @@ def cmd_data_match(args):
         dest = Path(args.save)
         if dest.exists() and not args.force:
             raise ScaleError(f"{dest} exists; give --force to replace it")
-        dest.write_text(best["mapping_yaml"], encoding="utf-8")
+        datamatch.save(dest, best["mapping_yaml"])
     if args.format == "json":
         _emit(res, args)
     else:

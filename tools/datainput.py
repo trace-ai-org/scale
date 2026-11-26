@@ -9,10 +9,10 @@ the delimiter, the encoding, the decimal mark) is the *recipe*; recorded with th
 
 Pure Python and the standard library only (``zipfile``, ``xml.etree``, ``csv``), so the same code runs in Pyodide;
 no spreadsheet library is needed. What it reads of a workbook: the sheets, shared and inline strings, numbers,
-booleans, error values, the cached values of formulas and dates (by the cell's number format). It does not evaluate
-formulas, merge cells or read charts. A number is written as the shortest decimal that gives the stored double back,
-and at most 15 significant digits (the binary noise of a sum such as 0.1 + 0.2 is dropped, as a spreadsheet displays
-it).
+booleans, error values, the cached values of formulas (a formula never calculated is refused, never read as a
+blank), dates (by the cell's number format) and percentages (a cell shown as 60% is the text 60%, or, with
+``percent: displayed``, the number 60: never 0.6 under a header in %). It does not evaluate formulas, merge cells or
+read charts. A number is written as the shortest decimal that gives the stored double back (lossless).
 """
 
 from __future__ import annotations
@@ -30,8 +30,9 @@ XLSX_MEDIA = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
 CSV_MEDIA = "text/csv"
 FORMATS = ("csv", "xlsx")
 DELIMITERS = (",", ";", "\t", "|")
-RECIPE_KEYS = ("format", "sheet", "header_row", "range", "delimiter", "encoding", "decimal")
+RECIPE_KEYS = ("format", "sheet", "header_row", "range", "delimiter", "encoding", "decimal", "percent")
 MAX_UNZIPPED = 256 * 1024 * 1024                 # a workbook larger than this unzipped is refused (a zip bomb)
+MAX_CELLS = 20_000_000                           # a sheet whose used area is larger is refused (a cell at XFD1048576)
 _NS = {"m": "http://schemas.openxmlformats.org/spreadsheetml/2006/main",
        "r": "http://schemas.openxmlformats.org/officeDocument/2006/relationships",
        "rel": "http://schemas.openxmlformats.org/package/2006/relationships"}
@@ -98,7 +99,8 @@ class _Workbook:
             path = target if target.startswith("xl/") else f"xl/{target}"
             self.sheets.append((s.get("name") or "", path))
         self.strings = self._shared_strings()
-        self.date_styles = self._date_styles()
+        self.date_styles, self.percent_styles = self._styles()
+        self.percent = None
 
     def _xml(self, name: str) -> ET.Element:
         try:
@@ -121,21 +123,25 @@ class _Workbook:
             return []
         return [self._text(si) for si in self._xml("xl/sharedStrings.xml").findall("m:si", _NS)]
 
-    def _date_styles(self) -> set[int]:
-        """The indexes of the cell formats (cellXfs) that show a date or a time."""
+    def _styles(self) -> tuple[set[int], set[int]]:
+        """The indexes of the cell formats (cellXfs) that show a date or a time, and those that show a percentage."""
         if "xl/styles.xml" not in self.z.namelist():
-            return set()
+            return set(), set()
         st = self._xml("xl/styles.xml")
-        custom = {}
+        dates, percents = {}, {}
         for f in st.findall("m:numFmts/m:numFmt", _NS):
             code = re.sub(r'"[^"]*"|\[[^\]]*\]|\\.', "", f.get("formatCode") or "").lower()
-            custom[int(f.get("numFmtId", "0"))] = bool(re.search(r"[dmyhs]", code)) and "general" not in code
-        out = set()
+            fid = int(f.get("numFmtId", "0"))
+            dates[fid] = bool(re.search(r"[dmyhs]", code)) and "general" not in code
+            percents[fid] = "%" in code
+        out_d, out_p = set(), set()
         for i, xf in enumerate(st.findall("m:cellXfs/m:xf", _NS)):
             fid = int(xf.get("numFmtId", "0"))
-            if fid in _DATE_IDS or custom.get(fid):
-                out.add(i)
-        return out
+            if fid in _DATE_IDS or dates.get(fid):
+                out_d.add(i)
+            elif fid in (9, 10) or percents.get(fid):
+                out_p.add(i)
+        return out_d, out_p
 
     def sheet_names(self) -> list[str]:
         return [n for n, _ in self.sheets]
@@ -153,18 +159,33 @@ class _Workbook:
             name, path = hit[0]
         root = self._xml(path)
         cells: dict[tuple[int, int], str] = {}
-        for c in root.iterfind("m:sheetData/m:row/m:c", _NS):
-            ref = c.get("r") or ""
-            m = _REF.match(ref)
-            if not m:
-                _fail(f"sheet {name!r}: a cell without a reference ({ref!r}); the workbook is not one this reader knows")
-            text = self._cell(c, name, ref)
-            if text != "":
-                cells[(int(m.group(2)) - 1, _col_index(m.group(1)))] = text
+        r = -1
+        for row in root.iterfind("m:sheetData/m:row", _NS):
+            rr = row.get("r")                         # optional (ECMA-376): without it, the row after the last
+            r = int(rr) - 1 if rr and rr.isdigit() and int(rr) > 0 else r + 1
+            col = -1
+            for c in row.iterfind("m:c", _NS):
+                ref = c.get("r")
+                if ref:
+                    m = _REF.match(ref)
+                    if not m or int(m.group(2)) - 1 != r:
+                        _fail(f"sheet {name!r}: the cell reference {ref!r} is not one of row {r + 1}")
+                    col = _col_index(m.group(1))
+                else:
+                    col += 1                          # optional too: the cell after the last
+                    ref = f"{col_letters(col)}{r + 1}"
+                text = self._cell(c, name, ref)
+                if text != "":
+                    if (r, col) in cells:
+                        _fail(f"sheet {name!r}: the cell {ref} is written twice")
+                    cells[(r, col)] = text
         if not cells:
             return name, []
         nrows = max(r for r, _ in cells) + 1
         ncols = max(c for _, c in cells) + 1
+        if nrows * ncols > MAX_CELLS:
+            _fail(f"sheet {name!r} spans {nrows} rows and {ncols} columns, more than {MAX_CELLS} cells; give input.range "
+                  "or save the table on a sheet of its own")
         rows = [["" for _ in range(ncols)] for _ in range(nrows)]
         for (r, c), t in cells.items():
             rows[r][c] = t
@@ -177,6 +198,9 @@ class _Workbook:
             is_ = c.find("m:is", _NS)
             return self._text(is_) if is_ is not None else ""
         if v is None or v.text is None:
+            if c.find("m:f", _NS) is not None:      # a formula never computed is no blank: refuse, never read as missing
+                _fail(f"sheet {sheet!r}, cell {ref}: a formula without a computed value; open the workbook in a "
+                      "spreadsheet program, let it calculate and save it")
             return ""
         raw = v.text
         if t == "s":
@@ -195,20 +219,30 @@ class _Workbook:
             x = float(raw)
         except ValueError as exc:
             raise ScaleError(f"sheet {sheet!r}, cell {ref}: {raw!r} is not a number") from exc
-        if int(c.get("s", "0") or 0) in self.date_styles:
+        style = int(c.get("s", "0") or 0)
+        if style in self.date_styles:
             return _serial_date(x, self.date1904)
+        if style in self.percent_styles:
+            # the sheet shows 60% and stores 0.6: the cell is read as it shows, with its % sign, so that a number is
+            # never taken at a hundredth of its magnitude (input.percent: displayed reads it as the number shown)
+            shown = number_text(_times_100(raw), float(_times_100(raw)))
+            return shown if self.percent == "displayed" else f"{shown}%"
         return number_text(raw, x)
 
 
+def _times_100(raw: str) -> str:
+    from decimal import Decimal
+    d = Decimal(raw.strip()) * 100
+    t = format(d.normalize(), "f")
+    return t if t not in ("-0",) else "0"
+
+
 def number_text(raw: str, x: float) -> str:
-    """The text of a stored number: an integer as written, else the shortest decimal that reads back as the double,
-    with at most 15 significant digits."""
+    """The text of a stored number: an integer as written, else the shortest decimal that reads back as the stored
+    double (lossless; a sum such as 0.1 + 0.2 is the double it stores, 0.30000000000000004)."""
     if re.fullmatch(r"[+-]?\d+", raw.strip()):
         return str(int(raw))
     s = repr(x)
-    digits = re.sub(r"[^0-9]", "", s.split("e")[0].split("E")[0]).lstrip("0")
-    if len(digits) > 15:
-        s = format(x, ".15g")
     if s.endswith(".0"):
         s = s[:-2]
     return s
@@ -296,6 +330,7 @@ def grid(data: bytes, opts: dict | None = None) -> dict:
         _fail(f"input.format is one of {list(FORMATS)}")
     if fmt == "xlsx":
         wb = _Workbook(data)
+        wb.percent = opts.get("percent")
         name, rows = wb.grid(opts.get("sheet"))
         out = {"format": "xlsx", "sheet": name, "sheets": wb.sheet_names(), "rows": rows, "media_type": XLSX_MEDIA}
     else:
@@ -362,6 +397,8 @@ def extract(data: bytes, opts: dict | None = None, where: str = "the file") -> d
     unknown = sorted(set(opts) - set(RECIPE_KEYS))
     if unknown:
         _fail(f"input has unknown keys {unknown} (allowed: {list(RECIPE_KEYS)})")
+    if opts.get("percent") not in (None, "displayed"):
+        _fail("input.percent is displayed (a cell shown as 60% is read as 60; without it, as the text 60%)")
     if opts.get("decimal") not in (None, ".", ","):
         _fail("input.decimal is . or ,")
     hr = opts.get("header_row", 1)
@@ -418,6 +455,8 @@ def extract(data: bytes, opts: dict | None = None, where: str = "the file") -> d
         recipe["range"] = opts["range"].strip().upper()
     if opts.get("decimal"):
         recipe["decimal"] = opts["decimal"]
+    if opts.get("percent"):
+        recipe["percent"] = opts["percent"]
     used = f"{col_letters(c0)}{hr}:{col_letters(c0 + width - 1)}{last}"
     return {"header": header, "body": body, "canonical": canonical, "recipe": recipe, "media_type": g["media_type"],
             "identity": canonical == data, "rows_used": used, "ignored_after": ignored,

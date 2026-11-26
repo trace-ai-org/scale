@@ -46,18 +46,23 @@ roles:
     quantity: faradaic_efficiency
     default_unit: '%'
     exclude_targets: [total, sum, balance, all]
-    patterns: ['^(?:fe|f\.e\.|faradaic[ _-]*efficiency|faradaic[ _-]*eff\.?)[\s_:-]*(?:of[\s_]+|for[\s_]+)?(?P<target>[A-Za-z][A-Za-z0-9+\-]*)$']
+    patterns:
+    - ^(?:fe|f\.e\.)[\s_:-]+(?:of[\s_]+|for[\s_]+)?(?P<target>[A-Za-z][A-Za-z0-9+\-]*)$
+    - ^faradaic[ _-]*(?:efficiency|eff\.?)[\s_:-]+(?:of[\s_]+|for[\s_]+)?(?P<target>[A-Za-z][A-Za-z0-9+\-]*)$
   partial_j:
     kind: melt
     id: j
     quantity: partial_current_density
     default_unit: mA/cm2
     exclude_targets: [total, tot, sum, all, geo, geometric]
-    patterns: ['^(?:j|jp|j[ _]?partial|partial[ _-]*current[ _-]*density|partial[ _-]*j)[\s_:-]*(?:of[\s_]+|for[\s_]+)?(?P<target>[A-Za-z][A-Za-z0-9+\-]*)$']
-confirm: [control_mode potentiostatic (each run held at its potential); change it for galvanostatic runs, 'a blank efficiency
-    or current is recorded as not_measured, and a cell such as <0.5 as below the detection limit', current densities are
-    per geometric electrode area (current_normalization geometric_area), a sample the document does not hold is created
-    as a CatalystSample of sample_kind other; set its form]
+    patterns:
+    - ^(?:j|jp|j[ _]?partial|partial[ _-]*j)[\s_:-]+(?:of[\s_]+|for[\s_]+)?(?P<target>[A-Za-z][A-Za-z0-9+\-]*)$
+    - ^partial[ _-]*current[ _-]*density[\s_:-]+(?:of[\s_]+|for[\s_]+)?(?P<target>[A-Za-z][A-Za-z0-9+\-]*)$
+confirm:
+- control_mode potentiostatic (each run held at its potential); change it for galvanostatic runs
+- a blank efficiency or current is recorded as not_measured, and a cell such as <0.5 as below the detection limit
+- current densities are per geometric electrode area (current_normalization geometric_area)
+- a sample the document does not hold is created as a CatalystSample of sample_kind other; set its form
 mapping:
   mapping_version: 2
   input: '{{input}}'

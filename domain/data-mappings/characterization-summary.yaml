@@ -45,11 +45,15 @@ roles:
     default_unit: '1'
     target_as: definition
     definition: '{target} surface atomic ratio (XPS)'
-    patterns: ['^XPS[\s_:-]*(?P<target>[A-Z][a-z]?\s*/\s*[A-Z][a-z]?)(?:[\s_-]*(?:atomic\s*)?ratio)?$', '^(?P<target>[A-Z][a-z]?\s*/\s*[A-Z][a-z]?)(?:[\s_-]*(?:atomic\s*)?ratio)?\s*\(\s*XPS\s*\)$',
-      '^(?P<target>[A-Z][a-z]?\s*/\s*[A-Z][a-z]?)[\s_-]*XPS$']
-confirm: [a sample the document does not hold is a new CatalystSample of sample_kind other; set its form, 'the BET area
-    and pore volume are one N2 physisorption characterization, the crystallite size one X-ray diffraction (Scherrer, as
-    the laboratory computes it) and the ratios one XPS characterization of each sample', a blank cell is recorded as not_measured]
+    patterns:
+    - ^XPS[\s_:-]*(?P<target>[A-Z][a-z]?\s*/\s*[A-Z][a-z]?)(?:[\s_-]*(?:atomic\s*)?ratio)?$
+    - ^(?P<target>[A-Z][a-z]?\s*/\s*[A-Z][a-z]?)(?:[\s_-]*(?:atomic\s*)?ratio)?\s*\(\s*XPS\s*\)$
+    - ^(?P<target>[A-Z][a-z]?\s*/\s*[A-Z][a-z]?)[\s_-]*XPS$
+confirm:
+- a sample the document does not hold is a new CatalystSample of sample_kind other; set its form
+- the BET area and pore volume are one N2 physisorption characterization, the crystallite size one X-ray diffraction (Scherrer,
+  as the laboratory computes it) and the ratios one XPS characterization of each sample
+- a blank cell is recorded as not_measured
 mapping:
   mapping_version: 2
   input: '{{input}}'

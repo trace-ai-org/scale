@@ -154,7 +154,7 @@ digests are unchanged; a version 2 key in it is refused). `scale data match` wri
 mapping_version: 2
 input: {format: xlsx, sheet: FE, header_row: 4}   # or {format: csv, delimiter: ";", encoding: cp1252, decimal: ","}
 dataset:
-  id_prefix: "lab:data/"     # or id; with id_prefix the id is the prefix, the file's name and its sha256's first 12
+  id_prefix: "lab:data/"     # or id; with id_prefix the id is made from the file's name and sha256 (see below)
   primary_key: [Run]         # version and uri may go: the uri is then the file's path relative to the document
 references:                  # records the rows use, created when the document has none ("@fe" names one)
   fe:
@@ -248,8 +248,8 @@ the same words, 0.95 in another order, 0.75 with a word or two more, 0.6 x the s
 0.85; times 0.2 when the values are not of the role's kind, times 0.7 when the header's unit cannot be read as the
 role's quantity, 0 when it is of another dimension, +0.05 when it is of the right one. A wide role takes every column
 whose header matches one of its patterns, its unit of the right dimension and its values numbers (a sum, `FE total`,
-is left out). Roles are bound best score first; a role whose best column has a rival within 0.05 is not bound. A
-template scores 0.75 x the mean score of its required roles and groups (0 for one not found) + 0.25 x the share of
+is left out, and so is a column a single-column role names as well: a `Sample` is never a selectivity). Roles are
+bound best score first; a role whose best column has a rival within 0.05 is not bound. A template scores 0.75 x the mean score of its required roles and groups (0 for one not found) + 0.25 x the share of
 the file's columns it binds. A workbook's sheets are tried each; the best mappings come first (`--top`).
 
 **What is uncertain** (`uncertain`, each with its column or role and, for a binding, its candidates): a role bound by
@@ -268,20 +268,32 @@ of any common dialect (`delimiter`, default detected among `,` `;` tab `|`; `enc
 else UTF-8, else Windows-1252; `decimal: ","` reads `12,5` as 12.5), from its `header_row` (from 1; the rows above are
 a preamble). The data rows end at the first empty row; rows after it are counted and reported, never read; a cell
 beyond the header's last named column, a header column without a name and a header that names a column twice are
-refused. A workbook's numbers are written as the shortest decimal that reads back as the stored number, with at most
-15 significant digits, its dates as ISO 8601 (by the cell's number format); formulas give their cached values. The
+refused. A workbook's numbers are written as the shortest decimal that reads back as the stored number (lossless), its
+dates as ISO 8601 (by the cell's number format); formulas give their cached values, and a formula never calculated is
+refused (never read as a blank). A cell formatted as a percentage stores 0.6 and shows 60%: it is read as the text
+`60%`, which no rule reads as a number, or, with `percent: displayed` (which `scale data match` sets and reports when
+it finds such cells), as the number 60, so that a value is never taken at a hundredth of its size. A sheet whose used
+area exceeds 20 million cells, and a workbook that unzips to more than 256 MiB, are refused. The
 reader (`scale.datainput`) is pure Python and the standard library: no spreadsheet library is needed, and none is an
 extra.
 
 The table read is written as `scale_csv_v1`, and the cells evidence names are cells of those canonical bytes. **No
 schema change:** `Dataset.table.profile` stays `scale_csv_v1`, and the reading is recorded with fields that exist.
 When the canonical bytes are the file's own (a `scale_csv_v1` file), there is one Dataset, as in version 1. Otherwise
-there are two: the file's own Dataset (`<id>/file`: its sha256, its media type, its uri) and the table's (`<id>`:
-`origin: derived`, the canonical bytes' sha256, its `table`, whose `ingest` records the recipe — `input_format`,
-`input_sheet`, `input_header_row`, `input_range`, `input_delimiter`, `input_encoding`, `input_decimal`,
-`input_rows` — and `extracted_from: <id>/file`), linked by `INCLUDES` (the file includes the table). `scale data
-verify` checks the file's sha256, extracts the table again by the recipe and checks the table's sha256 and every
-cited cell; a copy of the canonical table given with `--file <id>=table.csv` is verified as well.
+there are two: the file's own Dataset (its sha256, its media type, its uri; with `id_prefix`, the prefix, the file's
+name and its sha256's first 12 characters, else `<id>/file` or `file_id`) and the table's (with `id_prefix`, the
+file's id and `/table-` and the canonical bytes' sha256's first 12, so that two sheets of one workbook are two tables
+of one file; else `id`): `origin: derived`, the canonical bytes' sha256, its `table`, whose `ingest` records the
+recipe — `input_format`, `input_sheet`, `input_header_row`, `input_range`, `input_delimiter`, `input_encoding`,
+`input_decimal`, `input_percent`, `input_rows` — and `extracted_from` (the file's id); they are linked by `INCLUDES`
+(the file includes the table). `scale data verify` checks the file's sha256, extracts the table again by the recipe
+and checks the table's sha256 and every cited cell; a copy of the canonical table given with `--file <table
+id>=table.csv` is verified as well, and the file given as its own Dataset's (`--file <file id>=book.xlsx`) is
+checked by its bytes.
+
+An id the import would make or reuse never takes another meaning: a reference whose id the document holds with other
+properties (another quantity kind, scale or unit), and a record a lookup would create under an id the document holds
+for another formula or name, are refused.
 
 ## Verifying: `scale data verify`
 

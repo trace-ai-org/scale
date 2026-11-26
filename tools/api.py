@@ -495,8 +495,11 @@ class ScaleToolkit:
             # a data file is no document: inside a data repository it carries the repository's default access (none
             # stated: institution), so its header and sample values go only to an endpoint approved for that
             from .audience import find_policy, parse_policy
-            f = self._path(arguments["file"])
+            if not self._path(arguments["file"]).exists():
+                raise FileNotFoundError(2, "no such file", str(self._path(arguments["file"])))
             try:
+                f = self._path(arguments["file"]).resolve(strict=True)
+                data = f.read_bytes()               # the bytes checked are the bytes matched (no swap in between)
                 pf = find_policy(f)
                 st = None
                 if pf:
@@ -507,6 +510,7 @@ class ScaleToolkit:
             if st is not None:
                 self.egress.check({"graph": {"stewardship": st}, "nodes": [], "links": []},
                                   f"the data file {arguments['file']} (data repository {pf.parent})", f)
+            self._pinned = (arguments["file"], f, data)
             return None
         elif isinstance(arguments.get("folder"), str) and name in ("scale_source_check", "scale_source_finish"):
             from .curate import _folder
@@ -984,14 +988,21 @@ class ScaleToolkit:
             return {"error": "save_as is a file name in the working directory (letters, digits, '.', '_' or '-') ending "
                              "in .yaml"}
         p = self._path(file)
+        pinned, self._pinned = getattr(self, "_pinned", None), None
+        if self.egress is not None:                 # read nothing the gate did not check: the bytes it read
+            if not pinned or pinned[0] != file:
+                return {"error": "egress denied: the file was not checked; nothing was sent"}
+            data = pinned[2]
+        else:
+            data = p.read_bytes()
         spec = pgraph.load_spec(self.repo / layout.DOMAIN / layout.DOMAIN_GRAPH_MANIFEST)
-        res = datamatch.match(p.read_bytes(), p.name, datamatch.load_templates(self.repo), spec, sheet=sheet,
+        res = datamatch.match(data, p.name, datamatch.load_templates(self.repo), spec, sheet=sheet,
                               header_row=header_row, template=template, bind=bind or {}, namespace=namespace,
                               origin=origin, recorded_at=recorded_at, top=top)
         res["written"] = None
         if save_as and res["candidates"]:
             dest = self.workspace / save_as
-            dest.write_text(res["candidates"][0]["mapping_yaml"], encoding="utf-8")
+            datamatch.save(dest, res["candidates"][0]["mapping_yaml"])
             res["written"] = str(dest)
         for c in res["candidates"]:
             c.pop("mapping", None)                  # the YAML says it, once
