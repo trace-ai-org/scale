@@ -23,9 +23,9 @@
 <body>
 <div class="gx-page">
   <header class="gx-toolbar">
-    <button class="gx-curate-open" id="curate-open" type="button" title="Upload a source (a paper, patent or report, as a PDF), curate it into a graph and explore it">
+    <button class="gx-curate-open" id="add-open" type="button" title="Add a source (a publication, patent, thesis or report as a PDF or DOI, a data file as CSV or Excel, or a graph file) into a private graph and explore it">
       <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 3 H6 a2 2 0 0 0 -2 2 V19 a2 2 0 0 0 2 2 H18 a2 2 0 0 0 2 -2 V9 Z M14 3 V9 H20 M12 12 V18 M9 15 H15"/></svg>
-      <span>Upload, curate, and explore</span>
+      <span>Add a source</span>
     </button>
     <form class="gx-search" id="search-form" role="search" aria-label="Search the graph">
       <span class="gx-search-prefix" aria-hidden="true">
@@ -66,6 +66,7 @@
         <span>Open a graph or bundle</span>
         <input type="file" id="graph-file" accept=".json,application/json,.zip,application/zip" hidden>
       </label>
+      <div class="gx-unsaved" id="unsaved" role="status" hidden></div>
       <div class="gx-graphs" id="graphs" role="list" aria-label="Graphs"></div>
       <footer class="gx-rail-summary"><button type="button" class="gx-link-btn" id="board-open">Contributors to catal-commons</button><div id="summary">Displaying 0 nodes, 0 relationships.</div><div class="gx-status" id="status" aria-live="polite">Starting…</div></footer>
     </aside>
@@ -195,13 +196,36 @@
   </div>
 </div>
 
+<dialog class="gx-dialog gx-add" id="add-dialog" aria-labelledby="add-title">
+  <form method="dialog">
+    <h2 id="add-title">Add a source</h2>
+    <p class="gx-muted">A publication, patent, thesis or report (PDF or DOI), a data file (CSV or Excel) or a graph file.
+      SCALE reads it into a private graph you explore here, with the same code as <code>scale add-source</code>.</p>
+    <p class="gx-add-privacy" id="add-privacy">Private: everything runs in this browser and nothing is uploaded to SCALE;
+      a private graph is never contributed. A model reads something only with your own key: a paper's text when you
+      curate it, a table's column names only if you ask.</p>
+    <section class="gx-add-pick" id="add-pick">
+      <label class="gx-drop" id="add-drop">
+        <input type="file" id="add-file" accept=".pdf,.txt,.md,.csv,.tsv,.xlsx,.xlsm,.json,.zip,application/pdf,text/plain,text/csv,application/json,application/zip,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet">
+        <span id="add-file-name">Drop a file here, or choose one</span>
+        <small class="gx-subtle">PDF · text · CSV · Excel (.xlsx) · graph (.json) · bundle (.zip)</small>
+      </label>
+      <div class="gx-add-doi">
+        <input type="text" id="add-doi" placeholder="or a DOI (10.1021/…)" autocomplete="off" spellcheck="false" aria-label="A DOI">
+        <button type="button" class="gx-btn" id="add-doi-go">Add the DOI</button>
+      </div>
+    </section>
+    <section class="gx-add-step" id="add-step" aria-label="The source" hidden></section>
+    <menu><button class="gx-btn" value="cancel" id="add-close">Close</button></menu>
+  </form>
+</dialog>
 <dialog class="gx-dialog gx-curate" id="curate-dialog">
   <form method="dialog">
     <h2>Curate a source</h2>
     <p class="gx-muted">A paper, patent or report, as a PDF. SCALE turns it into a graph and checks every quote
       against the source. <span id="curate-time">It takes a few minutes.</span></p>
     <label class="gx-drop" id="curate-drop">
-      <input type="file" id="curate-pdf" accept="application/pdf,.pdf">
+      <input type="file" id="curate-pdf" accept="application/pdf,.pdf,text/plain,.txt,.md">
       <span id="curate-pdf-name">Drop a PDF here, or choose one</span>
     </label>
     <section class="gx-share" aria-label="What happens to the source">

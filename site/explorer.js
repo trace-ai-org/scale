@@ -7,6 +7,7 @@
 // Search, query plans and descriptions run SCALE's own code in a worker (worker.js).
 import { readBundle } from "./bundle.js";
 import { closedLevels, gate as egressGate, approve as egressApprove } from "./egress.js";
+import { addSource, labs, unsaved } from "./addsource.js";
 import { draw as drawChart, specFrom, choices, csvHeader, sha256Hex, digestCheck, splitFacets, targetOf, shown as shownValue } from "./analyze.js";
 const $ =(id) => document.getElementById(id);
 const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
@@ -54,7 +55,7 @@ const status = (t) => { $("status").textContent = t; };
 const ready = () => "Search, queries and answers run in this browser.";
 
 // ------------------------------------------------------------------------------------------ the graphs rail
-const SCOPE = { "own-key": ["personal", "var(--green)"], service: ["personal", "var(--green)"], graphs: ["curated", "var(--green)"], examples: ["example", "var(--blue)"], domain: ["synthetic", "var(--violet)"] };
+const SCOPE = { lab: ["private", "var(--green)"], "own-key": ["personal", "var(--green)"], service: ["personal", "var(--green)"], graphs: ["curated", "var(--green)"], examples: ["example", "var(--blue)"], domain: ["synthetic", "var(--violet)"] };
 const scopeOf = (e) => SCOPE[(e.from || "").split("/")[0]] || ["file", "var(--subtle)"];
 const CARET = `<svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6 L15 12 L9 18"/></svg>`;
 
@@ -163,7 +164,8 @@ const curateMode = () => ownKey ? "own" : SERVICE ? "service" : "";
 function curateTerms() {
   const own = curateMode() === "own";
   $("curate-terms").innerHTML = own ? `
-    <li><b>Private.</b> The PDF is read in your browser, and the graph opens here for you alone.</li>` : SERVICE_TERMS;
+    <li><b>Private.</b> The PDF is read in your browser, and the graph opens here for you alone.</li>
+    <li><b>Read by a model.</b> Its text goes to ${esc(providerName())} (${esc(modelLabel())}) with your key, and to no one else.</li>` : SERVICE_TERMS;
   $("curate-details").hidden = own;
 }
 async function curateAccount(note = "") {
@@ -214,7 +216,6 @@ async function openCurate() {
     if (h.inbox && token) showInbox();
   } catch (e) { $("curate-schema").innerHTML = `<span class="gx-err">The service did not answer: ${esc(e.message)}</span>`; }
 }
-$("curate-open").onclick = () => openCurate();
 // The leaderboard: catal-commons' contributors scored by tools/commons.py (SCORING). The service's copy carries each
 // source's reach (how often it answered other people); the site's copy (data/leaderboard.json) is the same without it.
 let boardData = null, boardTab = "contributors";
@@ -304,7 +305,7 @@ for (const ev of ["dragenter", "dragover"]) $("curate-drop").addEventListener(ev
 for (const ev of ["dragleave", "drop"]) $("curate-drop").addEventListener(ev, () => $("curate-drop").classList.remove("over"));
 $("curate-drop").addEventListener("drop", (e) => {
   e.preventDefault();
-  const f = [...(e.dataTransfer?.files || [])].find((x) => x.type === "application/pdf" || /\.pdf$/i.test(x.name));
+  const f = [...(e.dataTransfer?.files || [])].find((x) => x.type === "application/pdf" || /\.(pdf|txt|md)$/i.test(x.name));
   if (f) { const dt = new DataTransfer(); dt.items.add(f); $("curate-pdf").files = dt.files; pdfName(); }
 });
 async function startCuration(again = false) {
@@ -350,6 +351,15 @@ function loadPdfjs() {                                     // loaded when first 
   pdfjs.catch(() => { pdfjs = null; });
   return pdfjs;
 }
+async function plainText(file) {                          // a text file: its form feeds are its pages
+  const pages = (await file.text()).split("\f");
+  const text = pages.map((p, i) => `[page ${i + 1}]\n${p.trim()}\n\n`).join("");
+  return { text, pages: pages.length, chars: pages.join("").trim().length };
+}
+async function fileSha256(file) {
+  try { return [...new Uint8Array(await crypto.subtle.digest("SHA-256", await file.arrayBuffer()))].map((b) => b.toString(16).padStart(2, "0")).join(""); } catch { return ""; }
+}
+let paper = null;                                          // the publication curated in this page, for Add a source
 async function pdfText(file) {                            // "[page N]" and the page's text, as scale source start writes it
   const lib = await loadPdfjs();
   const pdf = await lib.getDocument({ data: new Uint8Array(await file.arrayBuffer()) }).promise;
@@ -436,7 +446,7 @@ function curateProgress(job) {
 }
 // Done: the form gives way to what was curated, in a few numbers, and what to do next: explore the graph (it is open
 // on the canvas, and questions now go to it), contribute it to catal-commons, or curate another source.
-function curateDone({ doc, check, r, pages, secs, title, log }) {
+function curateDone({ doc, check, r, pages, secs, title, log, into = null }) {
   const by = {};
   for (const n of doc.nodes) by[n.label] = (by[n.label] || 0) + 1;
   const skip = new Set(["Source", "Institution", "Project", "Person"]);
@@ -455,9 +465,14 @@ function curateDone({ doc, check, r, pages, secs, title, log }) {
       ${problems ? `<p><b>Problems left</b></p><ul>${check.errors.slice(0, 20).map((e) => `<li>${esc(typeof e === "string" ? e : (e.record ? `${e.record}: ` : "") + (e.message || JSON.stringify(e)))}</li>`).join("")}</ul>` : ""}
       <p class="gx-subtle">${esc(accountLine(r))}.</p></details>
     <details><summary>Activity (${log.length})</summary><ol>${log.map((l) => `<li>${esc(l)}</li>`).join("")}</ol></details>
+    ${into?.lab ? `<p class="gx-add-remind" role="alert"><b>Added to the private graph ${esc(into.lab.entry.title)}.</b> It lives in this tab and a
+      working copy in this browser's storage, which the browser can clear: download it to keep it.
+      <button type="button" class="gx-btn gx-btn-tiny gx-btn-primary" id="done-lab-download">Download</button></p>`
+      : into?.error ? `<p class="gx-card-warn">It was not added to the private graph: ${esc(into.error)}</p>` : ""}
     <div class="gx-done-next">
       <button type="button" class="gx-btn gx-btn-primary" id="done-explore">Explore the graph</button>
       <button type="button" class="gx-btn" id="done-contrib">Contribute to catal-commons</button>
+      <button type="button" class="gx-btn" id="done-private" title="Its graph into a private graph of this page, so that the tables you add link to it">Add to a private graph</button>
       <button type="button" class="gx-btn" id="done-again">Curate another</button>
     </div>`;
   $("done-explore").onclick = () => {
@@ -467,6 +482,9 @@ function curateDone({ doc, check, r, pages, secs, title, log }) {
   };
   $("done-contrib").onclick = () => { $("curate-dialog").close(); contribute(); };
   $("done-again").onclick = () => curateReset();
+  $("done-private").hidden = !paper || !!into?.lab;
+  if ($("done-lab-download")) $("done-lab-download").onclick = async () => { await addUI.download(into.lab.id); $("done-lab-download").textContent = "Downloaded"; };
+  $("done-private").onclick = () => { $("curate-dialog").close(); addUI.open(); addUI.paperStep(); };
   $("done-explore").focus();
 }
 function curateReset() {                         // the form again, empty
@@ -498,15 +516,23 @@ async function curateOwnKey() {
     curating = true; finishNow = false; syncCurate();
     st = curateProgress(job);
     st.go("read", `Reading ${f.name}`);
-    const src = await pdfText(f);
+    const src = /\.pdf$/i.test(f.name) || f.type === "application/pdf" ? await pdfText(f) : await plainText(f);
     if (src.chars < 200) throw new Error("the PDF has no text layer to read (a scan?); curating it needs text, which OCR would give");
     st.pages = src.pages;
     st.go("prepare", `${src.pages} pages of text read. Preparing SCALE in your browser (the first time, up to a minute)`);
-    const stem = f.name.replace(/\.pdf$/i, "").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "").slice(0, 60) || "source";
-    const s = await rpc({ op: "curate_start", text: src.text, name: `${stem}.txt`, version: commonsVersion });
+    const stem = f.name.replace(/\.(pdf|txt|md)$/i, "").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "").slice(0, 60) || "source";
+    const bound = addUI.pendingStewardship();     // started from Add a source: the private graph's audience
+    const s = await rpc({ op: "curate_start", text: src.text, name: `${stem}.txt`, version: commonsVersion, ...(bound ? { stewardship: bound } : {}) });
     $("curate-schema").textContent = `Curated under SCALE Catalysis, schema scale-catal v${s.started.schema_version}, in this browser.`;
     st.go("curate", `Read 0 of ${st.pages} pages · waiting for the model`);
-    const r = await modelLoop({ system: s.system, tools: s.tools, first: s.first, stop: "done",
+    // egress: what the loop sends (the source's text, the curation graph's records) goes only where the graph may go
+    const levels = closedLevels(await rpc({ op: "curate_graph" }));
+    const gate = egressGate(levels, ownProvider, providerName(), egressApprovals);
+    try { gate(); } catch (err) {                 // a private graph's records: the reader approves the provider, or nothing is sent
+      if (!confirm(`${err.message}\n\nSend this source's text and its curation (access ${levels.join(", ")}) to ${providerName()} (${modelLabel()}) from this page?`)) throw err;
+      egressApprove(levels, ownProvider, egressApprovals);
+    }
+    const r = await modelLoop({ system: s.system, tools: s.tools, first: s.first, stop: "done", gate,
       run: async (tool, args) => {
         const out = await rpc({ op: "curate_call", tool, args });
         st.tool(tool, args, out);
@@ -520,8 +546,14 @@ async function curateOwnKey() {
     clearInterval(st.timer);
     const title = graphTitle(r.stopInput?.title, doc, f.name);
     doc.graph = { ...(doc.graph || {}), title };
+    paper = { title, slug: stem.replace(/[^a-z0-9-]/g, "-").replace(/^-+/, "").slice(0, 60) || "source", source_id: doc.nodes.find((n) => n.label === "Source")?.id || "",
+      about: { file: f.name, sha256: await fileSha256(f), pages: st.pages, model: modelLabel(), schema_version: doc.graph.schema_version,
+        how: "curated in the reader's browser with the reader's own key, by the curate-corpus skill (scale.curation_tools)" } };
     await openOwn({ id: `curated-${stem}`, title, from: "own-key" }, JSON.stringify(doc), null, doc);
-    curateDone({ doc, check, r, pages: st.pages, secs: (Date.now() - st.t0) / 1000, title, log: st.log });
+    let into = null;                                  // started from Add a source: into the private graph chosen there
+    if (check.ok) { try { into = await addUI.afterCuration(); } catch (e) { into = { error: e.message || String(e) }; } }
+    else if (addUI.pendingStewardship()) { addUI.afterCuration(true); into = { error: "its check still reports problems: fix them (curate it again) before it goes into a private graph" }; }
+    curateDone({ doc, check, r, pages: st.pages, secs: (Date.now() - st.t0) / 1000, title, log: st.log, into });
   } catch (e) {
     curating = false;
     if (st) { st.stage = "failed"; st.end("Failed", `<div class="gx-err">${esc(e.message || String(e))}</div>`); }
@@ -792,6 +824,7 @@ async function contributeSignedIn() {
 async function contribute() {
   const B = G.base || G;
   if (contribBusy) return;
+  if (labOf(B.entry)) { status("Not contributed: a private graph made in this page is never contributed."); return; }
   const closed = graphLevels();                   // catal-commons is public: a graph with closed records never goes there
   if (closed.length) { status(`Not contributed: this graph holds records whose access is ${closed.join(", ")}; only a public graph goes to catal-commons, a public repository.`); return; }
   if (!SERVICE) return GH_LOGIN ? contributeSignedIn() : contributeOnGitHub();
@@ -826,7 +859,16 @@ async function start() {
   $("graph-file").onchange = async (e) => {
     const f = e.target.files[0];
     e.target.value = "";                            // the same file can be opened again
-    if (!f) return;
+    if (f) await openGraphFile(f);
+  };
+  let pending = null;                               // a job followed before a reload or a sign-in: follow it again
+  try { pending = JSON.parse(store.get(JOB) || "null"); } catch { /* none */ }
+  if (pending?.id && token && SERVICE) { openCurate(); $("curate-job").hidden = false; followJob(pending.id, !!pending.inbox); }
+  const back = await addUI.restore().catch(() => 0);   // the private graphs' working copies, from this browser's storage
+  if (back) status(`${back} private ${back === 1 ? "graph was" : "graphs were"} restored from this browser's storage (a working copy: download to keep it).`);
+  await openFromHash();
+}
+async function openGraphFile(f) {
     const base = f.name.replace(/\.(json|zip)$/i, "");
     try {
       if (/\.zip$/i.test(f.name)) {                 // a knowledge-graph bundle (scale graph export --to kg-bundle)
@@ -837,19 +879,31 @@ async function start() {
         else await openOwn({ id, title, from: "" }, JSON.stringify(b.doc), null, b.doc);
       } else await openOwn({ id: `file-${base.replace(/\W+/g, "-")}`, title: base, from: "" }, await f.text());
     } catch (err) { status(ready()); alert(`Not a graph or a graph bundle: ${err.message}`); }
-  };
-  let pending = null;                               // a job followed before a reload or a sign-in: follow it again
-  try { pending = JSON.parse(store.get(JOB) || "null"); } catch { /* none */ }
-  if (pending?.id && token && SERVICE) { openCurate(); $("curate-job").hidden = false; followJob(pending.id, !!pending.inbox); }
-  await openFromHash();
 }
 
+const DOWNLOAD_ICON = `<svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4 V15 M7 10 L12 15 L17 10 M5 19 H19"/></svg>`;
+const labEntries = () => [...labs.values()].map((l) => l.entry);
+const allEntries = () => [...labEntries(), ...(own ? [own.entry] : []), ...manifest];
+function labOf(e) { return e && e.from === "lab" ? labs.get(e.id) : null; }
+// The private graphs not downloaded, said once above the list: they live in this tab and the browser's storage only.
+function renderUnsaved() {
+  const n = unsaved();
+  $("unsaved").hidden = !n.length;
+  if (!n.length) return;
+  const keptAll = n.every((l) => l.kept);
+  $("unsaved").innerHTML = `<b>${n.length} private ${n.length === 1 ? "graph is" : "graphs are"} not downloaded.</b>
+    ${keptAll ? "This browser keeps a working copy, which it can clear." : "This browser could not keep a copy: closing the tab loses it."}
+    The download is the durable copy. ${n.map((l) => `<button type="button" class="gx-btn gx-btn-tiny" data-download="${esc(l.id)}">Download ${esc(trunc(l.entry.title, 28))}</button>`).join(" ")}`;
+  $("unsaved").querySelectorAll("[data-download]").forEach((b) => (b.onclick = () => addUI.download(b.dataset.download)));
+}
 function renderGraphs() {
-  const list = own ? [own.entry, ...manifest] : manifest;
+  renderUnsaved();
+  const list = allEntries();
   $("graphs").innerHTML = list.map((e) => {
     const [scope, c] = scopeOf(e), active = G && G.entry === e, open = active && !folded;
-    const mineRow = own && e === own.entry, sent = mineRow && sentToCommons();
-    const action = mineRow ? (sent ? `<a class="gx-graph-scope gx-graph-sent" href="${esc(own.prUrl)}" target="_blank" rel="noopener"
+    const mineRow = own && e === own.entry, sent = mineRow && sentToCommons(), L = labOf(e);
+    const action = L ? `<button type="button" class="gx-icon-btn gx-lab-dl" data-download="${esc(L.id)}" title="Download (one zip: the graph, its mappings, its sources and a manifest)" aria-label="Download ${esc(e.title)}">${DOWNLOAD_ICON}</button>${L.saved
+      ? `<span class="gx-graph-scope">${scope}</span>` : `<span class="gx-badge-unsaved" title="Not downloaded: download it to keep it">Unsaved</span>`}` : mineRow ? (sent ? `<a class="gx-graph-scope gx-graph-sent" href="${esc(own.prUrl)}" target="_blank" rel="noopener"
         title="Contributed to catal-commons: its pull request, for a person to review">catal-commons</a>` : contribButton() + `<span class="gx-graph-scope">${scope}</span>`) : "";
     return `<div role="listitem" class="gx-graph-row${action ? " has-action" : ""}" style="--dot:${c}"><button class="gx-graph-item${active ? " is-active" : ""}" type="button" data-id="${esc(e.id)}" title="${esc(e.title)}"
         aria-expanded="${open}"><span class="gx-graph-caret">${CARET}</span><span class="gx-graph-dot"></span>
@@ -862,6 +916,7 @@ function renderGraphs() {
     r.querySelector(".gx-graph-item").style.paddingRight = `${r.querySelector(".gx-graph-actions").offsetWidth + 17}px`;
   });
   wireContrib();
+  $("graphs").querySelectorAll("[data-download]").forEach((b) => (b.onclick = (ev) => { ev.stopPropagation(); addUI.download(b.dataset.download); }));
   const gs = $("graph-show");
   if (gs) gs.onclick = (ev) => { ev.preventDefault(); showGraph(); };
   wireWindow();
@@ -875,22 +930,24 @@ function renderGraphs() {
       $("graphs").querySelector(".gx-graph-item.is-active")?.focus();
       return;
     }
-    const e = (own ? [own.entry, ...manifest] : manifest).find((x) => x.id === b.dataset.id);
+    const e = allEntries().find((x) => x.id === b.dataset.id);
     if (e) location.hash = `g=${encodeURIComponent(e.id)}`;
   }));
 }
 function details() {
   const B = G.base || G;                          // in the schema view, the facts are still the graph's
-  const g = B.doc.graph || {}, e = B.entry, [scope] = scopeOf(e), mine = e.from === "service" || e.from === "own-key";
+  const g = B.doc.graph || {}, e = B.entry, [scope] = scopeOf(e), mine = e.from === "service" || e.from === "own-key", L = labOf(e);
   const facts = [
     ["Type", `<a href="#" id="graph-show" title="Show the graph on the canvas">Knowledge graph</a>${G.base ? "" : ` <span class="gx-subtle">(shown)</span>`}${scope === "synthetic" ? ` <span class="gx-warn">synthetic example</span>` : ""}`],
     ["Size", `${B.doc.nodes.length.toLocaleString()} nodes · ${B.doc.links.length.toLocaleString()} rels · ${B.props.toLocaleString()} props`],
     g.version ? ["Release", esc(g.version)] : null,
-    ["Visibility", mine ? "Private" : esc(((g.stewardship || {}).access || "public").replace(/^./, (c) => c.toUpperCase()))],
+    L ? ["Visibility", `Private · access ${esc((g.stewardship || {}).access || "project")} <span class="gx-subtle">(never contributed)</span>`] : null,
+    L ? ["Saved", L.saved ? `Download started${L.savedAt ? ` ${esc(new Date(L.savedAt).toLocaleString())}` : ""} <span class="gx-subtle">(keep the zip)</span>` : `<span class="gx-warn">Not downloaded</span>${L.kept ? " · a working copy in this browser" : " · this tab only"}`] : null,
+    L ? null : ["Visibility", mine ? "Private" : esc(((g.stewardship || {}).access || "public").replace(/^./, (c) => c.toUpperCase()))],
     g.created || g.date ? ["Created", esc(g.created || g.date)] : null,
     e.windowed ? null : ["Checksum", B.sha ? `<span class="gx-sha" title="sha256 ${esc(B.sha)}">${esc(B.sha.slice(0, 12))}…</span>` : "…"],
     ...windowRows(e),
-    ["Source", e.from === "service" ? "curated by the service just now" : e.from === "own-key" ? "curated by you, in this browser" : e.from ? `<a href="https://github.com/trace-ai-org/scale/tree/main/${esc(e.from)}">${esc(e.from)}</a>` : "a file on this computer"],
+    ["Source", L ? `added by you in this browser (${(L.manifest?.steps || []).filter((x) => x.step !== "new").length} sources)` : e.from === "service" ? "curated by the service just now" : e.from === "own-key" ? "curated by you, in this browser" : e.from ? `<a href="https://github.com/trace-ai-org/scale/tree/main/${esc(e.from)}">${esc(e.from)}</a>` : "a file on this computer"],
     ["Schema", `<a href="#" id="schema-toggle" title="${G.base ? "Back to the graph" : "Show the schema on the canvas"}">${esc(g.schema || "scale-catal")} v${esc(g.schema_version || "?")}</a>${G.base ? ` <span class="gx-subtle">(shown)</span>` : ""}<br>
       ${B.labels.size} labels · ${B.rels.size} rel types · ${schemaPropCount(B).toLocaleString()} props`],
   ].filter(Boolean);
@@ -1191,6 +1248,11 @@ function showGraph() {
 
 async function openFromHash() {
   const want = new URLSearchParams(location.hash.slice(1)).get("g");
+  if (labs.has(want)) {
+    const L = labs.get(want);
+    if (!(G && G.entry === L.entry && G.doc === L.doc)) await openGraph(L.entry, L.text, L.doc);
+    return;
+  }
   if (own && own.entry.id === want) {
     if (!(G && G.entry === own.entry)) await showOwn();
     return;
@@ -1903,6 +1965,7 @@ function useOwnKeys() {                                   // the key in use, fro
   if (ownKeep) inStore("sessionStorage", (s) => { s.removeItem("scale-own-keys"); s.removeItem("scale-own-active"); });   // one copy only
 }
 useOwnKeys();
+const providerName = () => (ownProvider === "anthropic" ? "Anthropic" : PROVIDERS[ownProvider]?.name || ownProvider);
 const labelOf = (k) => k.provider === "anthropic" ? OWN_MODELS.find(([m]) => m === k.model)[1] : `${k.model} via ${PROVIDERS[k.provider].name}`;
 const modelLabel = () => labelOf({ provider: ownProvider, model: ownModel });
 const tail = (key) => `…${key.slice(-4)}`;
@@ -2867,5 +2930,47 @@ $("rail-show").onclick = () => panel("rail", true);
 $("inspector-collapse").onclick = () => panel("inspector", false);
 $("inspector-show").onclick = () => panel("inspector", true);
 matchMedia("(prefers-color-scheme: dark)").addEventListener?.("change", (e) => { document.documentElement.dataset.theme = e.matches ? "dark" : "light"; });
+
+// ------------------------------------------------------------------------------------------ Add a source
+// One dialog for any source (addsource.js): a table read by the built-in mappings and confirmed, a publication curated
+// in this browser, a graph opened or merged; the private graphs it makes, with their working copy and their download.
+// Optional model help for a table's columns not read: the reader's own key, one call, only those headers and three
+// sample values each, and only after the egress gate's approval for the graph's access levels.
+async function modelHelp(columns, roles, doc) {
+  if (!ownKey) throw new Error("set your API key first");
+  const levels = closedLevels(doc), provider = ownProvider, name = providerName();
+  const check = egressGate(levels, provider, name, egressApprovals);
+  try { check(); } catch (err) {
+    if (!confirm(`${err.message}\n\nSend ${columns.length} column headers and up to three sample values each to ${name} (${modelLabel()}) from this page?`)) throw err;
+    egressApprove(levels, provider, egressApprovals);
+  }
+  const tool = { name: "suggest", description: "Say which role each column fills, or leave it out when none fits.",
+    input_schema: { type: "object", properties: { bindings: { type: "object", additionalProperties: { type: "string" },
+      description: "role -> the column's header, exactly as given" } }, required: ["bindings"] } };
+  const r = await modelLoop({ system: "You match the columns of a laboratory's data table to the roles of a SCALE data mapping. Suggest a column for a role only when its header and values clearly fit; never guess. Call suggest once.",
+    tools: [tool], first: JSON.stringify({ roles, columns }), stop: "suggest", run: async () => "", wrapUp: "Call suggest now.",
+    stopNow: () => false, progress: () => {}, alive: () => true, gate: check });
+  return r?.stopInput?.bindings || {};
+}
+const addUI = addSource({ $, esc, rpc, status, download,
+  changed: () => { renderGraphs(); },
+  showLab: async (l, view) => {
+    if (new URLSearchParams(location.hash.slice(1)).get("g") !== l.id) history.pushState(null, "", `#g=${encodeURIComponent(l.id)}`);
+    await openGraph(l.entry, l.text, l.doc);
+    if (view === "analyze") openAnalyze(true);
+  },
+  openCurateWith: (file) => {
+    const dt = new DataTransfer(); dt.items.add(file);
+    curateReset();
+    $("curate-pdf").files = dt.files; pdfName();
+    openCurate();
+  },
+  openGraphFile: (f) => openGraphFile(f),
+  modelHelp: (cols, roles, doc) => modelHelp(cols, roles, doc),
+  key: () => (ownKey ? `${providerName()} (${modelLabel()})` : ""),
+  openKeyMenu: () => openOwnKeyMenu(),
+  paper: () => paper,
+});
+$("add-open").onclick = () => addUI.open();
 
 start().catch((err) => status(`Could not start: ${err.message}`));

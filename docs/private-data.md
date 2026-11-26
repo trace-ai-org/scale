@@ -119,7 +119,8 @@ Where the gate stands:
 | a `ScaleToolkit(egress=EgressGate(...))` in Python | the gate's | the same; a toolkit without a gate leaves the results to its caller |
 | the SCALE service's `/ask` (`service/scaleweb`) | `$SCALE_WEB_EGRESS_ENDPOINT` (`anthropic`), approved by `$SCALE_WEB_EGRESS_POLICY` | 403 before any model or Claude Code runs; the question loop checks again before each batch of tool results |
 | the graph explorer: a question with the reader's own key, a question to the service | the provider (`provider:anthropic`, `provider:openai`, `provider:openrouter`) or `service` | the page shows why and sends nothing; the reader may approve that destination for those levels, in this page only (a reload denies again); the gate runs before every request of the loop |
-| the explorer's Contribute, `scale graph contribute` | catal-commons, public | refused: only a public graph goes to the commons |
+| the explorer's Add a source: the optional model help for a table's columns not read | the provider | asked only when the reader clicks it; the page names what it would send (those columns' headers and three sample values each) and sends nothing until the reader approves the provider for the private graph's levels, in this page only. Reading, matching and adding a source never leave the browser |
+| the explorer's Contribute, `scale graph contribute` | catal-commons, public | refused: only a public graph goes to the commons; a private graph made by Add a source has no Contribute |
 
 The endpoint's name is whatever the process is told: the gate trusts it. It catches mistakes, not a process that lies
 about where it sends.

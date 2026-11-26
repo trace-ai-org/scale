@@ -475,3 +475,63 @@ button.gx-add-graph { width: 100%; font: inherit; color: inherit; cursor: pointe
 .gx-analyze :focus-visible { outline: 2px solid var(--link-ink); outline-offset: 1px; }
 .gx-an-table .gx-link-btn { display: inline; margin: 0; text-align: left; }
 .gx-an-key { margin: 4px 0; font-size: 11.5px; color: var(--muted); }
+
+/* Add a source: one dialog for any source, the table's mapping to confirm, and the private graphs' Unsaved state */
+.gx-add { width: min(640px, 96vw); max-height: 92vh; }
+.gx-add form { display: flex; flex-direction: column; }
+.gx-add-privacy { margin: 8px 0 0; padding: 7px 10px; border-radius: 8px; background: color-mix(in srgb, var(--green) 9%, transparent);
+  font-size: 12px; color: var(--fg); }
+.gx-add input[type=text], .gx-add input[type=number], .gx-add input[type=datetime-local] { display: block; width: 100%; margin-top: 4px;
+  padding: 6px 9px; border: 1px solid var(--line); border-radius: 7px; background: var(--bg-input); color: var(--fg); font: inherit; }
+.gx-add .gx-drop { flex-direction: column; gap: 2px; }
+.gx-add-doi { display: flex; gap: 8px; align-items: center; margin-top: 8px; }
+.gx-add-doi input { margin-top: 0 !important; flex: 1; }
+.gx-add-step { margin-top: 12px; font-size: 12.5px; overflow: auto; }
+.gx-add-step fieldset { border: 1px solid var(--line); border-radius: 9px; padding: 8px 10px; margin: 10px 0 0; }
+.gx-add-step legend { padding: 0 4px; color: var(--muted); font-size: 12px; }
+.gx-add-two { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; align-items: end; }
+.gx-add-head { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.gx-add-head select { display: inline-block; width: auto; max-width: 100%; margin: 0 0 0 6px; }
+.gx-add-reading { display: flex; gap: 12px; flex-wrap: wrap; }
+.gx-add-reading label { flex: 1; min-width: 140px; }
+.gx-add-roles { width: 100%; border-collapse: collapse; margin-top: 10px; }
+.gx-add-roles th, .gx-add-roles td { text-align: left; vertical-align: top; padding: 5px 6px; border-bottom: 1px solid var(--line); }
+.gx-add-roles thead th { color: var(--muted); font-weight: 500; font-size: 11.5px; }
+.gx-add-roles tbody th { font-weight: 500; white-space: nowrap; }
+.gx-add-roles select { margin: 0; padding: 4px 6px; }
+.gx-add-melt { margin: 0; padding-left: 16px; }
+.gx-ask { background: color-mix(in srgb, var(--select) 12%, transparent); border-radius: 6px; }
+.gx-add-why { margin-top: 3px; color: #b45309; font-size: 11.5px; }
+[data-theme="dark"] .gx-add-why { color: #f0a35c; }
+.gx-add-qs { margin-top: 10px; display: flex; flex-direction: column; gap: 8px; }
+.gx-add-q { padding: 6px 8px; margin: 0 !important; }
+.gx-add-q.gx-check { align-items: flex-start; }
+.gx-add-q .gx-check { align-items: flex-start; margin: 4px 0 0; }
+.gx-add-notread { margin-top: 10px; }
+.gx-add-notread summary, .gx-add-cli summary { cursor: pointer; color: var(--muted); }
+.gx-add-notread ul { margin: 4px 0 0; padding-left: 18px; color: var(--muted); }
+.gx-add-help { margin-top: 10px; display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+.gx-add-state { margin: 12px 0 0; }
+.gx-add-cmd { white-space: pre-wrap; word-break: break-all; padding: 8px 10px; border-radius: 8px; background: var(--bg-input); font-size: 11.5px; }
+.gx-add-menu { display: flex; justify-content: flex-end; gap: 8px; padding: 0; margin: 12px 0 0; }
+.gx-add-remind { margin: 10px 0 0; padding: 8px 10px; border-radius: 8px; border: 1px solid color-mix(in srgb, var(--select) 55%, transparent);
+  background: color-mix(in srgb, var(--select) 10%, transparent); }
+.gx-unsaved { margin: 0 0 10px; padding: 8px 10px; border-radius: 8px; border: 1px solid color-mix(in srgb, var(--select) 55%, transparent);
+  background: color-mix(in srgb, var(--select) 10%, transparent); font-size: 12px; line-height: 1.45; display: flex; flex-wrap: wrap; gap: 4px 6px; align-items: center; }
+.gx-badge-unsaved { flex: none; font-size: 9.5px; font-weight: 600; text-transform: uppercase; letter-spacing: .04em; padding: 1px 6px;
+  border-radius: 5px; color: #8a4b00; background: color-mix(in srgb, var(--select) 30%, transparent); }
+[data-theme="dark"] .gx-badge-unsaved { color: #ffd59a; }
+@media (max-width: 600px) { .gx-add-two { grid-template-columns: 1fr; } .gx-done-stats { grid-template-columns: repeat(2, 1fr); } }
+.gx-add-file { display: flex; flex-wrap: wrap; gap: 6px; align-items: baseline; margin: 0 0 8px; padding: 8px 10px; border-radius: 8px; background: var(--bg-input); }
+.gx-add-file .gx-link-btn { margin: 0 0 0 auto; }
+.gx-add-foot { position: sticky; bottom: -18px; margin: 12px -20px -18px; padding: 2px 20px 14px; background: var(--bg); border-top: 1px solid var(--line); }
+.gx-lab-dl { width: 22px; height: 22px; }
+.gx-add .gx-subtle { color: var(--muted); }
+.gx-add .gx-drop:focus-within { outline: 2px solid var(--blue); outline-offset: 2px; }
+.gx-add-preview { margin-top: 10px; }
+.gx-add-preview summary, .gx-add-gaps summary { cursor: pointer; color: var(--muted); }
+.gx-add-scroll { overflow-x: auto; margin-top: 4px; }
+.gx-add-scroll table { border-collapse: collapse; font-size: 11.5px; }
+.gx-add-scroll th, .gx-add-scroll td { padding: 3px 7px; border: 1px solid var(--line); white-space: nowrap; text-align: left; }
+.gx-add-gaps { margin: 8px 0; }
+.gx-add-gaps ul { margin: 4px 0; padding-left: 18px; }

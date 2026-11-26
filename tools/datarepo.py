@@ -95,7 +95,10 @@ def _inside_git(path: Path) -> Path | None:
     p = path
     while not p.exists():
         p = p.parent
-    r = subprocess.run(["git", "-C", str(p), "rev-parse", "--show-toplevel"], capture_output=True, text=True)
+    try:
+        r = subprocess.run(["git", "-C", str(p), "rev-parse", "--show-toplevel"], capture_output=True, text=True)
+    except OSError:                       # no git, or no processes (Pyodide, in the graph explorer): the nearest .git
+        return next((d for d in [p, *p.parents] if (d / ".git").exists()), None)
     return Path(r.stdout.strip()) if r.returncode == 0 else None
 
 

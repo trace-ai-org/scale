@@ -2,6 +2,27 @@
 
 ## Unreleased
 
+- **Add a source in the graph explorer (explorer, tools; no schema change, no migration).** One dialog, **Add a
+  source**, replaces *Upload, curate, and explore*: a file (dropped or chosen) or a DOI, whose kind the Python router
+  says (`scale.addsource.detect`, run in the page by the new `tools/pagelab.py`), so the page and `scale add-source`
+  agree. A table (CSV, .xlsx, read in Pyodide by `scale.datainput`) is matched to the built-in mappings and shown for
+  the reader to confirm: the template and its score, each role's column (a dropdown that re-binds it, pinning the sheet)
+  and unit, the wide columns melted, the sheet and header row, the questions (a date-time input for when the data were
+  recorded, each assumption ticked, a unit the header does not write, a publication table's rights) and what is not
+  read; it is added by `scale add-source` into a private graph made by `scale data new` (access project unless the
+  reader chooses) only after a dry run says Ready, then validated and verified cell by cell, with the records, results,
+  cells verified and checklist gaps and Explore, Analyze and Download. A publication goes to the in-browser curation
+  (its attestation kept) and can then be merged into a private graph, so that a table links to it (`--from-source`); a
+  DOI is answered with the command that fetches it; a graph file opens or merges. A private graph shows **Unsaved**
+  until downloaded, the tab asks before it closes, every addition prompts for Download, and a working copy in
+  IndexedDB comes back on reload (the page says the browser can clear it); the download is one zip (the graph, its
+  rights, sources and mappings, and a manifest of the tool and schema versions, the spec digest, each source's sha256
+  and how it was read, and the commands that rebuild the graph byte for byte). Optional model help for columns not
+  read goes through the egress gate with the reader's key. Nothing is uploaded and a private graph is never
+  contributed. `scale add-source`'s result for a table now carries each role's column and unit, the wide columns, the
+  header and sheets read and the other templates that fit; without processes (Pyodide) the framework repository is
+  found by its `.git` (docs/data.md, "In the graph explorer").
+
 - **Any source into a graph of one's own, by one entry point (tools and a skill; no schema change, no migration).**
   `scale add-source FILE_OR_DOI --into DOC` (and the agent tool `scale_add_source`, gated by the destination's access)
   reads what the source is and routes it: a table (CSV, .xlsx) is matched to the built-in mappings and, when nothing

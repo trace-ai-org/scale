@@ -56,7 +56,7 @@ committed). A copy opened in the explorer, a browser tab or a chat is a working 
 **3. Explore, ask, plot.**
 
 - *Explore*: open [the graph explorer](https://trace-ai-org.github.io/scale/), **Open a graph or bundle**, and choose
-  `graphs/lab.json`: the page reads the file in your browser. A question to a model from there goes to that provider
+  `graphs/lab.json`: the page reads the file in your browser (or add the sources there, below). A question to a model from there goes to that provider
   only when you approve it for the document's access ([private-data.md](private-data.md#egress-what-a-model-may-receive)).
 - *Ask*: `scale graph query graphs/lab.json PLAN` (the query-graph skill writes the plan), and across graphs without
   merging them: `scale graph query --graph lab=graphs/lab.json --graph pub=catal-commons.json PLAN`
@@ -64,6 +64,47 @@ committed). A copy opened in the explorer, a browser tab or a chat is a working 
 - *Plot*: `scale data matrix --graph lab=graphs/lab.json --plan PLAN --contract CONTRACT --out matrix/` writes a
   typed table (`matrix.csv`, with its manifest) to plot with any tool; nothing is converted, so plot one unit and
   basis at a time.
+
+### In the graph explorer, with nothing to install: Add a source
+
+[The graph explorer](https://trace-ai-org.github.io/scale/) has the same entry point as a page: **Add a source**
+(the toolbar) takes a file (dropped or chosen) or a DOI and adds it to a **private graph** in your browser, by the code
+of `scale add-source` (`tools/pagelab.py`, run in Pyodide by `site/worker.js`). What a file is, the Python router says
+(`addsource.detect`), so the page and the command line agree.
+
+| the source | what the page does |
+|---|---|
+| a table (CSV, `.xlsx`) | matches the built-in mappings and shows how it reads the file for you to confirm: the kind of table (the template) and its score, each role with its column (a dropdown to re-bind it) and unit, the wide columns melted (one result per column), the sheet and header row, the questions (when the data were recorded, with a date-time input, or *from a publication*; each assumption of the mapping, ticked one by one; a unit the header does not write; the rights of a publication's table), and what is not read (columns, other sheets, rows after a blank row). **Add to the graph** stays grey until a dry run says *Ready* with the records and results it will add and the cells it checked against the file; then it adds them (`scale add-source`), validates, verifies every cited cell and shows the records, results, cells verified and checklist gaps, with **Explore**, **Analyze** and **Download** |
+| a publication (PDF, text) | hands it to the in-browser curation (your own API key, the lawful-access statement); the curated graph can then be added to a private graph (*Add to a private graph*), its PDF never kept, so that the tables you add link to it (*Link it to a publication*: `--from-source`) |
+| a DOI | says that a page cannot fetch a paper by its DOI and gives the command that does (`scale add-source DOI --into graph.json`) |
+| a graph (`.json`), a bundle (`.zip`) | opens it, as **Open a graph or bundle** does; a graph can instead be merged into a private graph (`--merge`: refused on a conflict or another schema version) |
+
+A new private graph is made by `scale data new` with the project, your lab and who may read it (access `project`
+unless you choose: never public by default). **Private**: everything runs in the browser and nothing is uploaded; a
+private graph is never contributed (it has no Contribute button); a model reads something only with your own key and
+after the egress gate's approval ([private-data.md](private-data.md#egress-what-a-model-may-receive)). The optional
+model help for a table's columns not read is off until you click it, and sends only those columns' headers and three
+sample values each; its suggestions are only suggestions, which you choose in the table.
+
+**Do not lose the work.** A private graph lives in the tab and in a working copy in the browser's storage
+(IndexedDB), which a reload restores; a browser can clear that storage, so the page shows **Unsaved** on the graph
+and above the list until you download it, asks before the tab closes, and prompts for **Download** after every
+addition. The download is one zip, the durable copy:
+
+```text
+<id>/graph.json            the graph
+<id>/manifest.json         the tool and schema versions (the spec's sha256), each source's sha256 and how it was
+                           read (template, sheet, bindings, answers), and the commands that rebuild graph.json
+<id>/rights.yaml           the rights of the sources it quotes
+<id>/sources/              the files added (a publication: its curated graph and rights, never its PDF)
+<id>/work/mappings/        the mapping each table was read with
+<id>/README.txt
+```
+
+In an empty folder outside the SCALE repository, with `sources/` copied into it, the manifest's
+`reproduce.commands` (`scale data new graph.json …`, then one `scale add-source …` per source, then
+`scale graph validate` and `scale data verify`) write the same `graph.json`, byte for byte, with the same tool and
+schema versions.
 
 ## From a laboratory's file to a graph
 

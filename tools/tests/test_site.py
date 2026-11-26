@@ -258,8 +258,10 @@ def test_the_explorer_runs_scales_own_tools_and_sends_a_readers_key_only_to_thei
     # a key not scoped to a workspace is sent with the workspace the reader gives
     assert '"anthropic-workspace-id": ownWorkspace' in js
     # the graph's type in its card is a link back to the graph on the canvas, as its schema is a link to the schema
-    # "Upload, curate, and explore" opens Curate, a toolbar button like the account's; the Visualization is gone
-    assert 'id="curate-open"' in page and "Upload, curate, and explore" in page and "viz-btn" not in page and "plotly" not in page.lower() and "Plotly" not in js
+    # "Add a source" (one dialog for any source, which hands a publication to Curate) is a toolbar button like the
+    # account's; the Visualization is gone
+    assert 'id="add-open"' in page and ">Add a source<" in page and 'id="curate-open"' not in page
+    assert "viz-btn" not in page and "plotly" not in page.lower() and "Plotly" not in js
     # the Curate dialog is about a source (a paper, patent or report) and says what happens in four short points
     assert "<h2>Curate a source</h2>" in page and "Curate a publication" not in page and "<summary>More details</summary>" in page
     # the one-source page says "source" too
@@ -374,7 +376,8 @@ def test_a_readers_own_key_curates_a_pdf_in_the_browser_with_the_services_tools(
     # when it is done, the dialog shows what was curated in a few numbers and what to do next
     done = js[js.index("function curateDone("):js.index("function curateReset(")]
     assert all(f'id="done-{k}"' in done for k in ("explore", "contrib", "again")) and "gx-done-stats" in done
-    assert "<b>Private.</b>" in terms and "modelLabel" not in terms and "PROVIDERS" not in terms
+    # the terms say who reads the text: the reader's provider, with their key, and no one else
+    assert "<b>Private.</b>" in terms and "providerName()" in terms and "with your key, and to no one else" in terms
 
 
 def test_the_built_pages_load_scripts_and_the_package_stamped_with_the_builds_digest(built):
@@ -509,3 +512,83 @@ def test_the_analyze_view_draws_scale_plot_data_honestly_and_loads_vega_pinned()
     assert out["count"] == [{"x": "a", "records": 2, "sources": 1, "series": ""}] and out["hist"][0]["records"] == 3
     assert out["header"] == ["a", 'b,"c"'] and out["via"]["x"] == {"via": [{"edge": "E", "to": "T"}], "path": "p"}
     assert out["digest"] == ["verified", "not_recorded", "mismatch"] and out["shown"] == ["5 ± 0.5 %", "≤ 1 %", "2 %"]
+
+
+def test_add_a_source_is_one_dialog_for_any_source_and_keeps_the_work(tmp_path):
+    page = (REPO / "site/index.html").read_text()
+    js = (REPO / "site/explorer.js").read_text()
+    add = (REPO / "site/addsource.js").read_text()
+    worker = (REPO / "site/worker.js").read_text()
+    # one dialog: a file (drop or pick: PDF, text, CSV, Excel, graph, bundle) or a DOI, and one line on privacy
+    assert 'id="add-dialog"' in page and 'id="add-file"' in page and 'id="add-doi"' in page and ".xlsx" in page
+    assert "nothing is uploaded" in page and "never contributed" in page
+    assert "addsource.js" in site.PAGES and '"./addsource.js"' in site.STAMPED["explorer.js"]
+    # what a file is, the Python router says (scale.addsource.detect, through scale.pagelab in the worker)
+    assert 'op === "lab"' in worker and "from scale import pagelab" in worker and 'lab("detect"' in add
+    assert all(f'"{f}"' in worker for f in ("detect", "stage", "table", "graph", "publication", "files", "restore"))
+    # the mapping view: template and score, each role's column (a dropdown) and unit, the wide columns, the questions
+    # (a date-time input, the assumptions ticked one by one, the units, the rights), the sheet and header row, what is
+    # not read; nothing is added before the dry run says Ready; a binding pins the sheet it was read from
+    for x in ('id="map-template"', "data-role=", 'type="datetime-local"', "data-assume=", "data-confirm=", 'id="q-rights"',
+              'id="map-sheet"', 'id="map-header"', "Not read (", 'id="map-source"', "Add to the graph", "wide: one result per column"):
+        assert x in add, x
+    assert 'r.status === "dry_run"' in add and "write: false" in add and "write: true" in add and "o.sheet = r.sheet" in add
+    # a new private graph's access is project unless the reader chooses; public is never the default
+    assert 'v === "project" ? " selected"' in add and "prefs.access" not in add and "savePrefs({ project, contributor })" in add
+    # do not lose work: a working copy in IndexedDB (every call in try/catch), an Unsaved badge, beforeunload, a
+    # Download prompt after every add, one zip; the page says that browser storage can be cleared
+    assert "indexedDB.open" in add and add.count("} catch { return") >= 3 and '"beforeunload"' in add
+    assert "gx-badge-unsaved" in js and "Download it." in add and "which the browser can clear" in add
+    # the page uploads nothing: no request leaves addsource.js; a model sees a table's columns only through the egress
+    # gate, after the reader asks and approves
+    assert "fetch(" not in add and "XMLHttpRequest" not in add
+    # a publication needs the reader's own key, names the provider its text goes to, and is curated into the private
+    # graph chosen; a download reopens as a private graph; a changed reading asks again what was confirmed
+    assert "env.key()" in add and "with your key, and to no" in add and "afterCuration" in js and "addUI.afterCuration()" in js
+    assert "privateGraphIn(await readZip(" in add and "function reconfirm()" in add
+    assert "egressGate(levels, provider" in js and "async function modelHelp(" in js and "egressApprove(levels, provider" in js
+    node = shutil.which("node")
+    if not node:
+        pytest.skip("node is not installed")
+    zpath = tmp_path / "t.zip"
+    files = "[{ name: 'g/graph.json', data: enc.encode('{\"a\": 1}') }, { name: 'g/sources/é.csv', data: new Uint8Array([0, 255, 10]) }]"
+    script = (f"import * as A from {json.dumps((REPO / 'site/addsource.js').as_uri())};\n"
+              "import { writeFileSync } from 'node:fs';\n"
+              "const enc = new TextEncoder();\n"
+              f"const z = A.zipStore({files}), again = A.zipStore({files});\n"
+              f"writeFileSync({json.dumps(str(zpath))}, z);\n"
+              "const back = await A.readZip(z), m = (o) => enc.encode(JSON.stringify(o));\n"
+              "const pg = A.privateGraphIn(new Map([['x/manifest.json', m({ manifest_version: 1, reproduce: {} })], ['x/graph.json', m({})], ['x/README.txt', m('r')]]));\n"
+              "const bad = z.slice(); bad[bad.indexOf(0x61, 42)] ^= 1;\n"
+              "const damaged = await A.readZip(bad).then(() => 'read', (e) => e.message);\n"
+              "const notPg = A.privateGraphIn(new Map([['b/bundle.json', m({})], ['b/kg/graph.json', m({})]]));\n"
+              "console.log(JSON.stringify({ damaged, back: [...back].map(([n, b]) => [n, [...b]]), pg: Object.keys(pg.files), notPg, noZip: await A.readZip(enc.encode('plain')),\n"
+              "  same: Buffer.from(z).equals(Buffer.from(again)), crc: A.crc32(enc.encode('123456789')),\n"
+              "  b64: A.b64ToText(A.bytesToB64(enc.encode('héllo'))), iso: A.isoUTC('2026-03-02T10:00'), bad: A.isoUTC('2026-03-02'),\n"
+              "  local: A.localOf('2026-03-02T10:00:00Z'), id: A.labId('CO2RR Lab data!', () => 0.5),\n"
+              "  opts: A.cleanOpts({ a: '', b: [], c: {}, d: ['x', 'x'], e: 0, f: { r: 'C' } }),\n"
+              "  note: [A.pageNote(\"sheet 'FE' of 'A', 'FE'; give --sheet to choose another\"),\n"
+              "         A.pageNote('the header row was found, not given: row 4; give --header-row to settle it')],\n"
+              "  gaps: A.checklistGaps({ checklist: { a: { missing: 2 }, b: { missing: 3 } } }),\n"
+              "  cells: A.cellsChecked({ verify: { datasets: [{ cells: 4 }, { cells: 5 }] } }),\n"
+              "  readme: A.readme({ id: 'g', tool: 'scale-catal 0', schema: { version: '0.8.4' }, graph: { title: 'T', sha256: 'abc',\n"
+              "    nodes: 1, links: 0, access: 'project' }, reproduce: { commands: ['scale data new graph.json'] } }) }));")
+    run = subprocess.run([node, "--input-type=module", "-e", script], capture_output=True, text=True, timeout=60,
+                         env={"TZ": "UTC", "PATH": ""})
+    assert run.returncode == 0, run.stderr
+    out = json.loads(run.stdout)
+    with zipfile.ZipFile(zpath) as z:                 # a zip Python reads, its CRCs right, the same bytes every time
+        assert z.testzip() is None and z.namelist() == ["g/graph.json", "g/sources/é.csv"]
+        assert z.read("g/graph.json") == b'{"a": 1}' and z.read("g/sources/é.csv") == b"\x00\xff\n"
+    assert out["same"] and out["crc"] == 0xCBF43926 and out["b64"] == "héllo"
+    # the page reads its own download back: a private graph's folder (its README left out), never a bundle or another file
+    assert out["back"] == [["g/graph.json", list(b'{"a": 1}')], ["g/sources/é.csv", [0, 255, 10]]]
+    assert "damaged" in out["damaged"]                  # a byte changed after the download: refused by its checksum
+    assert out["pg"] == ["manifest.json", "graph.json"] and out["notPg"] is None and out["noZip"] is None
+    assert (out["iso"], out["bad"], out["local"]) == ("2026-03-02T10:00:00Z", "", "2026-03-02T10:00")
+    assert re.fullmatch(r"co2rr-lab-data-[0-9a-z]{4}", out["id"])
+    assert out["opts"] == {"d": ["x"], "e": 0, "f": {"r": "C"}}
+    assert out["note"] == ["sheet 'FE' of 'A', 'FE': choose another sheet above",
+                           "the header row was found, not given: row 4: set the header row above if it is another"]
+    assert (out["gaps"], out["cells"]) == (5, 9)
+    assert "scale data new graph.json" in out["readme"] and "browser can clear" in out["readme"] and "sha256 abc" in out["readme"]

@@ -427,7 +427,16 @@ def _table(source: str, det: dict, dest: dict, doc: dict, spec: dict, repo: Path
            "score": best["score"], "sheet": best.get("sheet"),
            "bindings": {r: b["column"] for r, b in best["bindings"].items()},
            "melted": {r: [c["column"] for c in cs] for r, cs in best["melt"].items()},
-           "unmapped_columns": best["unmapped_columns"], "assumptions": best["confirm"], "notes": notes}
+           "unmapped_columns": best["unmapped_columns"], "assumptions": best["confirm"], "notes": notes,
+           # what a person confirming the reading looks at (the graph explorer's mapping view): each role's column and
+           # unit, each wide column's unit, the header read and the other kinds of table that fit
+           "roles": {r: {k: b[k] for k in ("column", "unit", "unit_from_header", "score", "by") if k in b}
+                     for r, b in best["bindings"].items()},
+           "melt_columns": {r: [{k: c[k] for k in ("column", "unit", "id", "target", "unresolved_target") if k in c}
+                                for c in cs] for r, cs in best["melt"].items()},
+           "header": header, "reading": res["reading"],
+           "alternatives": [{k: c.get(k) for k in ("template", "title", "score", "sheet", "complete")}
+                            for c in res["candidates"][1:]]}
     if questions:
         extra = [q["settle"]["options"][0] for q in questions if q["settle"]["options"]]
         tool = {"source": source, "into": into, **{k: v for k, v in opts.items() if v not in (None, [], {})}}

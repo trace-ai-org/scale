@@ -48,9 +48,12 @@ with its source, its reported unit, a short verbatim quote and its uncertainty, 
    the query plans behind it, and a **Limits** line says what the graph could not answer. The model's own
    extrapolations, if any, are in a separate, labelled paragraph.
 
-6. **Curate a paper's PDF with the same key.** With a key set, **Curate** runs in your browser: the page reads the
-   PDF, the model fills its graph with SCALE's curation tools run in the page, and the graph opens on the canvas,
-   private to you.
+6. **Add a source.** **Add a source** in the toolbar takes a data file (CSV, Excel), a paper (PDF, text, DOI) or a
+   graph file and adds it to a private graph in your browser, with nothing uploaded: a table is matched to the
+   built-in mappings and shown for you to confirm (each column, unit and assumption) before it is added and every
+   cited cell checked; a paper is curated with your key (the page reads the PDF, the model fills its graph with
+   SCALE's curation tools run in the page). **Download** the private graph (one zip, with a manifest from which
+   `scale add-source` rebuilds it): the browser keeps only a working copy ([docs/data.md](docs/data.md#in-the-graph-explorer-with-nothing-to-install-add-a-source)).
 
 With the SCALE web service ([`service/`](service/README.md), not yet public), signed-in readers can also curate a
 paper on the page with no API key of their own, and contribute a graph in one click.
