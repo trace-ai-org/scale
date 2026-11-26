@@ -137,20 +137,6 @@
   with a comment; a push dismisses the approval, and the next approval merges. The main ruleset still decides: one
   approval, the required checks, no request for changes. It is the only workflow job that writes the repository.
   Review policy 5; the governance text, AGENTS.md and the skills say "approves; it merges once the checks pass".
-- **plan-synthesis, a skill for planning the synthesis of a material on top of query-graph (skills; no schema change,
-  no migration).** A synthesis the records do not hold whole is reasoned rather than assembled: each requirement
-  (composition and ratio, phase or order, shape, size, support) is a sub-goal whose evidence is graded direct, analog
-  or none; a direct one follows its records, an analog or unsupported one names the lever it relies on and is reasoned
-  from the graph's controlled experiments — the variant pairs, a preparation and its base with the one change the
-  source states, read by `references/variant-pairs-plan.json` — and the authors' claims. The draft is checked by
-  `scripts/check_chemistry.py`, rules a chemist applies at a glance (errors: a carbon support burnt in air, a non-noble
-  metal left as an oxide; warnings: a metal without a precursor, an amount missing, nothing that reduces, too few
-  electrons, a wet step above every solvent's boiling point, an ordered target without an ordering step), then quoted,
-  checked and reviewed as query-graph does, and the proposal ends with a failure plan: what to measure and what to change
-  by failure kind. The same reasoning answers what one change, one procedure or one failure will do, with its basis
-  (retrieved, analog, hypothesis) and a confidence. query-graph 0.3.2 points to it from its proposal step and is
-  otherwise unchanged.
-
 ## v0.4.0 — 2026-11-24
 
 - **The review step after a first curation (tools, curate-corpus; no schema change, no migration).** From the first
