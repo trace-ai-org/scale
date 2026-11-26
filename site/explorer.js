@@ -1746,11 +1746,99 @@ async function ask(question) {
 }
 // The answer, the query plans that gave its rows, and what it cost (the service's answer and the page's own alike).
 function answerCard(r, cost) {
-  card("Answer", `${idLinks(md(r.answer || "No answer."))}
+  const cited = r.seen ? citeLinks(md(r.answer || "No answer."), r.seen) : { html: idLinks(md(r.answer || "No answer.")), checks: null };
+  card("Answer", `${cited.html}
+    ${cited.checks ? checksLine(cited.checks) : ""}
     ${r.stopped ? `<p class="gx-card-warn">Stopped early: ${esc(r.stopped)}.</p>` : ""}
-    ${(r.plans || []).length ? `<details><summary>How it was answered (${r.plans.length} plan${r.plans.length > 1 ? "s" : ""})</summary>${r.plans.map((p, i) =>
+    ${(r.plans || []).length ? `<details><summary>How it was answered (${r.plans.length} plan${r.plans.length > 1 ? "s" : ""}, ${r.plans.reduce((n, p) => n + (p.rows || 0), 0)} rows)</summary>${r.plans.map((p, i) =>
       `<p class="gx-meta">Plan ${i + 1}: ${esc(p.status || "?")}, ${p.rows ?? 0} rows</p><pre>${esc(JSON.stringify(p.plan, null, 1))}</pre>`).join("")}</details>` : ""}
     <p class="gx-meta">${esc(cost)}</p>`);
+  $("card-body").querySelectorAll(".gx-cite[data-id]").forEach((a) => (a.onclick = (e) => { e.preventDefault(); goTo(a.dataset.id); }));
+}
+
+// ------------------------------------------------------------------------------------------ citations
+// An answer cites [record id, locator] (several in one bracket, separated by ";"). Each citation becomes a short link
+// (the source's short title, year and kind, and the locator) whose title shows the cited record's quote at that
+// locator and whose click goes to the record. The page then checks references mechanically, never their meaning:
+// the id is a record of this graph; a tool returned it while this answer was written; a phrase quoted just before
+// the citation is in that record's evidence. It says "reference checks", never that the answer is verified.
+let idPrefix = "";                                        // the latest model view's id prefix, for a citation written with ~
+const ID_RE = /^((?:ex|scale|[a-z][a-z0-9-]*):[A-Za-z0-9_.\/#-]+|~[A-Za-z0-9_.\/#-]+)\s*(?:[,:]\s*(.+))?$/;
+function returnedIds(res, seen) {                         // every record id of this graph a tool result names
+  if (!G) return;
+  let text = typeof res === "string" ? res : JSON.stringify(res);
+  if (res && typeof res === "object" && res.id_prefix) {                 // a model view: ~ stands for its id prefix
+    idPrefix = res.id_prefix;
+    text = text.replace(/"~/g, `"${res.id_prefix}`).replace(/([\s:])~(?=[A-Za-z0-9])/g, `$1${res.id_prefix}`);
+  }
+  for (const m of text.matchAll(/(?:ex|scale|[a-z][a-z0-9-]*):[A-Za-z0-9_.\/#-]+/g)) if (G.byId.has(m[0])) seen.add(m[0]);
+}
+// text as the quote check compares it: case, line-break hyphens ("poison- ing"), page marks (|) and spacing aside
+const squash = (t) => String(t || "").toLowerCase().replace(/\u00ad/g, "").replace(/(\w)-\s+(\w)/g, "$1$2")
+  .replace(/[|]/g, " ").replace(/\s+/g, " ").trim();
+// a quoted phrase is in the evidence when each part between ellipses (of two words or more) is, compared with spaces,
+// hyphens and closing punctuation aside ("400°C" is "400° C", "cata- lyst-" is "catalyst")
+const bare = (t) => squash(t).replace(/[\s-]+/g, "").replace(/[.,;:]+$/, "");
+const quotedIn = (quoted, evs) => {
+  const parts = String(quoted).split(/\s*(?:…|\.\.\.)\s*/).filter((x) => x.trim().split(/\s+/).length >= 2).map(bare);
+  const all = evs.map((e) => bare(e.quote)).join("");          // the record's quotes in order (a word may be split across two)
+  return parts.length === 0 || parts.every((x) => all.includes(x));
+};
+function sourceOf(rec, locator) {                         // the evidence item at the cited locator, and its source
+  const evs = rec?.props?.evidence || [];
+  const want = squash(locator);
+  const ev = (want && evs.find((e) => squash(e.locator) === want)) || (want && evs.find((e) => squash(e.locator).startsWith(want) || want.startsWith(squash(e.locator)))) || evs[0] || {};
+  const srcId = ev.source || (G.doc.links.find((l) => l.source === rec?.id && l.type === "REPORTED_IN") || {}).target;
+  return { ev, src: srcId ? G.byId.get(srcId) : null };
+}
+function chipLabel(src, locator) {
+  const p = src?.props || {};
+  const title = String(p.title || p.name || src?.id || "source").replace(/\s+/g, " ");
+  const short = title.length > 32 ? title.slice(0, 31).replace(/\s\S*$/, "") + "…" : title;
+  return [short, p.year, p.kind && p.kind !== "article" ? p.kind : "", locator].filter(Boolean).join(" · ");
+}
+function citeLinks(html, seen) {
+  const checks = { cited: 0, unknown: [], unreturned: [], quotes: 0, quotesMissing: [], locators: [] };
+  const out = html.replace(/\[([^\[\]<>]{3,600})\]/g, (whole, inner, at) => {
+    const parts = inner.split(/\s*;\s*/).map((x) => x.match(ID_RE));
+    if (!parts.length || parts.some((m) => !m)) return whole;            // not a citation: left as written
+    const before = html.slice(Math.max(0, at - 400), at).replace(/<[^>]+>/g, " ")
+      .split(/[.!?]\s|\]/).pop();                         // the citation's own sentence, after any earlier citation
+    const quoted = [...before.matchAll(/[“"]([^“”"]{4,300})[”"]/g)].pop()?.[1];
+    return parts.map(([, id0, locator]) => {
+      const id = id0.startsWith("~") && idPrefix ? idPrefix + id0.slice(1) : id0;
+      checks.cited += 1;
+      const rec = G?.byId.get(id);
+      if (!rec) { checks.unknown.push(id); return `<span class="gx-cite gx-cite-bad" title="No record ${esc(id)} in this graph">${esc(id)} ?</span>`; }
+      if (!seen.has(id)) checks.unreturned.push(id);
+      const { ev, src } = sourceOf(rec, locator);
+      const locs = (rec.props?.evidence || []).map((e) => squash(e.locator)).filter(Boolean);
+      const want = squash(locator).replace(/[.;,]+$/, "");
+      if (want && locs.length && !locs.some((l) => l === want || l.startsWith(want) || want.startsWith(l) || l.includes(want)))
+        checks.locators.push(`${id}: ${locator}`);                     // a locator none of the record's evidence has
+      if (quoted) {
+        checks.quotes += 1;
+        const inEv = quotedIn(quoted, rec.props?.evidence || []);
+        if (!inEv) checks.quotesMissing.push(`“${quoted}” (${id})`);
+      }
+      const tip = [ev.quote ? `“${ev.quote}”` : "(quote withheld or not kept)", ev.locator, rec.props?.name, id].filter(Boolean).join("\n");
+      return `<a href="#" class="gx-cite${seen.has(id) ? "" : " gx-cite-warn"}" data-id="${esc(id)}" title="${esc(tip)}">${esc(chipLabel(src, locator || ev.locator))}</a>`;
+    }).join(" ");
+  });
+  return { html: out.replace(/(<[^>]*>)|([^<]+)/g, (m, tag, text) => tag || idLinks(text)), checks };   // ids in text only
+}
+function checksLine(c) {
+  if (!c.cited) return `<p class="gx-card-warn">This answer cites no records.</p>`;
+  const bad = [
+    c.unknown.length ? `${c.unknown.length} cited id${c.unknown.length > 1 ? "s are" : " is"} not in this graph` : "",
+    c.unreturned.length ? `${c.unreturned.length} cited record${c.unreturned.length > 1 ? "s were" : " was"} not returned by a tool while answering` : "",
+    c.quotesMissing.length ? `${c.quotesMissing.length} quoted phrase${c.quotesMissing.length > 1 ? "s are" : " is"} not in the cited record's evidence` : "",
+    c.locators.length ? `${c.locators.length} locator${c.locators.length > 1 ? "s are" : " is"} not one the cited record's evidence gives` : "",
+  ].filter(Boolean);
+  const head = `Reference checks: ${c.cited} citation${c.cited > 1 ? "s" : ""}${c.quotes ? `, ${c.quotes} quoted phrase${c.quotes > 1 ? "s" : ""}` : ""}`;
+  return bad.length
+    ? `<p class="gx-card-warn" title="${esc([...c.unknown, ...c.unreturned, ...c.quotesMissing, ...c.locators].join("\n"))}">${esc(head)}: ${esc(bad.join("; "))}.</p>`
+    : `<p class="gx-meta gx-checks-ok" title="Each cited id is a record of this graph that a tool returned while answering, and each quoted phrase is in the cited record's evidence. These check references, not whether the record supports the sentence.">${esc(head)}: all resolve to records returned while answering${c.quotes ? ", quotes found" : ""}.</p>`;
 }
 
 // ------------------------------------------------------------------------------------------ answers with the reader's key
@@ -1811,17 +1899,40 @@ let skillText = null;
 const OWN_TOOLS = [
   { name: "describe", description: "The schema: labels and edge types with their properties (scale describe).",
     input_schema: { type: "object", properties: { names: { type: "array", items: { type: "string" } } }, required: [] } },
-  { name: "stats", description: "The graph's units in use per property and its link patterns (scale graph stats).",
-    input_schema: { type: "object", properties: {}, required: [] } },
+  { name: "stats", description: "The graph's units in use per property and its link patterns (scale graph stats). Name the labels and properties a plan needs (e.g. labels [CatalyticTest], properties [temperature, pressure]): the whole graph's units are long.",
+    input_schema: { type: "object", properties: { labels: { type: "array", items: { type: "string" } }, properties: { type: "array", items: { type: "string" } } }, required: [] } },
   { name: "search", description: "Search the graph's evidence by words and meaning (scale graph search); hits lead to the records that cite them, one hit per quote (the other records citing it in `also`). Formulas keep their case: CO is carbon monoxide, Co cobalt.",
     input_schema: { type: "object", properties: { query: { type: "string" }, k: { type: "integer" }, published_before: { type: "string" } }, required: ["query"] } },
-  { name: "query", description: "Run a graph query plan (scale graph query): match, steps, where, return, evidence, order_by, limit, text, published_before. Returns rows, the kind of answer and the coverage. A numeric filter states its unit; add convert: true to also compare values in another unit of the same quantity, converted exactly (temperature K, °C, °F; absolute pressure; time), e.g. {prop: temperature, op: le, value: 250, unit: °C, convert: true}. Text filters ignore case except formulas (Co is cobalt, CO carbon monoxide).",
-    input_schema: { type: "object", properties: { plan: { type: "object" } }, required: ["plan"] } },
+  { name: "proposal_procedure", description: "The procedure for a proposal (how to make a material, how to run a test the graph holds no record of): call it first when the question asks what to do, and follow it.",
+    input_schema: { type: "object", properties: {}, required: [] } },
+  { name: "query", description: "Run a graph query plan (scale graph query): match, steps, where, return, evidence, order_by, limit, text, published_before. Returns rows, the kind of answer and the coverage, in a compact model view (its legend says how: each quote once as E1..En, sources once, ids shortened with ~ for id_prefix; cite the full id). Rows come in pages: fetch the next with page = the result's page.next; never answer from one page as if it were all. A numeric filter states its unit; add convert: true to also compare values in another unit of the same quantity, converted exactly (temperature K, °C, °F; absolute pressure; time), e.g. {prop: temperature, op: le, value: 250, unit: °C, convert: true}. Text filters ignore case except formulas (Co is cobalt, CO carbon monoxide).",
+    input_schema: { type: "object", properties: { plan: { type: "object" }, page: { type: "object", description: "the result's page.next, passed back whole, for its next page of rows" } }, required: ["plan"] } },
 ];
-const WORKING_HERE = "\n\n# Working here\n\nYou answer in a web page, through the tools given (no shell). The graph is the one the user is viewing. "
-  + "Write the answer in Markdown: every factual sentence from returned rows, citing record ids and evidence locators in brackets, then a "
-  + "**Limits** line. Keep your own extrapolations in a separate, labelled paragraph. Tool results come back whole: "
-  + "run every plan the question needs, and base the answer on all the relevant rows they return.";
+// How an answer is written in this page: the principles the design review settled on (docs/answering.md).
+const WORKING_HERE = `
+
+# Answering here
+
+You answer in a web page, through the tools given (no shell). The graph is the one the reader is viewing.
+
+## Find before you answer
+- Search every kind of record that can hold the answer, by at least two routes (query plans and evidence searches with synonyms, narrower terms and other spellings): tests and their results (zeros, upper bounds and "inactive" included); the authors' claims and hypotheses (their explanations); components and their roles (HAS_COMPONENT role: promoter, support); and the links between them (follow SUPPORTS and CONTRADICTS from a finding to the hypothesis it bears on; INHIBITED_BY for poisons). Before saying the graph holds none, run another plan.
+- Bind each result to its own product, assay, conditions and evidence (an entries step); compare or rank only within one context (comparison: scientific).
+- Keep each finding in its context: the reaction, product and conditions its record states. A finding about another reaction (oil, higher alcohols, decomposition) is out of scope unless the question asks; say so if you mention it.
+- Separate candidates from relevant records: read each row and drop what does not answer the question. Count sources and independent works, not records; identical wording in sibling patents is one claim repeated.
+- Check counter-evidence (CONTRADICTS, competing hypotheses, controls) when the answer is causal, a consensus, an earliest record or an absence. Stop when every distinction the question asks for has support or an explicit unresolved status.
+- Tool results come back whole: base the answer on all the relevant rows the plans return.
+
+## Write the answer (Markdown)
+- Lead with the answer in 1-3 sentences. Keep the whole answer short (about 400 words) unless the question asks for a full list; put a full list in a table, not in prose.
+- Then the evidence: a table when the records share columns (one row per test or finding; conditions shared by a source stated once; a column for what was varied; a column for the citation), otherwise short paragraphs. Put a caveat that changes the meaning beside its claim.
+- Cite as [record id, locator], e.g. [ex:msyn/10.1021-ie50226a034/test/cu-from-sulfate, p. 3]: the page shows each as a short link with its quote, so do not repeat ids in prose. Quote a phrase in quotation marks only when it is in the cited record's evidence, exactly as stored.
+- Copy each locator from the record's evidence; never guess a page. Report a claim's status as recorded (claim_status: proposed, supported, disputed, refuted, superseded): a refuted or superseded explanation is said to be so, and a missing CONTRADICTS link does not make a claim uncontested.
+- Give values as reported, with unit, basis and the conditions the record states; never add or average across assays, bases or units. Copy counts, statuses (claim_status, bound, missing_reason) and identifiers exactly from the tool results; count with a query rather than by hand.
+- Keep apart, visibly: what was observed; what the authors read it as showing ("**Authors' reading:**"); and your own inference ("**Our inference:**", only when asked or needed).
+- **What is missing:** name an absence only for what you checked, by its kind: "the source does not state it" only when the record says so (not_reported, not_stated_in_source); "not found by these plans" when your search found nothing; a withheld quote is not missing information (the record's values and statements still count). An absence in this graph is not an absence in the literature.
+- End with two short lines: **Found by:** the routes and what each returned, in one line; **Limits:** what was left out and why.
+- No preamble, no restating the question, no closing summary.`;
 // The cache breakpoints on the conversation: the newest two user messages, so each turn reads all that came before
 // from the cache and writes only what is new (with the system prompt's, three of the four breakpoints allowed).
 function markCache(messages) {
@@ -1861,13 +1972,22 @@ async function chat(provider, body) {
   if (r.status === 404 || /model/i.test(why)) throw new Error(`${p.name} answered: ${why}. Check the model name under Your API key.`);
   throw new Error(`${p.name}'s API answered: ${why}`);
 }
+let proposeText = null;
 async function ownTool(name, a, plans) {
-  if (name === "describe") return scale("describe", { names: a.names || [], domain: "catalysis" });
-  if (name === "stats") return scale("stats", {});
-  if (name === "search") return scale("search", { query: String(a.query || ""), k: Number(a.k) || 10, ...(a.published_before ? { published_before: a.published_before } : {}) });
+  if (name === "proposal_procedure") {
+    if (proposeText === null) {
+      const r = await fetch("data/query-graph-propose.md");
+      if (!r.ok) throw new Error(`data/query-graph-propose.md: HTTP ${r.status}`);
+      proposeText = await r.text();
+    }
+    return proposeText;
+  }
+  if (name === "describe") return scale("describe", { names: a.names || [], domain: "catalysis", checklist: false });
+  if (name === "stats") return scale("stats", { ...(Array.isArray(a.labels) ? { labels: a.labels } : {}), ...(Array.isArray(a.properties) ? { properties: a.properties } : {}) });
+  if (name === "search") return scale("search", { query: String(a.query || ""), k: Number(a.k) || 10, view: "model", ...(a.published_before ? { published_before: a.published_before } : {}) });
   if (name === "query") {
-    const res = await scale("query", { plan: a.plan });
-    plans.push({ plan: a.plan, status: res.status || res.error, rows: res.row_count || 0 });
+    const res = await scale("query", { plan: a.plan, view: "model", ...(a.page && typeof a.page === "object" ? a.page : {}) });
+    if (!a.page) plans.push({ plan: a.plan, status: res.status || res.error, rows: res.row_count || 0 });   // a further page is the same plan
     return res;
   }
   throw new Error(`unknown tool ${name}`);
@@ -1966,7 +2086,8 @@ async function askOwnKey(question) {
     if (b) b.onclick = () => { answerNow = true; b.disabled = true; b.textContent = "Answering from the rows so far…"; };
   };
   progress("");
-  const plans = [];
+  const plans = [], seen = new Set();                     // the plans run, and every record id a tool returned
+  const run = async (name, input) => { const res = await ownTool(name, input, plans); returnedIds(res, seen); return res; };
   try {
     if (skillText === null) {
       const s = await fetch("data/query-graph.md");
@@ -1974,11 +2095,10 @@ async function askOwnKey(question) {
       skillText = await s.text();
     }
     const r = await modelLoop({ system: skillText + WORKING_HERE, tools: OWN_TOOLS, first: question,
-      run: (name, input) => ownTool(name, input, plans), wrapUp: WRAP_UP, stopNow: () => answerNow, progress, alive: () => G === g,
-      gate: check });
+      run, wrapUp: WRAP_UP, stopNow: () => answerNow, progress, alive: () => G === g, gate: check });
     if (!r) return;                                         // another graph was opened meanwhile
     const stopped = r.stopped === "finished early, on request" ? ANSWERED_EARLY : r.stopped;
-    answerCard({ answer: r.text, plans, stopped }, accountLine(r));
+    answerCard({ answer: r.text, plans, stopped, seen }, accountLine(r));
   } catch (err) {
     if (G === g) card("Answer", `<p class="gx-card-warn">${esc(err.message || err)}</p>`);
   }

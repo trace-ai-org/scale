@@ -116,6 +116,34 @@ def _skill_body(repo: Path, name: str) -> str:
     return re.sub(r"\A---\n.*?\n---\n", "", text, flags=re.S)
 
 
+# The query-graph skill's parts that only a proposal needs (how to make a material, how to run a test): step 6 and the
+# proposal's layout in step 7. The page's answering prompt leaves them out and fetches them when a question asks for a
+# proposal (data/query-graph-propose.md, the explorer's proposal_procedure tool); the command-line route (step 8) is
+# not the page's. Each part runs from its marker to the next.
+PROPOSE_FROM, PROPOSE_TO = "6. **Propose", "7. **Present"
+LAYOUT_FROM, LAYOUT_TO = "   **A proposal's layout", "8. **Route failures"
+ROUTE_FROM, ROUTE_TO = "8. **Route failures", "## Rules"
+
+
+def _cut(text: str, start: str, end: str) -> tuple[str, str]:
+    """``text`` without the part from the line starting with ``start`` to the line starting with ``end``, and that part."""
+    a, b = text.find("\n" + start), text.find("\n" + end)
+    if a < 0 or b < a:
+        raise ScaleError(f"skills/query-graph/SKILL.md: no part from {start!r} to {end!r} (the site splits the skill there)")
+    return text[:a + 1] + text[b + 1:], text[a + 1:b + 1]
+
+
+def answering_parts(skill: str) -> tuple[str, str]:
+    """(the answering prompt, the proposal procedure) cut from the query-graph skill's body."""
+    text, propose = _cut(skill, PROPOSE_FROM, PROPOSE_TO)
+    text, layout_ = _cut(text, LAYOUT_FROM, LAYOUT_TO)
+    text, _ = _cut(text, ROUTE_FROM, ROUTE_TO)
+    pointer = ("6. **Propose, when the question asks what to do** (how to make a material, how to run a test): first call "
+               "the proposal_procedure tool and follow the procedure it returns.\n")
+    text = text.replace("\n" + PROPOSE_TO, "\n" + pointer + PROPOSE_TO, 1)
+    return text, "# Proposing from the graph\n\n" + propose + "\n" + layout_
+
+
 # Each reference a page makes to a script, a stylesheet or the package, stamped with the build's digest (?v=…), so a
 # browser never runs a page of one build with a worker or package of another it kept in its cache.
 STAMPED = {
@@ -129,7 +157,7 @@ STAMPED = {
 def _stamp(out: Path) -> str:
     """Stamp the built pages' references (``STAMPED``) with the digest of what they load; returns the stamp."""
     h = hashlib.sha256()
-    for name in sorted(PAGES) + [PACKAGE_ZIP, "data/query-graph.md"]:
+    for name in sorted(PAGES) + [PACKAGE_ZIP, "data/query-graph.md", "data/query-graph-propose.md"]:
         h.update(name.encode() + b"\0" + (out / name).read_bytes())
     stamp = h.hexdigest()[:12]
     for name, refs in STAMPED.items():
@@ -160,7 +188,9 @@ def build(repo: Path, out: Path) -> dict:
     header = repo / layout.GRAPHS / "catal-commons" / "parts" / "header.json"
     commons_version = json.loads(header.read_text(encoding="utf-8"))["graph"]["schema_version"] if header.is_file() else None
     write_canonical(out / "data" / "graphs.json", {"graphs": entries, "commons_schema_version": commons_version})
-    (out / "data" / "query-graph.md").write_text(_skill_body(repo, "query-graph"), encoding="utf-8")
+    answering, propose = answering_parts(_skill_body(repo, "query-graph"))
+    (out / "data" / "query-graph.md").write_text(answering, encoding="utf-8")            # the page's answering prompt
+    (out / "data" / "query-graph-propose.md").write_text(propose, encoding="utf-8")      # fetched for a proposal
     boards = commons.boards(repo / layout.GRAPHS / "catal-commons")
     board = boards["contributors"]
     write_canonical(out / "data" / "leaderboard.json", {"commons": f"{layout.GRAPHS}/catal-commons", **boards})
