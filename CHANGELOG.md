@@ -21,7 +21,12 @@
   read goes through the egress gate with the reader's key. Nothing is uploaded and a private graph is never
   contributed. `scale add-source`'s result for a table now carries each role's column and unit, the wide columns, the
   header and sheets read and the other templates that fit; without processes (Pyodide) the framework repository is
-  found by its `.git` (docs/data.md, "In the graph explorer").
+  found by its `.git` (docs/data.md, "In the graph explorer"). **Add a source takes a batch**: up to 10 sources of any
+  mix into one private graph (graphs merge first, each table confirmed or skipped in turn, each paper curated with the
+  reader's key, one file's failure that file's, one summary, a reload mid-batch naming what was not added); the Curate
+  dialog hands several files, or a data or graph file, to it; `scale add-source` takes up to 10 sources into one
+  document (`addsource.add_many`). **Analyze** moves to the toolbar, the twin of Add a source, and says why when there
+  is nothing to plot.
 
 - **Any source into a graph of one's own, by one entry point (tools and a skill; no schema change, no migration).**
   `scale add-source FILE_OR_DOI --into DOC` (and the agent tool `scale_add_source`, gated by the destination's access)

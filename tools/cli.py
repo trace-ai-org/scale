@@ -1365,7 +1365,14 @@ def cmd_add_source(args):
                                          "range", "data_rights")}
     opts["bind"] = _pairs(args.bind, "--bind")
     opts["confirm"] = list(args.confirm or [])
-    res = addsource.add(args.source, args.into, repo=_repo(args), finish_folder=args.finish, **opts)
+    sources = list(args.source or [])
+    if len(sources) > 1:                           # several sources into one graph, each on its own (addsource.add_many)
+        if args.finish:
+            raise ScaleError("--finish FOLDER takes no source")
+        res = addsource.add_many(sources, args.into, repo=_repo(args), **opts)
+        _emit(res, args, None) if args.format == "json" else print(addsource.text_report_many(res))
+        return 1 if res["status"] != "added" else 0
+    res = addsource.add(sources[0] if sources else None, args.into, repo=_repo(args), finish_folder=args.finish, **opts)
     _emit(res, args, None) if args.format == "json" else print(addsource.text_report(res))
     return 1 if res["status"] in ("questions", "invalid") else 0
 
@@ -2033,7 +2040,8 @@ def build_parser() -> argparse.ArgumentParser:
              "mapping and imported when nothing is uncertain (else it asks), a publication (PDF, DOI, text) starts a "
              "curation folder that --finish folds in, a graph (.json) is validated and merged with --merge "
              "(docs/data.md); exit 1 when it asks back or refuses, nothing written")
-    sp.add_argument("source", nargs="?", help="a file (PDF, CSV, .xlsx, JSON graph, text) or a DOI")
+    sp.add_argument("source", nargs="*", help="a file (PDF, CSV, .xlsx, JSON graph, text) or a DOI; up to 10, each added "
+                    "in turn into the one document (the options apply to each)")
     sp.add_argument("--into", required=True, help="the destination document (scale data new makes one; scale data init "
                     "makes graphs/lab.json)")
     sp.add_argument("--finish", metavar="FOLDER", help="fold a checked curation folder's graph into the document")

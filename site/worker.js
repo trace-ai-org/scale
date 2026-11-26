@@ -78,7 +78,7 @@ def plot_table(args_json):                   # a linked data file, read here: it
 
 from scale import pagelab
 from scale.util import ScaleError as _ScaleError
-_LAB_FNS = {"new", "detect", "stage", "table", "graph", "publication", "sources_of", "files", "restore", "verify", "drop"}
+_LAB_FNS = {"new", "detect", "stage", "unstage", "table", "graph", "publication", "sources_of", "files", "restore", "verify", "drop"}
 
 def lab_call(fn, args_json):                 # a private graph made in this page (scale add-source's code), in /lab
     a = json.loads(args_json)

@@ -192,6 +192,7 @@ export async function forget(id) { try { await idbDo("readwrite", (s) => s.delet
 export async function kept() { try { return (await idbDo("readonly", (s) => s.getAll())) || []; } catch { return []; } }
 
 // ------------------------------------------------------------------------------------------ the private graphs
+export const MAX_BATCH = 10;                   // sources in one batch of Add a source
 export const labs = new Map();                  // id -> { id, entry, text, doc, manifest, saved, kept, steps }
 export const unsaved = () => [...labs.values()].filter((l) => !l.saved);
 
@@ -260,13 +261,23 @@ export function addSource(env) {
     env.changed();
   }
 
-  // ---------------------------------------------------------------------------------------- the dialog
+  // ---------------------------------------------------------------------------------------- the dialog: a batch
+  // Up to MAX_BATCH sources at once (files of any kind, DOIs), all into ONE private graph, made once when the batch
+  // starts: graphs and bundles merge first (no questions), then each table is confirmed in turn (or skipped), then each
+  // paper is curated with the reader's key. A failure is that file's; the rest go on. Each file's outcome is kept and
+  // the batch ends with one summary. While it runs, the files not yet added are noted in this browser, so that a reload
+  // says which ones to add again.
   const step = $("add-step");
+  const B = { items: [], dropped: [], running: false, gid: "", head: "", attest: false, seq: 0, token: 0 };
+  const KIND = { table: "table", paper: "paper", graph: "graph", bundle: "bundle", download: "private-graph download", doi: "DOI", unknown: "unreadable" };
+  const STATE = { reading: "reading…", waiting: "waiting", confirm: "needs your confirmation", curating: "curating", merging: "merging",
+    added: "added", unchanged: "already there", failed: "failed", skipped: "skipped", "needs key": "needs your key" };
   function reset() {
     Object.assign(st, { file: null, b64: "", det: null, into: "", staged: "", opts: {}, ticked: new Set(), res: null, busy: false, help: null });
+    Object.assign(B, { items: [], dropped: [], running: false, gid: "", head: "", attest: false, token: B.token + 1 });
     $("add-file").value = "";
     $("add-doi").value = "";
-    $("add-file-name").textContent = "Drop a file here, or choose one";
+    $("add-file-name").textContent = `Drop files here (up to ${MAX_BATCH}), or choose them`;
     $("add-drop").classList.remove("has-file");
     $("add-pick").hidden = false;
     step.hidden = true;
@@ -274,50 +285,251 @@ export function addSource(env) {
   }
   function open() {
     if (!$("add-dialog").open) $("add-dialog").showModal();
-    if (!st.busy && st.res?.status === "added") reset();
+    if (!B.running && B.done) { B.done = false; reset(); }
+    else if (!B.running) renderPick();               // a key set meanwhile changes what the papers need
   }
-  // the file being added, in one line, once it is read (the drop zone gives way to it)
+  // a view: into the batch's stage while it runs (the list of files stays above it), else the whole step
   function show(html) {
     step.hidden = false;
     const a = document.activeElement, key = a && step.contains(a)
       ? (a.id ? `#${a.id}` : ["data-role", "data-assume", "data-confirm", "data-use"].map((k) => a.hasAttribute(k) ? `[${k}="${CSS.escape(a.getAttribute(k))}"]` : "").find(Boolean)) : "";
-    const f = st.file && st.det ? `<p class="gx-add-file"><b>${esc(st.file.name)}</b> <span class="gx-subtle">${esc((st.det.format || "").toUpperCase())}${st.file.size ? ` · ${Math.max(1, Math.round(st.file.size / 1024))} KB` : ""}</span>
-      <button type="button" class="gx-link-btn" id="add-change">Choose another</button></p>` : "";
-    if (f) $("add-pick").hidden = true;
-    step.innerHTML = f + html;
-    if ($("add-change")) $("add-change").onclick = reset;
+    const into = B.running && $("batch-stage") ? $("batch-stage") : step;
+    into.innerHTML = (B.running ? B.head : "") + html;
     if (key) step.querySelector(key)?.focus();
   }
   function fail(msg) {
-    show(`<p class="gx-err">${esc(msg)}</p><p><button type="button" class="gx-btn gx-btn-tiny" id="add-again">Choose another</button></p>`);
+    if (B.running && st.item) {                     // the table's failure is the table's: the batch goes on
+      show(`<p class="gx-err">${esc(msg)}</p><menu class="gx-add-menu"><button type="button" class="gx-btn gx-btn-primary" id="add-again">Go on with the next file</button></menu>`);
+      $("add-again").onclick = () => finishTable("failed", msg);
+      return;
+    }
+    show(`<p class="gx-err">${esc(msg)}</p><p><button type="button" class="gx-btn gx-btn-tiny" id="add-again">Start again</button></p>`);
     $("add-again").onclick = reset;
   }
   const busy = (msg) => show(`<p class="gx-subtle gx-add-busy">${esc(msg)}</p>`);
 
-  async function pick(file) {
-    reset();
-    st.file = file;
-    $("add-file-name").textContent = file.name;
-    $("add-drop").classList.add("has-file");
-    if (/\.zip$/i.test(file.name)) {
-      let pg = null;
-      try { pg = privateGraphIn(await readZip(new Uint8Array(await file.arrayBuffer()))); } catch (e) { return fail(`${file.name}: ${e.message || e}`); }
-      return pg ? reopen(pg) : graphStep(null);                // a download of this page, or a knowledge-graph bundle
-    }
-    busy(`Reading ${file.name} in this browser…`);
+  // ---- choosing: files and DOIs into the list, each read by the Python router (what it is)
+  async function addFiles(list) {
+    if (B.running) return;
+    const files = [...(list || [])];
+    const room = Math.max(0, MAX_BATCH - B.items.length);
+    B.dropped = [...B.dropped, ...files.slice(room).map((f) => f.name)];
+    const fresh = files.slice(0, room).map((file) => ({ key: `i${++B.seq}`, name: file.name, file, size: file.size, kind: "", state: "reading" }));
+    B.items.push(...fresh);
+    renderPick();
+    await Promise.all(fresh.map(readItem));
+    renderPick();
+  }
+  async function readItem(it) {
+    const token = B.token;
     try {
-      st.b64 = bytesToB64(new Uint8Array(await file.arrayBuffer()));
-      const r = await lab("detect", { name: file.name, data_b64: st.b64 });
-      st.det = r.detected;
-      st.sha256 = r.sha256;
-    } catch (e) { return fail(e.message || String(e)); }
-    if (st.det.route === "table") return tableStart();
-    if (st.det.route === "graph") return graphStep(st.det);
-    return documentStep();
+      if (/\.zip$/i.test(it.name)) {
+        const pg = privateGraphIn(await readZip(new Uint8Array(await it.file.arrayBuffer())));
+        Object.assign(it, pg ? { kind: "download", pg } : { kind: "bundle" }, { state: "waiting" });
+        return;
+      }
+      it.b64 = bytesToB64(new Uint8Array(await it.file.arrayBuffer()));
+      const r = await lab("detect", { name: it.name, data_b64: it.b64 });
+      it.det = r.detected;
+      it.kind = { table: "table", graph: "graph", document: "paper" }[it.det.route] || "unknown";
+      it.state = "waiting";
+    } catch (e) { Object.assign(it, { kind: it.kind || "unknown", state: "failed", why: e.message || String(e) }); }
+    if (token === B.token) renderPick();
+  }
+  async function addDoi(text) {
+    if (B.running) return;
+    if (B.items.length >= MAX_BATCH) { B.dropped.push(text); renderPick(); return; }
+    const it = { key: `i${++B.seq}`, name: text, kind: "", state: "reading" }, token = B.token;
+    B.items.push(it);
+    $("add-doi").value = "";
+    renderPick();
+    try {
+      const det = (await lab("detect", { text })).detected;
+      Object.assign(it, { name: det.doi, doi: det.doi, det, kind: "doi", state: "waiting" });
+    } catch (e) { Object.assign(it, { kind: "unknown", state: "failed", why: e.message || String(e) }); }
+    if (token === B.token) renderPick();
+  }
+  const count = (k) => B.items.filter((x) => x.kind === k && x.state !== "failed").length;
+  function rows(editable) {
+    return B.items.map((it, i) => `<li class="gx-batch-row is-${esc(it.state.replace(/\s/g, "-"))}" data-key="${esc(it.key)}">
+      <span class="gx-batch-n">${i + 1}</span><span class="gx-batch-name" title="${esc(it.name)}">${esc(it.name)}</span>
+      <span class="gx-chip gx-batch-kind">${esc(KIND[it.kind] || "…")}</span>
+      <span class="gx-batch-state">${esc(STATE[it.state] || it.state)}${it.why ? `<span class="gx-subtle">: ${esc(it.why)}</span>` : it.what ? `<span class="gx-subtle">: ${esc(it.what)}</span>` : ""}</span>
+      ${editable ? `<button type="button" class="gx-icon-btn" data-remove="${esc(it.key)}" aria-label="Remove ${esc(it.name)}" title="Remove it from the batch">×</button>` : ""}</li>`).join("");
+  }
+  // the batch before it runs: the list (each removable), what will happen to papers, the graph it goes into, Start
+  function renderPick() {
+    if (B.running) return;
+    if (!B.items.length && !B.dropped.length) { step.hidden = true; step.innerHTML = ""; return; }
+    step.hidden = false;
+    if (!$("batch-list")) {
+      step.innerHTML = `<p class="gx-subtle" id="batch-note"></p><ol class="gx-batch" id="batch-list" aria-label="The sources of this batch"></ol>
+        <div id="batch-papers"></div>${intoForm(stemOf(B.items[0]?.name || "My private graph"))}
+        <div class="gx-add-foot"><menu class="gx-add-menu"><button type="button" class="gx-btn" id="batch-clear">Clear</button><button type="button" class="gx-btn gx-btn-primary" id="batch-start">Add them</button></menu></div>`;
+      wireInto();
+      $("batch-clear").onclick = reset;
+      $("batch-start").onclick = () => run();
+    }
+    $("add-file-name").textContent = `${B.items.length} of ${MAX_BATCH} sources chosen · drop or choose more`;
+    $("add-drop").classList.toggle("has-file", !!B.items.length);
+    $("batch-note").innerHTML = (B.dropped.length ? `<span class="gx-card-warn">At most ${MAX_BATCH} sources a batch: left out ${esc(B.dropped.join(", "))}. Add them in another batch.</span> ` : "")
+      + `All of them go into one private graph. Graphs merge first, then each table is shown for you to confirm (or skip), then each paper is curated.`;
+    $("batch-list").innerHTML = rows(true);
+    $("batch-list").querySelectorAll("[data-remove]").forEach((b) => (b.onclick = () => { B.items = B.items.filter((x) => x.key !== b.dataset.remove); if (!B.items.length) B.dropped = []; renderPick(); }));
+    const papers = count("paper"), key = env.key();
+    $("batch-papers").innerHTML = !papers ? "" : key
+      ? `<div class="gx-add-q"><p>${papers} ${papers === 1 ? "paper" : "papers"}: each one's text goes to <b>${esc(key)}</b> with your key, and to no
+          one else; the model curates them one after another by SCALE's curate-corpus skill in this browser, every quote checked against the text. A PDF or text is never kept.</p>
+        <label class="gx-check"><input type="checkbox" id="batch-attest"${B.attest ? " checked" : ""}> I have lawful access to ${papers === 1 ? "this paper" : "these papers"} (for example through my library) and curate ${papers === 1 ? "it" : "them"} to record the knowledge ${papers === 1 ? "it reports" : "they report"}: only what is derived from ${papers === 1 ? "it" : "them"} (findings, values and short cited quotes).</label></div>`
+      : `<div class="gx-add-q gx-ask"><p>${papers} ${papers === 1 ? "paper" : "papers"}: curating needs your own API key, so ${papers === 1 ? "it is" : "they are"} marked <i>needs your key</i>; the tables and graphs still go in.</p>
+        <button type="button" class="gx-btn gx-btn-tiny" id="batch-key">Set an API key</button></div>`;
+    if ($("batch-attest")) $("batch-attest").onchange = () => { B.attest = $("batch-attest").checked; syncStart(); };
+    if ($("batch-key")) $("batch-key").onclick = () => { $("add-dialog").close(); env.openKeyMenu(); };
+    syncStart();
+  }
+  function syncStart() {
+    const reading = B.items.some((x) => x.state === "reading"), any = B.items.some((x) => x.state === "waiting");
+    const needAttest = count("paper") && env.key() && !B.attest;
+    $("batch-start").disabled = reading || !any || !!needAttest;
+    $("batch-start").title = reading ? "Still reading the files" : !any ? "Nothing to add" : needAttest ? "Tick the statement about the papers first" : "";
+  }
+
+  // ---- running: one private graph, made once; graphs, then tables one at a time, then papers
+  const BATCH_NOTE = "scale-add-batch";
+  function note() {                                // the files not yet added, for a reload to name (this browser only)
+    if (!B.gid) return;
+    try {
+      const left = B.items.filter((x) => ["waiting", "confirm", "curating", "merging"].includes(x.state)).map((x) => x.name);
+      if (left.length) localStorage.setItem(`${BATCH_NOTE}:${B.gid}`, JSON.stringify({ gid: B.gid, left }));
+      else localStorage.removeItem(`${BATCH_NOTE}:${B.gid}`);
+    } catch { /* the note is a convenience; the private graph is kept either way */ }
+  }
+  function renderRun() {
+    if ($("batch-run-list")) $("batch-run-list").innerHTML = rows(false);
+    note();
+  }
+  const settle = (it, state, extra = {}) => { Object.assign(it, { state }, extra); renderRun(); };
+  async function run() {
+    if (count("paper") && env.key() && !B.attest) { renderPick(); return; }   // the papers' statement, ticked first
+    const download = B.items.find((x) => x.kind === "download" && x.state === "waiting");
+    if (download && B.items.length === 1) return reopen(download.pg);     // a download alone: opened as the graph it was
+    const c = chosen();
+    B.running = true;
+    $("add-pick").hidden = true;
+    step.innerHTML = `<p class="gx-subtle" id="batch-into"></p><ol class="gx-batch" id="batch-run-list" aria-label="The sources of this batch"></ol>
+      <div class="gx-batch-stage" id="batch-stage" aria-live="polite"></div>`;
+    let l;
+    try { l = await target(c); } catch (e) { B.running = false; return fail(e.message || String(e)); }
+    B.gid = l.id;
+    $("batch-into").innerHTML = `Into the private graph <b>${esc(l.entry.title)}</b>`;
+    renderRun();
+    for (const it of B.items.filter((x) => x.state === "waiting")) {   // what never goes in, said at once
+      if (it.kind === "download") settle(it, "skipped", { why: "a private graph's download opens on its own: add it alone" });
+      else if (it.kind === "doi") settle(it, "skipped", { why: `a page cannot fetch a paper by its DOI: give its PDF, or run scale add-source ${it.doi} --into graph.json` });
+      else if (it.kind === "unknown") settle(it, "failed", { why: it.why || "not a file this page reads" });
+    }
+    for (const it of B.items.filter((x) => (x.kind === "graph" || x.kind === "bundle") && x.state === "waiting")) await mergeItem(l, it);
+    const tables = B.items.filter((x) => x.kind === "table" && x.state === "waiting");
+    for (const [i, it] of tables.entries()) await confirmTable(l, it, i + 1, tables.length);
+    const papers = B.items.filter((x) => x.kind === "paper" && x.state === "waiting");
+    if (papers.length && !env.key()) papers.forEach((it) => settle(it, "needs key", { why: "set your API key, then add it again" }));
+    else for (const [i, it] of papers.entries()) await curateItem(l, it, i + 1, papers.length);
+    B.running = false;
+    note();
+    summary(l);
+  }
+  async function mergeItem(l, it) {
+    settle(it, "merging");
+    B.head = "";
+    show(`<p class="gx-subtle">Merging ${esc(it.name)}…</p>`);
+    let staged = "";
+    try {
+      let b64 = it.b64, name = it.name;
+      if (it.kind === "bundle") {                    // a knowledge-graph bundle, read here, merged as a graph
+        const doc = await env.readBundleDoc(it.file);
+        b64 = bytesToB64(new TextEncoder().encode(JSON.stringify(doc)));
+        name = `${stemOf(it.name)}.json`;
+      }
+      const s = await lab("stage", { gid: l.id, name, data_b64: b64 });
+      staged = s.file;
+      const res = await lab("graph", { gid: l.id, file: s.file, write: true });
+      if (!["merged", "unchanged"].includes(res.status)) throw new Error(res.status === "invalid" ? `it does not validate (${(res.validation?.first_errors || []).map((e) => e.message).slice(0, 2).join("; ")})` : `not merged (${res.status})`);
+      await refresh(l);
+      settle(it, res.status === "merged" ? "added" : "unchanged", { res, what: `${res.added || 0} records and links added`, why: "" });
+    } catch (e) {
+      if (staged) await lab("unstage", { gid: l.id, file: staged }).catch(() => {});
+      settle(it, "failed", { why: e.message || String(e) });
+    }
+  }
+  // a table: the mapping view (the same as for one file), with Skip; resolves when it is added, skipped or failed
+  function confirmTable(l, it, n, of) {
+    return new Promise((resolve) => {
+      settle(it, "confirm");
+      Object.assign(st, { item: it, token: ++B.seq, resolve, file: it.file, b64: it.b64, det: it.det, into: l.id, staged: "", opts: {}, ticked: new Set(), res: null, help: null, sheets: null });
+      B.head = `<p class="gx-batch-head"><b>Table ${n} of ${of}</b>: ${esc(it.name)}</p>`;
+      busy("Matching the table to the built-in mappings…");
+      lab("stage", { gid: l.id, name: it.name, data_b64: it.b64 })
+        .then((s) => { st.staged = s.file; return reread(); })
+        .catch((e) => finishTable("failed", e.message || String(e)));
+    });
+  }
+  function finishTable(state, why = "", res = null, token = st.token) {
+    const it = st.item;
+    if (!it || token !== st.token) return;           // a table already settled, or another's late answer
+    st.item = null;
+    st.token = 0;
+    if (state !== "added" && state !== "unchanged" && st.staged) lab("unstage", { gid: st.into, file: st.staged }).catch(() => {});
+    settle(it, state, res ? { res, what: `${res.records} records, ${res.results} results, ${cellsChecked(res)} cited cells match the file`, why: "" } : { why });
+    const r = st.resolve;
+    st.resolve = null;
+    if (r) r();
+  }
+  async function curateItem(l, it, n, of) {
+    settle(it, "curating");
+    B.head = `<p class="gx-batch-head"><b>Paper ${n} of ${of}</b>: ${esc(it.name)}</p>`;
+    show(`<div class="gx-curate-job" id="batch-job"></div>`);
+    try {
+      const c = await env.curateFile(it.file, $("batch-job"), l.doc?.graph?.stewardship || null);
+      if (!c.check.ok) throw new Error(`its check still reports ${c.check.errors.length + (c.check.errors_not_shown || 0)} problems; it did not go in (curate it again)`);
+      const res = await addPaper(l.id);
+      settle(it, res.status === "merged" ? "added" : "unchanged", { res, what: `${res.added || 0} records and links (${c.title})`, why: "" });
+    } catch (e) { settle(it, "failed", { why: e.message || String(e) }); }
+  }
+  // the batch's end: what each file added, what was skipped or failed and why, and the ways on
+  function summary(l) {
+    B.done = true;
+    const added = B.items.filter((x) => x.state === "added" || x.state === "unchanged");
+    const sum = (f) => added.reduce((n, x) => n + (x.res ? f(x.res) || 0 : 0), 0);
+    const tile = (n, label) => `<div><b>${esc(Number(n).toLocaleString())}</b><span>${esc(label)}</span></div>`;
+    const gaps = sum(checklistGaps);
+    B.head = "";
+    step.innerHTML = `<div class="gx-done-head"><span class="gx-done-mark">✓</span><div><b>${added.length} of ${B.items.length} sources added</b>
+        <div class="gx-subtle">into ${esc(l.entry.title)}</div></div></div>
+      <div class="gx-done-stats">${tile(sum((r) => r.records ?? r.added), "records (and merged links)")}${tile(sum((r) => r.results), "results")}${tile(sum(cellsChecked), "cited cells match the files")}${tile(gaps, "reporting gaps (checklist)")}</div>
+      <ol class="gx-batch" id="batch-run-list" aria-label="What each source did">${rows(false)}</ol>
+      ${gaps ? `<p class="gx-subtle">The reporting gaps are what the files do not say (a test's reaction, feed or electrolyte, for instance): add them when you know them, never typical values.</p>` : ""}
+      <ul class="gx-subtle gx-batch-checks">
+        ${B.items.some((x) => x.kind === "table" && x.res) ? "<li>Tables: every value cites a cell, checked against its file; the assumptions you confirmed are yours.</li>" : ""}
+        ${B.items.some((x) => x.kind === "paper" && x.res) ? "<li>Papers: every quote checked against the paper's text by SCALE's check.</li>" : ""}
+        ${B.items.some((x) => (x.kind === "graph" || x.kind === "bundle") && x.res) ? "<li>Merged graphs: their records come as they were; the data files their Datasets cite are not here, so those cells are not checked.</li>" : ""}
+        <li>The graph follows the schema (validated after each source).</li></ul>
+      <p class="gx-add-remind" role="alert"><b>Download it.</b> This private graph lives in this tab${l.kept ? " and in a working copy in this browser's storage, which the browser can clear" : " only (this browser keeps no copy)"}; the download is the durable copy, and the command line rebuilds it from the download.</p>
+      <div class="gx-done-next">
+        <button type="button" class="gx-btn gx-btn-primary" id="done-download">Download</button>
+        <button type="button" class="gx-btn" id="done-graph">Explore the graph</button>
+        <button type="button" class="gx-btn" id="done-analyze">Analyze</button>
+        <button type="button" class="gx-btn" id="done-more">Add more sources</button>
+      </div>`;
+    step.hidden = false;
+    $("add-pick").hidden = true;
+    $("done-download").onclick = async () => { await download(l.id); $("done-download").textContent = "Download started"; };
+    $("done-graph").onclick = () => { $("add-dialog").close(); env.showLab(l, "graph"); };
+    $("done-analyze").onclick = () => { $("add-dialog").close(); env.showLab(l, "analyze"); };
+    $("done-more").onclick = () => { B.done = false; reset(); };
+    $("done-download").focus();
   }
   // a private graph's download, opened again: its folder back in the worker, as a private graph of this page
   async function reopen(pg) {
-    st.det = { format: "zip" };
     busy("Restoring the private graph from its download…");
     try {
       let id = String(pg.manifest.id || "").match(/^[a-z0-9][a-z0-9-]{0,63}$/) ? pg.manifest.id : labId(pg.manifest.graph?.title);
@@ -330,22 +542,16 @@ export function addSource(env) {
       const l = { id, entry: { id, title: pg.manifest.graph?.title || id, from: "lab" }, saved: true, kept: false, savedSha: pg.manifest.graph?.sha256 || "" };
       labs.set(id, l);
       await refresh(l, { saved: true });
+      B.done = true;
+      $("add-pick").hidden = true;
       show(`<p><b>${esc(l.entry.title)}</b> is open again as a private graph (${esc(l.doc.nodes.length)} records), from its download:
         add sources to it here, then download it again.</p>
         <div class="gx-done-next"><button type="button" class="gx-btn gx-btn-primary" id="done-graph">Explore the graph</button>
-        <button type="button" class="gx-btn" id="done-analyze">Analyze</button><button type="button" class="gx-btn" id="done-more">Add a source to it</button></div>`);
+        <button type="button" class="gx-btn" id="done-analyze">Analyze</button><button type="button" class="gx-btn" id="done-more">Add sources to it</button></div>`);
       $("done-graph").onclick = () => { $("add-dialog").close(); env.showLab(l, "graph"); };
       $("done-analyze").onclick = () => { $("add-dialog").close(); env.showLab(l, "analyze"); };
-      $("done-more").onclick = reset;
+      $("done-more").onclick = () => { B.done = false; reset(); };
     } catch (e) { fail(e.message || String(e)); }
-  }
-  async function pickDoi(text) {
-    reset();
-    try { st.det = (await lab("detect", { text })).detected; } catch (e) { return fail(e.message || String(e)); }
-    show(`<p><b>A DOI</b> <code>${esc(st.det.doi)}</code>: a publication to curate.</p>
-      <p class="gx-muted">This page cannot fetch a paper by its DOI: publishers do not let a web page read their files.
-        Give its PDF here (Drop a file), or add it on your computer, where SCALE fetches an open-access copy:</p>
-      <pre class="gx-add-cmd">scale add-source ${esc(st.det.doi)} --into graph.json</pre>`);
   }
 
   // the graph a source goes into: a private graph of this page, or a new one (its stewardship: never public by default)
@@ -383,24 +589,6 @@ export function addSource(env) {
 
   // ---------------------------------------------------------------------------------------- a table
   const stemOf = (name) => String(name || "").replace(/\.[^.]+$/, "");
-  function tableStart() {
-    show(`<p><b>A data table</b> (${esc(st.det.format.toUpperCase())}): SCALE matches it to its built-in mappings and shows
-      how it reads it for you to confirm before anything is added.</p>${intoForm(stemOf(st.file.name))}
-      <menu class="gx-add-menu"><button type="button" class="gx-btn gx-btn-primary" id="add-read">Read the table</button></menu>`);
-    wireInto();
-    $("add-read").onclick = async () => {
-      st.busy = true;
-      $("add-read").disabled = true;
-      try {
-        const l = await target();
-        st.into = l.id;
-        const s = await lab("stage", { gid: l.id, name: st.file.name, data_b64: st.b64 });
-        st.staged = s.file;
-        st.sheets = null;
-        await reread();
-      } catch (e) { st.busy = false; fail(e.message || String(e)); }
-    };
-  }
   async function reread() {
     const my = ++st.seq;
     st.busy = true;
@@ -420,8 +608,10 @@ export function addSource(env) {
     if (!r.template) {                               // nothing fits
       show(`<p class="gx-card-warn">No built-in mapping fits this table.</p>
         <p class="gx-muted">${esc((r.questions || [])[0]?.why || "")}</p>${readingControls(r)}
-        <p class="gx-subtle">Or write a mapping for this layout on your computer (docs/data.md) and run <code>scale data add</code>.</p>`);
+        <p class="gx-subtle">Or write a mapping for this layout on your computer (docs/data.md) and run <code>scale data add</code>.</p>
+        <menu class="gx-add-menu"><button type="button" class="gx-btn gx-btn-primary" id="add-back">Skip this table</button></menu>`);
       wireReading();
+      $("add-back").onclick = () => finishTable("skipped", "no built-in mapping fits it");
       return;
     }
     const roles = r.template_roles || {}, header = r.header || [];
@@ -508,7 +698,7 @@ export function addSource(env) {
       <div class="gx-add-foot"><p class="gx-add-state ${ready ? "" : "gx-card-warn"}" id="add-map-state" role="status" aria-live="polite">${ready
         ? `Ready: ${esc(r.records)} records and ${esc(r.results)} results go into <b>${esc(l?.entry.title || "")}</b>; the ${esc(cellsChecked(r))} cells they cite match the file (${esc(r.verify?.status || "")}).`
         : `${nq} ${nq === 1 ? "question" : "questions"} left: answer ${nq === 1 ? "it" : "them"} above (only someone who knows the data can).`}</p>
-      <menu class="gx-add-menu"><button type="button" class="gx-btn" id="add-back">Back</button><button type="button" class="gx-btn gx-btn-primary" id="map-add"${ready ? "" : " disabled"}>Add to the graph</button></menu></div>`);
+      <menu class="gx-add-menu"><button type="button" class="gx-btn" id="add-back">Skip this table</button><button type="button" class="gx-btn gx-btn-primary" id="map-add"${ready ? "" : " disabled"}>Add to the graph</button></menu></div>`);
     wireReading();
     step.querySelectorAll("select[data-role]").forEach((s) => (s.onchange = () => {
       o.bind = { ...(o.bind || {}) };
@@ -553,7 +743,7 @@ export function addSource(env) {
     };
     if ($("map-locator")) $("map-locator").onchange = () => { o.locator = $("map-locator").value.trim() || undefined; reread(); };
     if ($("map-ask")) $("map-ask").onclick = () => askModel(r);
-    $("add-back").onclick = reset;
+    $("add-back").onclick = () => finishTable("skipped", "skipped by you");
     $("map-add").onclick = () => commit();
     lab("sources_of", { gid: st.into }).then((s) => {
       const had = JSON.stringify(st.sources || []);
@@ -581,6 +771,7 @@ export function addSource(env) {
     if ($("map-range")) $("map-range").onchange = () => { st.opts.range = $("map-range").value.trim().toUpperCase() || undefined; reconfirm(); reread(); };
   }
   async function askModel(r) {
+    const token = st.token;
     const roles = r.template_roles || {};
     const unbound = Object.keys(roles).filter((k) => roles[k].kind !== "melt" && !(r.roles || {})[k]);
     const sheet = (r.reading || []).find((x) => x.sheet === r.sheet) || (r.reading || [])[0] || {};
@@ -588,6 +779,7 @@ export function addSource(env) {
     try {
       $("map-help").innerHTML = `<span class="gx-subtle">Asking your model…</span>`;
       const s = await env.modelHelp(cols, unbound.map((k) => ({ role: k, ...roles[k] })), labs.get(st.into)?.doc);
+      if (token !== st.token) return;               // the reader moved on to another table
       const pairs = Object.entries(s || {}).filter(([role, col]) => unbound.includes(role) && (r.header || []).includes(col));
       st.help = pairs.length ? `<span>Your model suggests (a suggestion only; choose it in the table):</span> ${pairs.map(([role, col]) =>
         `<button type="button" class="gx-btn gx-btn-tiny" data-use="${esc(role)}" data-col="${esc(col)}">${esc(role)} ← ${esc(col)}</button>`).join(" ")}`
@@ -597,20 +789,25 @@ export function addSource(env) {
     } catch (e) { $("map-help").innerHTML = `<span class="gx-err">${esc(e.message || String(e))}</span>`; }
   }
   async function commit() {
+    const token = st.token;
     st.busy = true;
     $("map-add").disabled = true;
+    if ($("add-back")) $("add-back").disabled = true;   // no skip while it is being added
     $("add-map-state").textContent = "Adding, validating and checking every cited cell against the file…";
     try {
-      const gid = st.into;                          // captured: a reader may leave the view while it runs
+      const gid = st.into;                          // captured: nothing the reader does meanwhile changes where it goes
       const res = await lab("table", { gid, file: st.staged, opts: cleanOpts(st.opts), write: true });
       if (res.status !== "added" && res.status !== "unchanged") throw new Error((res.questions || []).map((q) => q.why).join("; ") || `not added (${res.status})`);
-      const l = labs.get(gid);
-      await refresh(l);
-      if (st.into !== gid) return;                  // the reader moved on: the graph is kept, the view is theirs
-      st.res = res;
-      done(l, res);
-    } catch (e) { $("add-map-state").textContent = e.message || String(e); $("map-add").disabled = false; }
-    st.busy = false;
+      await refresh(labs.get(gid));
+      st.busy = false;
+      finishTable(res.status === "added" ? "added" : "unchanged", "", res, token);
+    } catch (e) {
+      st.busy = false;
+      if (token !== st.token) return;
+      $("add-map-state").textContent = e.message || String(e);
+      $("map-add").disabled = false;
+      if ($("add-back")) $("add-back").disabled = false;
+    }
   }
   // after an addition: what went in, and the three ways on (explore, analyze, download), with the reminder
   function done(l, res) {
@@ -637,65 +834,10 @@ export function addSource(env) {
     $("done-download").onclick = async () => { await download(l.id); $("done-download").textContent = "Downloaded"; };
     $("done-graph").onclick = () => { $("add-dialog").close(); env.showLab(l, "graph"); };
     $("done-analyze").onclick = () => { $("add-dialog").close(); env.showLab(l, "analyze"); };
-    $("done-more").onclick = reset;
+    $("done-more").onclick = () => { B.done = false; reset(); };
     $("done-download").focus();
   }
 
-  // ---------------------------------------------------------------------------------------- a graph, a publication
-  function graphStep(det) {
-    const bundle = !det;
-    show(`<p><b>${bundle ? "A knowledge-graph bundle" : "A graph file"}</b>: open it to explore${bundle ? "" : ", or merge it into a private graph (refused when a record conflicts or it pins another schema version)"}.</p>
-      ${bundle ? "" : intoForm(stemOf(st.file.name))}
-      <p class="gx-add-state" id="add-map-state"></p>
-      <menu class="gx-add-menu"><button type="button" class="gx-btn gx-btn-primary" id="add-open-graph">Open it</button>${bundle ? "" : `<button type="button" class="gx-btn" id="add-merge">Merge into the private graph</button>`}</menu>`);
-    if (!bundle) wireInto();
-    $("add-open-graph").onclick = () => { $("add-dialog").close(); env.openGraphFile(st.file); };
-    if ($("add-merge")) $("add-merge").onclick = async () => {
-      $("add-merge").disabled = true;
-      $("add-map-state").textContent = "Validating and merging…";
-      try {
-        const l = await target();
-        st.into = l.id;
-        const s = await lab("stage", { gid: l.id, name: st.file.name, data_b64: st.b64 });
-        const res = await lab("graph", { gid: l.id, file: s.file, write: true });
-        if (!["merged", "unchanged"].includes(res.status)) throw new Error(res.status === "invalid" ? `the graph does not validate: ${(res.validation?.first_errors || []).map((e) => e.message).slice(0, 3).join("; ")}` : `not merged (${res.status})`);
-        await refresh(l);
-        done(l, res);
-      } catch (e) { $("add-map-state").textContent = e.message || String(e); $("add-merge").disabled = false; }
-    };
-  }
-  let paperInto = null;                              // the private graph a publication curated from here goes into
-  function documentStep() {
-    const pdf = st.det.format === "pdf", key = env.key();
-    if (!key) {
-      show(`<p><b>A publication</b> (${pdf ? "PDF" : "text"}): curating it here needs your own API key. A model reads its
-        text with your key, in this browser, by SCALE's curate-corpus skill; nothing goes to SCALE.</p>
-        <menu class="gx-add-menu"><button type="button" class="gx-btn gx-btn-primary" id="add-key">Set an API key</button></menu>`);
-      $("add-key").onclick = () => { $("add-dialog").close(); env.openKeyMenu(); };
-      return;
-    }
-    show(`<p><b>A publication</b> (${pdf ? "PDF" : "text"}): its text goes to <b>${esc(key)}</b> with your key, and to no
-      one else; the model curates it by SCALE's curate-corpus skill in this browser and every quote is checked against it.
-      The curated graph goes into the private graph below (its ${pdf ? "PDF" : "text"} is never kept), so that the tables you add link to it.</p>
-      ${intoForm(stemOf(st.file.name))}
-      <menu class="gx-add-menu"><button type="button" class="gx-btn gx-btn-primary" id="add-curate">Curate it</button></menu>`);
-    wireInto();
-    $("add-curate").onclick = async () => {
-      $("add-curate").disabled = true;
-      paperInto = chosen();                          // made when the curation is done, not before
-      $("add-dialog").close();
-      env.openCurateWith(st.file);
-    };
-  }
-  // after a curation started here: the paper into the private graph chosen for it
-  async function afterCuration(drop = false) {
-    const c = paperInto;
-    paperInto = null;
-    if (drop || !c || (c.id && !labs.has(c.id)) || !env.paper()) return null;
-    const l = await target(c);
-    const res = await addPaper(l.id);
-    return { lab: l, res };
-  }
   // the publication curated in this page, into a private graph (its graph and rights; never its PDF)
   async function addPaper(gid) {
     const p = env.paper();
@@ -727,24 +869,33 @@ export function addSource(env) {
   }
 
   // ---------------------------------------------------------------------------------------- wiring
-  $("add-file").onchange = () => { const f = $("add-file").files[0]; if (f) pick(f); };
+  $("add-file").onchange = () => { const fs = [...($("add-file").files || [])]; $("add-file").value = ""; if (fs.length) addFiles(fs); };
   for (const ev of ["dragenter", "dragover"]) $("add-drop").addEventListener(ev, (e) => { e.preventDefault(); $("add-drop").classList.add("over"); });
   for (const ev of ["dragleave", "drop"]) $("add-drop").addEventListener(ev, () => $("add-drop").classList.remove("over"));
-  $("add-drop").addEventListener("drop", (e) => { e.preventDefault(); const f = e.dataTransfer?.files?.[0]; if (f) pick(f); });
-  $("add-doi-go").onclick = () => { const t = $("add-doi").value.trim(); if (t) pickDoi(t); };
+  $("add-drop").addEventListener("drop", (e) => { e.preventDefault(); const fs = [...(e.dataTransfer?.files || [])]; if (fs.length) addFiles(fs); });
+  $("add-doi-go").onclick = () => { const t = $("add-doi").value.trim(); if (t) addDoi(t); };
   $("add-doi").addEventListener("keydown", (e) => { if (e.key === "Enter") { e.preventDefault(); $("add-doi-go").click(); } });
-  // a tab with private graphs not downloaded asks before it closes
+  // a tab with private graphs not downloaded, or a batch under way, asks before it closes
   window.addEventListener("beforeunload", (e) => {
-    if (!unsaved().length) return;
+    if (!unsaved().length && !B.running) return;   // (a batch under way, or a graph not downloaded: ask)
     e.preventDefault();
     e.returnValue = "";
   });
-  // the audience of the private graph a curation started here goes into (its stewardship), or null
-  function pendingStewardship() {
-    const c = paperInto;
-    if (!c) return null;
-    if (c.id) return labs.get(c.id)?.doc?.graph?.stewardship || null;
-    return { access: c.new.access, project: c.new.project, contributed_by: [c.new.contributor] };
+  // a batch a reload interrupted: the files it had not added yet, named on its private graph
+  function interrupted() {
+    try {
+      for (const k of Object.keys(localStorage).filter((x) => x.startsWith(`${BATCH_NOTE}:`))) {
+        const n = JSON.parse(localStorage.getItem(k) || "null");
+        if (n && labs.has(n.gid) && Array.isArray(n.left) && n.left.length) labs.get(n.gid).interrupted = n.left.map(String).slice(0, MAX_BATCH);
+      }
+    } catch { /* none */ }
   }
-  return { open, pick, restore, download, remove, paperStep, afterCuration, pendingStewardship, labs };
+  function dismissInterrupted(gid) {
+    try { localStorage.removeItem(`${BATCH_NOTE}:${gid}`); } catch { /* as above */ }
+    if (labs.has(gid)) delete labs.get(gid).interrupted;
+    env.changed();
+  }
+  // more files for the dialog (the Curate dialog hands its files here)
+  function take(files) { open(); if (B.done) { B.done = false; reset(); } addFiles(files); }
+  return { open, take, restore: async () => { const n = await restore(); interrupted(); return n; }, download, remove, paperStep, dismissInterrupted, labs };
 }

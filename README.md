@@ -48,8 +48,8 @@ with its source, its reported unit, a short verbatim quote and its uncertainty, 
    the query plans behind it, and a **Limits** line says what the graph could not answer. The model's own
    extrapolations, if any, are in a separate, labelled paragraph.
 
-6. **Add a source.** **Add a source** in the toolbar takes a data file (CSV, Excel), a paper (PDF, text, DOI) or a
-   graph file and adds it to a private graph in your browser, with nothing uploaded: a table is matched to the
+6. **Add sources.** **Add a source** in the toolbar takes up to 10 at once, of any mix: data files (CSV, Excel),
+   papers (PDF, text, DOI) and graph files, all into one private graph in your browser, with nothing uploaded: a table is matched to the
    built-in mappings and shown for you to confirm (each column, unit and assumption) before it is added and every
    cited cell checked; a paper is curated with your key (the page reads the PDF, the model fills its graph with
    SCALE's curation tools run in the page). **Download** the private graph (one zip, with a manifest from which

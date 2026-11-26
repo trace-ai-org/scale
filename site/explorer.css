@@ -535,3 +535,19 @@ button.gx-add-graph { width: 100%; font: inherit; color: inherit; cursor: pointe
 .gx-add-scroll th, .gx-add-scroll td { padding: 3px 7px; border: 1px solid var(--line); white-space: nowrap; text-align: left; }
 .gx-add-gaps { margin: 8px 0; }
 .gx-add-gaps ul { margin: 4px 0; padding-left: 18px; }
+.gx-curate-open[aria-disabled="true"] { opacity: .55; cursor: not-allowed; }
+.gx-curate-open[aria-pressed="true"] { border-color: var(--blue); color: var(--blue); }
+/* a batch of Add a source: one row per source, its kind and its state */
+.gx-batch { list-style: none; margin: 8px 0 0; padding: 0; border: 1px solid var(--line); border-radius: 9px; }
+.gx-batch-row { display: grid; grid-template-columns: 22px minmax(0, 1fr) auto minmax(0, 1.2fr) auto; gap: 8px; align-items: center; padding: 6px 8px; border-top: 1px solid var(--line); font-size: 12px; }
+.gx-batch-row:first-child { border-top: 0; }
+.gx-batch-n { color: var(--muted); text-align: right; }
+.gx-batch-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-weight: 500; }
+.gx-batch-kind { font-size: 11px; padding: 1px 7px; }
+.gx-batch-state { overflow-wrap: anywhere; }
+.gx-batch-row.is-added .gx-batch-state, .gx-batch-row.is-unchanged .gx-batch-state { color: var(--green); }
+.gx-batch-row.is-failed .gx-batch-state { color: #d9534f; }
+.gx-batch-row.is-confirm, .gx-batch-row.is-curating, .gx-batch-row.is-merging { background: color-mix(in srgb, var(--select) 12%, transparent); }
+.gx-batch-stage { margin-top: 12px; }
+.gx-batch-head { margin: 0 0 8px; padding: 6px 10px; border-radius: 8px; background: var(--bg-input); }
+@media (max-width: 600px) { .gx-batch-row { grid-template-columns: 18px minmax(0, 1fr) auto; } .gx-batch-state { grid-column: 2 / -1; } }

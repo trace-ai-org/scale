@@ -267,7 +267,7 @@ $("board-open").onclick = async () => {
     drawBoard();
   } catch { $("board").innerHTML = `<p class="gx-muted">The leaderboard is published with the site.</p>`; }
 };
-$("board-curate").onclick = () => { $("board-dialog").close(); openCurate(); };
+$("board-curate").onclick = () => { $("board-dialog").close(); addUI.open(); };
 // The sources the service keeps because this reader agreed, each with a way to withdraw.
 async function showKept() {
   try {
@@ -299,13 +299,23 @@ function syncCurate() {
     || !mode || (mode === "service" && !token);
 }
 $("curate-attest").addEventListener("change", syncCurate);
-const pdfName = () => { const f = $("curate-pdf").files[0]; $("curate-pdf-name").textContent = f ? f.name : "Drop a PDF here, or choose one"; $("curate-drop").classList.toggle("has-file", !!f); $("curate-attest-row").hidden = !f; syncCurate(); };
-$("curate-pdf").onchange = pdfName;
+const pdfName = () => { const f = $("curate-pdf").files[0]; $("curate-pdf-name").textContent = f ? f.name : "Drop a PDF here, or choose one (several files, or a data or graph file, go to Add a source)"; $("curate-drop").classList.toggle("has-file", !!f); $("curate-attest-row").hidden = !f; syncCurate(); };
+const onePaper = (fs) => fs.length === 1 && (fs[0].type === "application/pdf" || /\.(pdf|txt|md)$/i.test(fs[0].name));
+function curateOrAdd(fs) {                       // a single paper stays here; anything else is a batch for Add a source
+  if (!fs.length || onePaper(fs)) return false;
+  if (curating) { status("A curation is under way here: add the other files when it ends."); return true; }
+  $("curate-dialog").close();
+  addUI.take(fs);
+  return true;
+}
+$("curate-pdf").onchange = () => { const fs = [...$("curate-pdf").files]; if (curateOrAdd(fs)) { $("curate-pdf").value = ""; return; } pdfName(); };
 for (const ev of ["dragenter", "dragover"]) $("curate-drop").addEventListener(ev, (e) => { e.preventDefault(); $("curate-drop").classList.add("over"); });
 for (const ev of ["dragleave", "drop"]) $("curate-drop").addEventListener(ev, () => $("curate-drop").classList.remove("over"));
 $("curate-drop").addEventListener("drop", (e) => {
   e.preventDefault();
-  const f = [...(e.dataTransfer?.files || [])].find((x) => x.type === "application/pdf" || /\.(pdf|txt|md)$/i.test(x.name));
+  const fs = [...(e.dataTransfer?.files || [])];
+  if (curateOrAdd(fs)) return;
+  const f = fs[0];
   if (f) { const dt = new DataTransfer(); dt.items.add(f); $("curate-pdf").files = dt.files; pdfName(); }
 });
 async function startCuration(again = false) {
@@ -506,13 +516,13 @@ function graphTitle(given, doc, filename) {
   const cut = t.slice(0, 60).replace(/\s+\S*$/, "").replace(/[\s,;:–—-]+$/, "");
   return `${cut}…`;
 }
-async function curateOwnKey() {
-  const job = $("curate-job");
+// One publication curated with the reader's key in this browser (pdf.js or the text, scale source start in Pyodide,
+// the model by the curate-corpus skill), its progress drawn in `job`: the Curate dialog's and each paper of an Add a
+// source batch. `bound`: the stewardship of the private graph it goes into (its egress then gated; one approval per
+// provider and access level holds for the page). Sets `paper` (for Add a source) and returns what was curated.
+async function curateCore(f, job, bound = null) {
   let st = null;
   try {
-    const f = $("curate-pdf").files[0];
-    if (!f) throw new Error("give the source's PDF");
-    if (!$("curate-attest").checked) throw new Error("tick the statement that you have lawful access to this PDF");
     curating = true; finishNow = false; syncCurate();
     st = curateProgress(job);
     st.go("read", `Reading ${f.name}`);
@@ -521,7 +531,6 @@ async function curateOwnKey() {
     st.pages = src.pages;
     st.go("prepare", `${src.pages} pages of text read. Preparing SCALE in your browser (the first time, up to a minute)`);
     const stem = f.name.replace(/\.(pdf|txt|md)$/i, "").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "").slice(0, 60) || "source";
-    const bound = addUI.pendingStewardship();     // started from Add a source: the private graph's audience
     const s = await rpc({ op: "curate_start", text: src.text, name: `${stem}.txt`, version: commonsVersion, ...(bound ? { stewardship: bound } : {}) });
     $("curate-schema").textContent = `Curated under SCALE Catalysis, schema scale-catal v${s.started.schema_version}, in this browser.`;
     st.go("curate", `Read 0 of ${st.pages} pages · waiting for the model`);
@@ -549,17 +558,25 @@ async function curateOwnKey() {
     paper = { title, slug: stem.replace(/[^a-z0-9-]/g, "-").replace(/^-+/, "").slice(0, 60) || "source", source_id: doc.nodes.find((n) => n.label === "Source")?.id || "",
       about: { file: f.name, sha256: await fileSha256(f), pages: st.pages, model: modelLabel(), schema_version: doc.graph.schema_version,
         how: "curated in the reader's browser with the reader's own key, by the curate-corpus skill (scale.curation_tools)" } };
-    await openOwn({ id: `curated-${stem}`, title, from: "own-key" }, JSON.stringify(doc), null, doc);
-    let into = null;                                  // started from Add a source: into the private graph chosen there
-    if (check.ok) { try { into = await addUI.afterCuration(); } catch (e) { into = { error: e.message || String(e) }; } }
-    else if (addUI.pendingStewardship()) { addUI.afterCuration(true); into = { error: "its check still reports problems: fix them (curate it again) before it goes into a private graph" }; }
-    curateDone({ doc, check, r, pages: st.pages, secs: (Date.now() - st.t0) / 1000, title, log: st.log, into });
+    syncCurate();
+    return { doc, check, r, st, title, stem, pages: st.pages, secs: (Date.now() - st.t0) / 1000 };
   } catch (e) {
     curating = false;
     if (st) { st.stage = "failed"; st.end("Failed", `<div class="gx-err">${esc(e.message || String(e))}</div>`); }
     else { job.hidden = false; job.innerHTML = `<div class="gx-err">${esc(e.message || String(e))}</div>`; }
+    syncCurate();
+    throw e;
   }
-  syncCurate();
+}
+async function curateOwnKey() {
+  const job = $("curate-job");
+  const f = $("curate-pdf").files[0];
+  if (!f) { job.hidden = false; job.innerHTML = `<div class="gx-err">give the source's PDF</div>`; return; }
+  if (!$("curate-attest").checked) { job.hidden = false; job.innerHTML = `<div class="gx-err">tick the statement that you have lawful access to this PDF</div>`; return; }
+  let c;
+  try { c = await curateCore(f, job); } catch { return; }
+  await openOwn({ id: `curated-${c.stem}`, title: c.title, from: "own-key" }, JSON.stringify(c.doc), null, c.doc);
+  curateDone({ doc: c.doc, check: c.check, r: c.r, pages: c.pages, secs: c.secs, title: c.title, log: c.st.log });
 }
 // The commons holds the source already, or an open contribution adds it: nothing was curated and nothing spent.
 function showKnown(k) {
@@ -887,7 +904,17 @@ const allEntries = () => [...labEntries(), ...(own ? [own.entry] : []), ...manif
 function labOf(e) { return e && e.from === "lab" ? labs.get(e.id) : null; }
 // The private graphs not downloaded, said once above the list: they live in this tab and the browser's storage only.
 function renderUnsaved() {
-  const n = unsaved();
+  const n = unsaved(), cut = [...labs.values()].find((l) => l.interrupted);
+  if (cut) {
+    $("unsaved").hidden = false;
+    $("unsaved").innerHTML = `<b>A batch into ${esc(trunc(cut.entry.title, 40))} stopped before it ended.</b> What it added is kept;
+      not added: ${esc(cut.interrupted.join(", "))}. Add them again with Add a source.
+      <button type="button" class="gx-btn gx-btn-tiny" data-download="${esc(cut.id)}">Download ${esc(trunc(cut.entry.title, 28))}</button>
+      <button type="button" class="gx-btn gx-btn-tiny" id="interrupted-ok">Got it</button>`;
+    $("unsaved").querySelectorAll("[data-download]").forEach((b) => (b.onclick = () => addUI.download(b.dataset.download)));
+    $("interrupted-ok").onclick = () => addUI.dismissInterrupted(cut.id);
+    return;
+  }
   $("unsaved").hidden = !n.length;
   if (!n.length) return;
   const keptAll = n.every((l) => l.kept);
@@ -1294,7 +1321,8 @@ async function openGraph(entry, text, doc = null) {
   const g = G;
   if (!text) return;                                // a bundle drawn around a source: the bundle searches itself
   sha256(text).then((h) => { if (G && G.entry === entry) { G.sha = h; renderGraphs(); } });
-  await rpc({ op: "put", name: G.file, text }).then(() => { g.loaded = true; })
+  syncAnalyze();
+  await rpc({ op: "put", name: G.file, text }).then(() => { g.loaded = true; syncAnalyze(); })
     .catch((err) => status(`SCALE could not load the graph: ${err.message}`));
   if (G !== g) return;
   status(ready());
@@ -2314,15 +2342,31 @@ function resetAnalyze() {
   if (!$("analyze").hidden) renderAnalyze();
 }
 function openAnalyze(on = $("analyze").hidden) {
+  if (on && analyzeWhyNot()) { status(analyzeWhyNot()); return; }
   $("analyze").hidden = !on;
-  $("analyze-btn").setAttribute("aria-pressed", String(on));
+  $("analyze-open").setAttribute("aria-pressed", String(on));
   if (on) renderAnalyze();
 }
-$("analyze-btn").onclick = () => openAnalyze();
-$("analyze-close").onclick = () => { openAnalyze(false); $("analyze-btn").focus(); };
+// why Analyze has nothing to show for the graph on screen, or "" when it has: no graph, a graph not loaded into SCALE
+// here, or a graph with no records (a graph's numbers, and the counts of its categories, plot)
+function analyzeWhyNot() {
+  if (!G) return "Open a graph first: Analyze plots the numbers of the graph on screen.";
+  const B = G.base || G;
+  if (!B.loaded && !B.entry?.windowed) return "The graph is still loading into SCALE here.";
+  if (B.entry?.windowed) return "This graph is drawn a window at a time: Analyze reads a graph opened whole.";
+  return B.doc.nodes.length ? "" : "This graph holds no records to plot.";     // counts of categories plot too
+}
+function syncAnalyze() {
+  const why = analyzeWhyNot(), b = $("analyze-open");
+  b.setAttribute("aria-disabled", String(!!why));
+  b.title = why || "Analyze: plot the graph's numbers (suggested charts, or build one)";
+  if (why && !$("analyze").hidden) { $("analyze").hidden = true; b.setAttribute("aria-pressed", "false"); }
+}
+$("analyze-open").onclick = () => openAnalyze();
+$("analyze-close").onclick = () => { openAnalyze(false); $("analyze-open").focus(); };
 // keyboard: Escape closes the panel and returns to its button; opening it puts the focus inside
-$("analyze").addEventListener("keydown", (e) => { if (e.key === "Escape" && !e.target.closest("select")) { openAnalyze(false); $("analyze-btn").focus(); } });
-$("analyze-btn").addEventListener("click", () => { if (!$("analyze").hidden) setTimeout(() => $("analyze-close").focus(), 0); });
+$("analyze").addEventListener("keydown", (e) => { if (e.key === "Escape" && !e.target.closest("select")) { openAnalyze(false); $("analyze-open").focus(); } });
+$("analyze-open").addEventListener("click", () => { if (!$("analyze").hidden) setTimeout(() => $("analyze-close").focus(), 0); });
 function chartColours(dark = false) {
   if (dark) return { fg: "#f4f4f6", muted: "#a3a6b1", line: "#2c3040", bg: "#0f121c" };
   const cs = getComputedStyle(document.documentElement), v = (n) => cs.getPropertyValue(n).trim();
@@ -2959,11 +3003,15 @@ const addUI = addSource({ $, esc, rpc, status, download,
     await openGraph(l.entry, l.text, l.doc);
     if (view === "analyze") openAnalyze(true);
   },
-  openCurateWith: (file) => {
-    const dt = new DataTransfer(); dt.items.add(file);
-    curateReset();
-    $("curate-pdf").files = dt.files; pdfName();
-    openCurate();
+  curateFile: async (file, el, bound) => {
+    if (curating) throw new Error("another curation is under way (the Curate dialog): add this paper again when it ends");
+    $("curate-job").innerHTML = "";
+    return curateCore(file, el, bound);
+  },
+  readBundleDoc: async (f) => {
+    const b = await readBundle(f, status);
+    if (b.view) throw new Error("a bundle this large is drawn a window at a time: open it on its own");
+    return b.doc;
   },
   openGraphFile: (f) => openGraphFile(f),
   modelHelp: (cols, roles, doc) => modelHelp(cols, roles, doc),

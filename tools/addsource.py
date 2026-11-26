@@ -890,6 +890,48 @@ def add(source: str | None, into: str | Path, repo: Path | None = None, finish_f
     return res
 
 
+MAX_SOURCES = 10                                   # sources in one run of scale add-source (and one batch of the explorer)
+
+
+def add_many(sources: list[str], into: str | Path, repo: Path | None = None, **opts) -> dict:
+    """Several sources into the one document ``into``, each by :func:`add` in turn (graphs first, then tables, then
+    publications, as the graph explorer's batch goes): one source's question or refusal is that source's, the others go
+    on. ``status``: added when every source was added (or already there), else partial."""
+    if not sources:
+        _fail("give one or more sources")
+    if len(sources) > MAX_SOURCES:
+        _fail(f"at most {MAX_SOURCES} sources in one run ({len(sources)} given): add the others in another run")
+    order = {"graph": 0, "table": 1, "document": 2}
+
+    def route(s: str) -> int:
+        try:
+            return order[detect(s, opts.get("kind"))["route"]]
+        except ScaleError:
+            return 3
+    results = []
+    for s in sorted(sources, key=lambda x: (route(x), sources.index(x))):
+        r = route(s)                                 # a graph merges in (as the batch says); --merge is a graph's alone
+        o = {**opts, "merge": True} if r == 0 else {k: v for k, v in opts.items() if k != "merge"}
+        try:
+            results.append({"source": s, **add(s, into, repo=repo, **o)})
+        except ScaleError as exc:
+            results.append({"source": s, "status": "refused", "error": str(exc)})
+    went_in = {"added", "unchanged", "merged"}
+    status = "dry_run" if opts.get("dry_run") else "added" if all(r["status"] in went_in for r in results) else "partial"
+    return {"into": str(into), "status": status, "sources": results,
+            "added": sum(r["status"] in went_in for r in results),
+            "started": sum(r["status"] == "started" for r in results)}
+
+
+def text_report_many(res: dict) -> str:
+    """Each source's report, in the order they were added, and one line for the run."""
+    parts = [text_report(r) if r["status"] != "refused" else f"{r['source']}: REFUSED: {r['error']}" for r in res["sources"]]
+    tail = f"{res['added']} of {len(res['sources'])} sources added into {res['into']}"
+    if res.get("started"):
+        tail += f" ({res['started']} publications started, to curate and --finish)"
+    return "\n\n".join(parts) + f"\n\n{tail}: {res['status'].upper()}"
+
+
 def text_report(res: dict) -> str:
     """The result for a person: what was added, what is asked, what the checklist says is missing, where it is saved."""
     lines = []
@@ -957,4 +999,4 @@ def text_report(res: dict) -> str:
     return "\n".join(lines)
 
 
-__all__ = ["add", "detect", "destination", "finish", "text_report", "ROUTES"]
+__all__ = ["add", "add_many", "MAX_SOURCES", "detect", "destination", "finish", "text_report", "ROUTES"]

@@ -183,6 +183,21 @@ def stage(base: str | Path, gid: str, name: str, data_b64: str) -> dict:
     return {"file": rel, "name": name, "sha256": sha256(data), "bytes": len(data), "detected": det}
 
 
+def unstage(base: str | Path, gid: str, file: str) -> dict:
+    """Remove a file staged under sources/ that did not go in (skipped, refused): one no step of the manifest names
+    stays out of the private graph's folder, its working copy and its download."""
+    root = _root(base, gid)
+    rel = str(file)
+    if not rel.startswith(f"{SOURCES}/") or ".." in rel.split("/") or "\\" in rel:
+        _fail(f"{file}: not a file under {SOURCES}/")
+    named = {s.get("file") for s in _manifest(root).get("steps") or []}
+    p = root / rel
+    if rel in named or not p.is_file():
+        return {"file": rel, "removed": False}
+    p.unlink()
+    return {"file": rel, "removed": True}
+
+
 def _opts(opts: dict | None) -> dict:
     o = {k: v for k, v in (opts or {}).items() if k in TABLE_OPTS and v not in (None, "", [], {})}
     if "header_row" in o:
@@ -330,4 +345,4 @@ def verify(base: str | Path, gid: str) -> dict:
     return _verify(load_doc(root / GRAPH), files={}, base=root)
 
 
-__all__ = ["new", "detect", "drop", "stage", "table", "graph", "publication", "sources_of", "files", "restore", "verify", "safe_name"]
+__all__ = ["new", "detect", "drop", "stage", "unstage", "table", "graph", "publication", "sources_of", "files", "restore", "verify", "safe_name"]

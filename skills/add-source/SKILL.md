@@ -84,6 +84,13 @@ It detects the kind from the file's first bytes and name (`--kind table|document
 
 An `.xls`, `.docx` or `.ods` file is refused with what to save it as; say that to the person.
 
+Several sources about one topic go into one document in one run, up to 10 (`scale add-source a.pdf b.csv c.xlsx
+lab.json --into <DOC>`): graphs first, then tables, then publications, each as it would go alone. A question or a refusal
+is that source's; the others are added, and the run ends with one line per source and one for the run (exit 1 unless
+every source went in). The options apply to every source, so give a table's answers (`--bind`, `--recorded-at`,
+`--confirm`) in a run of its own. The graph explorer's **Add a source** takes the same batch of up to 10 files in a
+browser.
+
 ## 3. A table: answer only what it asks
 
 When the status is `QUESTIONS`, nothing was written. Each question names what is uncertain and the option that

@@ -68,9 +68,17 @@ committed). A copy opened in the explorer, a browser tab or a chat is a working 
 ### In the graph explorer, with nothing to install: Add a source
 
 [The graph explorer](https://trace-ai-org.github.io/scale/) has the same entry point as a page: **Add a source**
-(the toolbar) takes a file (dropped or chosen) or a DOI and adds it to a **private graph** in your browser, by the code
-of `scale add-source` (`tools/pagelab.py`, run in Pyodide by `site/worker.js`). What a file is, the Python router says
-(`addsource.detect`), so the page and the command line agree.
+(the toolbar) takes up to 10 sources at once, of any mix (files dropped or chosen, DOIs), and adds them all to one
+**private graph** in your browser, so that a topic is read together, by the code of `scale add-source` (`tools/pagelab.py`,
+run in Pyodide by `site/worker.js`). What each file is, the Python router says (`addsource.detect`), so the page and
+the command line agree. The batch is a list, each source with its kind (paper, table, graph) and its state (waiting,
+needs your confirmation, curating, added, failed, skipped, needs your key), each removable before it runs; past 10, the
+first 10 are kept and the others named. When it runs, the private graph (a new one or one you choose) is made once;
+graphs and bundles merge first, with no question; each table is then shown for you to confirm, one at a time (or
+skipped); then each paper is curated with your key, one after another ("paper 2 of 4"). One file's failure is that
+file's; without a key the papers wait for one and the rest goes in. The batch ends with one summary: what each source
+added (records, results, cited cells matched), what was skipped or failed and why, Explore and Analyze. A reload in the
+middle of a batch keeps what was added and names the files that were not.
 
 | the source | what the page does |
 |---|---|
@@ -100,6 +108,9 @@ addition. The download is one zip, the durable copy:
 <id>/work/mappings/        the mapping each table was read with
 <id>/README.txt
 ```
+
+On the command line the same batch is `scale add-source a.pdf b.csv c.xlsx lab.json --into graph.json` (up to 10, each
+on its own; the options apply to every source).
 
 In an empty folder outside the SCALE repository, with `sources/` copied into it, the manifest's
 `reproduce.commands` (`scale data new graph.json …`, then one `scale add-source …` per source, then

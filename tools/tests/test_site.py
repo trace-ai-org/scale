@@ -313,7 +313,7 @@ def test_a_readers_own_key_curates_a_pdf_in_the_browser_with_the_services_tools(
     js = (REPO / "site" / "explorer.js").read_text(encoding="utf-8")
     worker = (REPO / "site" / "worker.js").read_text(encoding="utf-8")
     page = (REPO / "site" / "index.html").read_text(encoding="utf-8")
-    own = js[js.index("async function curateOwnKey("):js.index("// The commons holds the source already")]
+    own = js[js.index("async function curateCore("):js.index("// The commons holds the source already")]
     # with a key set, Curate runs here; the service is used only without one
     assert 'if (curateMode() === "own") return curateOwnKey();' in js and 'ownKey ? "own" : SERVICE ? "service" : ""' in js
     # the PDF is read here by pdf.js, loaded only when needed and checked against its digests
@@ -328,7 +328,7 @@ def test_a_readers_own_key_curates_a_pdf_in_the_browser_with_the_services_tools(
     assert 'id="curate-doi"' not in page and "text mining" not in page and "share the knowledge it reports" in page
     terms = js[js.index("function curateTerms("):js.index("async function curateAccount(")]
     # a curation says where it is (four stages, a bar) and about how long it has left
-    prog = js[js.index("function curateProgress("):js.index("async function curateOwnKey(")]
+    prog = js[js.index("function curateProgress("):js.index("async function curateCore(")]
     assert "min left" in prog and "elapsed" in prog and 'id="cj-bar"' in prog and "st.tool = (tool, args, result)" in prog
     # Curate is grey until a PDF is given and the statement ticked
     sync = js[js.index("function syncCurate("):js.index("const pdfName")]
@@ -470,7 +470,7 @@ def test_the_analyze_view_draws_scale_plot_data_honestly_and_loads_vega_pinned()
     an = (REPO / "site/analyze.js").read_text()
     worker = (REPO / "site/worker.js").read_text()
     # an Analyze button beside the graph view opens the panel; its data is scale_plot_data, run in the worker
-    assert 'id="analyze-btn"' in page and 'id="analyze"' in page and "analyze.js" in site.PAGES
+    assert 'id="analyze-open"' in page and 'id="analyze"' in page and "analyze.js" in site.PAGES
     assert '"./analyze.js"' in site.STAMPED["explorer.js"] and 'scale("plot_data", { suggest: true })' in js
     assert 'op === "table"' in worker and "plotdata.table_data" in worker
     # vega, vega-lite and vega-embed: pinned versions, checked against their digests, loaded only when a chart is drawn,
@@ -544,7 +544,7 @@ def test_add_a_source_is_one_dialog_for_any_source_and_keeps_the_work(tmp_path):
     assert "fetch(" not in add and "XMLHttpRequest" not in add
     # a publication needs the reader's own key, names the provider its text goes to, and is curated into the private
     # graph chosen; a download reopens as a private graph; a changed reading asks again what was confirmed
-    assert "env.key()" in add and "with your key, and to no" in add and "afterCuration" in js and "addUI.afterCuration()" in js
+    assert "env.key()" in add and "with your key, and to no" in add and "curateCore(file, el, bound)" in js
     assert "privateGraphIn(await readZip(" in add and "function reconfirm()" in add
     assert "egressGate(levels, provider" in js and "async function modelHelp(" in js and "egressApprove(levels, provider" in js
     node = shutil.which("node")
@@ -592,3 +592,46 @@ def test_add_a_source_is_one_dialog_for_any_source_and_keeps_the_work(tmp_path):
                            "the header row was found, not given: row 4: set the header row above if it is another"]
     assert (out["gaps"], out["cells"]) == (5, 9)
     assert "scale data new graph.json" in out["readme"] and "browser can clear" in out["readme"] and "sha256 abc" in out["readme"]
+
+
+def test_a_batch_takes_up_to_ten_sources_of_any_kind_into_one_private_graph():
+    page = (REPO / "site/index.html").read_text()
+    js = (REPO / "site/explorer.js").read_text()
+    add = (REPO / "site/addsource.js").read_text()
+    # several files at once (the picker and a drop), at most MAX_BATCH, the others named as left out
+    assert '<input type="file" id="add-file" multiple' in page and "export const MAX_BATCH = 10;" in add
+    assert "files.slice(room)" in add and "left out" in add and 'data-remove="' in add
+    # each file's kind (paper, table, graph, bundle, a download, a DOI) and its state, one row each
+    for x in ('paper: "paper"', 'table: "table"', 'graph: "graph"', 'bundle: "bundle"', 'confirm: "needs your confirmation"',
+              '"needs key": "needs your key"', 'skipped: "skipped"', 'failed: "failed"'):
+        assert x in add, x
+    # one private graph made once; graphs merge first, then each table confirmed (or skipped), then papers in turn
+    run = add[add.index("  async function run() {"):add.index("  async function mergeItem(")]
+    assert run.count("await target(c)") == 1
+    assert run.index("mergeItem(l, it)") < run.index("confirmTable(l, it") < run.index("curateItem(l, it")
+    assert "Skip this table" in add and 'finishTable("skipped", "skipped by you")' in add and "Paper ${n} of ${of}" in add
+    # no key: papers wait for one, the rest goes in; with a key, one lawful-access statement for the papers
+    assert 'settle(it, "needs key"' in add and 'id="batch-attest"' in add and "Tick the statement about the papers first" in add
+    # a failure is that file's; a reload mid-batch names the files not added; the tab asks before it closes mid-batch
+    assert 'settle(it, "failed"' in add and 'BATCH_NOTE = "scale-add-batch"' in add and "!unsaved().length && !B.running" in add
+    assert "stopped before it ended" in js
+    # the Curate dialog hands several files, or a data or graph file, to Add a source; the board's button opens it
+    assert "curateOrAdd(fs)" in js and "addUI.take(fs)" in js and '$("board-curate").onclick = () => { $("board-dialog").close(); addUI.open(); };' in js
+    assert '<input type="file" id="curate-pdf" multiple' in page
+
+
+def test_analyze_is_the_toolbar_twin_of_add_a_source():
+    page = (REPO / "site/index.html").read_text()
+    js = (REPO / "site/explorer.js").read_text()
+    css = (REPO / "site/explorer.css").read_text()
+    bar = page[page.index('<header class="gx-toolbar">'):page.index('<form class="gx-search"')]
+    # right after Add a source, the same class, its own chart icon, the panel it controls; the canvas button is gone
+    assert bar.index('id="add-open"') < bar.index('id="analyze-open"') and bar.count('class="gx-curate-open"') == 2
+    assert 'aria-controls="analyze"' in bar and 'aria-pressed="false"' in bar and "<span>Analyze</span>" in bar
+    assert 'id="analyze-btn"' not in page and "analyze-btn" not in js
+    # never a dead click: it says why when there is no graph, the graph is loading or holds no numbers
+    assert "function analyzeWhyNot()" in js and 'b.setAttribute("aria-disabled", String(!!why))' in js
+    assert "if (on && analyzeWhyNot()) { status(analyzeWhyNot()); return; }" in js
+    # closing returns focus to it; at phone width both buttons are icons
+    assert '$("analyze-close").onclick = () => { openAnalyze(false); $("analyze-open").focus(); };' in js
+    assert ".gx-curate-open span" in css and '.gx-curate-open[aria-disabled="true"]' in css

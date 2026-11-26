@@ -27,6 +27,10 @@
       <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 3 H6 a2 2 0 0 0 -2 2 V19 a2 2 0 0 0 2 2 H18 a2 2 0 0 0 2 -2 V9 Z M14 3 V9 H20 M12 12 V18 M9 15 H15"/></svg>
       <span>Add a source</span>
     </button>
+    <button class="gx-curate-open" id="analyze-open" type="button" aria-pressed="false" aria-controls="analyze" aria-disabled="true" title="Open a graph first: Analyze plots the numbers of the graph on screen">
+      <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 4 V20 H20"/><path d="M8 16 V12 M12 16 V8 M16 16 V10"/></svg>
+      <span>Analyze</span>
+    </button>
     <form class="gx-search" id="search-form" role="search" aria-label="Search the graph">
       <span class="gx-search-prefix" aria-hidden="true">
         <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="11" cy="11" r="6.5"/><path d="M20 20 L16 16"/></svg>
@@ -100,10 +104,6 @@
           <button class="gx-btn" id="labels-btn" type="button" aria-pressed="false" title="Show or hide relationship labels">
             <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 17 L9 6 L14 17 M6 13 H12 M16 9 H21 M16 13 H21 M16 17 H21"/></svg>
             <span>Labels</span>
-          </button>
-          <button class="gx-btn" id="analyze-btn" type="button" aria-pressed="false" aria-controls="analyze" title="Plot the graph's numbers: suggested charts, or build one">
-            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 4 V20 H20"/><circle cx="9" cy="14" r="1.4"/><circle cx="13" cy="10" r="1.4"/><circle cx="17" cy="7" r="1.4"/><path d="M15 15 L17 12 L19 15 Z"/></svg>
-            <span>Analyze</span>
           </button>
           <button class="gx-btn" id="unhide-btn" type="button" title="Bring hidden nodes back" hidden>
             <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 12 C5 6 19 6 22 12 C19 18 5 18 2 12 Z"/><circle cx="12" cy="12" r="3"/></svg>
@@ -206,8 +206,8 @@
       curate it, a table's column names only if you ask.</p>
     <section class="gx-add-pick" id="add-pick">
       <label class="gx-drop" id="add-drop">
-        <input type="file" id="add-file" accept=".pdf,.txt,.md,.csv,.tsv,.xlsx,.xlsm,.json,.zip,application/pdf,text/plain,text/csv,application/json,application/zip,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet">
-        <span id="add-file-name">Drop a file here, or choose one</span>
+        <input type="file" id="add-file" multiple accept=".pdf,.txt,.md,.csv,.tsv,.xlsx,.xlsm,.json,.zip,application/pdf,text/plain,text/csv,application/json,application/zip,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet">
+        <span id="add-file-name">Drop files here (up to 10), or choose them</span>
         <small class="gx-subtle">PDF · text · CSV · Excel (.xlsx) · graph (.json) · bundle (.zip)</small>
       </label>
       <div class="gx-add-doi">
@@ -225,8 +225,8 @@
     <p class="gx-muted">A paper, patent or report, as a PDF. SCALE turns it into a graph and checks every quote
       against the source. <span id="curate-time">It takes a few minutes.</span></p>
     <label class="gx-drop" id="curate-drop">
-      <input type="file" id="curate-pdf" accept="application/pdf,.pdf,text/plain,.txt,.md">
-      <span id="curate-pdf-name">Drop a PDF here, or choose one</span>
+      <input type="file" id="curate-pdf" multiple accept="application/pdf,.pdf,text/plain,.txt,.md,.csv,.tsv,.xlsx,.xlsm,.json,.zip">
+      <span id="curate-pdf-name">Drop a PDF here, or choose one (several files, or a data or graph file, go to Add a source)</span>
     </label>
     <section class="gx-share" aria-label="What happens to the source">
       <ul id="curate-terms">

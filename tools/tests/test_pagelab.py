@@ -161,3 +161,82 @@ def test_without_processes_the_framework_is_still_found_by_its_git_folder(monkey
     with pytest.raises(ScaleError, match="framework repository"):
         pagelab.new(REPO / "work-test-lab", "g1", PROJECT, LAB, repo=REPO)
     assert not (REPO / "work-test-lab").exists()
+
+
+def _rebuild(tmp_path, base, gid, monkeypatch):
+    """The download's commands, run in an empty folder with sources/ copied: the graph they write, as bytes."""
+    man = json.loads((base / gid / "manifest.json").read_text())
+    rebuilt = tmp_path / f"rebuilt-{gid}"
+    rebuilt.mkdir()
+    shutil.copytree(base / gid / "sources", rebuilt / "sources")
+    monkeypatch.chdir(rebuilt)
+    for cmd in man["reproduce"]["commands"]:
+        args = shlex.split(cmd)
+        assert main(["--repo", str(REPO), *args[1:]]) in (0, None), cmd
+    return (rebuilt / "graph.json").read_bytes()
+
+
+def test_a_batch_of_a_paper_two_tables_and_a_graph_rebuilds_byte_for_byte(tmp_path, monkeypatch):
+    base = tmp_path / "lab"
+    pagelab.new(base, "topic", PROJECT, LAB, "project", "A topic together", repo=REPO)
+    # a graph made elsewhere (another run of the kinetics bench), merged first, as the explorer's batch does
+    other = tmp_path / "other"
+    other.mkdir()
+    (other / "kinetics-run2.csv").write_text((X / "kinetics.csv").read_text().replace("K1,", "K4,").replace("K2,", "K5,")
+                                              .replace("K3,", "K6,").replace("493", "523"))
+    monkeypatch.chdir(other)
+    assert main(["--repo", str(REPO), "data", "new", "merge-me.json", "--project", PROJECT, "--contributor", LAB]) in (0, None)
+    assert main(["--repo", str(REPO), "add-source", "kinetics-run2.csv", "--into", "merge-me.json", "--recorded-at", WHEN,
+                 "--confirm", "assumptions:kinetics-rates"]) in (0, None)
+    st = pagelab.stage(base, "topic", "merge-me.json", b64(other / "merge-me.json"))
+    assert pagelab.graph(base, "topic", st["file"], write=True, repo=REPO)["status"] == "merged"
+    for name in ("thermal-tests.csv", "dft-energies.csv"):
+        st = pagelab.stage(base, "topic", name, b64(X / name))
+        assert pagelab.table(base, "topic", st["file"], ANSWERS[name], write=True, repo=REPO)["status"] == "added"
+    txt = tmp_path / "paper.txt"
+    txt.write_text("[page 1]\nCO2 methanation over nickel (a synthetic example text). The conversion was 46.2 % at 300 C "
+                   "and 10 bar over Ni-Al2O3, with CH4 the main product in every run of the series.\n")
+    curate.start(tmp_path / "folder", text=txt, repo=REPO)
+    folder = tmp_path / "folder"
+    res = pagelab.publication(base, "topic", "paper", load_doc(folder / "graph.json" if (folder / "graph.json").is_file() else next(folder.glob("*.json"))),
+                              (tmp_path / "folder/rights.yaml").read_text(), {"file": "paper.txt"}, repo=REPO)
+    assert res["status"] == "merged"
+    man = json.loads((base / "topic/manifest.json").read_text())
+    assert [s["step"] for s in man["steps"]] == ["new", "graph", "table", "table", "graph"]
+    assert _rebuild(tmp_path, base, "topic", monkeypatch) == (base / "topic/graph.json").read_bytes()
+
+
+def test_the_command_takes_several_sources_into_one_document_up_to_ten(tmp_path, capsys):
+    assert main(["--repo", str(REPO), "data", "new", "g.json", "--project", PROJECT, "--contributor", LAB]) in (0, None)
+    for name in ("kinetics.csv", "dft-energies.csv"):
+        shutil.copy(X / name, tmp_path / name)
+    capsys.readouterr()
+    # each source on its own: the tables ask (a recording time, the assumptions), nothing is guessed, the run says so
+    code = main(["--repo", str(REPO), "add-source", "kinetics.csv", "dft-energies.csv", "--into", "g.json",
+                 "--confirm", "assumptions:dft-adsorption-energy"])
+    out = capsys.readouterr().out
+    assert code == 1 and "1 of 2 sources added into g.json: PARTIAL" in out and "kinetics.csv: table" in out
+    assert any(n["label"] == "Dataset" for n in load_doc(tmp_path / "g.json")["nodes"])     # the DFT table went in
+    # a graph in the same run merges (as the explorer's batch does), while the tables keep their own options
+    assert main(["--repo", str(REPO), "data", "new", "other.json", "--project", PROJECT, "--contributor", LAB]) in (0, None)
+    assert main(["--repo", str(REPO), "add-source", "dft-energies.csv", "--into", "other.json", "--confirm",
+                 "assumptions:dft-adsorption-energy"]) in (0, None)
+    capsys.readouterr()
+    assert main(["--repo", str(REPO), "data", "new", "h.json", "--project", PROJECT, "--contributor", LAB]) in (0, None)
+    code = main(["--repo", str(REPO), "add-source", "other.json", "kinetics.csv", "--into", "h.json"])
+    out = capsys.readouterr().out
+    assert code == 1 and "1 of 2 sources added into h.json: PARTIAL" in out and "other.json: graph" in out
+    assert main(["--repo", str(REPO), "add-source", *(["kinetics.csv"] * 11), "--into", "g.json"]) not in (0, None)
+    assert "at most 10 sources" in "".join(capsys.readouterr())
+
+
+def test_a_file_that_did_not_go_in_leaves_the_private_graph(tmp_path):
+    base = tmp_path / "lab"
+    pagelab.new(base, "g1", PROJECT, LAB, repo=REPO)
+    st = pagelab.stage(base, "g1", "kinetics.csv", b64(X / "kinetics.csv"))
+    assert pagelab.unstage(base, "g1", st["file"])["removed"] and "sources/kinetics.csv" not in pagelab.files(base, "g1")
+    st = pagelab.stage(base, "g1", "dft-energies.csv", b64(X / "dft-energies.csv"))
+    pagelab.table(base, "g1", st["file"], ANSWERS["dft-energies.csv"], write=True, repo=REPO)
+    assert not pagelab.unstage(base, "g1", st["file"])["removed"]          # one a step names stays
+    with pytest.raises(ScaleError, match="not a file under"):
+        pagelab.unstage(base, "g1", "graph.json")
