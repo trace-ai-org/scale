@@ -102,8 +102,6 @@ A generated explanation is a presentation of the retrieved evidence, not a repla
    anywhere in the queried document.
 6. **Propose, when the question asks what to do** (how to make a material, how to run a test the graph holds
    no record of).
-   For the synthesis of a material, the [plan-synthesis](../plan-synthesis/SKILL.md) skill builds on this step: it
-   grades the evidence of each requirement and reasons from the graph's variant pairs where no record meets one.
    - **Precedents, in one call.** Write the requirements as tests on the fields of one plan, hardest first (the
      elements, then the phase and the shape, then the size; a support last, since it is usually a step of its own),
      and run `scripts/precedents.py` (again only when a test was written wrong, or within the chosen route; search
