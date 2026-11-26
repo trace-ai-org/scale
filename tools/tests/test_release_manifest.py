@@ -73,7 +73,7 @@ def test_the_build_carries_core_kernel_domain_and_skills_with_the_one_version(tm
                               "scale_graph": {"manifest": "domain/graph/scale-catal.yaml", "version": HEAD_VERSION,
                                               "status": "candidate"}}]
     assert cv["tool"]["package"] == "scale-catal" and {s["name"] for s in cv["skills"]} == {
-        "index-sources", "fetch-corpus", "curate-corpus", "query-graph", "plan-synthesis", "map-coverage", "scan-conflicts",
+        "index-sources", "fetch-corpus", "curate-corpus", "query-graph", "map-coverage", "scan-conflicts",
         "export-graph", "evolve-schema", "triage-feedback", "first-paper", "upgrade-curation"}
     # a skill is its whole folder: the release carries curate-corpus's references and scripts with their digests
     for f in ("references/recipes.md", "scripts/curate_run.py"):
