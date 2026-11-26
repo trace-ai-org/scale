@@ -2,6 +2,22 @@
 
 ## Unreleased
 
+- **Built-in data mappings: a laboratory's file into a document without writing a mapping (tools; no schema change, no
+  migration).** `scale data match FILE` (and the agent tool `scale_data_match`) scores the reviewed mapping templates
+  of the new library `domain/data-mappings/` (CO2RR Faradaic efficiency and partial current density vs potential,
+  thermal catalytic tests, kinetics with a TOF's site basis, DFT adsorption energies, characterization summaries)
+  against the file's header and sample values, binds each role to a column, melts wide columns into one result per
+  column, reads units from headers, reports every uncertain binding with its candidates (a role two columns fit is
+  left unbound, never guessed) and writes a complete mapping for `scale data add`, reusable for files of the same
+  layout. `scale data add` reads .xlsx sheets and CSV dialects (delimiter, encoding, header row and preamble, decimal
+  comma) by a reader in pure Python: the table is written as `scale_csv_v1`, recorded as a derived Dataset whose
+  `table.ingest` holds the recipe, beside the original file's own Dataset, and `scale data verify` extracts it again
+  from the file. Mappings gain `mapping_version: 2` (version 1 files are read as before): an `input` block, `melt`,
+  `unit_from_header` checked by the quantity contracts, `lookups` that find records by formula or name or create them
+  (a ChemicalSpecies from its formula), `references` reused by kind, several records per pass with `target_record`
+  links, `basis_column` and `unresolved_target_column`. A synthetic example per template
+  (`domain/examples/scale-catal/data-mapping-examples/`, listed in `governance/public-fixtures.yaml`), docs/data.md.
+
 - **Querying across knowledge graphs, a design matrix and a write-back convention (tools; no schema change, no
   migration).** `scale graph query` and `scale graph search` take several graphs (`--graph ALIAS=FILE`, repeated), as do
   the agent tools (`graphs`): each graph is queried on its own under the schema version it pins, with its spec digest

@@ -191,8 +191,8 @@ def test_blanks_and_tokens_map_only_to_missingness_or_bounds_never_zero(spec, se
 def test_the_mapping_is_declarative_and_versioned(spec, seed):
     with pytest.raises(ScaleError, match=r"the mapping has unknown keys \['script'\]"):
         plan(seed, spec, mapping_text=FE_MAP.read_text() + "script: import os\n")
-    with pytest.raises(ScaleError, match="mapping_version 2 is not one this tool reads"):
-        plan(seed, spec, mapping_text=FE_MAP.read_text().replace("mapping_version: 1", "mapping_version: 2"))
+    with pytest.raises(ScaleError, match="mapping_version 3 is not one this tool reads"):
+        plan(seed, spec, mapping_text=FE_MAP.read_text().replace("mapping_version: 1", "mapping_version: 3"))
     with pytest.raises(ScaleError, match="result has unknown keys"):
         plan(seed, spec, mapping_text=FE_MAP.read_text().replace("  phase_column: phase\n", "  phase_column: phase\n  sql: x\n"))
     with pytest.raises(ScaleError, match="names its version or its uri"):

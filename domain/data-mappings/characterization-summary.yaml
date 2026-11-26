@@ -1,0 +1,194 @@
+# A built-in mapping template of `scale data match` (docs/data.md, "Built-in mappings"); provisional.
+template_version: 1
+id: characterization-summary
+title: Characterization summary per sample, BET area, pore volume, XRD crystallite size and XPS atomic ratios
+description: |
+  One row per catalyst sample: its name, and any of its BET specific surface area, its pore volume, its XRD
+  crystallite size and its XPS surface atomic ratios (one column per ratio, Ni/Al (XPS)). In one pass, each sample
+  becomes a CatalystSample and each technique present a Characterization of it (EXAMINES), holding the technique's
+  results: N2 physisorption (BET area, pore volume), X-ray diffraction (crystallite size) and X-ray photoelectron
+  spectroscopy (one result per ratio, its definition the ratio's header).
+maturity: provisional
+driving_forces: []
+default_origin: recorded
+require_one_of:
+- [bet, pore_volume, crystallite, xps_ratio]
+example: examples/scale-catal/data-mapping-examples/characterization.csv
+roles:
+  sample:
+    kind: text
+    required: true
+    synonyms: [sample, sample id, sample name, catalyst, catalyst id, material, name, id]
+  recorded_at:
+    kind: datetime
+    synonyms: [recorded at, date, date time, datetime, measured at]
+  bet:
+    kind: number
+    quantity: specific_surface_area
+    default_unit: m2/g
+    synonyms: [bet, bet area, s bet, sbet, bet surface area, surface area, specific surface area, ssa, a bet]
+  pore_volume:
+    kind: number
+    quantity: specific_pore_volume
+    default_unit: cm3/g
+    synonyms: [pore volume, vp, v pore, total pore volume, v total, vpore, bjh pore volume]
+  crystallite:
+    kind: number
+    quantity: crystallite_size
+    default_unit: nm
+    synonyms: [crystallite size, xrd crystallite size, d xrd, dxrd, xrd size, scherrer size, d scherrer, crystal size, crystallite,
+      xrd d]
+  xps_ratio:
+    kind: melt
+    id: xps
+    quantity: ratio
+    default_unit: '1'
+    target_as: definition
+    definition: '{target} surface atomic ratio (XPS)'
+    patterns:
+    - ^XPS[\s_:-]*(?P<target>[A-Z][a-z]?\s*/\s*[A-Z][a-z]?)(?:[\s_-]*(?:atomic\s*)?ratio)?$
+    - ^(?P<target>[A-Z][a-z]?\s*/\s*[A-Z][a-z]?)(?:[\s_-]*(?:atomic\s*)?ratio)?\s*\(\s*XPS\s*\)$
+    - ^(?P<target>[A-Z][a-z]?\s*/\s*[A-Z][a-z]?)[\s_-]*XPS$
+confirm:
+- a sample the document does not hold is a new CatalystSample of sample_kind other; set its form
+- the BET area and pore volume are one N2 physisorption characterization, the crystallite size one X-ray diffraction (Scherrer,
+  as the laboratory computes it) and the ratios one XPS characterization of each sample
+- a blank cell is recorded as not_measured
+mapping:
+  mapping_version: 2
+  input: '{{input}}'
+  dataset:
+    id_prefix: '{{ns}}:data/'
+    primary_key: ['{{column:sample}}']
+  references:
+    ssa:
+      when: bet
+      id: '{{ns}}:variable/specific-surface-area'
+      label: Variable
+      props:
+        name: BET specific surface area
+        scale: quantitative
+        quantity_kind: specific_surface_area
+        unit: m2/g
+      reuse: [quantity_kind]
+    pore_volume:
+      when: pore_volume
+      id: '{{ns}}:variable/pore-volume'
+      label: Variable
+      props:
+        name: specific pore volume
+        scale: quantitative
+        quantity_kind: specific_pore_volume
+        unit: cm3/g
+      reuse: [quantity_kind]
+    crystallite:
+      when: crystallite
+      id: '{{ns}}:variable/crystallite-size'
+      label: Variable
+      props:
+        name: XRD crystallite size
+        scale: quantitative
+        quantity_kind: crystallite_size
+        unit: nm
+      reuse: [quantity_kind]
+    ratio:
+      when: xps_ratio
+      id: '{{ns}}:variable/xps-atomic-ratio'
+      label: Variable
+      props:
+        name: XPS surface atomic ratio
+        scale: quantitative
+        quantity_kind: ratio
+        unit: '1'
+      reuse: [quantity_kind]
+  records:
+  - as: sample
+    label: CatalystSample
+    key: ['{{column:sample}}']
+    name_column: '{{column:sample}}'
+    origin: '{{origin}}'
+    recorded_at_column: '{{column:recorded_at}}'
+    recorded_at: '{{recorded_at}}'
+    properties:
+      sample_kind:
+        literal: other
+  - as: physisorption
+    when: bet|pore_volume
+    label: Characterization
+    key: ['{{column:sample}}']
+    name: N2 physisorption
+    origin: '{{origin}}'
+    recorded_at_column: '{{column:recorded_at}}'
+    recorded_at: '{{recorded_at}}'
+    properties:
+      technique:
+        literal: N2 physisorption (BET)
+      experiment_kind:
+        literal: physical
+    results:
+    - when: bet
+      id: specific_surface_area
+      column: '{{column:bet}}'
+      variable: '@ssa'
+      unit: '{{unit:bet}}'
+      missing:
+        ? ''
+        : status: not_measured
+    - when: pore_volume
+      id: pore_volume
+      column: '{{column:pore_volume}}'
+      variable: '@pore_volume'
+      unit: '{{unit:pore_volume}}'
+      missing:
+        ? ''
+        : status: not_measured
+    links:
+    - type: EXAMINES
+      target_record: sample
+  - as: xrd
+    when: crystallite
+    label: Characterization
+    key: ['{{column:sample}}']
+    name: X-ray diffraction
+    origin: '{{origin}}'
+    recorded_at_column: '{{column:recorded_at}}'
+    recorded_at: '{{recorded_at}}'
+    properties:
+      technique:
+        literal: X-ray diffraction
+      experiment_kind:
+        literal: physical
+    results:
+    - id: crystallite_size
+      column: '{{column:crystallite}}'
+      variable: '@crystallite'
+      unit: '{{unit:crystallite}}'
+      missing:
+        ? ''
+        : status: not_measured
+    links:
+    - type: EXAMINES
+      target_record: sample
+  - as: xps
+    when: xps_ratio
+    label: Characterization
+    key: ['{{column:sample}}']
+    name: X-ray photoelectron spectroscopy
+    origin: '{{origin}}'
+    recorded_at_column: '{{column:recorded_at}}'
+    recorded_at: '{{recorded_at}}'
+    properties:
+      technique:
+        literal: X-ray photoelectron spectroscopy
+      experiment_kind:
+        literal: physical
+    results:
+    - variable: '@ratio'
+      unit: '{{unit:xps_ratio}}'
+      melt: '{{melt:xps_ratio}}'
+      missing:
+        ? ''
+        : status: not_measured
+    links:
+    - type: EXAMINES
+      target_record: sample

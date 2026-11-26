@@ -1,0 +1,56 @@
+# scale data match: built-in mapping dft-adsorption-energy (DFT adsorption and reaction energies, one calculation per row), score 1.0
+# file dft-energies.csv, cells A1:F5
+# confirm: the energy is an electronic adsorption (reaction) energy as the calculation gives it, of the adsorbate named; its reference states are the laboratory's (state them in the Variable's description)
+# confirm: the adsorbate names the process only in words (unresolved_target); link each energy to its Reaction (the adsorption with its reference states) when the document holds one
+# confirm: charge_treatment constant_charge (an ordinary calculation at a fixed number of electrons); change it for constant-potential calculations
+# confirm: a blank energy is recorded as not_measured (a failed or missing calculation), never zero
+mapping_version: 2
+input:
+  format: csv
+  header_row: 1
+  delimiter: ','
+  encoding: utf-8
+dataset:
+  id_prefix: ex-dm:data/
+  primary_key:
+  - calc_id
+references:
+  energy:
+    id: ex-dm:variable/adsorption-energy
+    label: Variable
+    props:
+      name: adsorption energy (electronic)
+      scale: quantitative
+      quantity_kind: reaction_energy
+      unit: eV
+    reuse:
+    - quantity_kind
+records:
+- as: calc
+  label: Computation
+  key:
+  - calc_id
+  name: DFT calculation
+  name_column: surface
+  origin: synthetic
+  properties:
+    computation_kind:
+      literal: electronic_structure
+    charge_treatment:
+      literal: constant_charge
+    level_of_theory:
+      column: functional
+      representation: text_value
+    experiment_status:
+      column: status
+  results:
+  - id: adsorption_energy
+    column: E_ads (eV)
+    variable: '@energy'
+    unit_from_header: true
+    unresolved_target_column: adsorbate
+    produced_by: self
+    missing:
+      '':
+        status: not_measured
+        note: no energy was obtained

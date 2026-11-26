@@ -1,0 +1,170 @@
+# A built-in mapping template of `scale data match` (docs/data.md, "Built-in mappings"); provisional.
+template_version: 1
+id: kinetics-rates
+title: Kinetic measurements, reaction rates and turnover frequencies with their site basis
+description: |
+  One row per kinetic measurement: its temperature, optionally its pressure, the species the rate is of, a rate per
+  catalyst mass (or volume, or area) and a turnover frequency with the basis its sites were counted on (a column
+  such as "site basis": H2 chemisorption, CO chemisorption, total metal atoms). Each row becomes a CatalyticTest of
+  test_kind kinetics (driving force thermo) with a rate and a TOF result entry; the TOF keeps its site basis as its
+  basis, cited from its cell, so that two TOFs counted on other sites are never compared as one quantity.
+maturity: provisional
+driving_forces: [thermo]
+default_origin: recorded
+require_one_of:
+- [rate, tof]
+example: examples/scale-catal/data-mapping-examples/kinetics.csv
+roles:
+  run:
+    kind: text
+    required: true
+    synonyms: [run, run id, measurement, measurement id, point, entry, test, test id, experiment, exp, id]
+  sample:
+    kind: text
+    synonyms: [sample, sample id, catalyst, catalyst id, material]
+  recorded_at:
+    kind: datetime
+    synonyms: [recorded at, date, date time, datetime, timestamp, measured at]
+  temperature:
+    kind: number
+    required: true
+    quantity: temperature
+    default_unit: K
+    synonyms: [t, temp, temperature, reaction temperature, t bed, bed temperature]
+  pressure:
+    kind: number
+    quantity: pressure
+    default_unit: bar
+    synonyms: [p, pressure, total pressure, reaction pressure]
+  species:
+    kind: text
+    synonyms: [species, product, reactant, rate of, molecule, compound]
+  rate:
+    kind: number
+    quantity: production_rate
+    default_unit: mol g-1 s-1
+    synonyms: [rate, reaction rate, r, formation rate, consumption rate, specific rate, mass specific rate, rate per mass,
+      activity]
+  tof:
+    kind: number
+    quantity: turnover_frequency
+    default_unit: s-1
+    synonyms: [tof, turnover frequency, tor, turnover rate, turn over frequency]
+  site_basis:
+    kind: text
+    synonyms: [site basis, sites, tof basis, site count, site counting, site titration, counted by, per site, normalized
+        to, normalization, active site basis]
+confirm:
+- each row is one kinetic measurement (one CatalyticTest of test_kind kinetics); a run holds one rate and one TOF
+- rates and TOFs are reported as measured; whether they are free of heat and mass transport limits is not stated by the
+  table (add the transport checks to the tests if they were made)
+- a TOF keeps the cell of the site-basis column as its basis; without that column it states no basis, and TOFs counted on
+  other sites are not one quantity
+- a sample the document does not hold is created as a CatalystSample of sample_kind other; set its form
+mapping:
+  mapping_version: 2
+  input: '{{input}}'
+  dataset:
+    id_prefix: '{{ns}}:data/'
+    primary_key: ['{{column:run}}']
+  references:
+    rate:
+      when: rate
+      id: '{{ns}}:variable/reaction-rate'
+      label: Variable
+      props:
+        name: reaction rate
+        scale: quantitative
+        quantity_kind: production_rate
+        unit: mol g-1 s-1
+      reuse: [quantity_kind]
+    tof:
+      when: tof
+      id: '{{ns}}:variable/turnover-frequency'
+      label: Variable
+      props:
+        name: turnover frequency
+        scale: quantitative
+        quantity_kind: turnover_frequency
+        unit: s-1
+      reuse: [quantity_kind]
+  lookups:
+    species:
+      when: species
+      label: ChemicalSpecies
+      match: [formula, name]
+      aliases:
+        carbon dioxide: CO2
+        carbon monoxide: CO
+        hydrogen: H2
+        methane: CH4
+        methanol: CH3OH
+        ethane: C2H6
+        ethylene: C2H4
+        ethene: C2H4
+        propane: C3H8
+        propylene: C3H6
+        propene: C3H6
+        ammonia: NH3
+        water: H2O
+      create:
+        id_prefix: '{{ns}}:species/'
+        as: formula
+    sample:
+      when: sample
+      label: CatalystSample
+      match: [name]
+      create:
+        id_prefix: '{{ns}}:sample/'
+        as: name
+        props:
+          sample_kind: other
+  records:
+  - as: test
+    label: CatalyticTest
+    key: ['{{column:run}}']
+    name: Kinetic measurement
+    origin: '{{origin}}'
+    recorded_at_column: '{{column:recorded_at}}'
+    recorded_at: '{{recorded_at}}'
+    properties:
+      test_kind:
+        literal: kinetics
+      experiment_kind:
+        literal: physical
+      driving_forces:
+        literal: [thermo]
+      temperature:
+        column: '{{column:temperature}}'
+        unit: '{{unit:temperature}}'
+      pressure:
+        when: pressure
+        column: '{{column:pressure}}'
+        unit: '{{unit:pressure}}'
+    results:
+    - when: rate
+      id: rate
+      column: '{{column:rate}}'
+      variable: '@rate'
+      unit: '{{unit:rate}}'
+      target_column: '{{column:species}}'
+      target_lookup: species
+      missing:
+        ? ''
+        : status: not_measured
+    - when: tof
+      id: tof
+      column: '{{column:tof}}'
+      variable: '@tof'
+      unit: '{{unit:tof}}'
+      target_column: '{{column:species}}'
+      target_lookup: species
+      basis_column: '{{column:site_basis}}'
+      missing:
+        ? ''
+        : status: not_measured
+    links:
+    - when: sample
+      type: USES_CATALYST
+      target_column: '{{column:sample}}'
+      target_lookup: sample

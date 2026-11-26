@@ -26,6 +26,7 @@ from __future__ import annotations
 import csv
 import hashlib
 import io
+import json
 import re
 from pathlib import Path
 from typing import Any
@@ -302,7 +303,7 @@ def _same_number(value: int | float, text: str) -> bool:
         return False
 
 
-def _holds(text: str, v: dict, numeric: bool) -> tuple[bool | None, str]:
+def _holds(text: str, v: dict, numeric: bool, named: dict | None = None) -> tuple[bool | None, str]:
     """Whether a cell's text holds what value ``v`` states (True, False, or None when it cannot be compared), and what
     was compared. A cell of a numeric column holds the value's number exactly; a token (``<0.5``) holds only a censored
     value (a limit or a one-sided bound) that records it as reported and whose number it ends with, never an exact one;
@@ -317,6 +318,9 @@ def _holds(text: str, v: dict, numeric: bool) -> tuple[bool | None, str]:
         hit = [k for k, x in fields.items() if x == (text.lower() if k == "boolean_value" else text)]
         if hit:
             return True, f"cell {text!r} is its {hit[0]}"
+        hit = [k for k, x in fields.items() if (named or {}).get(text) == x]
+        if hit:
+            return True, f"cell {text!r} names its {hit[0]} {fields[hit[0]]} (the table's lookup)"
         if st in MISSING and (text == "" or text == told):
             return True, f"cell {text!r} for a value {st}"
         return False, f"cell {text!r} is none of its {sorted(fields)}"
@@ -335,10 +339,14 @@ def _holds(text: str, v: dict, numeric: bool) -> tuple[bool | None, str]:
     return _same_number(v["value"], text), f"cell {text!r}, value {v['value']!r}"
 
 
-def _stated_by(text: str, r: dict) -> bool:
-    """Whether a record states the text of a cell no value of it cites: the target of a link, or one of the record's
-    own properties (a text, an enumerated value, a reference, a number, a boolean)."""
-    if "type" in r and r.get("target") == text:
+def _stated_by(text: str, r: dict, named: dict | None = None) -> bool:
+    """Whether a record states the text of a cell no value of it cites: the target of a link (or the id the table's
+    lookup gave the text), or one of the record's own properties (a text, an enumerated value, a reference, a number, a
+    boolean)."""
+    if "type" in r and (r.get("target") == text or (named and named.get(text) == r.get("target"))):
+        return True
+    if named and text in named and any(x == named[text] for k, x in (r.get("props") or {}).items()
+                                       if isinstance(x, str) and k not in ("evidence", "stewardship")):
         return True
     num = parse_number(text)
     for k, x in (r.get("props") or {}).items():
@@ -395,20 +403,69 @@ def verify(doc: dict, files: dict[str, str | Path] | None = None, base: str | Pa
         d = datasets[did]
         items = cited.get(did, [])
         entry: dict = {"dataset": did, "cells": len(items), "recorded_sha256": d.get("sha256")}
+        if not isinstance(d.get("table"), dict) and did in files:
+            # a file no cell names (a workbook its tables were extracted from): its bytes, nothing else
+            got = sha256(Path(files[did]).read_bytes()) if files[did].is_file() else None
+            out.append({**entry, "file": str(files[did]), "file_sha256": got,
+                        **({"status": "verified", "reason": "checksum only: the file has no table of its own"}
+                           if got == d.get("sha256") else
+                           {"status": "unverified", "reason": f"no local copy of the file (looked for {files[did]})"}
+                           if got is None else
+                           {"status": "failed", "problems": ["checksum mismatch: the file is not the bytes the Dataset "
+                                                             "records (new bytes are a new Dataset)"]})})
+            continue
+        t = d.get("table") if isinstance(d.get("table"), dict) else {}
+        ingest = t.get("ingest") if isinstance(t.get("ingest"), dict) else {}
         path = files.get(did) or _local_file(d.get("uri"), Path(base))
-        if path is None or not Path(path).is_file():
+        data = None
+        src = ingest.get("extracted_from")
+        if (path is None or not Path(path).is_file()) and isinstance(src, str) and src in datasets:
+            # a table read from a workbook (or another dialect): extract it again from the original file
+            fp = files.get(src) or _local_file(datasets[src].get("uri"), Path(base))
+            if fp is not None and Path(fp).is_file():
+                raw = Path(fp).read_bytes()
+                entry.update(source_dataset=src, source_file=str(fp), source_file_sha256=sha256(raw))
+                if sha256(raw) != datasets[src].get("sha256"):
+                    out.append({**entry, "status": "failed", "problems": [
+                        f"checksum mismatch: {fp} is not the bytes {src} records (new bytes are a new Dataset)"]})
+                    continue
+                from .datainput import extract, recipe_from_ingest
+                try:
+                    data = extract(raw, recipe_from_ingest(ingest), str(fp))["canonical"]
+                except ScaleError as exc:
+                    out.append({**entry, "status": "failed", "problems": [f"{src}: {exc}"]})
+                    continue
+                path = fp
+            else:
+                path = fp
+        if data is None and (path is None or not Path(path).is_file()):
             out.append({**entry, "status": "unverified",
                         "reason": "no local copy of the file" + (f" (looked for {path})" if path else
                                                                   "; give it with --file <dataset id>=<path>")})
             continue
-        data = Path(path).read_bytes()
+        if data is None:
+            data = Path(path).read_bytes()
         got = sha256(data)
-        entry.update(file=str(path), file_sha256=got)
+        if "source_dataset" in entry:
+            entry.update(table_sha256=got)          # the table extracted from the file (its recipe in table.ingest)
+        else:
+            entry.update(file=str(path), file_sha256=got)
         if got != d.get("sha256"):
-            out.append({**entry, "status": "failed", "problems": ["checksum mismatch: the file is not the bytes the "
-                                                                    "Dataset records (new bytes are a new Dataset)"]})
+            out.append({**entry, "status": "failed", "problems": ["checksum mismatch: the "
+                                                                    + ("table extracted from the file" if "source_dataset"
+                                                                       in entry else "file")
+                                                                    + " is not the bytes the Dataset records (new bytes "
+                                                                    "are a new Dataset)"]})
             continue
-        t = d.get("table") if isinstance(d.get("table"), dict) else {}
+        named_by: dict[str, dict] = {}              # column -> {cell text: the id the table's lookup gave it}
+        for k, x in sorted(ingest.items()):
+            if k.startswith("lookup_") and isinstance(x, str):
+                try:
+                    col, text, rid = json.loads(x)
+                except (ValueError, TypeError):
+                    continue
+                if isinstance(col, str) and isinstance(text, str) and isinstance(rid, str):
+                    named_by.setdefault(col, {})[text] = rid
         try:
             header, body = read_table(data, t.get("profile", "scale_csv_v1"), str(path))
         except ScaleError as exc:
@@ -442,15 +499,16 @@ def verify(doc: dict, files: dict[str, str | Path] | None = None, base: str | Pa
                     problems.append(f"{where}: the quote {e['quote']!r} is not the cell's text {text!r}")
             numeric = (_columns(t).get(cell["column"]) or {}).get("datatype") in NUMERIC
             inconclusive = False
+            named = named_by.get(cell["column"])
             for p, v in users:
-                same, said = _holds(text, v, numeric)
+                same, said = _holds(text, v, numeric, named)
                 if same is False:
                     ok = False
                     problems.append(f"{where}: props{p} does not hold the cell: {said}")
                 elif same is None:
                     uncompared += 1
                     inconclusive = True
-            if not users and not _stated_by(text, records[rid]):
+            if not users and not _stated_by(text, records[rid], named):
                 ok = False
                 problems.append(f"{where}: no value cites the cell, and the record states nothing it holds ({text!r})")
             matched += ok and not inconclusive
