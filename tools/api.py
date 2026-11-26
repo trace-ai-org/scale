@@ -830,6 +830,8 @@ class ScaleToolkit:
         else:
             if identity_map is not None:
                 raise ScaleError("identity_map identifies records across graphs: give graphs")
+            if document is not None and path:
+                raise ScaleError("give a document or a path, not both")
             if document is None and not path:
                 raise ScaleError("give a document (inline), a path, or graphs")
             members = self._members([{"alias": "graph", **({"path": path} if path else {"document": document})}], domain)

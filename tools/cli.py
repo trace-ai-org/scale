@@ -728,6 +728,9 @@ def cmd_data_plot_table(args):
     from . import plotdata
     raw = Path(args.table).read_bytes()
     want, cited = args.sha256, None
+    if args.sha256 and args.dataset:
+        raise ScaleError("--sha256 checks a file against a digest you hold; --dataset checks it against the Dataset's "
+                         "record (and marks the rows records cite): give one")
     if args.dataset:
         if not args.graph_file:
             raise ScaleError("--dataset names a Dataset of a graph: give the graph with --graph-file")

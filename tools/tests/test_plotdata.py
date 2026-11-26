@@ -118,8 +118,13 @@ def test_proposals_predictions_and_superseded_records_are_not_observations(pm):
                          "target": "ex:pm/test/co2rr", "props": {"origin": "derived"}})
     res = plotdata.plot_data(members(pm=pm2), CO_FE)
     assert res["left_out"]["by_reason"].get("y:superseded") == 2
-    assert plotdata.typed({"status": "present", "value": 1, "unit": "%", "origin": "predicted"})[1] == \
-        "prediction_not_observation"
+    # a predicted value is left out of observations and plotted in an inventory (population: all), marked predicted
+    pm3 = copy.deepcopy(load_doc(PM))
+    entry(pm3, "ex:pm/test/co2rr", "co_fe_30min")["origin"] = "predicted"
+    obs = plotdata.plot_data(members(pm=pm3), CO_FE)
+    assert obs["left_out"]["by_reason"] == {"y:prediction_not_observation": 1}
+    every = plotdata.plot_data(members(pm=pm3), {**CO_FE, "population": "all"})
+    assert any(q["y"].get("origin") == "predicted" for p in every["panels"] for q in p["points"])
 
 
 def test_a_spec_that_would_lose_a_unit_or_convert_is_refused(pm):
@@ -245,8 +250,10 @@ def test_a_linked_data_file_is_read_with_its_units_bounds_digest_and_cited_rows(
     assert pts[2]["y"]["type"] == "bound" and pts[2]["y"]["bound"] == "upper" and pts[3]["y"]["bound"] == "lower"
     assert pts[1]["cited_by"][0]["firm"] is True and pts[2]["cited_by"][0]["firm"] is False
     assert pts[1]["x"]["unit"] == "min" and 4 not in pts
-    assert res["left_out"]["by_reason"] == {"y:empty": 1}
-    assert {p["y"]["type"] for p in res["panels"]} == {"quantity", "category"}     # text never shares a number's axis
+    # text in a column of numbers is reported with its row, never plotted as a category of results
+    assert res["left_out"]["by_reason"] == {"y:empty": 1, "y:not_a_number": 1}
+    assert res["left_out"]["not_a_number_rows"] == {"y:FE CO [%]": [5]}
+    assert {p["y"]["type"] for p in res["panels"]} == {"quantity"}
     wrong = plotdata.table_data(TABLE, spec, "0" * 64, cited)
     assert wrong["digest_check"] == "mismatch" and not any(q.get("cited_by") for p in wrong["panels"] for q in p["points"])
     assert plotdata.table_data(TABLE, spec)["digest_check"] == "not_recorded"
@@ -325,3 +332,43 @@ def test_a_data_files_rows_keep_their_numbers_and_a_bare_bound_is_plotted():
     pt = next(q for p in res["panels"] for q in p["points"] if q["row"] == 1)
     assert pt["y"]["type"] == "bound" and "unit" not in pt["y"]
     assert plotdata.table_csv(res).startswith("panel,row,")
+
+
+def test_review_regressions_selection_grouping_identity_and_the_gate(pm, tmp_path):
+    # a numeric filter selects as a scientific comparison does: a potential on no stated scale is not -1.0 V vs RHE
+    node(pm, "ex:pm/test/co2rr-repeat")["props"]["reference_scale"] = "not_reported"
+    flt = {**CO_FE, "where": [{"prop": "electrode_potential", "op": "eq", "value": -1.0, "unit": "V"}]}
+    res = plotdata.plot_data(members(pm=pm), flt)
+    assert res["plan"]["comparison"] == "scientific"
+    assert {q["record"] for p in res["panels"] for q in p["points"]} == {"ex:pm/test/co2rr"}
+    # a count keeps kinds and contexts apart: equal CO and H2 efficiencies of one test are two panels' records
+    pm2 = copy.deepcopy(load_doc(PM))
+    entry(pm2, "ex:pm/test/co2rr", "h2_fe")["value"] = 24
+    res = plotdata.plot_data(members(pm=pm2), {"plot": 1, "label": "CatalyticTest", "y": "count",
+                                               "x": {"entries": "result_values", "variable": FE}})
+    species = {p["x"]["context"].get("species") for p in res["panels"]}
+    assert {"CO", "H2"} <= species
+    # boxes and histograms aggregate within each facet, never across
+    res = plotdata.plot_data(members(pm=load_doc(PM)), {**FE_ALL, "x": "test_kind", "mark": "box", "series": None,
+                                                         "facet": "product"})
+    assert all(b["facet"] for p in res["panels"] for b in p.get("boxes") or [])
+    # a result plotted in one pair is not also listed as unpaired
+    same = {"plot": 1, "label": "CatalyticTest", "x": {"entries": "result_values", "variable": FE, "target": "ex:pm/species/co"},
+            "y": {"entries": "result_values", "variable": FE, "target": "ex:pm/species/co"}}
+    res = plotdata.plot_data(members(pm=load_doc(PM)), same)
+    plotted = {(q["record"], q["entry"]) for p in res["panels"] for q in p["points"]}
+    assert not any((i["record"], i["entry"]) in plotted for i in res["left_out"]["items"])
+    # two records of one name are two categories
+    pm3 = copy.deepcopy(load_doc(PM))
+    for n in pm3["nodes"]:
+        if n["label"] == "CatalystSample":
+            n["props"]["name"] = "Cu foil"
+    res = plotdata.plot_data(members(pm=pm3), {"label": "CatalyticTest", "x": "sample", "y": "count"})
+    names = [b["x"] for p in res["panels"] for b in p["buckets"]]
+    assert len(names) == len(set(names)) and all(x.startswith("Cu foil") for x in names)
+    # the tool refuses a document and a path together (the gate checks one of them)
+    ws = tmp_path / "ws"
+    ws.mkdir()
+    (ws / "p.json").write_text(json.dumps(pm))
+    kit = ScaleToolkit(workspace=ws, repo=REPO)
+    assert "not both" in kit.call("plot_data", {"document": pm, "path": "p.json", "spec": CO_FE})["error"]

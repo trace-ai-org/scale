@@ -446,6 +446,9 @@ button.gx-add-graph { width: 100%; font: inherit; color: inherit; cursor: pointe
 .gx-an-digest.is-mismatch { border-left: 3px solid #e5484d; }
 .gx-an-digest.is-not_recorded { border-left: 3px solid var(--subtle); }
 .gx-attach { cursor: pointer; }
+.gx-an-warn { margin: 6px 0; padding: 6px 10px; border-left: 3px solid #f0a35c; background: var(--bg-soft); border-radius: 6px; font-size: 12px; }
+.gx-an-warn p { margin: 2px 0; }
+.gx-an-badge { margin-left: 6px; padding: 1px 7px; border-radius: 999px; font-size: 11px; font-weight: 500; background: #fff3e0; color: #8a4b00; }
 .gx-answer-chart { margin: 8px 0; }
 .gx-answer-chart .gx-an-chart { border-color: rgba(255, 255, 255, 0.12); }
 .gx-answer-chart .gx-an-digest, .gx-answer-chart .gx-an-build { background: rgba(255, 255, 255, 0.06); }

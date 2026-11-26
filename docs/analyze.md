@@ -46,7 +46,9 @@ Instead of `label` and `where`, `plan` gives a whole query plan (docs/querying.m
 paths (`t.temperature`, `fe`).
 
 A spec that would lose what a value states is refused: a path to a field of a value object (`temperature.value`, which
-drops its unit, bound and context) and a filter that converts (`convert: true`).
+drops its unit, bound and context) and a filter that converts (`convert: true`). A plan with a numeric filter runs as a
+scientific comparison (`comparison: scientific`), so that a filter at −1.0 V selects potentials on a stated reference
+scale only.
 
 ## What a chart keeps apart
 
@@ -67,8 +69,12 @@ drops its unit, bound and context) and a filter that converts (`convert: true`).
   the pair is left out (`unpaired_entries`), never matched by position.
 - **Observations.** By default a proposal, a prediction and a record a newer version REVISES are left out with their
   reason; `population: all` counts every record (an inventory).
-- **Counts.** A count counts records (of the spec's label), once per x value: a test with two samples counts under each
-  (`counted.in_more_than_one_x`). The buckets say the distinct sources behind each bar; histogram bins (`[lo, hi)`, a
+- **Categories of records** keep the record's identity: two samples named alike are two categories (the name takes the
+  end of the record's id).
+- **Counts.** A count counts records (of the spec's label), once per x value within one axis typing (two products'
+  efficiencies of one test are counted in their own panels): a test with two samples counts under each
+  (`counted.in_more_than_one_x`). Counts, bins and boxes are per series and facet; a faceted count or box is drawn as
+  one chart per facet. The buckets say the distinct sources behind each bar; histogram bins (`[lo, hi)`, a
   width of 1, 2 or 5 times a power of ten) and box statistics (quartiles by linear interpolation, whiskers from the
   minimum to the maximum value; bounds and ranges counted apart) are computed in Python, so the chart, its CSV and an
   agent read the same numbers.
@@ -107,9 +113,12 @@ A Dataset (or TimeSeries) record names its file (`uri`) and may state its `sha25
 plotted in the Analyze view. The file is kept in the tab's memory and sent nowhere (not to a model, nor the service).
 
 Columns are read from the header: a unit in parentheses or brackets (`T (°C)`, `FE CO [%]`); a cell is a number, a bound
-(`<0.5`, `>90`) or text; rows keep their number in the file (data rows from 1, after the header). The rows the graph's
+(`<0.5`, `>90`) or text; text in a column of numbers is reported with its rows (`left_out.not_a_number_rows`), never
+plotted as a category; rows keep their number in the file (data rows from 1, after the header). The rows the graph's
 records cite are ringed, and only when the file is the one the record names: an evidence item's `dataset_cell`
-(`{row, column}`), when the schema has it, is firm; a locator naming a row of the Dataset ("rows 3-4") is tentative.
+(`{row, column}`), when the schema has it, is firm (a solid ring); a locator naming a row of the Dataset ("rows 3-4") is
+tentative (a dashed ring). On the command line `--dataset` checks the file against the Dataset's record and `--sha256`
+against a digest you hold, never both.
 
 ## Limits
 

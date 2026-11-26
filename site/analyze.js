@@ -45,15 +45,17 @@ export function rowsOf(panel) {
     const x = place(q.x), y = place(q.y);
     const kind = q.y.type === "bound" || q.x.type === "bound" ? "bound"
       : q.y.type === "range" || q.x.type === "range" ? "range" : "value";
-    const marker = q.y.type === "bound" ? (q.y.bound === "lower" ? "triangle-up" : "triangle-down")
-      : q.x.type === "bound" ? (q.x.bound === "lower" ? "triangle-right" : "triangle-left") : "circle";
+    const xm = q.x.type === "bound" ? (q.x.bound === "lower" ? "triangle-right" : "triangle-left") : null;
+    const marker = q.y.type === "bound" ? (q.y.bound === "lower" ? "triangle-up" : "triangle-down") : xm || "circle";
+    const unc = q.y.uncertainty_kind || (q.y.interval_lower !== undefined ? `interval${q.y.confidence_level ? ` (${q.y.confidence_level})` : ""}` : "");
     const where = [...new Set((q.evidence || []).map((e) => [e.source_name, e.source_year, e.locator].filter(Boolean).join(", ")))];
     return {
       id: q.id, record: q.record || null, row: q.row ?? null, name: q.name || q.id, series: q.series || "", facet: q.facet || "",
-      kind, marker, x: x.at, x2: x.to ?? null, xlo: x.lo ?? null, xhi: x.hi ?? null, y: y.at, y2: y.to ?? null, ylo: y.lo ?? null, yhi: y.hi ?? null,
+      kind, marker, xmarker: q.y.type === "bound" && xm ? xm : null, unc, x: x.at, x2: x.to ?? null, xlo: x.lo ?? null, xhi: x.hi ?? null, y: y.at, y2: y.to ?? null, ylo: y.lo ?? null, yhi: y.hi ?? null,
       xr: q.x.type === "range", yr: q.y.type === "range", xs: shown(q.x), ys: shown(q.y),
       cited: (q.cited_by || []).length ? q.cited_by.map((c) => `${c.record}${c.firm ? "" : " (tentative)"}`).join("; ") : "",
-      citedBy: (q.cited_by || [])[0]?.record || null, evidence: where.slice(0, 4).join(" | "),
+      citedBy: (q.cited_by || [])[0]?.record || null, citedFirm: (q.cited_by || []).some((c) => c.firm),
+      evidence: where.slice(0, 4).join(" | "),
     };
   });
 }
@@ -65,15 +67,23 @@ export function rowsOf(panel) {
 function countLayers(panel, series) {
   const yTitle = panel.y.title || "records";
   if (panel.x.type === "quantity") {
-    const bins = (panel.histogram && panel.histogram.bins) || [];
+    const base = new Map(), bins = [];
+    for (const b of (panel.histogram && panel.histogram.bins) || []) {
+      const at = base.get(b.lo) || 0;
+      bins.push({ ...b, series: b.series || "", y0: at, y1: at + b.records });
+      base.set(b.lo, at + b.records);
+    }
     return [{ data: { values: bins }, mark: { type: "rect", opacity: 0.85, stroke: "#ffffff", strokeWidth: 0.5 },
       encoding: { x: { field: "lo", type: "quantitative", title: panel.x.title, scale: { zero: false } }, x2: { field: "hi" },
-        y: { field: "records", type: "quantitative", title: yTitle }, y2: { datum: 0 },
-        tooltip: [{ field: "lo", title: "from" }, { field: "hi", title: "to (excluded)" }, { field: "records", title: "records" }] } }];
+        y: { field: "y1", type: "quantitative", title: yTitle }, y2: { field: "y0" },
+        ...(series ? { color: { field: "series", type: "nominal", title: "Series", legend: { orient: "bottom", columns: 3, labelLimit: 220 } } } : {}),
+        tooltip: [{ field: "lo", title: "from" }, { field: "hi", title: "to (excluded)" }, { field: "records", title: "records" },
+          ...(series ? [{ field: "series", title: "Series" }] : [])] } }];
   }
   const rows = (panel.buckets || []).map((b) => ({ x: b.x, records: b.records, sources: b.sources, series: b.series || "" }));
-  return [{ data: { values: rows }, mark: { type: "bar", opacity: 0.85 },
-    encoding: { x: { field: "x", type: panel.x.type === "number" ? "ordinal" : "nominal", title: panel.x.title, sort: "ascending" },
+  return [{ data: { values: rows }, mark: { type: "bar", opacity: 0.85, ...(panel.x.type === "number" ? { width: { band: 0.9 }, size: 6 } : {}) },
+    encoding: { x: panel.x.type === "number" ? { field: "x", type: "quantitative", title: panel.x.title, scale: { zero: false }, axis: { format: "d" } }
+      : { field: "x", type: "nominal", title: panel.x.title, sort: "ascending" },
       y: { field: "records", type: "quantitative", title: yTitle, stack: "zero" },
       ...(series ? { color: { field: "series", type: "nominal", title: "Series", legend: { orient: "bottom", columns: 3, labelLimit: 220 } } } : {}),
       tooltip: [{ field: "x", title: panel.x.label || "x" }, { field: "records", title: "records" }, { field: "sources", title: "sources" },
@@ -84,12 +94,13 @@ function countLayers(panel, series) {
 function boxLayers(panel, color) {
   const rows = (panel.boxes || []).filter((b) => b.n > 0).map((b) => ({ ...b, x: b.x, series: b.series || "" }));
   const X = { field: "x", type: panel.x.type === "number" ? "ordinal" : "nominal", title: panel.x.title, sort: "ascending" };
-  const tip = [{ field: "x", title: panel.x.label || "x" }, { field: "n", title: "values" }, { field: "min" }, { field: "q1" }, { field: "median" },
+  const tip = [{ field: "x", title: panel.x.label || "x" }, { field: "n", title: "values in the box" }, { field: "min" }, { field: "q1" }, { field: "median" },
     { field: "q3" }, { field: "max" }, { field: "n_bounds", title: "bounds (not in the box)" }, { field: "n_ranges", title: "ranges (not in the box)" }, { field: "sources" }];
   const Y = (f) => ({ field: f, type: "quantitative", title: panel.y.title, scale: { zero: false } });
   return [
     { data: { values: rows }, mark: { type: "rule" }, encoding: { x: X, y: Y("min"), y2: { field: "max" }, tooltip: tip } },
-    { data: { values: rows }, mark: { type: "bar", size: 18, opacity: 0.55 }, encoding: { x: X, y: Y("q1"), y2: { field: "q3" }, ...color, tooltip: tip } },
+    { data: { values: rows }, mark: { type: "bar", size: 18, opacity: 0.55 }, encoding: { x: X, y: Y("q1"), y2: { field: "q3" }, ...color,
+      ...(color.color ? { xOffset: { field: "series" } } : {}), tooltip: tip } },
     { data: { values: rows }, mark: { type: "tick", size: 18, thickness: 2, color: "#111" }, encoding: { x: X, y: Y("median"), tooltip: tip } },
   ];
 }
@@ -103,7 +114,7 @@ export function vegaSpec(panel, opts = {}) {
   const Y = (field = "y") => ({ field, type: qy ? "quantitative" : "nominal", title: panel.y.title, ...(qy ? { scale: { zero: false } } : {}) });
   const series = (panel.series || []).length > 0;
   const color = series ? { color: { field: "series", type: "nominal", title: "Series", legend: { orient: "bottom", columns: 3, labelLimit: 220 } } } : {};
-  const tooltip = [{ field: "name", title: "Record" }, { field: "ys", title: panel.y.label || "y" }, { field: "xs", title: panel.x.label || "x" },
+  const tooltip = [{ field: "name", title: "Record" }, { field: "ys", title: panel.y.label || "y" }, { field: "unc", title: "uncertainty" }, { field: "xs", title: panel.x.label || "x" },
     ...(series ? [{ field: "series", title: "Series" }] : []), { field: "evidence", title: "Evidence" }, { field: "cited", title: "Cited by" }];
   const layer = [
     // error bars: a value's reported uncertainty or confidence interval
@@ -125,7 +136,7 @@ export function vegaSpec(panel, opts = {}) {
   }
   if (mark === "bar" && !qx && qy) {    // one bar per point, side by side; never stacked, never summed
     layer.push({ transform: [{ filter: "datum.kind === 'value'" }], mark: { type: "bar", opacity: 0.85 },
-      encoding: { x: X(), y: { ...Y(), stack: null, scale: { zero: true } }, ...color, ...(series ? { xOffset: { field: "series" } } : { xOffset: { field: "id" } }), tooltip } });
+      encoding: { x: X(), y: { ...Y(), stack: null, scale: { zero: true } }, ...color, xOffset: { field: "id" }, tooltip } });
   } else {
     layer.push({ transform: [{ filter: "datum.kind === 'value'" }], mark: { type: "point", filled: true, size: 55, opacity: 0.9 },
       encoding: { x: X(), y: Y(), ...color, tooltip } });
@@ -135,19 +146,25 @@ export function vegaSpec(panel, opts = {}) {
     { transform: [{ filter: "datum.kind === 'bound'" }], mark: { type: "point", filled: false, size: 110, strokeWidth: 1.8 },
       encoding: { x: X(), y: Y(), shape: { field: "marker", type: "nominal", scale: { domain: ["triangle-up", "triangle-down", "triangle-right", "triangle-left"],
         range: ["triangle-up", "triangle-down", "triangle-right", "triangle-left"] }, legend: null }, ...color, tooltip } },
-    // the rows a graph record cites (a linked data file): ringed
-    { transform: [{ filter: "datum.cited !== ''" }], mark: { type: "point", filled: false, size: 260, strokeWidth: 2, color: "#ffae3a" },
+    // a point bounded on both axes: its x direction too
+    { transform: [{ filter: "datum.xmarker !== null" }], mark: { type: "point", filled: false, size: 70, strokeWidth: 1.4 },
+      encoding: { x: X(), y: Y(), shape: { field: "xmarker", type: "nominal", scale: { domain: ["triangle-right", "triangle-left"],
+        range: ["triangle-right", "triangle-left"] }, legend: null }, ...color, tooltip } },
+    // the rows a graph record cites (a linked data file): ringed, solid when a dataset_cell names it, dashed when a locator does
+    { transform: [{ filter: "datum.cited !== '' && datum.citedFirm" }], mark: { type: "point", filled: false, size: 260, strokeWidth: 2, color: "#ffae3a" },
+      encoding: { x: X(), y: Y(), tooltip } },
+    { transform: [{ filter: "datum.cited !== '' && !datum.citedFirm" }], mark: { type: "point", filled: false, size: 260, strokeWidth: 2, color: "#ffae3a", strokeDash: [3, 3] },
       encoding: { x: X(), y: Y(), tooltip } },
   );
   if (panel.y.type === "count") layer.splice(0, layer.length, ...countLayers(panel, series));
   else if (mark === "box" && panel.boxes) {  // a box per category over its values; bounds and ranges stay markers on top
     const boxX = { field: "x", type: panel.x.type === "number" ? "ordinal" : "nominal", title: panel.x.title, sort: "ascending" };
     for (const l of layer) if (l.encoding && l.encoding.x && l.encoding.x.field === "x") l.encoding.x = { ...boxX };
-    layer.splice(layer.length - 3, 1, ...boxLayers(panel, color),
+    layer.splice(layer.length - 5, 1, ...boxLayers(panel, color),
       { transform: [{ filter: "datum.kind === 'value'" }], mark: { type: "point", filled: true, size: 14, opacity: 0.45 }, encoding: { x: boxX, y: Y(), tooltip } });
   }
   const inner = { layer, width: opts.width ?? "container", height: opts.height ?? 240 };
-  const faceted = (panel.facets || []).length > 1;
+  const faceted = (panel.facets || []).length > 1 && panel.y.type !== "count" && !(mark === "box" && panel.boxes);
   const spec = {
     $schema: "https://vega.github.io/schema/vega-lite/v5.json",
     data: { values: rowsOf(panel) },
@@ -158,6 +175,17 @@ export function vegaSpec(panel, opts = {}) {
       legend: { labelColor: c.fg, titleColor: c.fg }, header: { labelColor: c.fg }, font: "Inter, system-ui, sans-serif" },
   };
   return spec;
+}
+
+// A panel whose aggregates (counts, bins, boxes) are per facet, as one panel per facet: each chart then draws only its
+// facet's numbers, never another's.
+export function splitFacets(panel) {
+  const facets = panel.facets || [];
+  if (facets.length < 2 || !(panel.y.type === "count" || (panel.mark === "box" && panel.boxes))) return [panel];
+  const of = (xs, f) => (xs || []).filter((b) => (b.facet || "") === f);
+  return facets.map((f) => ({ ...panel, title: `${panel.title} · ${f}`, facets: [f], points: of(panel.points, f),
+    ...(panel.buckets ? { buckets: of(panel.buckets, f) } : {}), ...(panel.boxes ? { boxes: of(panel.boxes, f) } : {}),
+    ...(panel.histogram ? { histogram: { ...panel.histogram, bins: of(panel.histogram.bins, f) } } : {}) }));
 }
 
 // The digest of a file's bytes (hex), and how it compares with the digest a record states.

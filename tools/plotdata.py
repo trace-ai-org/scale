@@ -90,7 +90,7 @@ KEEP = ("as_reported", "status", "qualifier", "basis", "definition", "origin", "
         "phase", "stream", "evidence_ids")
 NOT_OBSERVED = ("proposed", "planned")
 # what makes two x values one bucket of a count (the value as reported, never its metadata)
-BUCKET_KEYS = ("type", "value", "lower", "upper", "bound", "unit")
+BUCKET_KEYS = ("type", "value", "lower", "upper", "bound", "unit", "id")
 LISTED = 200
 MAX_POINTS = 50000
 # the quantity kinds read as conditions and as outcomes when charts are suggested (the kernel's quantity contracts)
@@ -291,6 +291,8 @@ def compile_plan(spec: dict) -> tuple[dict, dict]:
     have_ret = list(plan.get("return") or [])
     plan["return"] = have_ret + [p for p in want if p not in have_ret]
     plan["evidence"] = True
+    if any(pgraph_query.numeric_filter(f) for f in _filters(plan)):
+        plan["comparison"] = "scientific"
     plan.pop("limit", None)
     plan.pop("order_by", None)
     return plan, roles
@@ -325,8 +327,6 @@ def typed(v: Any) -> tuple[dict | None, str | None]:
     if not isinstance(v, dict) or "status" not in v:
         return None, "not_a_value"
     st = v.get("status")
-    if v.get("origin") == "predicted":
-        return None, "prediction_not_observation"
     if st not in NUMBERED:
         if st == "not_reported":
             return None, f"not_reported:{v.get('missing_reason') or 'unstated'}"
@@ -462,7 +462,9 @@ class _Reader:
         ctx = {}
         for k, x in sorted((tag.get("context") or {}).items()):
             ctx[k] = (self.classes.get((alias, x)) or f"{alias}::{x}") if isinstance(x, str) and x in g.nodes else x
-        return {"kind": tag["kind"], "context": ctx, "contract": self.contract(tag["kind"])}, None
+        extra = {k: tag[k] for k in ("shows", "converted", "denominator") if tag.get(k)}
+        return {"kind": tag["kind"], "context": ctx, "contract": self.contract(tag["kind"]),
+                **({"compared": extra} if extra else {})}, None
 
     def contract(self, kind: str) -> str | None:
         """The quantity contract of ``kind`` under this graph's schema (the kind and the contexts it compares by), as a
@@ -496,6 +498,7 @@ def plot_data(members: list[dict], spec: Any, identity_map: dict | None = None) 
     readers: dict[str, _Reader] = {}
     points: dict[tuple, dict] = {}
     left: dict[tuple, dict] = {}
+    unpaired: dict[tuple, dict] = {}
     for r in res["rows"]:
         alias = r["graph"]
         m = by_alias[alias]
@@ -515,13 +518,14 @@ def plot_data(members: list[dict], spec: Any, identity_map: dict | None = None) 
                 raw = r["bound"].get(path)          # a record (a catalyst, a sample, a source) on a category axis
                 rid, entry = (raw, "") if isinstance(raw, str) else (None, "")
                 val = _name(g, raw) if isinstance(raw, str) else None
-                form, why = ({"type": "category", "value": val}, None) if val else (None, "not_linked")
+                form, why = ({"type": "category", "value": val, "id": f"{alias}::{raw}"}, None) if val else \
+                    (None, "not_linked")
             else:
                 raw = r["values"].get(path)
                 form, why = typed(raw)
                 if form is not None and form["type"] in ("value", "bound", "range"):
                     one = raw[0] if isinstance(raw, list) else raw
-                    owner = g.nodes.get(rid) or {}
+                    owner = g.records.get(rid) or {}
                     prop = entry.strip("/").split("/")[0] if entry else pgraph_query.parse_path(path.partition(".")[2])[0]
                     tag, why = rd.read(owner, prop, one)
                     if why:
@@ -529,8 +533,8 @@ def plot_data(members: list[dict], spec: Any, identity_map: dict | None = None) 
                     else:
                         form.update(tag)
             if form is not None and spec["population"] == "observations":
-                why = next((w for w in (_not_observed(g, x) for x in dict.fromkeys(
-                    [counted, rid]) if x) if w), None)
+                why = "prediction_not_observation" if form.get("origin") == "predicted" else \
+                    next((w for w in (_not_observed(g, x) for x in dict.fromkeys([counted, rid]) if x) if w), None)
                 if why:
                     form = None
             if form is None:                       # one item per point left out: its y's record and entry, the axis
@@ -547,14 +551,15 @@ def plot_data(members: list[dict], spec: Any, identity_map: dict | None = None) 
             continue
         (fx, xrid, xent), (fy, yrid, yent) = axes["x"], axes["y"]
         if fy["type"] == "count":                    # a record counts once per x value, whatever links led there
-            key = (order[alias], yrid or "", "", dump_canonical({k: fx.get(k) for k in BUCKET_KEYS}), "")
+            key = (order[alias], yrid or "", "", dump_canonical({**{k: fx.get(k) for k in BUCKET_KEYS},
+                                                                 **_typing(fx)}), "")
         else:
             if xent and yent and xrid == yrid and xent != yent:   # two entries of one record: one result's pair only
                 px, py = fx.get("produced_by"), fy.get("produced_by")
                 if not (px and py and px == py):
-                    left.setdefault((alias, yrid or "", yent, "x", "unpaired_entries"), {
+                    unpaired.setdefault((alias, yrid or "", yent, "x", "unpaired_entries"), {
                         "graph": alias, "record": yrid, "entry": yent, "axis": "x", "reason": "unpaired_entries",
-                        "axis_record": xrid, "x_entry": xent})
+                        "axis_record": xrid})
                     continue
             key = (order[alias], counted or "", yrid or "", yent, xrid or "", xent)
         pt = points.get(key)
@@ -580,6 +585,8 @@ def plot_data(members: list[dict], spec: Any, identity_map: dict | None = None) 
                     item = {"axis": k, **{f: e[f] for f in sorted(e) if f not in ("quote", "note", "var", "evidence")},
                             "source_name": _name(g, e.get("source"))}
                     pt["_ev"][json.dumps(item, sort_keys=True, default=str)] = item
+    plotted = {(p["graph"], p["record"] or "", p["entry"] or "") for p in points.values()}
+    left.update({k: v for k, v in unpaired.items() if (k[0], k[1], k[2]) not in plotted})
     panels = _panels(list(points.values()), spec, roles, by_alias)
     left_items = [left[k] for k in sorted(left, key=lambda k: (order[k[0]], k[1], k[2], k[3], str(k[4])))]
     by_reason: dict[str, int] = {}
@@ -642,8 +649,8 @@ def _ctx_text(by_alias: dict, ctx: dict) -> dict:
 def _typing(form: dict) -> dict:
     t = form["type"]
     if t in ("value", "bound", "range"):
-        out = {"type": "quantity", "unit": form.get("unit"), "kind": form.get("kind"), "context": form.get("context") or {},
-               "contract": form.get("contract") or "none"}
+        out = {"type": "quantity", "unit": form.get("unit"), "kind": form.get("kind"),
+               "context": form.get("context") or {}, "contract": form.get("contract") or "none"}
         if out["contract"] == "none":            # no contract reads it: what it states of its basis keeps it apart
             out.update({k: form[k] for k in ("basis", "definition") if form.get(k)})
         return out
@@ -665,6 +672,7 @@ def _panels(points: list[dict], spec: dict, roles: dict, by_alias: dict) -> list
     out = []
     for i, key in enumerate(sorted(panels, key=lambda k: (-len(panels[k]["points"]), k))):
         p = panels[key]
+        _distinct_names(p["points"])
         pts = sorted(p["points"], key=lambda q: (q["graph"], q["record"] or "", q["entry"] or "", q.get("x_record") or "",
                                                  q.get("x_entry") or "", q["series"] or "", q["facet"] or ""))
         axes = {}
@@ -701,11 +709,30 @@ def _panels(points: list[dict], spec: dict, roles: dict, by_alias: dict) -> list
     return out
 
 
+def _distinct_names(pts: list[dict]) -> None:
+    """Two records of one name on a category axis are two categories: each name that several records share takes the
+    end of its record's id (``Cu foil [sample/1]``), so that no count or box pools them."""
+    for k in ("x", "y"):
+        ids: dict[str, set] = {}
+        for q in pts:
+            if q[k].get("type") == "category" and q[k].get("id"):
+                ids.setdefault(str(q[k]["value"]), set()).add(q[k]["id"])
+        for q in pts:
+            v = q[k]
+            if v.get("type") == "category" and v.get("id") and len(ids.get(str(v["value"]), ())) > 1:
+                q[k] = {**v, "value": f"{v['value']} [{v['id'].split('::', 1)[-1].rsplit('/', 2)[-2:][0]}/"
+                                      f"{v['id'].rsplit('/', 1)[-1]}]"}
+
+
+def _group_key(q: dict) -> tuple:
+    return (q["series"] or "", q["facet"] or "")
+
+
 def _buckets(pts: list[dict], xtype: str) -> dict:
     """What a count shows, counted here so that an agent reads the same numbers as the chart: per x value (a category
-    or a bare number such as a year; a quantity's values are binned by the page, its bounds and ranges never), the
-    records, the distinct sources that state them and the graphs; and how many records count under more than one x
-    value (a test with two samples counts once under each)."""
+    or a bare number such as a year), series and facet, the records, the distinct sources that state them and the
+    graphs; for a quantity, a histogram per series and facet on shared bin edges; and how many records count under more
+    than one x value (a test with two samples counts once under each)."""
     out: dict[str, Any] = {}
     seen: dict[tuple, int] = {}
     for q in pts:
@@ -741,20 +768,24 @@ def _nice(step: float) -> float:
 def _histogram(pts: list[dict], bins: int = 20) -> dict:
     """A histogram of the x values (each a reported value; bounds and ranges are never binned, counted apart), its bin
     edges chosen here so that the chart, the CSV and an agent read the same counts: about ``bins`` bins of a width of
-    1, 2 or 5 times a power of ten, each [lo, hi) (the last closed), counting the distinct records in it."""
-    vals = [(q["x"]["value"], (q["graph"], q["record"])) for q in pts if q["x"]["type"] in ("value", "number")]
+    1, 2 or 5 times a power of ten, each [lo, hi) (the last closed), shared by every series and facet, each bin counting
+    the distinct records of its series and facet in it."""
+    vals = [q for q in pts if q["x"]["type"] in ("value", "number")]
     if not vals:
         return {"bins": [], "values": 0, "not_binned": len(pts), "note": "no reported values to bin"}
-    lo_v, hi_v = min(v for v, _ in vals), max(v for v, _ in vals)
+    lo_v, hi_v = min(q["x"]["value"] for q in vals), max(q["x"]["value"] for q in vals)
     width = _nice((hi_v - lo_v) / bins) if hi_v > lo_v else _nice(abs(lo_v) / 10 or 1)
     start = math.floor(lo_v / width) * width
     n = max(1, math.floor((hi_v - start) / width) + 1)
-    recs: list[set] = [set() for _ in range(n)]
-    for v, rid in vals:
-        recs[min(n - 1, int((v - start) // width))].add(rid)
-    return {"bins": [{"lo": round(start + i * width, 12), "hi": round(start + (i + 1) * width, 12), "records": len(r)}
-                     for i, r in enumerate(recs)],
+    recs: dict[tuple, list[set]] = {}
+    for q in vals:
+        i = min(n - 1, int((q["x"]["value"] - start) // width))
+        recs.setdefault(_group_key(q), [set() for _ in range(n)])[i].add((q["graph"], q["record"]))
+    return {"bins": [{"lo": round(start + i * width, 12), "hi": round(start + (i + 1) * width, 12), "records": len(r[i]),
+                      "series": ser or None, "facet": fac or None}
+                     for (ser, fac), r in sorted(recs.items()) for i in range(n)],
             "width": width, "values": len(vals), "not_binned": len(pts) - len(vals),
+            "records_binned": len({(q["graph"], q["record"]) for q in vals}),
             "note": "each bin [lo, hi) counts the distinct records with a value in it; bounds and ranges are not binned "
                     "(not_binned)"}
 
@@ -767,11 +798,12 @@ def _quantile(xs: list[float], q: float) -> float:
 
 
 def _boxes(pts: list[dict]) -> list[dict]:
-    """Box statistics per category (and series) of the reported values: n, min, quartiles (linear interpolation),
-    median, max; bounds and ranges are not in a box (n_bounds, n_ranges say how many were drawn apart)."""
+    """Box statistics per category, series and facet of the reported values: n, min, quartiles (linear
+    interpolation), median, max; bounds and ranges are not in a box (n_bounds, n_ranges say how many were drawn
+    apart)."""
     groups: dict[tuple, dict] = {}
     for q in pts:
-        g = groups.setdefault((dump_canonical(q["x"].get("value")), q["series"] or ""),
+        g = groups.setdefault((dump_canonical(q["x"].get("value")), *_group_key(q)),
                               {"x": q["x"].get("value"), "vals": [], "bounds": 0, "ranges": 0, "sources": set()})
         t = q["y"]["type"]
         if t == "value":
@@ -780,10 +812,11 @@ def _boxes(pts: list[dict]) -> list[dict]:
             g["bounds" if t == "bound" else "ranges"] += 1
         g["sources"].update(e["source"] for e in q["evidence"] if e.get("source") and e["axis"] == "y")
     out = []
-    for (x, ser), g in sorted(groups.items()):
+    for (_, ser, fac), g in sorted(groups.items()):
         v = sorted(g["vals"])
-        box = {"x": g["x"], "series": ser or None, "n": len(v), "n_bounds": g["bounds"], "n_ranges": g["ranges"],
-               "sources": len(g["sources"])}
+        box = {"x": g["x"], "series": ser or None, "facet": fac or None, "n": len(v), "n_bounds": g["bounds"],
+               "n_ranges": g["ranges"], "sources": len(g["sources"]),
+               "method": "quartiles by linear interpolation; whiskers from the minimum to the maximum value"}
         if v:
             box.update(min=v[0], q1=_quantile(v, 0.25), median=_quantile(v, 0.5), q3=_quantile(v, 0.75), max=v[-1])
         out.append(box)
@@ -838,10 +871,13 @@ def model_view(result: dict, offset: int = 0, page_size: int = 50) -> dict:
     flat = [(p["id"], q) for p in result.get("panels") or [] for q in p["points"]]
     page = flat[offset:offset + page_size]
     return {"title": result.get("title"), "status": result.get("status"), "counts": result.get("counts"),
-            "panels": [{k: p[k] for k in ("id", "title", "x", "y", "series", "facets", "counts")}
+            "panels": [{k: p[k] for k in ("id", "title", "x", "y", "series", "facets", "counts", "buckets", "histogram",
+                                          "boxes", "counted") if k in p}
                        for p in result.get("panels") or []],
-            "points": [{"panel": pid, **{k: q[k] for k in ("id", "name", "x", "y", "series", "facet") if q.get(k) is not None},
-                        "locators": sorted({e.get("locator") for e in q["evidence"] if e.get("locator")})}
+            "points": [{"panel": pid, **{k: q[k] for k in ("id", "record", "entry", "x_record", "name", "x", "y", "series",
+                                                           "facet") if q.get(k) is not None},
+                        "evidence": sorted({(e.get("record"), e.get("source"), e.get("locator")) for e in q["evidence"]},
+                                           key=str)}
                        for pid, q in page],
             "page": {"offset": offset, "returned": len(page), "total": len(flat),
                      "truncated": offset + len(page) < len(flat),
@@ -864,7 +900,7 @@ def _role(spec: dict, record: dict, prop: str) -> str | None:
 def _usable(rd: _Reader, node: dict, prop: str, v: Any) -> str | None:
     """The panel a value would be plotted in (its unit, kind and contexts), or None when the chart would leave it out."""
     form, why = typed(v)
-    if form is None or form["type"] not in ("value", "bound", "range"):
+    if form is None or form["type"] not in ("value", "bound", "range") or form.get("origin") == "predicted":
         return None
     tag, why = rd.read(node, prop, v)
     if why:
@@ -1097,6 +1133,12 @@ def table_data(text: str, spec: Any, sha256: str | None = None, cited: list[dict
     ix = {h: i for i, h in enumerate(head)}
     units = {h: column_unit(h)[1] for h in head}
     points, left, typings = [], {}, {}
+    numeric = {}
+    for col in {spec["x"], spec["y"]}:
+        cells = [_cell(r[ix[col]] if ix[col] < len(r) else "", units[col])[0] for r in rows]
+        kinds = [c["type"] for c in cells if c]
+        numeric[col] = sum(k != "category" for k in kinds) >= max(1, sum(k == "category" for k in kinds))
+    bad_rows: dict[str, list[int]] = {}
     for n, row in enumerate(rows, 1):              # a row keeps its number in the file (blank rows count, unplotted)
         if not any(c.strip() for c in row):
             continue
@@ -1105,6 +1147,9 @@ def table_data(text: str, spec: Any, sha256: str | None = None, cited: list[dict
             col = spec[k]
             raw = row[ix[col]] if ix[col] < len(row) else ""
             form, why = _cell(raw, units[col])
+            if form is not None and form["type"] == "category" and numeric[col]:
+                form, why = None, "not_a_number"
+                bad_rows.setdefault(f"{k}:{col}", []).append(n)
             if form is None:
                 left[f"{k}:{why}"] = left.get(f"{k}:{why}", 0) + 1
                 cells = None
@@ -1139,7 +1184,8 @@ def table_data(text: str, spec: Any, sha256: str | None = None, cited: list[dict
                                                                       "columns": head, "units": units},
             "digest_check": check, "panels": panels,
             "counts": {"rows": len(rows), "points": len(points), "panels": len(panels), "left_out": sum(left.values())},
-            "left_out": {"by_reason": dict(sorted(left.items()))},
+            "left_out": {"by_reason": dict(sorted(left.items())),
+                         "not_a_number_rows": {k: v[:50] for k, v in sorted(bad_rows.items())}},
             "cited": {"rows": sorted(marks), "shown": check == "verified",
                       "note": "rows the graph's records cite are marked only when the file is the one the graph records "
                               "(its sha256); a locator's row is tentative, a dataset_cell firm"},
