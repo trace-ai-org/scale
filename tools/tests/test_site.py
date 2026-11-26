@@ -344,7 +344,7 @@ def test_a_readers_own_key_curates_a_pdf_in_the_browser_with_the_services_tools(
     # its label (personal, in the site's green); without the service it says it is to come
     rows = js[js.index("function renderGraphs("):js.index("function details(")]
     assert "contribButton()" in rows and 'class="gx-graph-actions"' in rows
-    assert '"own-key": ["personal", "var(--green)"]' in js
+    assert '(level === "personal" ? contribButton() : "")' in rows
     # without the service, Contribute downloads the graph with every quote withheld and opens GitHub's upload page for
     # catal-commons/incoming/, where the reader proposes it under their own login; the repository's intake folds it in
     gh = js[js.index("async function contributeOnGitHub("):js.index("async function contribute(")]
@@ -365,10 +365,10 @@ def test_a_readers_own_key_curates_a_pdf_in_the_browser_with_the_services_tools(
     assert "/compare/main...${encodeURIComponent(me.login)}:${encodeURIComponent(branch)}?expand=1" in tok
     assert "win.location = compare" in tok and 'gh("POST", `/repos/${REPO}/pulls`' not in tok and "watchForPullRequest(" in tok
     assert "e.origin !== from" in js and "e.data.nonce !== nonce" in js
-    assert "curated-download" not in js and "contrib-box" not in js and '["Visibility", mine ? "Private"' in js
+    assert "curated-download" not in js and "contrib-box" not in js and '["Visibility", `<span title="${esc(tip)}">${esc(label)}</span>' in js
     # once a pull request to catal-commons exists, the label reads catal-commons and links it; the by-hand route
     # changes nothing, since only GitHub knows whether the file was uploaded
-    assert ">catal-commons</a>" in rows and "sentToCommons()" in rows
+    assert ">Catal-Commons</a>" in rows and "sentToCommons()" in rows
     gh = js[js.index("async function contributeOnGitHub("):js.index("// With a GitHub sign-in")]
     assert "contributed(" not in gh and "download(file" in gh
     # a curated graph gets a concise title: the model's (done's title), else its source's, else the PDF's name
@@ -534,7 +534,7 @@ def test_add_a_source_is_one_dialog_for_any_source_and_keeps_the_work(tmp_path):
         assert x in add, x
     assert 'r.status === "dry_run"' in add and "write: false" in add and "write: true" in add and "o.sheet = r.sheet" in add
     # a new private graph's access is project unless the reader chooses; public is never the default
-    assert 'v === "project" ? " selected"' in add and "prefs.access" not in add and "savePrefs({ project, contributor })" in add
+    assert 'v === "institution" ? " selected"' in add and "prefs.access" not in add and "savePrefs({ project, contributor })" in add
     # do not lose work: a working copy in IndexedDB (every call in try/catch), an Unsaved badge, beforeunload, a
     # Download prompt after every add, one zip; the page says that browser storage can be cleared
     assert "indexedDB.open" in add and add.count("} catch { return") >= 3 and '"beforeunload"' in add
@@ -635,3 +635,53 @@ def test_analyze_is_the_toolbar_twin_of_add_a_source():
     # closing returns focus to it; at phone width both buttons are icons
     assert '$("analyze-close").onclick = () => { openAnalyze(false); $("analyze-open").focus(); };' in js
     assert ".gx-curate-open span" in css and '.gx-curate-open[aria-disabled="true"]' in css
+
+
+def test_each_graph_has_one_level_from_one_table_decided_by_what_its_document_says(tmp_path):
+    js = (REPO / "site/explorer.js").read_text()
+    css = (REPO / "site/explorer.css").read_text()
+    table = js[js.index("const LEVELS = {"):js.index("const levelCache")]
+    # five levels, each with its label, colour and one-line definition; "curated" is no level
+    labels = re.findall(r'label: "([^"]+)"', table)
+    assert labels == ["Catal-Commons", "Example", "Personal", "Team", "Private"] and table.count("tip: ") == 5
+    assert len(set(re.findall(r'colour: "([^"]+)"', table))) == 5 and '"curated"' not in js and "SCOPE" not in js
+    # the shared graph and the shipped examples by where they come from; any other by its document, as the egress gate
+    # reads it (closedLevels): none closed Personal, institution Private, else Team; unknown is the strictest
+    lk = js[js.index("function levelKey("):js.index("const synthetic")]
+    assert 'return "commons"' in lk and 'return "example"' in lk and "closedLevels(doc)" in lk
+    assert '!closed.length ? "personal" : closed.includes("institution") ? "private" : "team"' in lk and 'if (!doc) return "private"' in lk
+    # one casing: as the table writes it, never upper-cased; every badge carries its definition; Unsaved stays apart
+    assert "text-transform: uppercase" not in css[css.index(".gx-graph-scope {"):css.index(".gx-graph-detail")]
+    assert 'title="${esc(tip)}">${esc(label)}</span>' in js and "gx-badge-unsaved" in js and "${levelBadge(e)}" in js
+    # Contribute only on a Personal graph; a synthetic example says so in its tooltip; the picker names the level
+    assert '(level === "personal" ? contribButton() : "")' in js and "synthetic: made up to show the format" in js
+    add = (REPO / "site/addsource.js").read_text()
+    assert "env.levelLabel(l.entry)" in add and '["institution", "Private: your lab only (access institution)"]' in add
+    node = shutil.which("node")
+    if not node:
+        pytest.skip("node is not installed")
+    # the rule, run on documents of each access: the explorer's own functions, with the egress module's closedLevels,
+    # each document given as the one a reader opened from a file
+    src = js[js.index("const LEVELS = {"):js.index("const levelBadge")]
+    mod = tmp_path / "levels.mjs"
+    mod.write_text(f"import {{ closedLevels }} from {json.dumps((REPO / 'site/egress.js').as_uri())};\n"
+                   "let own = null; const G = null, labOf = () => null; export function setOwn(o) { own = o; }\n"
+                   + src + "\nexport { levelOf };\n")
+    st = lambda **k: {"graph": {"stewardship": k} if k else {}, "nodes": [], "links": []}   # noqa: E731
+    docs = {"public": st(access="public"), "project": st(access="project"), "consortium": st(access="consortium"),
+            "institution": st(access="institution"), "none": st(),
+            "embargoed": st(access="embargoed", embargo_until="2999-01-01", access_after_embargo="public"),
+            "mixed": {**st(access="public"), "nodes": [{"id": "x", "label": "Sample", "props": {"stewardship": {"access": "project"}}}]}}
+    script = (f"import * as M from {json.dumps(mod.as_uri())};\n"
+              f"const docs = {json.dumps(docs)}, out = {{}};\n"
+              "for (const [k, d] of Object.entries(docs)) { const e = { id: k, from: '' }; M.setOwn({ entry: e, doc: d }); out[k] = M.levelOf(e)[3]; }\n"
+              "out.commons = M.levelOf({ id: 'catal-commons', from: 'graphs/catal-commons' })[3];\n"
+              "out.example = M.levelOf({ id: 'm', from: 'graphs/methanol' })[3];\n"
+              "out.synth = M.levelOf({ id: 's', from: 'domain/x', data_status: 'synthetic_example' })[2];\n"
+              "console.log(JSON.stringify(out));")
+    run = subprocess.run([node, "--input-type=module", "-e", script], capture_output=True, text=True, timeout=60)
+    assert run.returncode == 0, run.stderr
+    out = json.loads(run.stdout)
+    assert {k: out[k] for k in docs} == {"public": "personal", "project": "team", "consortium": "team", "institution": "private",
+                                         "embargoed": "private", "none": "private", "mixed": "team"}
+    assert out["commons"] == "commons" and out["example"] == "example" and "synthetic" in out["synth"]

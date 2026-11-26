@@ -87,8 +87,20 @@ middle of a batch keeps what was added and names the files that were not.
 | a DOI | says that a page cannot fetch a paper by its DOI and gives the command that does (`scale add-source DOI --into graph.json`) |
 | a graph (`.json`), a bundle (`.zip`) | opens it, as **Open a graph or bundle** does; a graph can instead be merged into a private graph (`--merge`: refused on a conflict or another schema version) |
 
-A new private graph is made by `scale data new` with the project, your lab and who may read it (access `project`
-unless you choose: never public by default). **Private**: everything runs in the browser and nothing is uploaded; a
+A new private graph is made by `scale data new` with the project, your lab and who may read it (access `institution`,
+your lab only, unless you choose: never public by default). Each graph in the explorer's list carries one level, the
+same badge, colour and definition everywhere (the list, its details, the Into picker):
+
+| level | what it is |
+|---|---|
+| Catal-Commons | the shared catal-commons graph (`graphs/catal-commons`) |
+| Example | a public example graph the site ships (the other `graphs/`, `examples/`, the domain's synthetic fixtures, which say so) |
+| Personal | a public-access graph in this browser only: a paper you curated, a public graph you opened; you can contribute it |
+| Team | not public, shared beyond your lab: access `project` or `consortium` |
+| Private | not public, your lab only: access `institution` or `embargoed` |
+
+A private graph's or an opened file's level is read from its document (the strictest access of its header and records,
+as the egress gate reads it), never from where it came from; **Unsaved** is a state shown beside the level, not a level. **Private**: everything runs in the browser and nothing is uploaded; a
 private graph is never contributed (it has no Contribute button); a model reads something only with your own key and
 after the egress gate's approval ([private-data.md](private-data.md#egress-what-a-model-may-receive)). The optional
 model help for a table's columns not read is off until you click it, and sends only those columns' headers and three

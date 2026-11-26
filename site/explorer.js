@@ -55,8 +55,45 @@ const status = (t) => { $("status").textContent = t; };
 const ready = () => "Search, queries and answers run in this browser.";
 
 // ------------------------------------------------------------------------------------------ the graphs rail
-const SCOPE = { lab: ["private", "var(--green)"], "own-key": ["personal", "var(--green)"], service: ["personal", "var(--green)"], graphs: ["curated", "var(--green)"], examples: ["example", "var(--blue)"], domain: ["synthetic", "var(--violet)"] };
-const scopeOf = (e) => SCOPE[(e.from || "").split("/")[0]] || ["file", "var(--subtle)"];
+// A graph's level: one table, one label, one colour and one definition each, wherever a level is shown (the rail's
+// badge and its tooltip, the details' Visibility, the Add a source picker; docs/data.md). The shared graph and the
+// examples the site ships are known by where they come from; any other graph (a private graph of this page, a paper
+// curated here, a file opened) by what its document says: the strictest access of its header and records, read as the
+// egress gate reads it (closedLevels): none closed is Personal, institution (or an embargo) Private, else Team.
+const LEVELS = {
+  commons: { label: "Catal-Commons", colour: "var(--green)", tip: "Catal-Commons: the shared catal-commons graph, public, each source reviewed before it joined" },
+  example: { label: "Example", colour: "var(--blue)", tip: "Example: a public example graph this site ships" },
+  personal: { label: "Personal", colour: "var(--violet)", tip: "Personal: a public-access graph in this browser only (a paper you curated, a public file you opened); you can contribute it" },
+  team: { label: "Team", colour: "#d97706", tip: "Team: not public; shared beyond your lab, with your project or consortium (access project or consortium)" },
+  private: { label: "Private", colour: "#e0457b", tip: "Private: not public; your lab only (access institution or embargoed)" },
+};
+const levelCache = new WeakMap();
+function docOf(e) {
+  const L = labOf(e);
+  if (L) return L.doc;
+  if (own && own.entry === e) { try { return own.doc || (own.doc = JSON.parse(own.text)); } catch { return null; } }
+  const B = G && (G.base || G);
+  return B && B.entry === e ? B.doc : null;
+}
+function levelKey(e) {
+  const from = e.from || "";
+  if (e.id === "catal-commons" || from === "graphs/catal-commons") return "commons";
+  if (/^(graphs|examples|domain)(\/|$)/.test(from)) return "example";
+  const doc = docOf(e);
+  if (!doc) return "private";                     // unknown: the strictest, as the gate fails closed
+  if (!levelCache.has(doc)) {
+    const closed = closedLevels(doc);
+    levelCache.set(doc, !closed.length ? "personal" : closed.includes("institution") ? "private" : "team");
+  }
+  return levelCache.get(doc);
+}
+const synthetic = (e) => e.data_status === "synthetic_example" || /^domain(\/|$)/.test(e.from || "");
+// [label, colour, tooltip, key] of a graph's level; a synthetic example says so in its tooltip
+function levelOf(e) {
+  const k = levelKey(e), L = LEVELS[k];
+  return [L.label, L.colour, L.tip + (k === "example" && synthetic(e) ? " (synthetic: made up to show the format, not evidence about the world)" : ""), k];
+}
+const levelBadge = (e) => { const [label, , tip] = levelOf(e); return `<span class="gx-graph-scope" title="${esc(tip)}">${esc(label)}</span>`; };
 const CARET = `<svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6 L15 12 L9 18"/></svg>`;
 
 // ------------------------------------------------------------------------------------------ curating a source
@@ -918,7 +955,7 @@ function renderUnsaved() {
   $("unsaved").hidden = !n.length;
   if (!n.length) return;
   const keptAll = n.every((l) => l.kept);
-  $("unsaved").innerHTML = `<b>${n.length} private ${n.length === 1 ? "graph is" : "graphs are"} not downloaded.</b>
+  $("unsaved").innerHTML = `<b>${n.length} ${n.length === 1 ? "graph" : "graphs"} made here ${n.length === 1 ? "is" : "are"} not downloaded (Unsaved).</b>
     ${keptAll ? "This browser keeps a working copy, which it can clear." : "This browser could not keep a copy: closing the tab loses it."}
     The download is the durable copy. ${n.map((l) => `<button type="button" class="gx-btn gx-btn-tiny" data-download="${esc(l.id)}">Download ${esc(trunc(l.entry.title, 28))}</button>`).join(" ")}`;
   $("unsaved").querySelectorAll("[data-download]").forEach((b) => (b.onclick = () => addUI.download(b.dataset.download)));
@@ -927,14 +964,16 @@ function renderGraphs() {
   renderUnsaved();
   const list = allEntries();
   $("graphs").innerHTML = list.map((e) => {
-    const [scope, c] = scopeOf(e), active = G && G.entry === e, open = active && !folded;
+    const [, c, , level] = levelOf(e), active = G && G.entry === e, open = active && !folded;
     const mineRow = own && e === own.entry, sent = mineRow && sentToCommons(), L = labOf(e);
+    // a private graph: its download, its Unsaved state beside its level (never instead of it); a personal graph: its
+    // Contribute, or the catal-commons link once sent
     const action = L ? `<button type="button" class="gx-icon-btn gx-lab-dl" data-download="${esc(L.id)}" title="Download (one zip: the graph, its mappings, its sources and a manifest)" aria-label="Download ${esc(e.title)}">${DOWNLOAD_ICON}</button>${L.saved
-      ? `<span class="gx-graph-scope">${scope}</span>` : `<span class="gx-badge-unsaved" title="Not downloaded: download it to keep it">Unsaved</span>`}` : mineRow ? (sent ? `<a class="gx-graph-scope gx-graph-sent" href="${esc(own.prUrl)}" target="_blank" rel="noopener"
-        title="Contributed to catal-commons: its pull request, for a person to review">catal-commons</a>` : contribButton() + `<span class="gx-graph-scope">${scope}</span>`) : "";
+      ? "" : `<span class="gx-badge-unsaved" title="Unsaved: not downloaded yet; download it to keep it">Unsaved</span>`}${levelBadge(e)}` : mineRow ? (sent ? `<a class="gx-graph-scope gx-graph-sent" href="${esc(own.prUrl)}" target="_blank" rel="noopener"
+        title="Contributed to catal-commons: its pull request, for a person to review">Catal-Commons</a>` : (level === "personal" ? contribButton() : "") + levelBadge(e)) : "";
     return `<div role="listitem" class="gx-graph-row${action ? " has-action" : ""}" style="--dot:${c}"><button class="gx-graph-item${active ? " is-active" : ""}" type="button" data-id="${esc(e.id)}" title="${esc(e.title)}"
         aria-expanded="${open}"><span class="gx-graph-caret">${CARET}</span><span class="gx-graph-dot"></span>
-        <span class="gx-graph-title">${esc(e.title)}</span>${action ? "" : `<span class="gx-graph-scope">${scope}</span>`}</button>`
+        <span class="gx-graph-title">${esc(e.title)}</span>${action ? "" : levelBadge(e)}</button>`
       + (action ? `<span class="gx-graph-actions">${action}</span>` : "")
       + `${open ? details() : ""}</div>`;
   }).join("") || `<p class="gx-muted">No graphs are listed: open a file.</p>`;
@@ -963,14 +1002,14 @@ function renderGraphs() {
 }
 function details() {
   const B = G.base || G;                          // in the schema view, the facts are still the graph's
-  const g = B.doc.graph || {}, e = B.entry, [scope] = scopeOf(e), mine = e.from === "service" || e.from === "own-key", L = labOf(e);
+  const g = B.doc.graph || {}, e = B.entry, [label, , tip, level] = levelOf(e), L = labOf(e);
+  const access = (g.stewardship || {}).access || (level === "personal" || level === "commons" || level === "example" ? "public" : "institution");
   const facts = [
-    ["Type", `<a href="#" id="graph-show" title="Show the graph on the canvas">Knowledge graph</a>${G.base ? "" : ` <span class="gx-subtle">(shown)</span>`}${scope === "synthetic" ? ` <span class="gx-warn">synthetic example</span>` : ""}`],
+    ["Type", `<a href="#" id="graph-show" title="Show the graph on the canvas">Knowledge graph</a>${G.base ? "" : ` <span class="gx-subtle">(shown)</span>`}${synthetic(e) ? ` <span class="gx-warn" title="made up to show the format, not evidence about the world">synthetic example</span>` : ""}`],
     ["Size", `${B.doc.nodes.length.toLocaleString()} nodes · ${B.doc.links.length.toLocaleString()} rels · ${B.props.toLocaleString()} props`],
     g.version ? ["Release", esc(g.version)] : null,
-    L ? ["Visibility", `Private · access ${esc((g.stewardship || {}).access || "project")} <span class="gx-subtle">(never contributed)</span>`] : null,
+    ["Visibility", `<span title="${esc(tip)}">${esc(label)}</span> · access ${esc(access)}${L ? ` <span class="gx-subtle">(never contributed)</span>` : ""}`],
     L ? ["Saved", L.saved ? `Download started${L.savedAt ? ` ${esc(new Date(L.savedAt).toLocaleString())}` : ""} <span class="gx-subtle">(keep the zip)</span>` : `<span class="gx-warn">Not downloaded</span>${L.kept ? " · a working copy in this browser" : " · this tab only"}`] : null,
-    L ? null : ["Visibility", mine ? "Private" : esc(((g.stewardship || {}).access || "public").replace(/^./, (c) => c.toUpperCase()))],
     g.created || g.date ? ["Created", esc(g.created || g.date)] : null,
     e.windowed ? null : ["Checksum", B.sha ? `<span class="gx-sha" title="sha256 ${esc(B.sha)}">${esc(B.sha.slice(0, 12))}…</span>` : "…"],
     ...windowRows(e),
@@ -3016,6 +3055,7 @@ const addUI = addSource({ $, esc, rpc, status, download,
   openGraphFile: (f) => openGraphFile(f),
   modelHelp: (cols, roles, doc) => modelHelp(cols, roles, doc),
   key: () => (ownKey ? `${providerName()} (${modelLabel()})` : ""),
+  levelLabel: (e) => levelOf(e)[0],
   openKeyMenu: () => openOwnKeyMenu(),
   paper: () => paper,
 });

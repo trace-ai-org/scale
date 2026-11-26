@@ -141,7 +141,7 @@ browser can clear.
   sources/          the files added (a publication's curated graph, never its PDF)
   work/mappings/    the mapping each table was read with
 
-Access: ${man.graph?.access || "project"}. It is private: the page never contributes it.
+Access: ${man.graph?.access || "institution"}. The page never contributes it.
 
 To rebuild graph.json with the command line (${man.tool}), in an empty folder outside the SCALE repository with
 sources/ copied into it:
@@ -559,7 +559,7 @@ export function addSource(env) {
     const mine = [...labs.values()];
     const last = mine.length ? mine[mine.length - 1].id : "";
     return `<fieldset class="gx-add-into"><legend>Into</legend>
-      <select id="add-into" aria-label="The private graph it goes into">${mine.map((l) => `<option value="${esc(l.id)}"${l.id === last ? " selected" : ""}>${esc(l.entry.title)}</option>`).join("")}
+      <select id="add-into" aria-label="The private graph it goes into">${mine.map((l) => `<option value="${esc(l.id)}"${l.id === last ? " selected" : ""}>${esc(l.entry.title)} (${esc(env.levelLabel(l.entry))})</option>`).join("")}
         <option value=""${mine.length ? "" : " selected"}>A new private graph</option></select>
       <div class="gx-add-new" id="add-new"${mine.length ? " hidden" : ""}>
         <label>Title <input type="text" id="add-title-in" value="${esc(defaultTitle)}"></label>
@@ -568,8 +568,8 @@ export function addSource(env) {
           <label>Your lab <input type="text" id="add-contributor" value="${esc(prefs.contributor || "lab:org/my-lab")}" title="Your institution's id with a prefix: lab:org/…"></label>
         </div>
         <label>Who may read it (access) <select id="add-access">
-          ${[["project", "project: the project's members"], ["institution", "institution: your lab only"], ["consortium", "consortium: the project's institutions"], ["public", "public: anyone (only for data you may publish)"]]
-            .map(([v, t]) => `<option value="${v}"${v === "project" ? " selected" : ""}>${t}</option>`).join("")}</select></label>
+          ${[["institution", "Private: your lab only (access institution)"], ["project", "Team: the project's members (access project)"], ["consortium", "Team: the project's institutions (access consortium)"], ["public", "Personal: anyone may read it (access public; only for data you may publish)"]]
+            .map(([v, t]) => `<option value="${v}"${v === "institution" ? " selected" : ""}>${t}</option>`).join("")}</select></label>
         <p class="gx-subtle">Who may read the graph once you share it; in this browser it is yours alone.</p>
       </div></fieldset>`;
   }
