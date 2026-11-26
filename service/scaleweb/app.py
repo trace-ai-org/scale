@@ -364,6 +364,14 @@ class Service:
     def _ask(self, path: Path, question: str):
         if not question.strip():
             return 400, {"error": "ask a question"}, {}
+        # egress, deny by default: a graph whose records are not public reaches no model unless the service's own
+        # policy (SCALE_WEB_EGRESS_POLICY) approves its endpoint for their levels; checked before any model is called
+        from scale.egress import EgressDenied, EgressGate, load_endpoints
+        gate = EgressGate(self.cfg.egress_endpoint, load_endpoints(self.cfg.egress_policy) if self.cfg.egress_policy else [])
+        try:
+            gate.check(load_doc(path), "the graph asked about")
+        except EgressDenied as e:
+            return 403, {"error": str(e), "egress": "denied"}, {}
         if self.cfg.ask == "claude-code":                  # answered on this computer by Claude Code (runner.answer)
             from . import runner
             if not self.asking.acquire(timeout=120):
@@ -373,7 +381,7 @@ class Service:
             finally:
                 self.asking.release()
         res = agent.answer(path, question, self.client_factory(), self.cfg.model, 30,
-                           min(200_000, self.budget.left()), repo=self.repo)
+                           min(200_000, self.budget.left()), repo=self.repo, egress=gate)
         self.budget.spend(res["tokens"])
         return 200, res, {}
 
