@@ -57,6 +57,8 @@ export function rowsOf(panel) {
       citedBy: (q.cited_by || [])[0]?.record || null, citedFirm: (q.cited_by || []).some((c) => c.firm),
       conditions: Object.entries(q.conditions || {}).filter(([k]) => k !== "source").map(([k, v]) => `${k}: ${v}`).join(" · "),
       source: (q.conditions || {}).source || "", assay: q.assay || "", target: q.target || "",
+      result: [q.y.phase && `phase ${q.y.phase}`, q.y.stream && `stream ${q.y.stream}`, q.y.origin && q.y.origin !== "reported" && `origin ${q.y.origin}`,
+        q.run_status && q.run_status !== "completed" && `run ${q.run_status}`, q.x_record && `x from ${q.x_record}${q.x_entry || ""}`].filter(Boolean).join(" · "),
       evidence: where.slice(0, 4).join(" | "),
     };
   });
@@ -100,10 +102,10 @@ function boxLayers(panel, color) {
     { field: "q3" }, { field: "max" }, { field: "n_bounds", title: "bounds (not in the box)" }, { field: "n_ranges", title: "ranges (not in the box)" }, { field: "sources" }];
   const Y = (f) => ({ field: f, type: "quantitative", title: panel.y.title, scale: { zero: false } });
   return [
-    { data: { values: rows }, mark: { type: "rule" }, encoding: { x: X, y: Y("min"), y2: { field: "max" }, tooltip: tip } },
+    { data: { values: rows }, mark: { type: "rule" }, encoding: { x: X, y: Y("min"), y2: { field: "max" }, ...(color.color ? { xOffset: { field: "series" } } : {}), tooltip: tip } },
     { data: { values: rows }, mark: { type: "bar", size: 18, opacity: 0.55 }, encoding: { x: X, y: Y("q1"), y2: { field: "q3" }, ...color,
       ...(color.color ? { xOffset: { field: "series" } } : {}), tooltip: tip } },
-    { data: { values: rows }, mark: { type: "tick", size: 18, thickness: 2, color: "#111" }, encoding: { x: X, y: Y("median"), tooltip: tip } },
+    { data: { values: rows }, mark: { type: "tick", size: 18, thickness: 2, color: "#111" }, encoding: { x: X, y: Y("median"), ...(color.color ? { xOffset: { field: "series" } } : {}), tooltip: tip } },
   ];
 }
 
@@ -123,7 +125,7 @@ export function vegaSpec(panel, opts = {}) {
   const color = series ? { color: { field: "series", type: "nominal", title: "Series", legend: { orient: "bottom", columns: 3, labelLimit: 220 } } } : {};
   const tooltip = [{ field: "name", title: "Record" }, { field: "ys", title: panel.y.label || "y" }, { field: "unc", title: "uncertainty" }, { field: "xs", title: panel.x.label || "x" },
     ...(series ? [{ field: "series", title: "Series" }] : []), { field: "target", title: "product" }, { field: "assay", title: "assay" },
-    { field: "conditions", title: "conditions" }, { field: "source", title: "source" }, { field: "evidence", title: "evidence" }, { field: "cited", title: "cited by" }];
+    { field: "result", title: "this result" }, { field: "conditions", title: "conditions" }, { field: "source", title: "source" }, { field: "evidence", title: "evidence" }, { field: "cited", title: "cited by" }];
   const layer = [
     // error bars: a value's reported uncertainty or confidence interval
     { transform: [{ filter: "datum.ylo !== null && datum.yhi !== null" }], mark: { type: "rule", strokeWidth: 1.2, opacity: 0.8 },
@@ -191,7 +193,10 @@ export function splitFacets(panel) {
   const facets = panel.facets || [];
   if (facets.length < 2 || !(panel.y.type === "count" || (panel.mark === "box" && panel.boxes))) return [panel];
   const of = (xs, f) => (xs || []).filter((b) => (b.facet || "") === f);
-  return facets.map((f) => ({ ...panel, title: `${panel.title} · ${f}`, facets: [f], points: of(panel.points, f),
+  const all = [...facets, ...((panel.points || []).some((q) => !q.facet) ? [""] : [])];
+  return all.map((f) => ({ ...panel, title: `${panel.title} · ${f || "(no facet value)"}`, facets: [f], points: of(panel.points, f),
+    counts: { ...panel.counts, points: of(panel.points, f).length },
+    ...(panel.counted ? { counted: { ...panel.counted, records: new Set(of(panel.points, f).map((q) => `${q.graph}::${q.record}`)).size } } : {}),
     ...(panel.buckets ? { buckets: of(panel.buckets, f) } : {}), ...(panel.boxes ? { boxes: of(panel.boxes, f) } : {}),
     ...(panel.histogram ? { histogram: { ...panel.histogram, bins: of(panel.histogram.bins, f) } } : {}) }));
 }

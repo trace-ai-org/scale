@@ -54,7 +54,10 @@ the axes' own left out), so that tests run differently are told apart.
 A **condition filter** (`filters`) names a target as an axis does (a path, a named link's path, or `{via, path}`; an
 empty path is the linked record, by its name) and keeps either the values listed (`values`) or a range (`min`, `max` in
 `unit`, with `context` when the quantity compares by one). A range compares as a scientific comparison does: only
-values in its unit, on a stated context; a value whose context is not stated is not kept. The filters are said in the
+values in its unit, on a stated context; a value whose context is not stated is not kept, and a range whose values lie
+on two contexts (potentials vs RHE and vs SHE) is refused until it states the one meant. A category keeps a record
+whose value, any item of its list (a test's driving forces) or linked record's name is listed. One path of links is
+bound once, whatever names it: a filter on the sample and an axis on the sample's BET area read the same sample. The filters are said in the
 chart's title, in `filters` and in every CSV line. `scale_plot_data` with `field: {label, target}` lists what a filter
 can keep: the text values present with their records, or each unit's range and how many of its values a comparison can
 compare (the others state no convention, no reference scale, ...).
@@ -79,8 +82,9 @@ scale only.
   potential's reference scale, a current density's normalization, a share's species, a pressure's convention). Two
   contexts, or two graphs whose schemas define the kind differently, are two panels. A context that is not stated, or
   stated two ways, and a unit the contracts cannot read as the kind's leave the value out (`missing_context`,
-  `incompatible_context`, `incompatible_unit`). A value no contract reads is grouped by its unit and stated basis
-  only, and its panel says its comparability is unknown.
+  `incompatible_context`, `incompatible_unit`). A value no contract reads is kept apart by its unit, its descriptor
+  (`variable`), its product and its stated basis, each named in its panel's title, and its panel says its
+  comparability is unknown.
 - **Bounds and ranges.** A one-sided value (`bound`, a detection limit, `lower` or `upper` alone) is an open triangle
   pointing the way the value lies; a range a line from one end to the other (a box when both axes are ranges). Neither
   is a number on the axis, binned in a histogram or put in a box. A reported uncertainty or confidence interval is an

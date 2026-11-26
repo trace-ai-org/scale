@@ -244,36 +244,53 @@ def load_spec(raw: Any) -> dict:
     return out
 
 
+# the named links as paths of edges: an axis, a filter and a group that name one path share one binding of it
+HOPS = {
+    "sample": ({"edge": "USES_CATALYST", "to": "CatalystSample"},),
+    "catalyst": ({"edge": "USES_CATALYST", "to": "CatalystSample"}, {"edge": "HAS_FORMULATION", "to": "Catalyst"}),
+    "source": ({"edge": "REPORTED_IN", "to": "Source"},),
+}
+
+
 class _Binder:
-    """Builds a shorthand spec's plan: the steps that bind each axis, filter and group to a variable of the plan."""
+    """Builds a shorthand spec's plan: the steps that bind each axis, filter and group to a variable of the plan. One
+    path of edges from the record is bound once, whatever names it (an axis, a filter, a group): a filter on the sample
+    and an axis on the sample's BET area read the same sample, never every pair of two."""
 
     def __init__(self, plan: dict):
         self.steps, self.have = plan["steps"], set()
+        self.bound: dict[str, dict] = {}            # a path of edges (its hops, as JSON) -> its step
 
-    def link(self, name: str) -> None:
-        for st in LINKED[name]:
-            if st["as"] not in self.have:
-                self.steps.append(dict(st))
-                self.have.add(st["as"])
-
-    def via(self, hops: list[dict], prefix: str, optional: bool = True) -> str:
+    def via(self, hops: list[dict] | tuple, prefix: str = "", optional: bool = True) -> str:
         prev = REC
-        for i, st in enumerate(hops, 1):
-            var = f"{prefix}_via{i}"
-            self.steps.append({"from": prev, "edge": st["edge"], "to": st["to"], "as": var, "optional": optional,
-                               **({"direction": st["direction"]} if st.get("direction") else {})})
-            prev = var
+        for i in range(1, len(hops) + 1):
+            key = json.dumps([{k: h[k] for k in ("edge", "to", "direction") if h.get(k) and not (k == "direction" and
+                                                                                                    h[k] == "out")}
+                              for h in hops[:i]], sort_keys=True)
+            st = self.bound.get(key)
+            if st is None:
+                named = next((n for n, hs in HOPS.items() if json.dumps(list(hs), sort_keys=True) == key), None)
+                var = named or f"l{len(self.bound) + 1}"
+                h = hops[i - 1]
+                st = {"from": prev, "edge": h["edge"], "to": h["to"], "as": var, "optional": optional,
+                      **({"direction": h["direction"]} if h.get("direction") and h["direction"] != "out" else {})}
+                self.steps.append(st)
+                self.bound[key] = st
+                self.have.add(var)
+            elif not optional:
+                st["optional"] = False               # a filter needs the link: every use of it then does
+            prev = st["as"]
         return prev
+
+    def link(self, name: str) -> str:
+        return self.via(HOPS[name])
 
     def path(self, p: str) -> str:
         """A path of the record, or through a named link (sample.bet_area, catalyst.catalyst_family, source.year)."""
-        head = p.split(".", 1)[0]
-        if head in LINKED and "." in p:
-            self.link(head)
-            return p
-        if p in LINKED:
-            self.link(p)
-            return p
+        head, _, rest = p.partition(".")
+        if head in HOPS:
+            var = self.link(head)
+            return f"{var}.{rest}" if rest else var
         return p if p.startswith(f"{REC}.") else f"{REC}.{p}"
 
     def entries(self, a: dict, var: str, start: str = REC) -> str:
@@ -288,7 +305,11 @@ class _Binder:
 
     def target(self, t: dict, prefix: str, optional: bool = True) -> str:
         """The plan path of an axis-like target: {path}, {via, path} or {entries (, via)}."""
-        start = self.via(t["via"], prefix, optional) if t.get("via") else REC
+        if t.get("via"):
+            start = self.via(t["via"], prefix, optional)
+        else:
+            head = t.get("path", "").partition(".")[0]
+            start = self.via(HOPS[head], prefix, optional) if head in HOPS and not optional else REC
         if "entries" in t:
             return self.entries(t, f"{prefix}_entry", start)
         if t.get("via"):
@@ -297,16 +318,35 @@ class _Binder:
 
 
 def _where_of(path: str, f: dict) -> list[dict]:
-    """The plan filters of a condition filter on a plan path (a variable's property, or a record by its name)."""
+    """The plan filters of a range filter on a plan path (a category is kept after the query: :func:`_kept`)."""
     var, _, prop = path.partition(".")
-    if "values" in f:
-        return [{"var": var, "prop": prop or "name", "op": "in", "value": list(f["values"])}]
     out = []
     for k, op in (("min", "ge"), ("max", "le")):
         if k in f:
             out.append({"var": var, "prop": prop, "op": op, "value": f[k], **({"unit": f["unit"]} if f.get("unit") else {}),
                         **({"context": f["context"]} if f.get("context") else {})})
     return out
+
+
+def _texts(g: Any, v: Any) -> set[str]:
+    """What a categorical filter matches in a value: a record by its name, each item of a list, a value's text."""
+    if v is None:
+        return set()
+    if isinstance(v, list):
+        return set().union(*(_texts(g, x) for x in v)) if v else set()
+    if isinstance(v, str):
+        return {_name(g, v) or v} if v in g.nodes else {v}
+    if isinstance(v, dict) and "status" in v:
+        return {str(v[k]) for k in ("text_value", "value", "as_reported") if v.get(k) is not None}
+    if isinstance(v, dict) and "record" in v:
+        return {str(v["record"])}
+    return {str(v)}
+
+
+def _kept(g: Any, r: dict, path: str, f: dict) -> bool:
+    v = r["values"].get(path) if path in r["values"] else r["bound"].get(path)
+    want = {str(x) for x in f["values"]}
+    return bool(_texts(g, v) & want)
 
 
 def filter_text(f: dict) -> str:
@@ -347,7 +387,9 @@ def compile_plan(spec: dict) -> tuple[dict, dict]:
             if "entries" in a:
                 entry_of[k] = roles[k]
         for i, f in enumerate(spec.get("filters") or []):      # a filter's links must be there: never optional
-            where += _where_of(bind.target(f, f"f{i + 1}", optional=False), f)
+            fp = bind.target(f, f"f{i + 1}", optional=False)
+            roles[f"filter{i}"] = fp
+            where += _where_of(fp, f)
         if where:
             plan["where"] = where
         for k in ("series", "facet"):
@@ -370,6 +412,7 @@ def compile_plan(spec: dict) -> tuple[dict, dict]:
         if not plan["steps"]:
             plan.pop("steps")
     want = [p for k, p in roles.items() if p not in ("graph", "count", "conditions") and k != "record"]
+    want = list(dict.fromkeys(want))
     have_ret = list(plan.get("return") or [])
     plan["return"] = have_ret + [p for p in want if p not in have_ret]
     plan["evidence"] = True
@@ -404,6 +447,10 @@ def field_values(members: list[dict], label: str, target: Any) -> dict:
         if isinstance(v, str) and "." not in path and v in g.nodes:
             v = _name(g, v)
         form, _ = typed(v)
+        if isinstance(v, list) and v and all(isinstance(x, str) for x in v):   # a list of terms: each a choice
+            for x in v:
+                cats.setdefault(_name(g, x) or x if x in g.nodes else x, set()).add((r["graph"], rid))
+            continue
         if form is None:
             continue
         if form["type"] in ("category",):
@@ -417,18 +464,23 @@ def field_values(members: list[dict], label: str, target: Any) -> dict:
             n["min"], n["max"] = min(n["min"], lo), max(n["max"], hi)
             owner_id, entry = _owner(r, path)
             prop = entry.strip("/").split("/")[0] if entry else pgraph_query.parse_path(path.partition(".")[2] or "name")[0]
-            _, why = rd.read(g.records.get(owner_id) or {}, prop, v[0] if isinstance(v, list) else v) \
+            tag, why = rd.read(g.records.get(owner_id) or {}, prop, v[0] if isinstance(v, list) else v) \
                 if form["type"] != "number" else (None, None)
             if why:                                     # a filter compares it only with its context stated
                 n["why"][why] = n["why"].get(why, 0) + 1
             else:
                 n["comparable"].add((r["graph"], rid))
+                ctx = {k: x for k, x in ((tag or {}).get("context") or {}).items() if isinstance(x, str) and "::" not in x}
+                if ctx:
+                    n.setdefault("contexts", {}).setdefault(dump_canonical(ctx), set()).add((r["graph"], rid))
     return {"label": label, "target": t, "path": path,
             "kind": "quantity" if nums and len(nums) >= 1 and sum(len(x["records"]) for x in nums.values()) >=
             sum(len(x) for x in cats.values()) else ("category" if cats else "none"),
             "values": [{"value": v, "records": len(rs)} for v, rs in sorted(cats.items(), key=lambda kv: (-len(kv[1]), kv[0]))][:300],
             "units": [{"unit": u or None, "records": len(x["records"]), "comparable": len(x["comparable"]),
-                       "not_comparable": dict(sorted(x["why"].items())), "min": x["min"], "max": x["max"]}
+                       "not_comparable": dict(sorted(x["why"].items())), "min": x["min"], "max": x["max"],
+                       "contexts": [{"context": json.loads(c), "records": len(rs)}
+                                    for c, rs in sorted((x.get("contexts") or {}).items(), key=lambda kv: (-len(kv[1]), kv[0]))]}
                       for u, x in sorted(nums.items(), key=lambda kv: (-len(kv[1]["comparable"]), -len(kv[1]["records"]),
                                                                        kv[0]))],
             "note": "a range filter keeps only values its scientific comparison can compare (comparable): a value whose "
@@ -473,6 +525,13 @@ def conditions(g: Any, rid: str | None, compact: bool = False) -> dict:
             if k == "electrode_potential" and isinstance(p.get("reference_scale"), str) and \
                     p["reference_scale"] not in ("not_reported", "other") and p["reference_scale"].lower() not in t.lower():
                 t = f"{t} vs {p['reference_scale'].upper()}"
+            v = p.get(k)                             # what tells two alike numbers apart: a basis, a normalization
+            extra = [v.get("basis")] if isinstance(v.get("basis"), str) else []
+            if k == "current_density" and isinstance(p.get("current_normalization"), str) and \
+                    p["current_normalization"] != "not_reported":
+                extra.append(f"per {p['current_normalization'].replace('_', ' ')}")
+            if extra and compact:
+                t = f"{t} ({', '.join(extra)})"
             out[_human(k)] = t
     for edge, name in CONDITION_LINKS:
         names = sorted({_name(g, e["target"]) or e["target"] for e in g.out.get(rid, []) if e["type"] == edge})
@@ -683,7 +742,7 @@ def _conditions_key(g: Any, rid: str | None, roles: dict) -> str:
     """A series by condition: the stated numeric conditions of a record, in their units (the axes' own left out), so
     that tests run differently are told apart; the records it ran with are in each point's tooltip."""
     axes = {_human(roles[k].rsplit(".", 1)[-1]) for k in ("x", "y") if roles.get(k)}
-    shown = {_human(k) for k in CONDITION_SHOW}
+    shown = {_human(k) for k in CONDITION_SHOW} | {"feed", "electrolyte"}     # and what it was fed or immersed in
     c = conditions(g, rid, compact=True)
     return "; ".join(f"{k} {v}" for k, v in c.items() if k in shown and k not in axes) or "no condition stated"
 
@@ -703,11 +762,26 @@ def plot_data(members: list[dict], spec: Any, identity_map: dict | None = None) 
     points: dict[tuple, dict] = {}
     left: dict[tuple, dict] = {}
     unpaired: dict[tuple, dict] = {}
+    filters = [(f, roles[f"filter{i}"]) for i, f in enumerate(spec.get("filters") or []) if f"filter{i}" in roles]
+    filtered_out = 0
+    range_ctx: dict[int, dict] = {}                 # a range filter without a context: the contexts its rows are on
     for r in res["rows"]:
         alias = r["graph"]
         m = by_alias[alias]
         g = m["graph"]
         rd = readers.get(alias) or readers.setdefault(alias, _Reader(m, classes))
+        if not all(_kept(g, r, fp, f) for f, fp in filters if "values" in f):
+            filtered_out += 1                       # a category filter keeps the values listed, after the query
+            continue
+        for i, (f, fp) in enumerate(filters):
+            if "values" not in f and not f.get("context"):
+                rid_, ent_ = _owner(r, fp)
+                prop_ = ent_.strip("/").split("/")[0] if ent_ else pgraph_query.parse_path(fp.partition(".")[2])[0]
+                v_ = r["values"].get(fp)
+                tag_, _ = rd.read(g.records.get(rid_) or {}, prop_, v_[0] if isinstance(v_, list) and v_ else v_)
+                ctx_ = {k: x for k, x in ((tag_ or {}).get("context") or {}).items()}
+                if ctx_:
+                    range_ctx.setdefault(i, {})[dump_canonical(ctx_)] = ctx_
         axes = {}
         counted = r["bound"].get(roles["record"])
         counted = counted if isinstance(counted, str) else None
@@ -771,14 +845,20 @@ def plot_data(members: list[dict], spec: Any, identity_map: dict | None = None) 
             if len(points) >= MAX_POINTS:
                 raise ScaleError(f"more than {MAX_POINTS} points: narrow the records (where, or a plan) and plot again")
             node = g.nodes.get(yrid) or {}
-            pt = points[key] = {"id": f"{alias}::{yrid}" + (f"#{yent}" if yent else ""), "graph": alias, "record": yrid,
+            pid = f"{alias}::{yrid}" + (f"#{yent}" if yent else "")
+            if fy["type"] != "count" and xrid and (xrid != yrid or (xent and xent != yent)):   # a pair: both ends
+                pid += f"|x={xrid}" + (f"#{xent}" if xent else "")
+            if counted and counted not in (xrid, yrid) and fy["type"] != "count":
+                pid += f"|of={counted}"
+            pt = points[key] = {"id": pid, "graph": alias, "record": yrid,
                                 "entry": yent or None, "name": _name(g, yrid), "label": node.get("label"),
                                 "run_status": (node.get("props") or {}).get("experiment_status"),
                                 "x": fx, "y": fy, "_groups": {k: set() for k in ("series", "facet") if k in roles},
                                 "_ev": {}}
             if xrid != yrid or xent != yent:
                 pt["x_record"], pt["x_entry"] = xrid, xent or None
-            pt["conditions"] = conditions(g, counted or yrid)
+            # the measurement context of the result: its own record's (a sample's characterization is the sample's)
+            pt["conditions"] = conditions(g, counted if fy["type"] == "count" else (yrid or counted))
             for k, f in (("y", fy), ("x", fx)):          # a result entry's assay and product, by name
                 if f.get("produced_by"):
                     pt.setdefault("assay", _name(g, f["produced_by"]) or f["produced_by"])
@@ -796,6 +876,12 @@ def plot_data(members: list[dict], spec: Any, identity_map: dict | None = None) 
                     item = {"axis": k, **{f: e[f] for f in sorted(e) if f not in ("quote", "note", "var", "evidence")},
                             "source_name": _name(g, e.get("source"))}
                     pt["_ev"][json.dumps(item, sort_keys=True, default=str)] = item
+    for i, seen in sorted(range_ctx.items()):
+        if len(seen) > 1:                          # never one range across two contexts: state the one meant
+            f = spec["filters"][i]
+            raise ScaleError(f"the filter {filter_text(f)} keeps values on {len(seen)} contexts ("
+                             + "; ".join(", ".join(f"{k}: {v}" for k, v in c.items()) for c in seen.values())
+                             + "): state the one meant (context: {...}), never several on one range")
     plotted = {(p["graph"], p["record"] or "", p["entry"] or "") for p in points.values()}
     left.update({k: v for k, v in unpaired.items() if (k[0], k[1], k[2]) not in plotted})
     panels = _panels(list(points.values()), spec, roles, by_alias)
@@ -828,7 +914,8 @@ def plot_data(members: list[dict], spec: Any, identity_map: dict | None = None) 
         "partial": res["partial"],
         "identity_map_sha256": (identity_map or {}).get("sha256"),
         "panels": panels,
-        "counts": {"query_rows": len(res["rows"]), "points": n_points, "panels": len(panels), "left_out": len(left_items)},
+        "counts": {"query_rows": len(res["rows"]), "points": n_points, "panels": len(panels), "left_out": len(left_items),
+                   **({"filtered_out": filtered_out} if filtered_out else {})},
         "left_out": {"by_reason": dict(sorted(by_reason.items())), "items": left_items[:LISTED],
                      "listed": min(len(left_items), LISTED), "total": len(left_items)},
         "identity_conflicts": res["identity_conflicts"],
@@ -838,8 +925,11 @@ def plot_data(members: list[dict], spec: Any, identity_map: dict | None = None) 
             "contexts or two quantity contracts of one axis are two panels, never one axis.",
             "A bound is a bound point and a range an interval: neither is a number on the axis. A line joins a series' "
             "reported values in x order only to guide the eye: it states no trend the sources did not report.",
-            "Proposals, predictions and superseded records are not observations and are left out; what was left out is "
-            "counted by axis and reason (left_out), after what each graph's query left out (graphs[].query_left_out).",
+            ("Proposals, predictions and superseded records are not observations and are left out; what was left out "
+             "is counted by axis and reason (left_out), after what each graph's query left out (graphs[].query_left_out)."
+             if spec["population"] == "observations" else
+             "Every record is plotted (population: all): proposals, predictions and superseded records included, each "
+             "point's origin and run status kept; this is an inventory, not a set of observations."),
         ] + ([f"Partial: {', '.join(res.get('partial_graphs') or [])} not evaluated."] if res["partial"] else [])
           + ([f"{', '.join(synthetic)}: synthetic examples, not evidence about the world."] if synthetic else []),
     }
@@ -864,8 +954,8 @@ def _typing(form: dict) -> dict:
     if t in ("value", "bound", "range"):
         out = {"type": "quantity", "unit": form.get("unit"), "kind": form.get("kind"),
                "context": form.get("context") or {}, "contract": form.get("contract") or "none"}
-        if out["contract"] == "none":            # no contract reads it: what it states of its basis keeps it apart
-            out.update({k: form[k] for k in ("basis", "definition") if form.get(k)})
+        if out["contract"] == "none":            # no contract reads it: its descriptor, product and basis keep it apart
+            out.update({k: form[k] for k in ("variable", "target", "basis", "definition") if form.get(k)})
         return out
     return {"type": t}
 
@@ -896,12 +986,17 @@ def _panels(points: list[dict], spec: dict, roles: dict, by_alias: dict) -> list
                 label = f"{spec['label']} records"
             if t.get("kind") and _human(t["kind"]) not in label:     # entries of several kinds: say which this is
                 label = f"{label}: {_human(t['kind'])}"
+            g0 = (by_alias.get(pts[0]["graph"]) or {}).get("graph") if pts else None
+            named = [n for n in (_name(g0, t.get(f)) for f in ("variable", "target") if t.get(f)) if n]
+            if named:                                 # no contract reads it: its descriptor and product name it
+                label = f"{label}: {', '.join(named)}"
             shown = _ctx_text(by_alias, t.get("context") or {})
             title = label + (f" ({t['unit']})" if t.get("unit") else "") + \
                 (" [" + ", ".join(f"{c}: {v}" for c, v in shown.items()) + "]" if shown else "") + \
                 (f" [basis: {t['basis']}]" if t.get("basis") else "")
             if t.get("type") == "quantity" and t.get("contract") == "none":
-                t["comparability"] = "unknown: no quantity contract reads this value; grouped by its unit and basis only"
+                t["comparability"] = ("unknown: no quantity contract reads this value; kept apart by its unit, descriptor "
+                                      "(variable), product and basis only")
             if t.get("type") == "quantity":
                 t["context"] = shown
                 t["context_ids"] = p[k]["context"]
@@ -933,8 +1028,10 @@ def _distinct_names(pts: list[dict]) -> None:
         for q in pts:
             v = q[k]
             if v.get("type") == "category" and v.get("id") and len(ids.get(str(v["value"]), ())) > 1:
-                q[k] = {**v, "value": f"{v['value']} [{v['id'].split('::', 1)[-1].rsplit('/', 2)[-2:][0]}/"
-                                      f"{v['id'].rsplit('/', 1)[-1]}]"}
+                alias, _, rid = v["id"].partition("::")
+                tail = "/".join(rid.rsplit("/", 2)[-2:])
+                many = len({i.partition("::")[0] for i in ids[str(v["value"])]}) > 1
+                q[k] = {**v, "value": f"{v['value']} [{alias + ':' if many else ''}{tail}]"}
 
 
 def _group_key(q: dict) -> tuple:

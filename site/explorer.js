@@ -2291,7 +2291,12 @@ async function renderAnalyze() {
     } catch (err) { body.innerHTML = `<p class="gx-card-warn">${esc(err.message || err)}</p>`; return; }
     let last = null;                                 // the chart last drawn of this graph, in this tab
     try { last = JSON.parse(inStore("sessionStorage", (st) => st.getItem(`scale-analyze:${G.entry.id}`)) || "null"); } catch { last = null; }
-    if (last && !A.spec) { A.label = last.label || A.label; return plotGraph(last); }
+    if (last && !A.spec) {
+      const spec = last.spec || last;
+      A.with = new Set((last.with || []).filter((id) => manifest.some((e) => e.id === id)));
+      A.label = spec.label || A.label;
+      return plotGraph(spec);
+    }
   }
   const labels = Object.keys(A.stats.node_labels || {}).filter((l) => !["Institution", "Project"].includes(l)).sort();
   const ch = choices(A.stats, A.label);
@@ -2317,6 +2322,7 @@ async function renderAnalyze() {
   const others = manifest.filter((e) => e.id !== G.entry.id && e.path);
   const sugg = (A.suggestions.suggestions || []);
   const collapsed = !!(A.result && A.collapsed);
+  const focused = document.activeElement && body.contains(document.activeElement) ? document.activeElement.id : "";
   body.innerHTML = `
     <section class="gx-an-suggest"><h3>Suggested charts</h3>${sugg.length ? `<div class="gx-an-chips">${sugg.map((x, i) =>
       `<button type="button" class="gx-pill" data-tone="neutral" data-sug="${i}" title="${esc(`${x.records} records with both values; ${x.panels} panel${x.panels === 1 ? "" : "s"} (units and contexts kept apart)`)}">${esc(x.title)} <span class="gx-pill-count">${x.records}</span></button>`).join("")}</div>`
@@ -2357,6 +2363,8 @@ async function renderAnalyze() {
     plotGraph(currentSpec());
   };
   if (A.result && A.result.kind === "graph") showResult(A.result.res, $("an-out"), { onPick: pickGraph, csv: () => graphCsv(A.result.spec, A.result.graphs) });
+  const back = (focused && $(focused) && !$(focused).closest("[hidden]")) ? $(focused) : (collapsed ? $("an-edit") : null);
+  if (back) back.focus();
 }
 // The chart the builder describes now.
 function currentSpec() {
@@ -2387,13 +2395,25 @@ async function filterEditor(value, text) {
       const gaps = (u) => Object.keys(u.not_comparable || {}).map((k) => k.split(":").pop().replace(/_/g, " "));
       box.innerHTML = `<label>Unit<select id="an-funit">${r.units.map((u) => option(u.unit || "", `${u.unit || "no unit"}: ${u.comparable ?? u.records} of ${u.records} records comparable, ${u.min}–${u.max}${
         gaps(u).length ? ` (the others state no ${gaps(u).join(", ")})` : ""}`, false)).join("")}</select></label>
+        <label>On<select id="an-fctx"></select></label>
         <label>From<input type="number" step="any" id="an-fmin" placeholder="${esc(r.units[0].min)}"></label>
         <label>To<input type="number" step="any" id="an-fmax" placeholder="${esc(r.units[0].max)}"></label>
         <button type="button" class="gx-btn gx-btn-tiny" id="an-fok">Add filter</button>`;
+      const ctxText = (c) => Object.entries(c.context).map(([k, v]) => `${k.replace(/_/g, " ")}: ${v}`).join(", ");
+      const contexts = () => (r.units.find((u) => (u.unit || "") === $("an-funit").value) || {}).contexts || [];
+      const fillCtx = () => {                       // one context: stated; several: the reader picks one, never all
+        const cs = contexts();
+        $("an-fctx").innerHTML = cs.length ? cs.map((c, i) => option(String(i), `${ctxText(c)} (${c.records})`, i === 0)).join("") : option("", "no context to state", true);
+        $("an-fctx").disabled = cs.length < 2;
+      };
+      $("an-funit").onchange = fillCtx;
+      fillCtx();
       $("an-fok").onclick = () => {
         const lo = $("an-fmin").value, hi = $("an-fmax").value;
         if (lo === "" && hi === "") return;
-        A.filters.push({ ...target, label, ...(lo !== "" ? { min: Number(lo) } : {}), ...(hi !== "" ? { max: Number(hi) } : {}), ...($("an-funit").value ? { unit: $("an-funit").value } : {}) });
+        const ctx = contexts()[Number($("an-fctx").value)];
+        A.filters.push({ ...target, label, ...(lo !== "" ? { min: Number(lo) } : {}), ...(hi !== "" ? { max: Number(hi) } : {}), ...($("an-funit").value ? { unit: $("an-funit").value } : {}),
+          ...(ctx ? { context: ctx.context } : {}) });
         A.spec = { ...currentSpec(), filters: [...A.filters] }; A.collapsed = false;
         renderAnalyze();
       };
@@ -2458,7 +2478,7 @@ async function plotGraph(spec) {
     if (res.error) throw new Error(res.error);
     A.result = { kind: "graph", res, spec, graphs, aliased: !!graphs };
     A.collapsed = true;                             // the builder folds away; Edit chart opens it again
-    inStore("sessionStorage", (st) => st.setItem(`scale-analyze:${G.entry.id}`, JSON.stringify(spec)));
+    inStore("sessionStorage", (st) => st.setItem(`scale-analyze:${G.entry.id}`, JSON.stringify({ spec, with: [...A.with] })));
     await renderAnalyze();
   } catch (err) { out.innerHTML = `<p class="gx-card-warn">${esc(err.message || err)}</p>`; }
 }
@@ -2475,8 +2495,22 @@ function caption(p) {
   return [n(p.counts.points, "point"), n(p.counts.bounds, "bound"), n(p.counts.ranges, "range"), p.counts.cited ? `${p.counts.cited} cited` : ""].filter(Boolean).join(", ");
 }
 let resultSeq = 0;
+// A bar of a count (or a histogram's bin): the records under it, each a link to its record (in its own graph only).
+function listBucket(p, row, box, onPick) {
+  const last = row.bin && p.histogram && p.histogram.bins.length && row.bin[1] === Math.max(...p.histogram.bins.map((b) => b.hi));
+  const recs = row.bin ? p.points.filter((q) => ["value", "number"].includes(q.x.type) && q.x.value >= row.bin[0] && (q.x.value < row.bin[1] || (last && q.x.value === row.bin[1])))
+    : p.points.filter((q) => String(q.x.value) === String(row.bucket) && (row.series == null || (q.series || "") === row.series));
+  const at = row.bin ? `${row.bin[0]}–${row.bin[1]}` : row.bucket;
+  let list = box.parentElement.querySelector(".gx-an-bucket");
+  if (!list) { list = document.createElement("div"); list.className = "gx-an-bucket"; box.after(list); }
+  list.innerHTML = `<p class="gx-subtle">${recs.length} record${recs.length === 1 ? "" : "s"} at ${esc(at)}${row.series ? ` (${esc(row.series)})` : ""}:</p><ul>${
+    recs.slice(0, 200).map((q, k) => `<li><button type="button" class="gx-link-btn" data-rec="${k}">${esc(trunc(q.name || q.record, 90))}</button></li>`).join("")}</ul>`;
+  list.querySelectorAll("[data-rec]").forEach((b) => (b.onclick = () => (onPick || pickGraph)(recs[Number(b.dataset.rec)])));
+  list.querySelector("[data-rec]")?.focus();
+}
 async function showResult(res, el, { onPick = null, csv = null, dark = false, compact = false } = {}) {
   const c = res.counts || {}, left = res.left_out || {}, uid = ++resultSeq;
+  const queryLeft = (res.graphs || []).flatMap((g) => Object.entries(g.query_left_out || {}).map(([k, n]) => [g.alias, k, n]));
   const charts = (res.panels || []).flatMap(splitFacets);
   const reasons = Object.entries(left.by_reason || {}).sort((a, b) => b[1] - a[1]);
   const digest = res.digest_check ? `<p class="gx-an-digest is-${esc(res.digest_check)}">${esc({ verified: "The file is the one the record names (its sha256 matches): the rows the graph cites are ringed.",
@@ -2490,17 +2524,25 @@ async function showResult(res, el, { onPick = null, csv = null, dark = false, co
   el.innerHTML = `${digest}${warn.length ? `<div class="gx-an-warn">${warn.map((w) => `<p>${esc(w)}</p>`).join("")}</div>` : ""}
     <p class="gx-an-summary"><b>${esc(res.title || "")}</b> · ${c.points ?? 0} point${c.points === 1 ? "" : "s"} in ${c.panels ?? 0} panel${c.panels === 1 ? "" : "s"}${
       (left.total ?? c.left_out) ? ` · ${left.total ?? c.left_out} left out` : ""}${res.access && res.access.level && res.access.level !== "public" ? ` · access: ${esc(res.access.level)}` : ""}</p>
-    ${reasons.length ? `<details class="gx-an-left"><summary>What was left out, and why</summary><ul>${reasons.map(([k, n]) => `<li>${esc(reasonText(k))}: ${n}</li>`).join("")}</ul></details>` : ""}
+    ${reasons.length || queryLeft.length ? `<details class="gx-an-left"><summary>What was left out, and why</summary><ul>${reasons.map(([k, n]) => `<li>${esc(reasonText(k))}: ${n}</li>`).join("")}${
+      queryLeft.map(([g, k, n]) => `<li>by the query${(res.graphs || []).length > 1 ? ` (${esc(g)})` : ""}: ${esc(reasonText(`row:${k}`).replace(/^row: /, ""))}: ${n}</li>`).join("")}${
+      c.filtered_out ? `<li>not matching a category filter (kept out on purpose): ${c.filtered_out}</li>` : ""}</ul></details>` : ""}
+    ${(res.panels || []).length && !compact ? `<p class="gx-an-key" aria-label="Key">● a value (its bar: the reported uncertainty) · △▽◁▷ a one-sided bound, pointing the way the value lies · ━ a range, end to end${
+      (res.panels || []).some((p) => p.points.some((q) => (q.cited_by || []).length)) ? " · ◯ a row a record cites (dashed: named by a locator only)" : ""}</p>` : ""}
     ${(res.panels || []).length > 1 ? `<p class="gx-subtle">${res.panels.length} panels: their values differ in unit, comparison context or contract, so they never share an axis.</p>` : ""}
     ${charts.length > 2 ? `<div class="gx-an-pick"><label>Show <select id="an-pick-${uid}"><option value="all">all ${charts.length} panels, side by side</option>${
-      charts.map((p, i) => `<option value="${i}">${esc(trunc(p.title, 90))}</option>`).join("")}</select></label></div>` : ""}
+      charts.map((p, i) => `<option value="${i}">${esc(p.title)}</option>`).join("")}</select></label></div>` : ""}
     <div class="gx-an-grid${charts.length > 2 && !compact ? " is-multi" : ""}">
     ${charts.map((p, i) => `<figure class="gx-an-chart" data-fig="${i}"><figcaption>${esc(p.title)} <span class="gx-subtle">· ${caption(p)}</span>${
       p.x.comparability || p.y.comparability ? ` <span class="gx-an-badge" title="${esc(p.y.comparability || p.x.comparability)}">comparability unknown</span>` : ""}</figcaption>
       <div class="gx-an-vega" data-panel="${i}"></div>
       ${compact ? "" : `<div class="gx-an-dl"><button type="button" class="gx-btn gx-btn-tiny" data-svg="${i}">SVG</button><button type="button" class="gx-btn gx-btn-tiny" data-png="${i}">PNG</button></div>`}
       ${p.points.length && !(p.y.type === "count") ? `<details class="gx-an-table"><summary>Points as a table (${p.points.length})</summary><table><thead><tr><th>Record</th><th>${esc(p.y.label)}</th><th>${esc(p.x.label)}</th>${(p.series || []).length ? "<th>Series</th>" : ""}<th>Conditions</th></tr></thead><tbody>${
-        p.points.slice(0, 300).map((q) => `<tr><td>${q.record ? `<button type="button" class="gx-link-btn" data-goto="${esc(q.record)}">${esc(trunc(q.name || q.record, 60))}</button>` : esc(q.id)}</td><td>${esc(shownValue(q.y))}</td><td>${esc(shownValue(q.x))}</td>${(p.series || []).length ? `<td>${esc(q.series || "")}</td>` : ""}<td>${esc(Object.entries(q.conditions || {}).filter(([k]) => k !== "source").map(([k, v]) => `${k}: ${v}`).join("; "))}</td></tr>`).join("")}</tbody></table>${p.points.length > 300 ? `<p class="gx-subtle">The first 300 of ${p.points.length}; the CSV holds them all.</p>` : ""}</details>` : ""}</figure>`).join("")}
+        p.points.slice(0, 300).map((q) => `<tr><td>${q.record ? `<button type="button" class="gx-link-btn" data-goto="${esc(q.record)}" data-pid="${esc(q.id)}">${esc(trunc(q.name || q.record, 60))}</button>` : esc(q.id)}</td><td>${esc(shownValue(q.y))}</td><td>${esc(shownValue(q.x))}</td>${(p.series || []).length ? `<td>${esc(q.series || "")}</td>` : ""}<td>${esc(Object.entries(q.conditions || {}).filter(([k]) => k !== "source").map(([k, v]) => `${k}: ${v}`).join("; "))}</td></tr>`).join("")}</tbody></table>${p.points.length > 300 ? `<p class="gx-subtle">The first 300 of ${p.points.length}; the CSV holds them all.</p>` : ""}</details>` : ""}
+      ${p.y.type === "count" && (p.buckets || p.histogram) ? `<details class="gx-an-table"><summary>Counts as a table</summary><table><thead><tr><th>${esc(p.x.label)}</th>${
+        (p.series || []).length ? "<th>Series</th>" : ""}<th>Records</th>${p.buckets ? "<th>Sources</th>" : ""}<th></th></tr></thead><tbody>${
+        (p.buckets || []).map((b, j) => `<tr><td>${esc(b.x)}</td>${(p.series || []).length ? `<td>${esc(b.series || "")}</td>` : ""}<td>${b.records}</td><td>${b.sources}</td><td><button type="button" class="gx-link-btn" data-bucket="${i}:${j}">its records</button></td></tr>`).join("")}${
+        p.histogram ? p.histogram.bins.filter((b) => b.records).map((b, j) => `<tr><td>${esc(b.lo)}–${esc(b.hi)}</td>${(p.series || []).length ? `<td>${esc(b.series || "")}</td>` : ""}<td>${b.records}</td><td><button type="button" class="gx-link-btn" data-bin="${i}:${b.lo}:${b.hi}">its records</button></td></tr>`).join("") : ""}</tbody></table></details>` : ""}</figure>`).join("")}
     </div>
     ${(res.limitations || []).length && !compact ? `<details class="gx-an-left"><summary>How to read these charts</summary><ul>${res.limitations.map((l) => `<li>${esc(l)}</li>`).join("")}<li>Filled circles are values (bars: error bars), open triangles one-sided bounds pointing the way the value lies, lines from one end to the other ranges.</li></ul></details>` : ""}
     <div class="gx-an-dl">${csv ? `<button type="button" class="gx-btn gx-btn-tiny" data-csv>Data (CSV)</button>` : ""}<button type="button" class="gx-btn gx-btn-tiny" data-json>Data (JSON)</button></div>`;
@@ -2509,7 +2551,15 @@ async function showResult(res, el, { onPick = null, csv = null, dark = false, co
   if (csv) el.querySelector("[data-csv]").onclick = async () => {
     try { download(`${base}.csv`, new Blob([await csv()], { type: "text/csv" })); } catch (err) { status(err.message || String(err)); }
   };
-  el.querySelectorAll("[data-goto]").forEach((b) => (b.onclick = () => { if (G.byId.has(b.dataset.goto)) goTo(b.dataset.goto); }));
+  el.querySelectorAll("[data-goto]").forEach((b) => (b.onclick = () => (onPick || pickGraph)({ record: b.dataset.goto, id: b.dataset.pid })));
+  el.querySelectorAll("[data-bucket]").forEach((b) => (b.onclick = () => {
+    const [i, j] = b.dataset.bucket.split(":").map(Number), bk = charts[i].buckets[j];
+    listBucket(charts[i], { bucket: bk.x, series: bk.series || null }, el.querySelector(`[data-panel="${i}"]`), onPick);
+  }));
+  el.querySelectorAll("[data-bin]").forEach((b) => (b.onclick = () => {
+    const [i, lo, hi] = b.dataset.bin.split(":");
+    listBucket(charts[Number(i)], { bin: [Number(lo), Number(hi)] }, el.querySelector(`[data-panel="${i}"]`), onPick);
+  }));
   const picker = el.querySelector(`#an-pick-${uid}`);
   if (picker) picker.onchange = () => {
     const v = picker.value;
@@ -2524,16 +2574,7 @@ async function showResult(res, el, { onPick = null, csv = null, dark = false, co
     try {
       views[i] = await drawChart(box, p, { colors: chartColours(dark), height: compact || charts.length > 2 ? 190 : 240 }, onPick && ((row) => {
         if (row.bucket === undefined && row.bin === undefined) return onPick(row);
-        // a bar of a count (or a histogram's bin): the records under it, each a link to the record in the graph
-        const last = row.bin && p.histogram && p.histogram.bins.length && row.bin[1] === p.histogram.bins[p.histogram.bins.length - 1].hi;
-        const recs = row.bin ? p.points.filter((q) => ["value", "number"].includes(q.x.type) && q.x.value >= row.bin[0] && (q.x.value < row.bin[1] || (last && q.x.value === row.bin[1])))
-          : p.points.filter((q) => String(q.x.value) === String(row.bucket) && (row.series === null || (q.series || "") === row.series));
-        if (row.bin) row.bucket = `${row.bin[0]}–${row.bin[1]}`;
-        let list = box.parentElement.querySelector(".gx-an-bucket");
-        if (!list) { list = document.createElement("div"); list.className = "gx-an-bucket"; box.after(list); }
-        list.innerHTML = `<p class="gx-subtle">${recs.length} record${recs.length === 1 ? "" : "s"} at ${esc(row.bucket)}${row.series ? ` (${esc(row.series)})` : ""}:</p><ul>${
-          recs.slice(0, 200).map((q) => `<li><a href="#" data-id="${esc(q.record)}">${esc(trunc(q.name || q.record, 90))}</a></li>`).join("")}</ul>`;
-        if (G && G.byId) list.querySelectorAll("a[data-id]").forEach((a) => (a.onclick = (e) => { e.preventDefault(); if (G.byId.has(a.dataset.id)) goTo(a.dataset.id); }));
+        listBucket(p, row, box, onPick);
       }));
     } catch (err) { box.innerHTML = `<p class="gx-card-warn">${esc(err.message || err)}</p>`; }
   }

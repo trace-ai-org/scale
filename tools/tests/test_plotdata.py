@@ -301,7 +301,7 @@ def test_a_value_through_links_and_a_population_policy(pm):
     via = {"via": [{"edge": "USES_CATALYST", "to": "CatalystSample"}], "path": ""}
     res = plotdata.plot_data(members(pm=pm), {**CO_FE, "x": via})
     assert res["counts"]["points"] >= 1 and all(p["x"]["type"] == "category" for p in res["panels"])
-    assert {"from": "rec", "edge": "USES_CATALYST", "to": "CatalystSample", "as": "x_via1", "optional": True} in \
+    assert {"from": "rec", "edge": "USES_CATALYST", "to": "CatalystSample", "as": "sample", "optional": True} in \
         res["plan"]["steps"]
     back = plotdata.load_spec({**CO_FE, "x": {"via": [{"edge": "USES_CATALYST", "to": "CatalyticTest", "direction": "in"}]}})
     assert back["x"]["via"][0]["direction"] == "in"
@@ -428,3 +428,43 @@ def test_result_entries_of_a_linked_record_are_typed_and_kept_apart_as_the_recor
     pts = [q for p in res["panels"] for q in p["points"]]
     assert pts and all(q["x_record"] == "ex:pm/char/xps" and q["x_entry"] == "/result_values/surface_cu" for q in pts)
     assert all(p["x"]["title"].startswith("CatalystSample → Characterization result values") for p in res["panels"])
+    assert len({q["id"] for q in pts}) == len(pts) and all("|x=ex:pm/char/xps" in q["id"] for q in pts)   # a pair's id
+
+
+def test_one_path_is_bound_once_and_a_range_never_spans_two_contexts(pm):
+    # an axis, a filter and a group on the sample read one binding of it: no pairs of two samples' values
+    spec = {**CO_FE, "x": "sample", "series": "sample",
+            "filters": [{"via": [{"edge": "USES_CATALYST", "to": "CatalystSample"}], "path": "", "values": ["Cu foil"]}]}
+    plan, _ = plotdata.compile_plan(plotdata.load_spec(spec))
+    links = [st for st in plan["steps"] if st.get("edge") == "USES_CATALYST"]
+    assert len(links) == 1 and links[0]["optional"] is False
+    # a range filter whose values lie on two reference scales is refused unless it states the one meant
+    node(pm, "ex:pm/test/co2rr-repeat")["props"]["reference_scale"] = "she"
+    rng = {"plot": 1, "label": "CatalyticTest", "x": "control_mode", "y": "count",
+           "filters": [{"path": "electrode_potential", "min": -1.1, "max": -0.9, "unit": "V"}]}
+    with pytest.raises(ScaleError, match="contexts"):
+        plotdata.plot_data(members(pm=pm), rng)
+    one = plotdata.plot_data(members(pm=pm), {**rng, "filters": [{**rng["filters"][0], "context": {"potential_reference": "rhe"}}]})
+    assert {q["record"] for p in one["panels"] for q in p["points"]} == {"ex:pm/test/co2rr"}
+    # a field lists each unit's contexts, for the builder to ask which
+    (u,) = plotdata.field_values(members(pm=pm), "CatalyticTest", "electrode_potential")["units"]
+    assert {c["context"]["potential_reference"] for c in u["contexts"]} == {"rhe", "she"}
+
+
+def test_a_category_filter_reads_lists_and_record_names_and_says_what_it_dropped(pm):
+    res = plotdata.plot_data(members(pm=pm), {**CO_FE, "filters": [{"path": "driving_forces", "values": ["electro"]}]})
+    assert {q["record"] for p in res["panels"] for q in p["points"]} == {"ex:pm/test/co2rr", "ex:pm/test/co2rr-repeat"}
+    assert "electro" in {v["value"] for v in plotdata.field_values(members(pm=pm), "CatalyticTest", "driving_forces")["values"]}
+    none = plotdata.plot_data(members(pm=pm), {**CO_FE, "filters": [{"path": "driving_forces", "values": ["photo"]}]})
+    assert none["counts"]["points"] == 0 and none["counts"]["filtered_out"] > 0
+
+
+def test_values_no_contract_reads_stay_apart_by_descriptor(pm):
+    t = node(pm, "ex:pm/test/co2rr")["props"]
+    t["result_values"] += [{"id": "peak_a", "status": "present", "value": 43.3, "unit": "°", "variable": "ex:pm/var/peak-a"},
+                           {"id": "peak_b", "status": "present", "value": 50.4, "unit": "°", "variable": "ex:pm/var/peak-b"}]
+    res = plotdata.plot_data(members(pm=pm), {"plot": 1, "label": "CatalyticTest", "x": "control_mode",
+                                              "y": {"entries": "result_values"}})
+    deg = [p for p in res["panels"] if p["y"].get("unit") == "°"]
+    assert len(deg) == 2 and {p["y"]["variable"] for p in deg} == {"ex:pm/var/peak-a", "ex:pm/var/peak-b"}
+    assert all(p["y"]["comparability"].startswith("unknown") for p in deg)
