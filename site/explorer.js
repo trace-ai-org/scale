@@ -7,7 +7,8 @@
 // Search, query plans and descriptions run SCALE's own code in a worker (worker.js).
 import { readBundle } from "./bundle.js";
 import { closedLevels, gate as egressGate, approve as egressApprove } from "./egress.js";
-const $ = (id) => document.getElementById(id);
+import { draw as drawChart, specFrom, choices, csvHeader, sha256Hex, digestCheck, splitFacets, targetOf, shown as shownValue } from "./analyze.js";
+const $ =(id) => document.getElementById(id);
 const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
 const md = (s) => DOMPurify.sanitize(marked.parse(String(s || "")));
 const KIND_PALETTE = ["#5b8def", "#f59e0b", "#10b981", "#ef4444", "#8b5cf6", "#06b6d4", "#f43f5e", "#84cc16", "#0ea5e9", "#d946ef", "#fbbf24", "#22c55e"];
@@ -1220,6 +1221,7 @@ async function openGraph(entry, text, doc = null) {
   [...labels].sort((a, b) => b[1] - a[1]).forEach(([l]) => colourForKind(l));
   [...rels].sort((a, b) => b[1] - a[1]).forEach(([t]) => colourForEdge(t));
   G = { entry, file: `${entry.id}.json`, doc, byId, out, inn, labels, rels, props, sha: "" };
+  resetAnalyze();
   folded = false;
   Object.assign(S, { kind: null, rel: null, sources: false, hidden: new Set(), extra: new Set(), match: null, selected: null, pos: new Map(), nodes: [] });
   $("card").hidden = true;
@@ -1234,6 +1236,7 @@ async function openGraph(entry, text, doc = null) {
     .catch((err) => status(`SCALE could not load the graph: ${err.message}`));
   if (G !== g) return;
   status(ready());
+  if (!$("analyze").hidden) renderAnalyze();       // Analyze, open, reads the graph now loaded
   warm(g);
 }
 async function sha256(text) {
@@ -1636,11 +1639,13 @@ function showDetails(rec) {
   $("record").innerHTML = `${head}
     <table class="gx-props"><thead><tr><th>Key</th><th>Value</th><th></th></tr></thead><tbody>${rows}</tbody></table>
     ${ev ? `<section class="gx-inspector-section"><h3>Provenance <span class="gx-count">${(p.evidence || []).length}</span></h3>${ev}</section>` : ""}
+    ${!isLink && LINKED_FILE_LABELS.includes(rec.label) ? linkedFileSection(rec) : ""}
     ${neighbours}
     ${isLink ? "" : `<footer class="gx-inspector-actions"><button class="gx-btn gx-btn-tiny" id="act-expand">Expand neighbourhood</button>
       <button class="gx-btn gx-btn-tiny" id="act-focus">Focus</button><button class="gx-btn gx-btn-tiny" id="act-pin" aria-pressed="${!!node?.pinned}">${node?.pinned ? "Unpin" : "Pin"}</button>
       <button class="gx-btn gx-btn-tiny" id="act-hide" title="Remove from this view (the graph is not changed)">Hide</button></footer>`}`;
   wireIds($("record"));
+  if (!isLink && LINKED_FILE_LABELS.includes(rec.label)) wireLinkedFile(rec);
   $("record").querySelectorAll(".gx-copy").forEach((b) => (b.onclick = () => { const v = entries[Number(b.dataset.i)][1]; navigator.clipboard?.writeText(typeof v === "string" ? v : JSON.stringify(v)); }));
   if (!isLink) {
     $("act-expand").onclick = () => expand(rec.id);
@@ -1750,10 +1755,16 @@ function answerCard(r, cost) {
   card("Answer", `${cited.html}
     ${cited.checks ? checksLine(cited.checks) : ""}
     ${r.stopped ? `<p class="gx-card-warn">Stopped early: ${esc(r.stopped)}.</p>` : ""}
+    ${(r.charts || []).map((_, i) => `<section class="gx-answer-chart" data-chart="${i}"></section>`).join("")}
     ${(r.plans || []).length ? `<details><summary>How it was answered (${r.plans.length} plan${r.plans.length > 1 ? "s" : ""}, ${r.plans.reduce((n, p) => n + (p.rows || 0), 0)} rows)</summary>${r.plans.map((p, i) =>
       `<p class="gx-meta">Plan ${i + 1}: ${esc(p.status || "?")}, ${p.rows ?? 0} rows</p><pre>${esc(JSON.stringify(p.plan, null, 1))}</pre>`).join("")}</details>` : ""}
     <p class="gx-meta">${esc(cost)}</p>`);
   $("card-body").querySelectorAll(".gx-cite[data-id]").forEach((a) => (a.onclick = (e) => { e.preventDefault(); goTo(a.dataset.id); }));
+  // the charts the model drew (its plot tool), each point linked to its record; the full data for download
+  (r.charts || []).forEach((res, i) => {
+    const el = $("card-body").querySelector(`[data-chart="${i}"]`);
+    if (el) showResult(res, el, { dark: true, compact: true, onPick: pickGraph });
+  });
 }
 
 // ------------------------------------------------------------------------------------------ citations
@@ -1907,6 +1918,8 @@ const OWN_TOOLS = [
     input_schema: { type: "object", properties: {}, required: [] } },
   { name: "query", description: "Run a graph query plan (scale graph query): match, steps, where, return, evidence, order_by, limit, text, published_before. Returns rows, the kind of answer and the coverage, in a compact model view (its legend says how: each quote once as E1..En, sources once, ids shortened with ~ for id_prefix; cite the full id). Rows come in pages: fetch the next with page = the result's page.next; never answer from one page as if it were all. A numeric filter states its unit; add convert: true to also compare values in another unit of the same quantity, converted exactly (temperature K, °C, °F; absolute pressure; time), e.g. {prop: temperature, op: le, value: 250, unit: °C, convert: true}. Text filters ignore case except formulas (Co is cobalt, CO carbon monoxide).",
     input_schema: { type: "object", properties: { plan: { type: "object" }, page: { type: "object", description: "the result's page.next, passed back whole, for its next page of rows" } }, required: ["plan"] } },
+  { name: "plot", description: "Draw a chart for the reader from the graph's numbers (scale_plot_data); it appears under your answer, each point linked to its record. spec: {label (e.g. CatalyticTest), where (filters on the record), x and y (a property path such as temperature, electrode_potential or source.year; catalyst, sample or source as a category; {entries: faradaic_efficiency, target, variable} for one result entry per point; {via: [{edge, to, direction}], path} for a linked record's value; y count for records per x), series and facet (product, catalyst, sample, source, graph or a property path), mark point|line|bar|box}. Values are never converted: two units or contexts are two panels, a bound stays a bound, what was left out is counted by reason. You get the panels, counts, left_out and the points in pages (page: the result's page.next). Use it when the reader asks for a plot, a trend or a distribution.",
+    input_schema: { type: "object", properties: { spec: { type: "object" }, page: { type: "integer", description: "the result's page.next, for the next page of points" } }, required: ["spec"] } },
 ];
 // How an answer is written in this page: the principles the design review settled on (docs/answering.md).
 const WORKING_HERE = `
@@ -1922,6 +1935,7 @@ You answer in a web page, through the tools given (no shell). The graph is the o
 - Separate candidates from relevant records: read each row and drop what does not answer the question. Count sources and independent works, not records; identical wording in sibling patents is one claim repeated.
 - Check counter-evidence (CONTRADICTS, competing hypotheses, controls) when the answer is causal, a consensus, an earliest record or an absence. Stop when every distinction the question asks for has support or an explicit unresolved status.
 - Tool results come back whole: base the answer on all the relevant rows the plans return.
+- When the reader asks for a plot, a trend or a distribution, call plot with a plot spec once query plans found the values: the chart appears under your answer; describe it from the panels and points plot returns, never from the picture.
 
 ## Write the answer (Markdown)
 - Lead with the answer in 1-3 sentences. Keep the whole answer short (about 400 words) unless the question asks for a full list; put a full list in a table, not in prose.
@@ -1973,7 +1987,15 @@ async function chat(provider, body) {
   throw new Error(`${p.name}'s API answered: ${why}`);
 }
 let proposeText = null;
-async function ownTool(name, a, plans) {
+async function ownTool(name, a, plans, charts = []) {
+  if (name === "plot") {                        // the chart is drawn in the answer card; the model reads it in pages
+    if (!a.page) {
+      const full = await scale("plot_data", { spec: a.spec });
+      if (full.error) return full;
+      charts.push(full);
+    }
+    return scale("plot_data", { spec: a.spec, view: "model", offset: Number(a.page) || 0, page_size: 40 });
+  }
   if (name === "proposal_procedure") {
     if (proposeText === null) {
       const r = await fetch("data/query-graph-propose.md");
@@ -2086,8 +2108,8 @@ async function askOwnKey(question) {
     if (b) b.onclick = () => { answerNow = true; b.disabled = true; b.textContent = "Answering from the rows so far…"; };
   };
   progress("");
-  const plans = [], seen = new Set();                     // the plans run, and every record id a tool returned
-  const run = async (name, input) => { const res = await ownTool(name, input, plans); returnedIds(res, seen); return res; };
+  const plans = [], seen = new Set(), charts = [];        // the plans run, every record id a tool returned, the charts drawn
+  const run = async (name, input) => { const res = await ownTool(name, input, plans, charts); returnedIds(res, seen); return res; };
   try {
     if (skillText === null) {
       const s = await fetch("data/query-graph.md");
@@ -2098,7 +2120,7 @@ async function askOwnKey(question) {
       run, wrapUp: WRAP_UP, stopNow: () => answerNow, progress, alive: () => G === g, gate: check });
     if (!r) return;                                         // another graph was opened meanwhile
     const stopped = r.stopped === "finished early, on request" ? ANSWERED_EARLY : r.stopped;
-    answerCard({ answer: r.text, plans, stopped, seen }, accountLine(r));
+    answerCard({ answer: r.text, plans, stopped, seen, charts }, accountLine(r));
   } catch (err) {
     if (G === g) card("Answer", `<p class="gx-card-warn">${esc(err.message || err)}</p>`);
   }
@@ -2197,6 +2219,478 @@ function openOwnKeyMenu() {
   ownForm = { editing: "", provider: "" };
   ownKeyMenu();
   ($("ownkey-input") || $("ownkey-menu").querySelector("[data-use]:checked")).focus();
+}
+
+// ------------------------------------------------------------------------------------------ Analyze
+// The graph's numbers as charts (docs/analyze.md). The points come from SCALE's own code in the worker (scale_plot_data:
+// scale.plotdata), as `scale graph plot-data` gives them: each value as reported, a bound as a bound, values in two
+// units or two comparison contexts in two panels, never one axis, and everything left out counted by reason. The panel
+// offers the charts SCALE suggests for the graph and a builder (records, y, x, series, facet, mark); a click on a point
+// selects its record in the graph and shows its evidence. A Dataset (or TimeSeries) record's own file can be attached
+// in the inspector: it is read in this browser (its sha256 checked against the record), plotted by its columns, and sent
+// nowhere, kept only while the tab is open.
+const LINKED_FILE_LABELS = ["Dataset", "TimeSeries"];
+const A = { from: "graph", stats: null, suggestions: null, label: "", files: new Map(), result: null, spec: null, run: 0,
+  with: new Set(), loaded: new Set() };
+const REASONS = {
+  absent: "the record states no such value", not_linked: "no linked record", unit_unstated: "no unit stated",
+  ambiguous_multiple_values: "several values where one is needed", missing_context: "a context its comparison needs is not stated",
+  incompatible_context: "its contexts are stated two ways", incompatible_unit: "a unit its kind cannot be in, or one the contracts do not read",
+  proposal_not_observation: "a proposal, not an observation", prediction_not_observation: "a prediction, not an observation",
+  superseded: "superseded by a newer version", not_reported: "not reported", not_measured: "not measured", not_applicable: "not applicable",
+  empty: "an empty cell", unpaired_entries: "two result entries of one record that no assay pairs (never paired by position)",
+  not_bound: "nothing bound",
+};
+const reasonText = (key) => {
+  const [axis, code, ...rest] = key.split(":");
+  return `${axis}: ${REASONS[code] || code.replace(/_/g, " ")}${rest.length ? ` (${rest.join(":").replace(/_/g, " ")})` : ""}`;
+};
+function resetAnalyze() {
+  Object.assign(A, { from: "graph", stats: null, suggestions: null, label: "", files: new Map(), result: null, spec: null, run: A.run + 1,
+    with: new Set(), filters: [], collapsed: false });
+  if (!$("analyze").hidden) renderAnalyze();
+}
+function openAnalyze(on = $("analyze").hidden) {
+  $("analyze").hidden = !on;
+  $("analyze-btn").setAttribute("aria-pressed", String(on));
+  if (on) renderAnalyze();
+}
+$("analyze-btn").onclick = () => openAnalyze();
+$("analyze-close").onclick = () => { openAnalyze(false); $("analyze-btn").focus(); };
+// keyboard: Escape closes the panel and returns to its button; opening it puts the focus inside
+$("analyze").addEventListener("keydown", (e) => { if (e.key === "Escape" && !e.target.closest("select")) { openAnalyze(false); $("analyze-btn").focus(); } });
+$("analyze-btn").addEventListener("click", () => { if (!$("analyze").hidden) setTimeout(() => $("analyze-close").focus(), 0); });
+function chartColours(dark = false) {
+  if (dark) return { fg: "#f4f4f6", muted: "#a3a6b1", line: "#2c3040", bg: "#0f121c" };
+  const cs = getComputedStyle(document.documentElement), v = (n) => cs.getPropertyValue(n).trim();
+  return { fg: v("--fg"), muted: v("--muted"), line: v("--line"), bg: v("--bg") };
+}
+const option = (value, label, selected) => `<option value="${esc(value)}"${selected ? " selected" : ""}>${esc(label)}</option>`;
+const nice = (s) => String(s).replace(/^results\./, "results: ").replace(/_/g, " ");
+
+async function renderAnalyze() {
+  const body = $("analyze-body"), run = A.run;
+  const files = [...A.files.entries()];
+  $("analyze-from").innerHTML = [`<button type="button" role="tab" class="gx-an-tab" data-from="graph" aria-selected="${A.from === "graph"}">The graph</button>`,
+    ...files.map(([id, f]) => `<button type="button" role="tab" class="gx-an-tab" data-from="${esc(id)}" aria-selected="${A.from === id}" title="${esc(f.name)}, attached to ${esc(name(G.byId.get(id)))}">${esc(trunc(f.name, 28))}</button>`)].join("");
+  $("analyze-from").querySelectorAll("[data-from]").forEach((b) => (b.onclick = () => { A.from = b.dataset.from; A.result = null; renderAnalyze(); }));
+  if (A.from !== "graph" && A.files.has(A.from)) return renderFileBuilder(body, A.from);
+  if (!G || !G.loaded) {
+    body.innerHTML = `<p class="gx-muted">${G ? "This graph is drawn a window at a time and is not loaded into SCALE here: Analyze reads a graph opened whole." : "Open a graph first."}</p>`;
+    return;
+  }
+  if (!A.stats) {
+    body.innerHTML = `<p class="gx-muted">Reading what the graph holds…</p>`;
+    try {
+      const [stats, sug] = await Promise.all([scale("stats", {}), scale("plot_data", { suggest: true })]);
+      if (run !== A.run) return;
+      if (stats.error) throw new Error(stats.error);
+      A.stats = stats; A.suggestions = sug.error ? { suggestions: [], error: sug.error } : sug;
+      const labels = Object.keys(stats.units_in_use || {}).filter((l) => (stats.node_labels || {})[l]);
+      A.label = A.suggestions.suggestions[0]?.label || (labels.includes("CatalyticTest") ? "CatalyticTest" : labels[0] || "");
+    } catch (err) { body.innerHTML = `<p class="gx-card-warn">${esc(err.message || err)}</p>`; return; }
+    let last = null;                                 // the chart last drawn of this graph, in this tab
+    try { last = JSON.parse(inStore("sessionStorage", (st) => st.getItem(`scale-analyze:${G.entry.id}`)) || "null"); } catch { last = null; }
+    if (last && !A.spec) {
+      const spec = last.spec || last;
+      A.with = new Set((last.with || []).filter((id) => manifest.some((e) => e.id === id)));
+      A.label = spec.label || A.label;
+      return plotGraph(spec);
+    }
+  }
+  const labels = Object.keys(A.stats.node_labels || {}).filter((l) => !["Institution", "Project"].includes(l)).sort();
+  const ch = choices(A.stats, A.label);
+  const xVia = ch.via.map((o) => [o.value, o.text]);
+  const viaEntries = xVia.filter(([v]) => v.includes('"entries"'));
+  const yOpts = [["count", "count of records (bars, or a histogram of x)"], ...ch.entries.map((p) => [`e:${p}`, `${nice(p)} (one result entry per point)`]),
+    ...ch.numeric.map((p) => [`p:${p}`, nice(p)])];
+  const xOwn = [...ch.numeric.map((p) => [`p:${p}`, nice(p)]), ...ch.entries.map((p) => [`e:${p}`, `${nice(p)} (one result entry per point)`]),
+    ...ch.linked.map((p) => [`c:${p}`, `${p} (category)`]), ...ch.text.map((p) => [`p:${p}`, `${nice(p)} (category)`]),
+    ...(ch.linked.includes("source") ? [["p:source.year", "source year"]] : [])];
+  const groups = [["", "none"], ["conditions", "conditions (tests run differently apart)"], ...ch.linked.map((p) => [`c:${p}`, p]),
+    ...(ch.linked.includes("source") ? [["p:source.year", "source year"]] : []), ["graph", "graph"], ...ch.text.map((p) => [`p:${p}`, nice(p)])];
+  const s = A.spec || {};
+  const pick = (v) => (v === "count" ? "count" : typeof v === "object" && v
+    ? (v.via ? `v:${JSON.stringify(v.entries ? { via: v.via, entries: v.entries } : { via: v.via, path: v.path || "" })}` : `e:${v.entries}`)
+    : v ? (["catalyst", "sample", "source"].includes(v) ? `c:${v}` : `p:${v}`) : "");
+  const sel = { y: pick(s.y), x: pick(s.x), series: s.series ? (["product", "conditions", "graph"].includes(s.series) ? s.series : pick(s.series)) : "",
+    facet: s.facet ? (s.facet === "graph" ? "graph" : pick(s.facet)) : "" };
+  if (sel.x && ![...xOwn, ...xVia].some(([v]) => v === sel.x)) xOwn.push([sel.x, typeof s.x === "string" ? nice(s.x) : "the chart's x"]);
+  if (sel.y && ![...yOpts, ...viaEntries].some(([v]) => v === sel.y)) yOpts.push([sel.y, typeof s.y === "string" ? nice(s.y) : "the chart's y"]);
+  A.filters = s.filters ? [...s.filters] : A.filters || [];
+  const filterTargets = [...xOwn.filter(([v]) => !v.startsWith("e:")), ...xVia.filter(([v]) => !v.includes('"entries"'))];
+  const others = manifest.filter((e) => e.id !== G.entry.id && e.path);
+  const sugg = (A.suggestions.suggestions || []);
+  const collapsed = !!(A.result && A.collapsed);
+  const focused = document.activeElement && body.contains(document.activeElement) ? document.activeElement.id : "";
+  body.innerHTML = `
+    <section class="gx-an-suggest"><h3>Suggested charts</h3>${sugg.length ? `<div class="gx-an-chips">${sugg.map((x, i) =>
+      `<button type="button" class="gx-pill" data-tone="neutral" data-sug="${i}" title="${esc(`${x.records} records with both values; ${x.panels} panel${x.panels === 1 ? "" : "s"} (units and contexts kept apart)`)}">${esc(x.title)} <span class="gx-pill-count">${x.records}</span></button>`).join("")}</div>`
+      : `<p class="gx-muted">${esc(A.suggestions.error || "No chart to suggest: no records state an outcome and a varying condition together. Build one below.")}</p>`}</section>
+    <div class="gx-an-collapsed"${collapsed ? "" : " hidden"}><span class="gx-muted">${esc(A.result?.res?.title || "")}</span>
+      <button type="button" class="gx-btn gx-btn-tiny" id="an-edit" aria-expanded="false" aria-controls="an-form">Edit chart</button></div>
+    <form class="gx-an-build" id="an-form"${collapsed ? " hidden" : ""}>
+      <label>Records<select id="an-label">${labels.map((l) => option(l, l, l === A.label)).join("")}</select></label>
+      <label>Y<select id="an-y"><optgroup label="The record's own">${yOpts.map(([v, t]) => option(v, t, v === sel.y)).join("")}</optgroup>${
+        viaEntries.length ? `<optgroup label="Results of linked records">${viaEntries.map(([v, t]) => option(v, t, v === sel.y)).join("")}</optgroup>` : ""}</select></label>
+      <label id="an-ywhich-l" hidden>Which result<select id="an-ywhich"></select></label>
+      <label>X<select id="an-x"><optgroup label="The record's own">${xOwn.map(([v, t]) => option(v, t, v === sel.x)).join("")}</optgroup>${
+        xVia.length ? `<optgroup label="Through its links">${xVia.map(([v, t]) => option(v, t, v === sel.x)).join("")}</optgroup>` : ""}</select></label>
+      <label id="an-xwhich-l" hidden>Which result<select id="an-xwhich"></select></label>
+      <label>Series<select id="an-series">${groups.map(([v, t]) => option(v, t, v === sel.series)).join("")}${option("product", "product (of a result entry)", sel.series === "product")}</select></label>
+      <label>Facet<select id="an-facet">${groups.filter(([v]) => v !== "conditions").map(([v, t]) => option(v, t, v === sel.facet)).join("")}</select></label>
+      <label>Mark<select id="an-mark">${["point", "line", "bar", "box"].map((m) => option(m, m, m === (s.mark || "point"))).join("")}</select></label>
+      <label class="gx-check" title="By default proposals, predictions and superseded records are left out (observations only); tick to count every record, as an inventory"><span><input type="checkbox" id="an-all"${s.population === "all" ? " checked" : ""}> every record</span></label>
+      <button type="submit" class="gx-btn gx-btn-primary">Plot</button>
+      <fieldset class="gx-an-filters"><legend>Conditions (filters on the records or their links; numbers compared in their unit and context, never converted)</legend>
+        <div class="gx-an-fchips" id="an-fchips">${A.filters.map((f, i) => `<span class="gx-an-fchip">${esc(filterLabel(f))}<button type="button" class="gx-icon-btn" data-unfilter="${i}" aria-label="Remove the filter ${esc(filterLabel(f))}">×</button></span>`).join("") || `<span class="gx-subtle">none</span>`}</div>
+        <div class="gx-an-fadd"><label>Add a filter on<select id="an-ftarget">${option("", "choose…", true)}<optgroup label="The record's own">${
+          filterTargets.filter(([v]) => !v.startsWith("v:")).map(([v, t]) => option(v, t, false)).join("")}</optgroup><optgroup label="Through its links">${
+          filterTargets.filter(([v]) => v.startsWith("v:")).map(([v, t]) => option(v, t, false)).join("")}</optgroup></select></label><div id="an-fedit"></div></div>
+      </fieldset>
+      ${others.length ? `<fieldset class="gx-an-with"><legend>With other graphs (each read on its own, never merged)</legend>${others.map((e) =>
+        `<label class="gx-check"><input type="checkbox" data-with="${esc(e.id)}"${A.with.has(e.id) ? " checked" : ""}> ${esc(trunc(e.title || e.id, 50))}</label>`).join("")}</fieldset>` : ""}
+    </form>
+    <div class="gx-an-out" id="an-out"></div>`;
+  body.querySelectorAll("[data-with]").forEach((b) => (b.onchange = () => {
+    if (b.checked) A.with.add(b.dataset.with); else A.with.delete(b.dataset.with);
+    for (const k of ["y", "x"]) whichResult(k);      // the results present in the graphs now ticked
+  }));
+  body.querySelectorAll("[data-sug]").forEach((b) => (b.onclick = () => { const x = sugg[Number(b.dataset.sug)]; A.label = x.label; A.filters = []; plotGraph(x.spec); }));
+  body.querySelectorAll("[data-unfilter]").forEach((b) => (b.onclick = () => { A.filters.splice(Number(b.dataset.unfilter), 1); A.spec = { ...currentSpec(), filters: [...A.filters] }; A.collapsed = false; renderAnalyze(); }));
+  $("an-edit").onclick = () => { A.collapsed = false; $("an-form").hidden = false; body.querySelector(".gx-an-suggest").hidden = false;
+    body.querySelector(".gx-an-collapsed").hidden = true; $("an-y").focus(); };
+  $("an-label").onchange = () => { A.label = $("an-label").value; A.spec = null; A.filters = []; A.collapsed = false; renderAnalyze(); };
+  $("an-ftarget").onchange = () => filterEditor($("an-ftarget").value, $("an-ftarget").selectedOptions[0]?.textContent || "");
+  // a result list (a record's own or a linked record's) asks which of its descriptors to plot, the most informative first
+  for (const k of ["y", "x"]) {
+    $(`an-${k}`).addEventListener("change", () => whichResult(k));
+    whichResult(k, s[k]);
+  }
+  $("an-form").onsubmit = (e) => {
+    e.preventDefault();
+    if (!$("an-y").value || !$("an-x").value) return;
+    plotGraph(currentSpec());
+  };
+  if (A.result && A.result.kind === "graph") showResult(A.result.res, $("an-out"), { onPick: pickGraph, csv: () => graphCsv(A.result.spec, A.result.graphs) });
+  const back = (focused && $(focused) && !$(focused).closest("[hidden]")) ? $(focused) : (collapsed ? $("an-edit") : null);
+  if (back) back.focus();
+}
+// The chart the builder describes now: a result list's axis takes the descriptor chosen (all of them only when asked).
+function currentSpec() {
+  const spec = { ...specFrom({ label: $("an-label").value, x: $("an-x").value, y: $("an-y").value, series: $("an-series").value,
+    facet: $("an-facet").value, mark: $("an-mark").value, filters: A.filters }), ...($("an-all").checked ? { population: "all" } : {}) };
+  for (const k of ["x", "y"]) {
+    const w = $(`an-${k}which`).value;              // a descriptor whole: its variable, product (null: it states none), unit
+    const d = !$(`an-${k}which-l`).hidden && w !== "" && w !== "all" && (A.which[k] || [])[Number(w)];
+    if (d && typeof spec[k] === "object") spec[k] = { ...spec[k], variable: d.variable ?? null, target: d.target ?? null, ...(d.unit ? { unit: d.unit } : {}) };
+  }
+  return spec;
+}
+const isEntries = (v) => v.startsWith("e:") || (v.startsWith("v:") && v.includes('"entries"'));
+// The descriptors of the result list an axis names, from SCALE (scale_plot_data descriptors): each variable and product
+// with its points and the spread of its values; the first that varies is chosen, "all, side by side" only on request.
+async function whichResult(k, was = null) {
+  const sel = $(`an-${k}`), box = $(`an-${k}which-l`), which = $(`an-${k}which`);
+  A.which ||= {};
+  A.whichRun ||= {};
+  const run = A.whichRun[k] = (A.whichRun[k] || 0) + 1;
+  A.which[k] = null;                               // nothing chosen while the list is read
+  if (!sel || !isEntries(sel.value)) { box.hidden = true; return; }
+  const v = sel.value, target = v.startsWith("e:") ? { entries: v.slice(2) } : JSON.parse(v.slice(2));
+  const submit = $("an-form").querySelector("button[type=submit]");
+  box.hidden = false;
+  submit.disabled = true;                          // never plot a descriptor of another axis's list
+  which.innerHTML = option("", "reading the results present…", true);
+  try {
+    const r = await plotCall({ descriptors: { label: $("an-label").value, target } }, A.with.size ? await plotGraphs() : null);
+    if (sel.value !== v || run !== A.whichRun[k] || !which.isConnected) return;   // the axis or the builder changed meanwhile
+    if (r.error) throw new Error(r.error);
+    const ds = A.which[k] = r.descriptors || [];
+    const text = (d) => `${[d.variable_name, d.target_name].filter(Boolean).join(", ") || "unnamed"}${d.unit ? ` (${d.unit})` : ""}: ${d.points} point${
+      d.points === 1 ? "" : "s"}, ${d.distinct < 2 ? "one value" : `${d.distinct} values, ${d.min}–${d.max}`}`;
+    const chosen = was && typeof was === "object" ? ds.findIndex((d) => (d.variable ?? null) === (was.variable ?? null)
+      && (d.target ?? null) === (was.target ?? null) && (!was.unit || d.unit === was.unit)) : 0;
+    const allChosen = was && typeof was === "object" && !("variable" in was) && !("target" in was) && ds.length > 1;
+    which.innerHTML = ds.map((d, i) => option(String(i), text(d), !allChosen && i === Math.max(chosen, 0))).join("")
+      + (ds.length > 1 ? option("all", `all ${ds.length}, side by side`, allChosen) : "");
+    if (ds.length < 2) box.hidden = ds.length === 0;
+  } catch (err) { which.innerHTML = option("all", `all (${err.message || err})`, true); A.which[k] = null; }
+  if (run === A.whichRun[k]) submit.disabled = false;
+}
+function filterLabel(f) {
+  const what = f.label || [...(f.via || []).map((h) => h.to), f.path].filter(Boolean).join(" ").replace(/_/g, " ");
+  if (f.values) return `${what}: ${f.values.join(", ")}`;
+  const u = f.unit ? ` ${f.unit}` : "";
+  return "min" in f && "max" in f ? `${what} ${f.min}–${f.max}${u}` : `${what} ${"min" in f ? "≥" : "≤"} ${f.min ?? f.max}${u}`;
+}
+// A filter's editor: the values present (a category), or a range in one of the units in use (numbers), read by SCALE
+// from the graph (scale_plot_data field).
+async function filterEditor(value, text) {
+  const box = $("an-fedit");
+  if (!value) { box.innerHTML = ""; return; }
+  // the filter's name as the chart's title will say it: "Electrolyte", "CatalystSample bet area", "temperature"
+  const label = text.replace(/ \(category\)$/, "").replace(/\s*\([^)]*\)$/, "").replace(/[→←]\s*/g, "").replace(/:\s*the \w+ itself$/, "")
+    .replace(/:\s*/g, " ").trim();
+  const target = targetOf(value);
+  box.innerHTML = `<span class="gx-subtle">Reading the values present…</span>`;
+  try {
+    const r = await plotCall({ field: { label: $("an-label").value, target } }, A.with.size ? await plotGraphs() : null);
+    if (r.error) throw new Error(r.error);
+    if (r.kind === "quantity" && r.units.length) {
+      // each unit with how many of its values a filter can compare (the others state no convention, scale, ...)
+      const gaps = (u) => Object.keys(u.not_comparable || {}).map((k) => k.split(":").pop().replace(/_/g, " "));
+      box.innerHTML = `<label>Unit<select id="an-funit">${r.units.map((u) => option(u.unit || "", `${u.unit || "no unit"}: ${u.comparable ?? u.records} of ${u.records} records comparable, ${u.min}–${u.max}${
+        gaps(u).length ? ` (the others state no ${gaps(u).join(", ")})` : ""}`, false)).join("")}</select></label>
+        <label>On<select id="an-fctx"></select></label>
+        <label>From<input type="number" step="any" id="an-fmin" placeholder="${esc(r.units[0].min)}"></label>
+        <label>To<input type="number" step="any" id="an-fmax" placeholder="${esc(r.units[0].max)}"></label>
+        <button type="button" class="gx-btn gx-btn-tiny" id="an-fok">Add filter</button>`;
+      const ctxText = (c) => Object.entries(c.context).map(([k, v]) => `${k.replace(/_/g, " ")}: ${v}`).join(", ");
+      const contexts = () => (r.units.find((u) => (u.unit || "") === $("an-funit").value) || {}).contexts || [];
+      const fillCtx = () => {                       // one context: stated; several: the reader picks one, never all
+        const cs = contexts();
+        $("an-fctx").innerHTML = cs.length ? cs.map((c, i) => option(String(i), `${ctxText(c)} (${c.records})`, i === 0)).join("") : option("", "no context to state", true);
+        $("an-fctx").disabled = cs.length < 2;
+      };
+      $("an-funit").onchange = fillCtx;
+      fillCtx();
+      $("an-fok").onclick = () => {
+        const lo = $("an-fmin").value, hi = $("an-fmax").value;
+        if (lo === "" && hi === "") return;
+        const ctx = contexts()[Number($("an-fctx").value)];
+        A.filters.push({ ...target, label, ...(lo !== "" ? { min: Number(lo) } : {}), ...(hi !== "" ? { max: Number(hi) } : {}), ...($("an-funit").value ? { unit: $("an-funit").value } : {}),
+          ...(ctx ? { context: ctx.context } : {}) });
+        A.spec = { ...currentSpec(), filters: [...A.filters] }; A.collapsed = false;
+        renderAnalyze();
+      };
+    } else if (r.values.length) {
+      box.innerHTML = `<div class="gx-an-fvalues" role="group" aria-label="Values to keep">${r.values.slice(0, 60).map((v, i) =>
+        `<label class="gx-check"><input type="checkbox" data-fval="${i}"> ${esc(trunc(v.value, 60))} <span class="gx-subtle">${v.records}</span></label>`).join("")}</div>
+        <button type="button" class="gx-btn gx-btn-tiny" id="an-fok">Add filter</button>`;
+      $("an-fok").onclick = () => {
+        const vals = [...box.querySelectorAll("[data-fval]:checked")].map((c) => r.values[Number(c.dataset.fval)].value);
+        if (!vals.length) return;
+        A.filters.push({ ...target, label, values: vals });
+        A.spec = { ...currentSpec(), filters: [...A.filters] }; A.collapsed = false;
+        renderAnalyze();
+      };
+    } else box.innerHTML = `<span class="gx-subtle">No values to filter on.</span>`;
+  } catch (err) { box.innerHTML = `<span class="gx-card-warn">${esc(err.message || err)}</span>`; }
+}
+const pickGraph = (row) => {
+  if (row.record && G.byId.has(row.record) && (!A.result?.aliased || String(row.id).startsWith(`${aliasOf(G.entry.id)}::`))) goTo(row.record);
+  else if (row.record) status(`${row.record} is a record of another graph: open that graph to see it.`);
+};
+// A graph's alias in a call across graphs: its id as letters, digits, _ and -, starting with a letter.
+const aliasOf = (id) => { const a = String(id).replace(/[^A-Za-z0-9_-]/g, "-").replace(/^[^A-Za-z]+/, ""); return (a || "graph").slice(0, 40); };
+// The graphs to plot together: this one, and the others the reader ticked, each loaded into SCALE here once.
+async function plotGraphs() {
+  if (!A.with.size) return null;
+  const list = [{ alias: aliasOf(G.entry.id), path: G.file }];
+  for (const id of [...A.with].sort()) {
+    const e = manifest.find((x) => x.id === id);
+    if (!e) continue;
+    if (!A.loaded.has(id)) {
+      const r = await fetch(e.path);
+      if (!r.ok) throw new Error(`${e.path}: HTTP ${r.status}`);
+      await rpc({ op: "put", name: `${id}.json`, text: await r.text() });
+      A.loaded.add(id);
+    }
+    list.push({ alias: aliasOf(id), path: `${id}.json` });
+  }
+  return list;
+}
+// plot_data on this graph, or across the graphs ticked (federation: no graph's records merged with another's)
+async function plotCall(args, graphs) {
+  return graphs ? rpc({ op: "call", tool: "plot_data", args: { ...args, graphs } }) : scale("plot_data", args);
+}
+async function graphCsv(spec, graphs) {
+  const r = await plotCall({ spec, format: "csv" }, graphs);
+  if (r.error) throw new Error(r.error);
+  return r.csv;
+}
+async function plotGraph(spec) {
+  const run = A.run;
+  A.spec = spec;
+  A.result = null;                                  // the builder shows this chart's choices; its result follows
+  if (spec.label && spec.label !== A.label) A.label = spec.label;
+  await renderAnalyze();
+  const out = $("an-out");
+  out.innerHTML = `<p class="gx-muted">Plotting… SCALE reads each value under its quantity contract.</p>`;
+  try {
+    const graphs = await plotGraphs();
+    const res = await plotCall({ spec }, graphs);
+    if (run !== A.run) return;
+    if (res.error) throw new Error(res.error);
+    A.result = { kind: "graph", res, spec, graphs, aliased: !!graphs };
+    A.collapsed = true;                             // the builder folds away; Edit chart opens it again
+    inStore("sessionStorage", (st) => st.setItem(`scale-analyze:${G.entry.id}`, JSON.stringify({ spec, with: [...A.with] })));
+    await renderAnalyze();
+  } catch (err) { out.innerHTML = `<p class="gx-card-warn">${esc(err.message || err)}</p>`; }
+}
+// A chart's result: what was plotted and left out, one chart per panel (each with its SVG and PNG), the data as CSV
+// (with record ids, units and sources) and as JSON (the result itself: graphs, access, what was left out).
+// What a chart is made of, in its caption: points, bounds and ranges; a histogram's values binned and not; a box's.
+function caption(p) {
+  const n = (k, w) => (k ? `${k} ${w}${k === 1 ? "" : "s"}` : "");
+  if (p.histogram) return [`${p.histogram.values} values binned (${p.histogram.records_binned ?? "?"} records)`,
+    p.histogram.not_binned ? `${p.histogram.not_binned} bounds or ranges not binned` : ""].filter(Boolean).join(", ");
+  if (p.buckets) return `${p.counted ? p.counted.records : p.counts.points} records counted${p.counted?.in_more_than_one_x ? `, ${p.counted.in_more_than_one_x} under more than one x` : ""}`;
+  if (p.boxes) return `${p.boxes.reduce((s, b) => s + b.n, 0)} values in boxes (quartiles by linear interpolation, whiskers min–max)${
+    p.counts.bounds || p.counts.ranges ? `; ${p.counts.bounds} bounds and ${p.counts.ranges} ranges drawn apart` : ""}`;
+  return [n(p.counts.points, "point"), n(p.counts.bounds, "bound"), n(p.counts.ranges, "range"), p.counts.cited ? `${p.counts.cited} cited` : ""].filter(Boolean).join(", ");
+}
+let resultSeq = 0;
+// A bar of a count (or a histogram's bin): the records under it, each a link to its record (in its own graph only).
+function listBucket(p, row, box, onPick) {
+  const last = row.bin && p.histogram && p.histogram.bins.length && row.bin[1] === Math.max(...p.histogram.bins.map((b) => b.hi));
+  const recs = row.bin ? p.points.filter((q) => ["value", "number"].includes(q.x.type) && q.x.value >= row.bin[0] && (q.x.value < row.bin[1] || (last && q.x.value === row.bin[1])))
+    : p.points.filter((q) => String(q.x.value) === String(row.bucket) && (row.series == null || (q.series || "") === row.series));
+  const at = row.bin ? `${row.bin[0]}–${row.bin[1]}` : row.bucket;
+  let list = box.parentElement.querySelector(".gx-an-bucket");
+  if (!list) { list = document.createElement("div"); list.className = "gx-an-bucket"; box.after(list); }
+  list.innerHTML = `<p class="gx-subtle">${recs.length} record${recs.length === 1 ? "" : "s"} at ${esc(at)}${row.series ? ` (${esc(row.series)})` : ""}:</p><ul>${
+    recs.slice(0, 200).map((q, k) => `<li><button type="button" class="gx-link-btn" data-rec="${k}">${esc(trunc(q.name || q.record, 90))}</button></li>`).join("")}</ul>`;
+  list.querySelectorAll("[data-rec]").forEach((b) => (b.onclick = () => (onPick || pickGraph)(recs[Number(b.dataset.rec)])));
+  list.querySelector("[data-rec]")?.focus();
+}
+async function showResult(res, el, { onPick = null, csv = null, dark = false, compact = false } = {}) {
+  const c = res.counts || {}, left = res.left_out || {}, uid = ++resultSeq;
+  const queryLeft = (res.graphs || []).flatMap((g) => Object.entries(g.query_left_out || {}).map(([k, n]) => [g.alias, k, n]));
+  const charts = (res.panels || []).flatMap(splitFacets);
+  const reasons = Object.entries(left.by_reason || {}).sort((a, b) => b[1] - a[1]);
+  const digest = res.digest_check ? `<p class="gx-an-digest is-${esc(res.digest_check)}">${esc({ verified: "The file is the one the record names (its sha256 matches): the rows the graph cites are ringed.",
+    mismatch: "The file is not the one the record names (its sha256 differs): no row is shown as cited.", not_recorded: "The record states no sha256: the file cannot be checked against it, and no row is shown as cited." }[res.digest_check])}</p>` : "";
+  const warn = [...(res.graphs || []).filter((g) => g.status && !["answered", "no_matching_record"].includes(g.status))
+      .map((g) => `${g.alias}: ${g.status}${g.error ? ` (${g.error})` : ""}`),
+    ...(res.partial ? ["Partial: not every graph was read; an absence here is not an absence there."] : []),
+    ...(res.graphs || []).filter((g) => g.data_status === "synthetic_example").map((g) => `${g.alias}: a synthetic example, not evidence about the world.`),
+    ...(res.status && !["plotted", "no_points"].includes(res.status) ? [`The query's answer is ${res.status}.`] : []),
+    ...(res.left_out?.not_a_number_rows ? Object.entries(res.left_out.not_a_number_rows).map(([col, rows]) => `${col}: text where numbers are, rows ${rows.join(", ")}`) : [])];
+  el.innerHTML = `${digest}${warn.length ? `<div class="gx-an-warn">${warn.map((w) => `<p>${esc(w)}</p>`).join("")}</div>` : ""}
+    <p class="gx-an-summary"><b>${esc(res.title || "")}</b> · ${c.points ?? 0} point${c.points === 1 ? "" : "s"} in ${c.panels ?? 0} panel${c.panels === 1 ? "" : "s"}${
+      (left.total ?? c.left_out) ? ` · ${left.total ?? c.left_out} left out` : ""}${res.access && res.access.level && res.access.level !== "public" ? ` · access: ${esc(res.access.level)}` : ""}</p>
+    ${reasons.length || queryLeft.length ? `<details class="gx-an-left"><summary>What was left out, and why</summary><ul>${reasons.map(([k, n]) => `<li>${esc(reasonText(k))}: ${n}</li>`).join("")}${
+      queryLeft.map(([g, k, n]) => `<li>by the query${(res.graphs || []).length > 1 ? ` (${esc(g)})` : ""}: ${esc(reasonText(`row:${k}`).replace(/^row: /, ""))}: ${n}</li>`).join("")}${
+      c.filtered_out ? `<li>not matching a category filter (kept out on purpose): ${c.filtered_out}</li>` : ""}</ul></details>` : ""}
+    ${(res.panels || []).length && !compact ? `<p class="gx-an-key" aria-label="Key">● a value (its bar: the reported uncertainty) · △▽◁▷ a one-sided bound, pointing the way the value lies · ━ a range, end to end${
+      (res.panels || []).some((p) => p.points.some((q) => (q.cited_by || []).length)) ? " · ◯ a row a record cites (dashed: named by a locator only)" : ""}</p>` : ""}
+    ${(res.panels || []).length > 1 ? `<p class="gx-subtle">${res.panels.length} panels: their values differ in unit, comparison context or contract, so they never share an axis.</p>` : ""}
+    ${charts.length > 2 ? `<div class="gx-an-pick"><label>Show <select id="an-pick-${uid}"><option value="all">all ${charts.length} panels, side by side</option>${
+      charts.map((p, i) => `<option value="${i}">${esc(p.title)}</option>`).join("")}</select></label></div>` : ""}
+    <div class="gx-an-grid${charts.length > 2 && !compact ? " is-multi" : ""}">
+    ${charts.map((p, i) => `<figure class="gx-an-chart" data-fig="${i}"><figcaption>${esc(p.title)} <span class="gx-subtle">· ${caption(p)}</span>${
+      p.x.comparability || p.y.comparability ? ` <span class="gx-an-badge" title="${esc(p.y.comparability || p.x.comparability)}">comparability unknown</span>` : ""}</figcaption>
+      <div class="gx-an-vega" data-panel="${i}"></div>
+      ${compact ? "" : `<div class="gx-an-dl"><button type="button" class="gx-btn gx-btn-tiny" data-svg="${i}">SVG</button><button type="button" class="gx-btn gx-btn-tiny" data-png="${i}">PNG</button></div>`}
+      ${p.points.length && !(p.y.type === "count") ? `<details class="gx-an-table"><summary>Points as a table (${p.points.length})</summary><table><thead><tr><th>Record</th><th>${esc(p.y.label)}</th><th>${esc(p.x.label)}</th>${(p.series || []).length ? "<th>Series</th>" : ""}<th>Conditions</th></tr></thead><tbody>${
+        p.points.slice(0, 300).map((q) => `<tr><td>${q.record ? `<button type="button" class="gx-link-btn" data-goto="${esc(q.record)}" data-pid="${esc(q.id)}">${esc(trunc(q.name || q.record, 60))}</button>` : esc(q.id)}</td><td>${esc(shownValue(q.y))}</td><td>${esc(shownValue(q.x))}</td>${(p.series || []).length ? `<td>${esc(q.series || "")}</td>` : ""}<td>${esc(Object.entries(q.conditions || {}).filter(([k]) => k !== "source").map(([k, v]) => `${k}: ${v}`).join("; "))}</td></tr>`).join("")}</tbody></table>${p.points.length > 300 ? `<p class="gx-subtle">The first 300 of ${p.points.length}; the CSV holds them all.</p>` : ""}</details>` : ""}
+      ${p.y.type === "count" && (p.buckets || p.histogram) ? `<details class="gx-an-table"><summary>Counts as a table</summary><table><thead><tr><th>${esc(p.x.label)}</th>${
+        (p.series || []).length ? "<th>Series</th>" : ""}<th>Records</th>${p.buckets ? "<th>Sources</th>" : ""}<th></th></tr></thead><tbody>${
+        (p.buckets || []).map((b, j) => `<tr><td>${esc(b.x)}</td>${(p.series || []).length ? `<td>${esc(b.series || "")}</td>` : ""}<td>${b.records}</td><td>${b.sources}</td><td><button type="button" class="gx-link-btn" data-bucket="${i}:${j}">its records</button></td></tr>`).join("")}${
+        p.histogram ? p.histogram.bins.filter((b) => b.records).map((b, j) => `<tr><td>${esc(b.lo)}–${esc(b.hi)}</td>${(p.series || []).length ? `<td>${esc(b.series || "")}</td>` : ""}<td>${b.records}</td><td><button type="button" class="gx-link-btn" data-bin="${i}:${b.lo}:${b.hi}">its records</button></td></tr>`).join("") : ""}</tbody></table></details>` : ""}</figure>`).join("")}
+    </div>
+    ${(res.limitations || []).length && !compact ? `<details class="gx-an-left"><summary>How to read these charts</summary><ul>${res.limitations.map((l) => `<li>${esc(l)}</li>`).join("")}<li>Filled circles are values (bars: error bars), open triangles one-sided bounds pointing the way the value lies, lines from one end to the other ranges.</li></ul></details>` : ""}
+    <div class="gx-an-dl">${csv ? `<button type="button" class="gx-btn gx-btn-tiny" data-csv>Data (CSV)</button>` : ""}<button type="button" class="gx-btn gx-btn-tiny" data-json>Data (JSON)</button></div>`;
+  const base = (res.title || "chart").replace(/[^A-Za-z0-9]+/g, "-").replace(/^-|-$/g, "").slice(0, 60) || "chart";
+  el.querySelector("[data-json]").onclick = () => download(`${base}.json`, new Blob([JSON.stringify(res, null, 1)], { type: "application/json" }));
+  if (csv) el.querySelector("[data-csv]").onclick = async () => {
+    try { download(`${base}.csv`, new Blob([await csv()], { type: "text/csv" })); } catch (err) { status(err.message || String(err)); }
+  };
+  el.querySelectorAll("[data-goto]").forEach((b) => (b.onclick = () => (onPick || pickGraph)({ record: b.dataset.goto, id: b.dataset.pid })));
+  el.querySelectorAll("[data-bucket]").forEach((b) => (b.onclick = () => {
+    const [i, j] = b.dataset.bucket.split(":").map(Number), bk = charts[i].buckets[j];
+    listBucket(charts[i], { bucket: bk.x, series: bk.series || null }, el.querySelector(`[data-panel="${i}"]`), onPick);
+  }));
+  el.querySelectorAll("[data-bin]").forEach((b) => (b.onclick = () => {
+    const [i, lo, hi] = b.dataset.bin.split(":");
+    listBucket(charts[Number(i)], { bin: [Number(lo), Number(hi)] }, el.querySelector(`[data-panel="${i}"]`), onPick);
+  }));
+  const picker = el.querySelector(`#an-pick-${uid}`);
+  if (picker) picker.onchange = () => {
+    const v = picker.value;
+    el.querySelector(".gx-an-grid").classList.toggle("is-multi", v === "all");
+    el.querySelectorAll("[data-fig]").forEach((f) => (f.hidden = v !== "all" && f.dataset.fig !== v));
+    for (const view of views) if (view) view.resize().runAsync();
+  };
+  const views = [];
+  for (const [i, p] of charts.entries()) {
+    const box = el.querySelector(`[data-panel="${i}"]`);
+    if (!box || !box.isConnected) return;            // another result replaced this one while it was drawn
+    try {
+      views[i] = await drawChart(box, p, { colors: chartColours(dark), height: compact || charts.length > 2 ? 190 : 240 }, onPick && ((row) => {
+        if (row.bucket === undefined && row.bin === undefined) return onPick(row);
+        listBucket(p, row, box, onPick);
+      }));
+    } catch (err) { box.innerHTML = `<p class="gx-card-warn">${esc(err.message || err)}</p>`; }
+  }
+  el.querySelectorAll("[data-svg]").forEach((b) => (b.onclick = async () => {
+    const v = views[Number(b.dataset.svg)]; if (v) download(`${base}-${Number(b.dataset.svg) + 1}.svg`, new Blob([await v.toSVG()], { type: "image/svg+xml" }));
+  }));
+  el.querySelectorAll("[data-png]").forEach((b) => (b.onclick = async () => {
+    const v = views[Number(b.dataset.png)]; if (v) { const url = await v.toImageURL("png", 2); const a = document.createElement("a"); a.href = url; a.download = `${base}-${Number(b.dataset.png) + 1}.png`; a.click(); }
+  }));
+}
+
+// A linked file (a Dataset's or TimeSeries' own data), attached in the inspector: read here, its sha256 compared with the
+// record's, plotted by its columns. It is kept in this tab's memory only and sent nowhere (not to the worker's disk,
+// the service or a model).
+function linkedFileSection(rec) {
+  const f = A.files.get(rec.id), recorded = rec.props?.sha256;
+  const state = f ? `<p class="gx-an-digest is-${esc(f.check)}">${esc(f.name)}: ${esc({ verified: "the file is the one this record names (sha256 matches)",
+    mismatch: "the file is not the one this record names (its sha256 differs)", not_recorded: "this record states no sha256 to check it against" }[f.check])}</p>
+    <button type="button" class="gx-btn gx-btn-tiny" id="act-plot-file">Plot its columns</button>` : "";
+  return `<section class="gx-inspector-section"><h3>Linked file</h3>
+    <p class="gx-subtle">${rec.props?.uri ? `Kept at ${/^https?:\/\//i.test(String(rec.props.uri)) ? `<a href="${esc(rec.props.uri)}" target="_blank" rel="noopener noreferrer">${esc(trunc(rec.props.uri, 60))}</a>`
+      : `<code>${esc(trunc(rec.props.uri, 60))}</code>`}. ` : ""}${recorded ? "The record states its sha256. " : ""}Attach your copy (CSV) to plot it: it is read in this browser and sent nowhere.</p>
+    <label class="gx-btn gx-btn-tiny gx-attach">Attach local file<input type="file" id="act-attach" accept=".csv,text/csv,text/plain" hidden></label>
+    ${state}</section>`;
+}
+function wireLinkedFile(rec) {
+  $("act-attach").onchange = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    try {
+      const buf = await file.arrayBuffer();
+      const hex = await sha256Hex(buf);
+      const text = new TextDecoder("utf-8").decode(buf);
+      A.files.set(rec.id, { name: file.name, text, sha: hex, check: digestCheck(rec.props?.sha256, hex), recorded: rec.props?.sha256 || null,
+        columns: csvHeader(text) });
+      showDetails(rec);
+      if (!$("analyze").hidden && A.from === rec.id) renderAnalyze();   // a chart of the file it replaced is gone
+    } catch (err) { status(`The file could not be read: ${err.message || err}`); }
+  };
+  const plot = $("act-plot-file");
+  if (plot) plot.onclick = () => { A.from = rec.id; A.result = null; openAnalyze(true); };
+}
+function renderFileBuilder(body, id) {
+  const f = A.files.get(id), cols = f.columns, s = f.spec || {};
+  const opts = (cur, none = false) => (none ? option("", "none", !cur) : "") + cols.map((c) => option(c, c, c === cur)).join("");
+  body.innerHTML = `<p class="gx-muted">${esc(f.name)}, attached to <a href="#" data-id="${esc(id)}">${esc(name(G.byId.get(id)))}</a>: read in this browser, sent nowhere.</p>
+    <form class="gx-an-build" id="an-file-form">
+      <label>Y<select id="an-fy">${opts(s.y || cols[1])}</select></label>
+      <label>X<select id="an-fx">${opts(s.x || cols[0])}</select></label>
+      <label>Series<select id="an-fs">${opts(s.series, true)}</select></label>
+      <label>Facet<select id="an-ff">${opts(s.facet, true)}</select></label>
+      <label>Mark<select id="an-fm">${["point", "line", "bar"].map((m) => option(m, m, m === (s.mark || "point"))).join("")}</select></label>
+      <button type="submit" class="gx-btn gx-btn-primary">Plot</button>
+    </form><div class="gx-an-out" id="an-out"></div>`;
+  wireIds(body);
+  $("an-file-form").onsubmit = async (e) => {
+    e.preventDefault();
+    const spec = { x: $("an-fx").value, y: $("an-fy").value, mark: $("an-fm").value, title: `${$("an-fy").value} vs ${$("an-fx").value} (${f.name})`,
+      ...($("an-fs").value ? { series: $("an-fs").value } : {}), ...($("an-ff").value ? { facet: $("an-ff").value } : {}) };
+    f.spec = spec;
+    const out = $("an-out"), run = A.run;
+    out.innerHTML = `<p class="gx-muted">Reading the file…</p>`;
+    try {
+      const res = await rpc({ op: "table", args: { text: f.text, spec, path: G.loaded ? G.file : "", dataset: id, sha256: f.recorded, file_sha256: f.sha } });
+      if (run !== A.run) return;
+      if (res.error) throw new Error(res.error);
+      showResult(res, out, { onPick: (row) => { if (row.citedBy) goTo(row.citedBy); else status(`Row ${row.row} of ${f.name}: no record of the graph cites it.`); }, csv: async () => res.csv });
+    } catch (err) { out.innerHTML = `<p class="gx-card-warn">${esc(err.message || err)}</p>`; }
+  };
 }
 
 // ------------------------------------------------------------------------------------------ example questions
