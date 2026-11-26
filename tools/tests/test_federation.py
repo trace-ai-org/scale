@@ -343,3 +343,17 @@ def test_identity_admission_is_strict_and_a_malformed_or_unpinned_graph_stays_it
     keys = {r["row_key"] for r in res["rows"]}
     assert all(x["row_key"] in keys for mt in res["joins"][0]["matches"] for xs in mt["graphs"].values() for x in xs)
     assert res["joins"][0]["over_returned_rows_only"]
+
+
+def test_the_model_view_is_refused_across_graphs_not_silently_dropped(tmp_path):
+    """The model view (one graph's compact result) is not built for a query or search across graphs yet: asking for it
+    is a clear error, never a full result returned in its place or a silent merge."""
+    from scale.api import ScaleToolkit
+    tk = ScaleToolkit(workspace=tmp_path)
+    tk.call("scale_example", {"name": "c-inconsistent-reference"})
+    graphs = [{"alias": "a", "path": "c-inconsistent-reference.json"}, {"alias": "b", "path": "c-inconsistent-reference.json"}]
+    plan = {"match": {"label": "CatalyticTest", "as": "t"}, "return": ["t.name"]}
+    for tool, args in (("scale_query", {"plan": plan}), ("scale_search", {"query": "copper"})):
+        res = tk.call(tool, {**args, "graphs": graphs, "view": "model"})
+        assert "view model is not available" in res.get("error", ""), tool
+    assert "error" not in tk.call("scale_query", {"plan": plan, "graphs": graphs})

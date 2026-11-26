@@ -150,7 +150,7 @@ def cmd_graph_validate(args):
 def cmd_graph_stats(args):
     from . import pgraph
     doc = load_doc(args.file)
-    _emit(pgraph.stats(doc), args)
+    _emit(pgraph.stats(doc, args.label, args.property), args)
 
 
 def _viewer_doc(args, doc=None):
@@ -1281,7 +1281,11 @@ def build_parser() -> argparse.ArgumentParser:
     sp.add_argument("--source-text", action="append", help="<source-id>=<file> for verbatim quote checks")
     sp.add_argument("-v", "--verbose", action="store_true"); out_opts(sp, ("text", "json"))
     sp = add("stats", cmd_graph_stats, "count labels, edge types, properties and units in use, and link patterns", gr)
-    sp.add_argument("file"); out_opts(sp)
+    sp.add_argument("file")
+    sp.add_argument("--label", action="append", help="keep properties, units and link patterns of this label or edge type "
+                    "only (repeatable)")
+    sp.add_argument("--property", action="append", help="keep properties and units of this property only (repeatable)")
+    out_opts(sp)
     def viewer_opts(sp):
         sp.add_argument("--as", dest="viewer", action="append", metavar="ID",
                         help="viewer: an institution, person or project id (repeatable)")

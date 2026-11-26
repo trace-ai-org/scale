@@ -19,9 +19,7 @@ const ready = (async () => {
   py.FS.mkdirTree("/work");
   py.runPython(`
 import json
-from scale import pgraph
 from scale.api import ScaleToolkit
-from scale.util import load_doc
 
 _kit = ScaleToolkit(workspace="/work")
 
@@ -58,11 +56,8 @@ def contribution(text):                      # the graph as it is contributed: n
                                          "source_chars": 0, "basis": "contributed from a reader's browser"}})
     return json.dumps({"doc": capped, "withheld": rep["withheld"], "slug": sid.split("/source/", 1)[-1]}, default=str)
 
-def scale_call(tool, args_json):
-    a = json.loads(args_json)
-    if tool == "stats":                      # what the service's question loop gives as stats
-        return json.dumps(pgraph.stats(load_doc("/work/" + a["path"])), default=str)
-    return json.dumps(_kit.call(tool, a), default=str)
+def scale_call(tool, args_json):             # every tool, stats included, through the toolkit (scale.api)
+    return json.dumps(_kit.call(tool, json.loads(args_json)), default=str)
 `);
   call = py.globals.get("scale_call");
   self.curate = { start: py.globals.get("curate_start"), call: py.globals.get("curate_call"), graph: py.globals.get("curate_graph"),
