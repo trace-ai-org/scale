@@ -5,7 +5,7 @@ tools do the checking; the skill says what to read, record or decide. The skills
 answers:
 
 > **index-sources** → a frozen corpus → **fetch-corpus** → its files → **curate-corpus** → scale-catal documents →
-> **query-graph** (and **plan-synthesis** on it), **map-coverage**, **scan-conflicts** → **export-graph**; **evolve-schema** for what the schema cannot
+> **query-graph**, **map-coverage**, **scan-conflicts** → **export-graph**; **evolve-schema** for what the schema cannot
 > express yet
 
 | Skill | What it does |
@@ -14,7 +14,6 @@ answers:
 | [fetch-corpus](fetch-corpus/SKILL.md) | fetch a frozen corpus's files (PDFs and supporting information; paywalled ones only through the library's proxy) and record in the corpus what was fetched and what was not |
 | [curate-corpus](curate-corpus/SKILL.md) | curate one publication, one data file or a frozen corpus into scale-catal documents, with evidence on every statement and typed absences |
 | [query-graph](query-graph/SKILL.md) | answer a question with a graph query plan, rows as reported with their evidence; a question that asks what to do gets a proposal built from the closest records, each step citing one, checked (and reviewed when asked) |
-| [plan-synthesis](plan-synthesis/SKILL.md) | plan how to make a material on top of query-graph: each requirement a sub-goal with its evidence graded, the graph's controlled experiments (variant pairs) where no record meets it, chemistry rules on the draft, one review, and a plan for what to change if it fails; also what one change, one procedure or one failure will do |
 | [map-coverage](map-coverage/SKILL.md) | map what the documents cover (materials by properties by conditions) and each kind of absence |
 | [scan-conflicts](scan-conflicts/SKILL.md) | find values that seem to disagree and classify each pair as genuine, apparent or not comparable |
 | [export-graph](export-graph/SKILL.md) | hand a document to another system, validated, capped and filtered for its audience |
@@ -34,7 +33,6 @@ answers:
 | one source, a DOI, a PDF, or a data file to record | curate-corpus |
 | an unfinished curation run, or "continue" | curate-corpus (references/runs.md) |
 | "what do the sources report about …" | query-graph |
-| "how do I make …", "adapt this synthesis to …", "what will this change do", "why did this synthesis fail" | plan-synthesis (it runs query-graph's precedents and checks) |
 | "what is covered / where are the gaps" | map-coverage |
 | "do the sources disagree about …" | scan-conflicts |
 | "export / share the graph" | export-graph; a contribution to a graph in `graphs/` only when a person asks |
