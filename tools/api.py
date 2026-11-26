@@ -237,6 +237,9 @@ TOOLS: list[dict] = [
             "field": {"type": "object", "description": "Instead of a chart: what a condition filter on {label, target} can "
                                                        "keep (target a path, sample.bet_area, or {via, path}): the text "
                                                        "values present, or the units and ranges of the numbers."},
+            "descriptors": {"type": "object", "description": "Instead of a chart: the descriptors (variables and products) "
+                                                             "of a result list {label, target: {entries (, via)}}, with "
+                                                             "their points and spread, the most informative first."},
             "format": {"type": "string", "enum": ["json", "csv"], "description": "csv adds the points as CSV text."},
             **_VIEW,
             "offset": {"type": "integer", "minimum": 0, "default": 0,
@@ -821,7 +824,7 @@ class ScaleToolkit:
     def _scale_plot_data(self, spec: dict | None = None, document: dict | None = None, path: str | None = None,
                          domain: str | None = None, graphs: list | None = None, identity_map: Any = None,
                          suggest: bool = False, format: str = "json", view: str = "full", offset: int = 0,
-                         page_size: int = 50, field: dict | None = None) -> dict:
+                         page_size: int = 50, field: dict | None = None, descriptors: dict | None = None) -> dict:
         from . import plotdata
         _check_view(view)
         if format not in ("json", "csv"):
@@ -840,6 +843,10 @@ class ScaleToolkit:
             members = self._members([{"alias": "graph", **({"path": path} if path else {"document": document})}], domain)
             if members[0].get("status") in ("unavailable", "unsupported_version"):
                 raise ScaleError(members[0].get("error") or "the document cannot be read")
+        if descriptors is not None:
+            if not isinstance(descriptors, dict) or not isinstance(descriptors.get("label"), str) or "target" not in descriptors:
+                raise ScaleError("descriptors is {label, target}: the records and their result list ({entries (, via)})")
+            return plotdata.descriptors(members, descriptors["label"], descriptors["target"])
         if field is not None:
             if not isinstance(field, dict) or not isinstance(field.get("label"), str) or "target" not in field:
                 raise ScaleError("field is {label, target}: the records and what a filter would read of them")

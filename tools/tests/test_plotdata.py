@@ -468,3 +468,34 @@ def test_values_no_contract_reads_stay_apart_by_descriptor(pm):
     deg = [p for p in res["panels"] if p["y"].get("unit") == "°"]
     assert len(deg) == 2 and {p["y"]["variable"] for p in deg} == {"ex:pm/var/peak-a", "ex:pm/var/peak-b"}
     assert all(p["y"]["comparability"].startswith("unknown") for p in deg)
+
+
+def test_a_result_list_names_its_descriptors_the_varying_first_and_suggestions_plot_one_that_varies(pm):
+    # a linked record's results: one descriptor constant over many records, one that varies over fewer
+    sample = "ex:pm/sample/cu-foil"
+    for i, (const, var) in enumerate([(29.0, 0.1), (29.0, 0.4)]):
+        pm["nodes"].append({"id": f"ex:pm/char/{i}", "label": "Characterization", "props": {"name": f"char {i}", "result_values": [
+            {"id": "peak", "status": "present", "value": const, "unit": "°", "variable": "ex:pm/var/peak"},
+            {"id": "peak2", "status": "present", "value": const, "unit": "°", "variable": "ex:pm/var/peak2"},
+            {"id": "cl", "status": "present", "value": var, "unit": "at.%", "variable": "ex:pm/var/cl"}]}})
+        pm["links"].append({"id": f"ex:pm/link/char{i}", "type": "CHARACTERIZES", "source": f"ex:pm/char/{i}", "target": sample,
+                            "props": {"origin": "synthetic"}})
+    target = {"via": [{"edge": "USES_CATALYST", "to": "CatalystSample"},
+                      {"edge": "CHARACTERIZES", "to": "Characterization", "direction": "in"}], "entries": "result_values"}
+    ds = plotdata.descriptors(members(pm=pm), "CatalyticTest", target)["descriptors"]
+    assert ds[0]["variable"] == "ex:pm/var/cl" and ds[0]["distinct"] == 2 and ds[0]["unit"] == "at.%"
+    assert all(d["distinct"] == 1 for d in ds[1:])                      # constants last
+    # one descriptor plots one panel; the axis names it
+    res = plotdata.plot_data(members(pm=pm), {**CO_FE, "x": {**target, "variable": "ex:pm/var/cl"}})
+    assert len(res["panels"]) == 1 and res["panels"][0]["x"]["unit"] == "at.%"
+    # a descriptor that states no product is that one, never every product; a unit selects that unit's results
+    ds = plotdata.descriptors(members(pm=load_doc(PM)), "CatalyticTest", {"entries": "result_values"})["descriptors"]
+    none = next(d for d in ds if d["variable"] == FE and d["target"] is None)
+    res = plotdata.plot_data(members(pm=load_doc(PM)), {**CO_FE, "y": {"entries": "result_values", "variable": FE,
+                                                                       "target": None, "unit": none["unit"]}})
+    assert res["counts"]["query_rows"] == 1                                  # the unassigned FE alone
+    assert res["left_out"]["items"][0]["entry"] == "/result_values/unassigned_fe"   # (no species: not on a species axis)
+    # suggestions plot one descriptor of a result list at a time, and only one whose values vary
+    for s in plotdata.suggest(members(pm=load_doc(PM)))["suggestions"]:
+        if isinstance(s["spec"]["y"], dict):
+            assert s["spec"]["y"].get("target") or s["spec"]["y"].get("variable"), s["title"]

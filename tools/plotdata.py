@@ -70,7 +70,7 @@ PLOT_VERSION = 1
 SPEC_KEYS = {"plot", "title", "description", "plan", "label", "where", "filters", "x", "y", "series", "facet", "mark",
              "population"}
 POPULATIONS = ("observations", "all")
-AXIS_KEYS = {"path", "entries", "kind", "variable", "target", "label", "via", "count"}
+AXIS_KEYS = {"path", "entries", "kind", "variable", "target", "label", "via", "count", "unit"}
 MARKS = ("point", "line", "bar", "box")
 REC = "rec"
 # what a series, a facet or a category axis may name besides a path: records a test links to, and the graph
@@ -147,8 +147,12 @@ def _axis(a: Any, where: str, with_plan: bool) -> dict:
     if "entries" in a and with_plan:
         raise ScaleError(f"{where}: with a plan, an axis names a returned path (bind entries with the plan's entries step)")
     for k in (AXIS_KEYS - {"via", "count"}) & set(a):
+        if a[k] is None and k in ("variable", "target") and "entries" in a:
+            continue                                 # null: the results that state none (never: every one)
         if not (isinstance(a[k], str) and (a[k].strip() or (k == "path" and "via" in a))):
-            raise ScaleError(f"{where}.{k} is text")
+            raise ScaleError(f"{where}.{k} is text (or, for variable and target of entries, null: the results stating none)")
+    if "unit" in a and "entries" not in a:
+        raise ScaleError(f"{where}.unit selects the results of an entries axis in one unit")
     if "path" in a and _scalar_of_value(a["path"]):
         raise ScaleError(f"{where}: {a['path']!r} names a field of a value object; name the value itself "
                          f"({a['path'].rsplit('.', 1)[0]!r}), so that its unit, bound and context stay with it")
@@ -297,7 +301,8 @@ class _Binder:
         st = {"from": start, "entries": a["entries"], "as": var}
         if a.get("kind"):
             st["kind"] = a["kind"]
-        fs = [{"prop": q, "op": "eq", "value": a[q]} for q in ("variable", "target") if a.get(q)]
+        fs = [{"prop": q, "op": "eq", "value": a[q]} if a[q] is not None else {"prop": q, "op": "missing"}
+              for q in ("variable", "target") if q in a]
         if fs:
             st["where"] = fs
         self.steps.append(st)
@@ -485,6 +490,45 @@ def field_values(members: list[dict], label: str, target: Any) -> dict:
                                                                        kv[0]))],
             "note": "a range filter keeps only values its scientific comparison can compare (comparable): a value whose "
                     "context (a pressure's convention, a potential's reference scale) is not stated is left out"}
+
+
+def descriptors(members: list[dict], label: str, target: Any) -> dict:
+    """The descriptors of a result list (a record's own, ``{entries}``, or a linked record's, ``{via, entries}``): each
+    variable and product present, with its unit, the points it would give, how many distinct values and their range,
+    the most informative first (values that vary, then more points), so that a builder asks which one to plot."""
+    t = dict(target if isinstance(target, dict) else {"entries": target})
+    if not isinstance(t.get("entries"), str):
+        raise ScaleError("descriptors are those of a result list: target is {entries (, via)}")
+    if t.get("via"):
+        t["via"] = _via(t["via"], "target")
+    plan = {"match": {"label": label, "as": REC}, "steps": []}
+    path = _Binder(plan).target({k: t[k] for k in ("via", "entries") if k in t}, "d", optional=False)
+    plan["return"] = [path]
+    res = federation.run(members, plan, None, limit=federation.NO_LIMIT)
+    by_alias = {m["alias"]: m for m in members}
+    found: dict[tuple, dict] = {}
+    for r in res["rows"]:
+        g = by_alias[r["graph"]]["graph"]
+        v = r["values"].get(path)
+        v = v[0] if isinstance(v, list) and len(v) == 1 else v
+        form, _ = typed(v)
+        if form is None or form["type"] not in ("value", "bound", "range"):
+            continue
+        key = (v.get("variable") if isinstance(v.get("variable"), str) else None,
+               v.get("target") if isinstance(v.get("target"), str) else None, form.get("unit"))
+        d = found.setdefault(key, {"variable": key[0], "variable_name": _name(g, key[0]), "target": key[1],
+                                   "target_name": _name(g, key[1]), "unit": key[2], "points": 0, "values": set()})
+        d["points"] += 1
+        d["values"].add(tuple(form.get(k) for k in ("type", "value", "lower", "upper", "bound")))
+    out = []
+    for d in found.values():
+        vals = d.pop("values")
+        ends = sorted(x for v in vals for x in v[1:4] if _num(x))
+        out.append({**d, "distinct": len(vals), **({"min": ends[0], "max": ends[-1]} if ends else {})})
+    out.sort(key=lambda d: (d["distinct"] < 2, -d["points"], -d["distinct"], str(d["variable_name"] or ""),
+                            str(d["target_name"] or ""), str(d["unit"])))
+    return {"label": label, "target": t, "descriptors": out,
+            "note": "the most informative first: values that vary, then more points; a constant shows nothing"}
 
 
 # what a point's tooltip says of its measurement: a test's conditions and the records it ran with
@@ -782,6 +826,11 @@ def plot_data(members: list[dict], spec: Any, identity_map: dict | None = None) 
                 ctx_ = {k: x for k, x in ((tag_ or {}).get("context") or {}).items()}
                 if ctx_:
                     range_ctx.setdefault(i, {})[dump_canonical(ctx_)] = ctx_
+        if any(spec[k].get("unit") and _unit((r["values"].get(roles[k]) or {}).get("unit")
+                                                 if isinstance(r["values"].get(roles[k]), dict) else None) != spec[k]["unit"]
+               for k in ("x", "y") if isinstance(spec.get(k), dict) and "entries" in spec[k]):
+            filtered_out += 1                       # another unit of the descriptor: another chart's
+            continue
         axes = {}
         counted = r["bound"].get(roles["record"])
         counted = counted if isinstance(counted, str) else None
@@ -987,7 +1036,10 @@ def _panels(points: list[dict], spec: dict, roles: dict, by_alias: dict) -> list
             if t.get("kind") and _human(t["kind"]) not in label:     # entries of several kinds: say which this is
                 label = f"{label}: {_human(t['kind'])}"
             g0 = (by_alias.get(pts[0]["graph"]) or {}).get("graph") if pts else None
-            named = [n for n in (_name(g0, t.get(f)) for f in ("variable", "target") if t.get(f)) if n]
+            # the descriptor it names: the one the axis chose, else the one its values keep apart (no contract)
+            named = [n for n in (_name(g0, spec[k].get(f) or t.get(f)) for f in ("variable", "target")
+                                 if spec[k].get(f) or t.get(f)) if n]
+            named = [n for n in named if n.lower() not in label.lower()]
             if named:                                 # no contract reads it: its descriptor and product name it
                 label = f"{label}: {', '.join(named)}"
             shown = _ctx_text(by_alias, t.get("context") or {})
@@ -1300,33 +1352,47 @@ def suggest(members: list[dict], limit: int = 12) -> dict:
                     if panel and role == "condition":
                         conds[prop] = (panel, json.dumps([v.get(k) for k in ("value", "lower", "upper", "bound", "unit")]))
                     elif panel and role == "outcome":
-                        outs[("path", prop)] = [panel]
+                        outs[("path", prop, None, None)] = ([panel], {json.dumps([v.get(k) for k in ("value", "lower",
+                                                                                                     "upper", "bound")])})
                 elif isinstance(v, list) and v and all(isinstance(x, dict) and "status" in x for x in v) \
-                        and any(isinstance(x.get("target"), str) for x in v):
-                    ps = sorted({p for x in v if (p := _usable(rd, node, prop, x))})
-                    if ps:
-                        outs[("entries", prop)] = ps
+                        and any(isinstance(x.get("target"), str) or isinstance(x.get("variable"), str) for x in v):
+                    for x in v:                          # one chart per descriptor (its variable and product)
+                        p_ = _usable(rd, node, prop, x)
+                        if p_:
+                            key = ("entries", prop, x.get("variable") if isinstance(x.get("variable"), str) else None,
+                                   x.get("target") if isinstance(x.get("target"), str) else None)
+                            ps_, ys_ = outs.setdefault(key, ([], set()))
+                            ps_.append(p_)
+                            ys_.add(json.dumps([x.get(k) for k in ("value", "lower", "upper", "bound")]))
             samples = sorted(f"{m['alias']}::{e['target']}" for e in g.out.get(rid, []) if e["type"] == "USES_CATALYST")
             xs = list(conds.items()) + ([("catalyst", ("category", json.dumps(samples)))] if samples else [])
-            for o, ops in outs.items():
+            for o, (ops, ykey) in outs.items():
                 for c, (cp, xkey) in xs:
                     t = tallies.setdefault((node.get("label"), o, c), {"records": 0, "panels": set(), "graphs": set(),
-                                                                       "x": set()})
+                                                                       "x": set(), "y": set(), "g": g})
                     t["records"] += 1
                     t["graphs"].add(m["alias"])
                     t["x"].add(xkey)
+                    t["y"].update(ykey)
                     t["panels"].update(f"{p}|{cp}" for p in ops)
-    ranked = sorted(tallies.items(), key=lambda kv: (-kv[1]["records"], kv[0][0] or "", kv[0][1], kv[0][2]))
+    ranked = sorted(tallies.items(), key=lambda kv: (-kv[1]["records"], -len(kv[1]["y"]), kv[0][0] or "",
+                                                     json.dumps(kv[0][1], default=str), kv[0][2]))
     out = []
+    per_prop: dict[tuple, int] = {}
     nice = lambda s: s.replace("_", " ")   # noqa: E731
-    for (label, (how, o), c), t in ranked:
-        # two records at least, and an x that varies: a chart of one condition value shows nothing against it
-        if t["records"] < 2 or len(t["x"]) < 2 or len(out) >= limit:
+    for (label, (how, o, var, tgt), c), t in ranked:
+        # two records at least, an x that varies and a y that varies: a constant shows nothing against anything
+        if t["records"] < 2 or len(t["x"]) < 2 or len(t["y"]) < 2 or len(out) >= limit:
             continue
-        spec = {"plot": PLOT_VERSION, "label": label, "x": c, "y": {"entries": o} if how == "entries" else o}
+        if how == "entries":                          # a few descriptors of one list, the most informative first
+            if per_prop.get((label, o, c), 0) >= 2:
+                continue
+            per_prop[(label, o, c)] = per_prop.get((label, o, c), 0) + 1
+        y = o if how == "path" else {"entries": o, **({"variable": var} if var else {}), **({"target": tgt} if tgt else {})}
+        spec = {"plot": PLOT_VERSION, "label": label, "x": c, "y": y}
         if how == "entries":
-            spec["series"] = "product"
-            title = f"{nice(o)} by product vs {nice(c)}"
+            what = ", ".join(n for n in (_name(t["g"], var), _name(t["g"], tgt)) if n)
+            title = f"{nice(o)}{f' ({what})' if what else ''} vs {nice(c)}"
         else:
             title = f"{nice(o)} vs {nice(c)}"
         spec["title"] = title[0].upper() + title[1:]

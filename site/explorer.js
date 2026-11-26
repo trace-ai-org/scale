@@ -2333,8 +2333,10 @@ async function renderAnalyze() {
       <label>Records<select id="an-label">${labels.map((l) => option(l, l, l === A.label)).join("")}</select></label>
       <label>Y<select id="an-y"><optgroup label="The record's own">${yOpts.map(([v, t]) => option(v, t, v === sel.y)).join("")}</optgroup>${
         viaEntries.length ? `<optgroup label="Results of linked records">${viaEntries.map(([v, t]) => option(v, t, v === sel.y)).join("")}</optgroup>` : ""}</select></label>
+      <label id="an-ywhich-l" hidden>Which result<select id="an-ywhich"></select></label>
       <label>X<select id="an-x"><optgroup label="The record's own">${xOwn.map(([v, t]) => option(v, t, v === sel.x)).join("")}</optgroup>${
         xVia.length ? `<optgroup label="Through its links">${xVia.map(([v, t]) => option(v, t, v === sel.x)).join("")}</optgroup>` : ""}</select></label>
+      <label id="an-xwhich-l" hidden>Which result<select id="an-xwhich"></select></label>
       <label>Series<select id="an-series">${groups.map(([v, t]) => option(v, t, v === sel.series)).join("")}${option("product", "product (of a result entry)", sel.series === "product")}</select></label>
       <label>Facet<select id="an-facet">${groups.filter(([v]) => v !== "conditions").map(([v, t]) => option(v, t, v === sel.facet)).join("")}</select></label>
       <label>Mark<select id="an-mark">${["point", "line", "bar", "box"].map((m) => option(m, m, m === (s.mark || "point"))).join("")}</select></label>
@@ -2350,13 +2352,21 @@ async function renderAnalyze() {
         `<label class="gx-check"><input type="checkbox" data-with="${esc(e.id)}"${A.with.has(e.id) ? " checked" : ""}> ${esc(trunc(e.title || e.id, 50))}</label>`).join("")}</fieldset>` : ""}
     </form>
     <div class="gx-an-out" id="an-out"></div>`;
-  body.querySelectorAll("[data-with]").forEach((b) => (b.onchange = () => { if (b.checked) A.with.add(b.dataset.with); else A.with.delete(b.dataset.with); }));
+  body.querySelectorAll("[data-with]").forEach((b) => (b.onchange = () => {
+    if (b.checked) A.with.add(b.dataset.with); else A.with.delete(b.dataset.with);
+    for (const k of ["y", "x"]) whichResult(k);      // the results present in the graphs now ticked
+  }));
   body.querySelectorAll("[data-sug]").forEach((b) => (b.onclick = () => { const x = sugg[Number(b.dataset.sug)]; A.label = x.label; A.filters = []; plotGraph(x.spec); }));
   body.querySelectorAll("[data-unfilter]").forEach((b) => (b.onclick = () => { A.filters.splice(Number(b.dataset.unfilter), 1); A.spec = { ...currentSpec(), filters: [...A.filters] }; A.collapsed = false; renderAnalyze(); }));
   $("an-edit").onclick = () => { A.collapsed = false; $("an-form").hidden = false; body.querySelector(".gx-an-suggest").hidden = false;
     body.querySelector(".gx-an-collapsed").hidden = true; $("an-y").focus(); };
   $("an-label").onchange = () => { A.label = $("an-label").value; A.spec = null; A.filters = []; A.collapsed = false; renderAnalyze(); };
   $("an-ftarget").onchange = () => filterEditor($("an-ftarget").value, $("an-ftarget").selectedOptions[0]?.textContent || "");
+  // a result list (a record's own or a linked record's) asks which of its descriptors to plot, the most informative first
+  for (const k of ["y", "x"]) {
+    $(`an-${k}`).addEventListener("change", () => whichResult(k));
+    whichResult(k, s[k]);
+  }
   $("an-form").onsubmit = (e) => {
     e.preventDefault();
     if (!$("an-y").value || !$("an-x").value) return;
@@ -2366,10 +2376,47 @@ async function renderAnalyze() {
   const back = (focused && $(focused) && !$(focused).closest("[hidden]")) ? $(focused) : (collapsed ? $("an-edit") : null);
   if (back) back.focus();
 }
-// The chart the builder describes now.
+// The chart the builder describes now: a result list's axis takes the descriptor chosen (all of them only when asked).
 function currentSpec() {
-  return { ...specFrom({ label: $("an-label").value, x: $("an-x").value, y: $("an-y").value, series: $("an-series").value,
+  const spec = { ...specFrom({ label: $("an-label").value, x: $("an-x").value, y: $("an-y").value, series: $("an-series").value,
     facet: $("an-facet").value, mark: $("an-mark").value, filters: A.filters }), ...($("an-all").checked ? { population: "all" } : {}) };
+  for (const k of ["x", "y"]) {
+    const w = $(`an-${k}which`).value;              // a descriptor whole: its variable, product (null: it states none), unit
+    const d = !$(`an-${k}which-l`).hidden && w !== "" && w !== "all" && (A.which[k] || [])[Number(w)];
+    if (d && typeof spec[k] === "object") spec[k] = { ...spec[k], variable: d.variable ?? null, target: d.target ?? null, ...(d.unit ? { unit: d.unit } : {}) };
+  }
+  return spec;
+}
+const isEntries = (v) => v.startsWith("e:") || (v.startsWith("v:") && v.includes('"entries"'));
+// The descriptors of the result list an axis names, from SCALE (scale_plot_data descriptors): each variable and product
+// with its points and the spread of its values; the first that varies is chosen, "all, side by side" only on request.
+async function whichResult(k, was = null) {
+  const sel = $(`an-${k}`), box = $(`an-${k}which-l`), which = $(`an-${k}which`);
+  A.which ||= {};
+  A.whichRun ||= {};
+  const run = A.whichRun[k] = (A.whichRun[k] || 0) + 1;
+  A.which[k] = null;                               // nothing chosen while the list is read
+  if (!sel || !isEntries(sel.value)) { box.hidden = true; return; }
+  const v = sel.value, target = v.startsWith("e:") ? { entries: v.slice(2) } : JSON.parse(v.slice(2));
+  const submit = $("an-form").querySelector("button[type=submit]");
+  box.hidden = false;
+  submit.disabled = true;                          // never plot a descriptor of another axis's list
+  which.innerHTML = option("", "reading the results present…", true);
+  try {
+    const r = await plotCall({ descriptors: { label: $("an-label").value, target } }, A.with.size ? await plotGraphs() : null);
+    if (sel.value !== v || run !== A.whichRun[k] || !which.isConnected) return;   // the axis or the builder changed meanwhile
+    if (r.error) throw new Error(r.error);
+    const ds = A.which[k] = r.descriptors || [];
+    const text = (d) => `${[d.variable_name, d.target_name].filter(Boolean).join(", ") || "unnamed"}${d.unit ? ` (${d.unit})` : ""}: ${d.points} point${
+      d.points === 1 ? "" : "s"}, ${d.distinct < 2 ? "one value" : `${d.distinct} values, ${d.min}–${d.max}`}`;
+    const chosen = was && typeof was === "object" ? ds.findIndex((d) => (d.variable ?? null) === (was.variable ?? null)
+      && (d.target ?? null) === (was.target ?? null) && (!was.unit || d.unit === was.unit)) : 0;
+    const allChosen = was && typeof was === "object" && !("variable" in was) && !("target" in was) && ds.length > 1;
+    which.innerHTML = ds.map((d, i) => option(String(i), text(d), !allChosen && i === Math.max(chosen, 0))).join("")
+      + (ds.length > 1 ? option("all", `all ${ds.length}, side by side`, allChosen) : "");
+    if (ds.length < 2) box.hidden = ds.length === 0;
+  } catch (err) { which.innerHTML = option("all", `all (${err.message || err})`, true); A.which[k] = null; }
+  if (run === A.whichRun[k]) submit.disabled = false;
 }
 function filterLabel(f) {
   const what = f.label || [...(f.via || []).map((h) => h.to), f.path].filter(Boolean).join(" ").replace(/_/g, " ");

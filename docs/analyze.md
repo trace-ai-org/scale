@@ -154,7 +154,15 @@ against a digest you hold, never both.
 ## Limits
 
 A path of edges reaches a linked record's properties and result entries, not an edge's own properties (write a query
-plan for those). The builder offers a linked record's result entries whole (every variable, each kind its own panel);
-`variable` and `target` select one in a spec. A data file's units come from its header alone; its reference scales, normalizations and
+plan for those).
+
+## One result at a time
+
+A result list (a record's own, or a linked record's) holds several descriptors: a characterization's surface Cl
+content, its CuCl fraction, its XRD reflection positions. The builder asks which one to plot (`scale_plot_data` with
+`descriptors: {label, target: {entries (, via)}}` lists them: each variable and product with its points and how many
+distinct values it takes, those that vary first, then by points); the first that varies is chosen, and every one at
+once, side by side, only when asked. The suggested charts plot one descriptor at a time, and only one whose values
+vary. In a spec, `variable` and `target` on an entries axis select the descriptor. A data file's units come from its header alone; its reference scales, normalizations and
 uncertainty columns are not read. A line joins a series' values in x order to guide the eye; it says nothing of whether
 the source ran them as one sweep. Nothing is averaged, fitted or converted.
