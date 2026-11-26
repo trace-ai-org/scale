@@ -20,6 +20,7 @@ answers:
 | [evolve-schema](evolve-schema/SKILL.md) | turn missing-concept gaps or a request into one reviewable schema change |
 | [triage-feedback](triage-feedback/SKILL.md) | sort community feedback into topics and options for the reviewers (maintainers) |
 | [first-paper](first-paper/SKILL.md) | a new contributor's first run: one DOI in, a checked graph of the paper, its digest (conditions and results, "has this been done?", negative results) and a review sheet out; a contribution only after the person approves |
+| [add-source](add-source/SKILL.md) | any source a person has (a publication, patent, thesis or report as a PDF, a DOI or its text; a CSV or Excel table; a graph file) into their own document, in their own data repository, by one entry point (`scale add-source`): a table imported when nothing about it is uncertain, else questions back; a publication started for curation and folded in; a graph merged on request |
 | [upgrade-curation](upgrade-curation/SKILL.md) | on demand, bring a curated graph to a newer schema version: a step-by-step report first, the mechanical upgrade on approval, and a re-reading of only the passages the worklist names |
 
 ## Which skill for a request
@@ -30,6 +31,7 @@ answers:
 | "download the PDFs", "get the papers of …" | index-sources freezes a corpus (or take a frozen one), then fetch-corpus |
 | a topic: "build the graph / curate / extract the data" | index-sources, freeze a corpus, fetch-corpus, then curate-corpus |
 | "try SCALE on my paper", a first contribution | first-paper (it runs curate-corpus for one source) |
+| "turn this file into a graph", "add this paper / spreadsheet to my graph", own data | add-source (it runs curate-corpus for a publication) |
 | one source, a DOI, a PDF, or a data file to record | curate-corpus |
 | an unfinished curation run, or "continue" | curate-corpus (references/runs.md) |
 | "what do the sources report about …" | query-graph |

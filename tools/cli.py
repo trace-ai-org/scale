@@ -348,9 +348,13 @@ def cmd_corpus_check(args):
 def cmd_source_start(args):
     from . import curate
     from .api import default_workspace
+    from .audience import find_policy
     first = args.pdf or args.text
-    folder = Path(args.folder) if args.folder else default_workspace() / curate.slug_of(
-        curate.normalize_doi(args.doi) if args.doi else None, Path(first) if first else None)
+    slug = curate.slug_of(curate.normalize_doi(args.doi) if args.doi else None, Path(first) if first else None)
+    pf = find_policy(Path.cwd())
+    # inside a data repository the folder goes to its work/ (kept on the computer) and takes its default stewardship
+    folder = Path(args.folder) if args.folder else (pf.parent / "work" / "sources" / slug if pf
+                                                    else default_workspace() / slug)
     res = curate.start(folder, doi=args.doi, pdf=Path(args.pdf) if args.pdf else None,
                        text=Path(args.text) if args.text else None, domain=args.domain or None, version=args.version,
                        email=args.email, contributor=args.contributor, project=args.project, repo=_repo(args))
@@ -1283,8 +1287,27 @@ def cmd_guard_check(args):
 def cmd_data_init(args):
     from . import datarepo
     print(to_json(datarepo.init(args.directory, access=args.access, project=args.project,
-                                institutions=args.institution, title=args.title)))
+                                institutions=args.institution, title=args.title, contributor=args.contributor)))
     return 0
+
+
+def cmd_data_new(args):
+    from . import datarepo
+    print(to_json(datarepo.new_document(args.doc, project=args.project, contributor=args.contributor,
+                                        access=args.access, title=args.title, repo=_repo(args))))
+    return 0
+
+
+def cmd_add_source(args):
+    from . import addsource
+    opts = {k: getattr(args, k) for k in ("kind", "dry_run", "sheet", "header_row", "recorded_at", "origin", "template",
+                                         "namespace", "from_source", "locator", "doi", "email", "source_kind", "merge",
+                                         "range", "data_rights")}
+    opts["bind"] = _pairs(args.bind, "--bind")
+    opts["confirm"] = list(args.confirm or [])
+    res = addsource.add(args.source, args.into, repo=_repo(args), finish_folder=args.finish, **opts)
+    _emit(res, args, None) if args.format == "json" else print(addsource.text_report(res))
+    return 1 if res["status"] in ("questions", "invalid") else 0
 
 
 # ---------------------------------------------------------------- parser
@@ -1608,12 +1631,14 @@ def build_parser() -> argparse.ArgumentParser:
     sp.add_argument("--pdf", help="the source's PDF (when there is no open-access copy, or no DOI)")
     sp.add_argument("--text", help="the source's text instead of a PDF (pages headed [page N], or separated by form feeds)")
     sp.add_argument("--out", dest="folder", help="the working folder (default: <working directory>/<the source's slug>; the "
-                    "working directory is $SCALE_WORKSPACE, by default ~/.scale/workspace)")
+                    "working directory is $SCALE_WORKSPACE, by default ~/.scale/workspace; inside a data repository, its "
+                    "work/sources/<slug>, with the stewardship its policy gives new documents)")
     sp.add_argument("--domain", default="catalysis", help="the checklist the graph follows (default catalysis; '' for none)")
     sp.add_argument("--version", help="the schema version to pin (default: the head)")
     sp.add_argument("--email", help="a contact address for Unpaywall (or SCALE_CONTACT_EMAIL); without one no "
                     "open-access copy is looked for")
-    sp.add_argument("--contributor", default="scale:org/scale-researchers", help="who curates (a stewardship registry id)")
+    sp.add_argument("--contributor", help="who curates (a stewardship registry id; default: the data repository's "
+                    "defaults.stewardship when --out is inside one, else scale:org/scale-researchers)")
     sp.add_argument("--project", help="the project the graph belongs to (default: ex:pub/project/<slug>, a study of this source)")
     sp = add("check", cmd_source_check, "validate the folder's graph, every quote against the page texts; conformance, "
              "gaps and the copyright cap (exit 1 on any error)", cu)
@@ -1851,14 +1876,25 @@ def build_parser() -> argparse.ArgumentParser:
                         "a document by a built-in or declarative mapping, with checks of the cells it cites"
                         ).add_subparsers(dest="sub", required=True)
     sp = add("init", cmd_data_init, "scaffold a data repository: a policy (readers, remotes, raw data, egress; "
-             "scale-data.yaml), rights.yaml, a README, ignored raw/index/exports/cache/work folders, the guard's hooks, "
-             "mode 0700 and no remote", da)
+             "scale-data.yaml), rights.yaml, a README, ignored raw/index/exports/cache/work folders, a starter document "
+             "graphs/lab.json, the guard's hooks, mode 0700 and no remote", da)
     sp.add_argument("directory", help="a new or empty folder outside any git repository")
     sp.add_argument("--access", default="project", choices=["public", "consortium", "project", "institution"],
                     help="who reads the repository (default: project)")
     sp.add_argument("--project", help="the project id (required for --access project)")
     sp.add_argument("--institution", action="append", help="an institution id (for --access institution; repeat)")
+    sp.add_argument("--contributor", help="who contributes the starter document's data (default: the first "
+                    "--institution, else <prefix>:org/my-lab)")
     sp.add_argument("--title", help="the README's title")
+    sp = add("new", cmd_data_new, "write an empty, valid research_data document: the header pinning the schema "
+             "version, its stewardship (the arguments, else the defaults of the data repository holding it) and the "
+             "Project and Institution records it names", da)
+    sp.add_argument("doc", help="the new document (a .json file)")
+    sp.add_argument("--project", help="the project id (default: the data repository's defaults.stewardship)")
+    sp.add_argument("--contributor", help="the contributing institution's id (default: the data repository's)")
+    sp.add_argument("--access", choices=["public", "consortium", "project", "institution"],
+                    help="who may read it (default: the data repository's, else project)")
+    sp.add_argument("--title", help="the graph's title (default: the file's name)")
     sp = add("matrix", cmd_data_matrix, "a typed table (CSV) and its canonical JSON manifest from a query plan over one "
              "or several graphs and a matrix contract: explicit row identity, feature and outcome roles, typed "
              "missingness, provenance and the answer's access; ambiguous pivots and incompatible outcomes refused", da)
@@ -1914,6 +1950,39 @@ def build_parser() -> argparse.ArgumentParser:
     sp = add("build", cmd_site_build, "write the site: the pages of site/, the repository's graphs and their query plans, "
              "and the scale package the explorer runs in the browser (Pyodide)", st)
     sp.add_argument("--out", default="_site", help="the folder to write (emptied first; default _site)")
+    sp = add("add-source", cmd_add_source, "turn any source into a graph: a table (CSV, .xlsx) is matched to a built-in "
+             "mapping and imported when nothing is uncertain (else it asks), a publication (PDF, DOI, text) starts a "
+             "curation folder that --finish folds in, a graph (.json) is validated and merged with --merge "
+             "(docs/data.md); exit 1 when it asks back or refuses, nothing written")
+    sp.add_argument("source", nargs="?", help="a file (PDF, CSV, .xlsx, JSON graph, text) or a DOI")
+    sp.add_argument("--into", required=True, help="the destination document (scale data new makes one; scale data init "
+                    "makes graphs/lab.json)")
+    sp.add_argument("--finish", metavar="FOLDER", help="fold a checked curation folder's graph into the document")
+    sp.add_argument("--dry-run", action="store_true", help="say what would be written; write nothing")
+    sp.add_argument("--kind", choices=["table", "document", "graph"], help="how to read the file (default: detected)")
+    sp.add_argument("--sheet", help="a table: the workbook's sheet")
+    sp.add_argument("--header-row", type=int, help="a table: the header's row number, from 1")
+    sp.add_argument("--range", help="a table: the cells to read, as an A1 range (B3:H20)")
+    sp.add_argument("--data-rights", choices=["own", "open", "public_domain", "restricted", "in_copyright"],
+                    help="a table: the rights of its cells, which the document quotes (default own: the project's own "
+                         "data; a table from a publication is asked about)")
+    sp.add_argument("--recorded-at", help="a table: when the data were recorded (ISO 8601 with a time zone)")
+    sp.add_argument("--origin", choices=["recorded", "computed", "reported", "synthetic"],
+                    help="a table: the records' origin (reported: a table from a publication)")
+    sp.add_argument("--bind", action="append", metavar="ROLE=COLUMN", help="a table: bind a role to a column (repeatable)")
+    sp.add_argument("--confirm", action="append", metavar="ID", help="a table: accept an assumption it asked about "
+                    "(unit:<column>; repeatable)")
+    sp.add_argument("--template", help="a table: use this built-in mapping (scale data match --list)")
+    sp.add_argument("--namespace", help="a table: the prefix of the ids it makes (default: the project id's prefix)")
+    sp.add_argument("--from-source", metavar="SOURCE_ID", help="a table: the publication (a Source of the document) "
+                    "the data belong to; the Dataset is REPORTED_IN it")
+    sp.add_argument("--locator", help="with --from-source: where in the publication (Table 2, SI section S3)")
+    sp.add_argument("--doi", help="a document: its DOI, when the file is its PDF or text")
+    sp.add_argument("--email", help="a DOI: a contact address for the open-access lookup (or SCALE_CONTACT_EMAIL)")
+    sp.add_argument("--source-kind", help="a document: article, patent, thesis, report, book, preprint, ... (default: "
+                    "the DOI's, else article)")
+    sp.add_argument("--merge", action="store_true", help="a graph: merge it into the document (default: validate only)")
+    out_opts(sp, ("text", "json"))
     sp = add("status", cmd_status, "print the implementation-status inventory")
     sp.add_argument("--format", choices=["text", "json", "markdown"], default="text"); sp.add_argument("--out")
     return p

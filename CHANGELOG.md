@@ -2,6 +2,25 @@
 
 ## Unreleased
 
+- **Any source into a graph of one's own, by one entry point (tools and a skill; no schema change, no migration).**
+  `scale add-source FILE_OR_DOI --into DOC` (and the agent tool `scale_add_source`, gated by the destination's access)
+  reads what the source is and routes it: a table (CSV, .xlsx) is matched to the built-in mappings and, when nothing
+  is uncertain, imported, validated and verified cell by cell, else nothing is written and the uncertain items come
+  back as questions, each with the option that settles it (`--bind`, `--confirm unit:COLUMN`, `--recorded-at`,
+  `--sheet`, `--data-rights`); a publication (a PDF, a DOI, its text) starts a curation folder in the data
+  repository's `work/sources/` with the document's stewardship, and `--finish FOLDER` folds the checked graph in (ids
+  kept, the Source's rights entry added to `rights.yaml`); a graph file is validated and merged with `--merge`,
+  refusing an id conflict, another schema version and records the repository's readers may not read;
+  `--from-source` makes a table's Dataset REPORTED_IN its publication. A table from outside the data repository is
+  copied into its `raw/`, and the rights entries of the Datasets whose cells a document quotes are written, so the
+  guard admits the commit. `scale data new DOC` (`scale_data_new`) writes an empty, valid research_data document;
+  `scale data init` writes one, `graphs/lab.json`, and its policy's `defaults.stewardship` names the project and the
+  contributor (`--contributor`); `scale call template` and `scale source start` now take that stewardship inside a
+  data repository (`scale source start` there puts its folder in `work/sources/`). Nothing of a person's is written
+  into the framework repository. An existing Dataset's evidence added later is no conflict for `scale data add`. The
+  skill `add-source` is the procedure an agent follows when a person says "turn this file into a graph"; docs/data.md
+  ("Your own data, from any source"), docs/private-data.md, README.
+
 - **Built-in data mappings: a laboratory's file into a document without writing a mapping (tools; no schema change, no
   migration).** `scale data match FILE` (and the agent tool `scale_data_match`) scores the reviewed mapping templates
   of the new library `domain/data-mappings/` (CO2RR Faradaic efficiency and partial current density vs potential,

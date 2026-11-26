@@ -1104,7 +1104,7 @@ def plan(data: bytes, mapping: bytes, doc: dict, spec: dict, file_name: str = "t
         cur = have.get(x["id"])
         if cur is None:
             added.append(x)
-        elif _same(cur, x):
+        elif _same(_as_imported(cur, x), x):
             unchanged.append(x["id"])
         else:
             conflicts.append(x["id"])
@@ -1143,6 +1143,31 @@ def plan(data: bytes, mapping: bytes, doc: dict, spec: dict, file_name: str = "t
                             "rows_ignored_after_a_blank_row": extracted["ignored_after"],
                             **({"file_dataset": fid, "file_sha256": file_digest} if derived else {})}
     return res
+
+
+def _as_imported(cur: dict, new: dict) -> dict:
+    """A record of the document as the import compares it: evidence a person added to a Dataset later (the
+    publication its data belong to, by ``scale add-source --from-source``) is no conflict, since the import writes
+    none."""
+    props = cur.get("props")
+    if cur.get("label") == "Dataset" and isinstance(props, dict) and "evidence" in props \
+            and "evidence" not in (new.get("props") or {}):
+        return {**cur, "props": {k: v for k, v in props.items() if k != "evidence"}}
+    return cur
+
+
+def write_atomic(into: Path, doc: dict) -> None:
+    """Write a document through a new file renamed into place: whole or not at all, and a link at ``into`` is
+    replaced, never followed."""
+    import tempfile
+    fd, tmp = tempfile.mkstemp(prefix=f".{into.name}.", suffix=".tmp", dir=into.parent)
+    try:
+        with os.fdopen(fd, "w", encoding="utf-8") as f:
+            f.write(dump_canonical(doc))
+        os.replace(tmp, into)
+    except BaseException:
+        Path(tmp).unlink(missing_ok=True)
+        raise
 
 
 def _same(a: dict, b: dict) -> bool:
@@ -1190,15 +1215,7 @@ def add(csv_path: str | Path, map_path: str | Path, into: str | Path, spec: dict
     res["dry_run"] = dry_run
     res["written"] = None
     if not dry_run and res["added"]:
-        import tempfile
-        fd, tmp = tempfile.mkstemp(prefix=f".{into.name}.", suffix=".tmp", dir=into.parent)   # a new file, never a link
-        try:
-            with os.fdopen(fd, "w", encoding="utf-8") as f:
-                f.write(dump_canonical(out))
-            os.replace(tmp, into)                   # all or nothing: a retry after a failure starts from the same file
-        except BaseException:
-            Path(tmp).unlink(missing_ok=True)
-            raise
+        write_atomic(into, out)                     # all or nothing: a retry after a failure starts from the same file
         res["written"] = str(into)
     if not dry_run:
         res.pop("nodes"), res.pop("links")

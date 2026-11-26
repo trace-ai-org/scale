@@ -21,7 +21,9 @@ Design rules
   filing GitHub issues are deliberately *not* agent tools; they stay in the CLI for humans
   (``status.human_only_actions`` lists the commands).
 * **Writes stay inside the working directory.** Only ``scale_example``, ``scale_migrate`` (with ``save_as``) and
-  ``scale_data_add`` (into a document there) write, and only a sanitized file name there.
+  ``scale_data_add`` (into a document there) write, and only a sanitized file name there; ``scale_add_source`` and
+  ``scale_data_new`` write a document there or in a data repository of one's own (``scale data init``), and the
+  curation folder, mapping and raw copy beside it, never in the SCALE framework repository.
 * **Results are data.** Every tool returns JSON-serializable dicts; failures return
   ``{"error": ...}`` rather than raising, so an agent can read and recover.
 """
@@ -305,6 +307,57 @@ TOOLS: list[dict] = [
                                                          "directory (letters, digits, . _ -; it ends in .yaml)."}}},
     },
     {
+        "name": "scale_add_source",
+        "description": "Turn any source into records of a document (the add-source skill): a table (CSV, .xlsx) is "
+                       "matched to a built-in mapping and imported, verified cell by cell, when nothing about it is "
+                       "uncertain, else nothing is written and the questions come back, each with the argument that "
+                       "settles it (ask the person; never guess); a publication (a PDF, a DOI, a text file) starts a "
+                       "curation folder beside the document (curate it by the curate-corpus skill, then call again "
+                       "with finish); a graph (.json) is validated and merged with merge. Refuses to write into the "
+                       "SCALE framework repository, records the repository's readers may not read, and an id "
+                       "conflict. Gated by the destination's access, like scale_data_add.",
+        "input_schema": {"type": "object", "required": ["into"], "properties": {
+            "source": {"type": "string", "description": "A file (relative to the working directory, or absolute) or "
+                                                        "a DOI."},
+            "into": {"type": "string", "description": "The destination document: a .json file in the working "
+                                                      "directory or in a data repository (scale data init); "
+                                                      "scale_data_new makes one."},
+            "finish": {"type": "string", "description": "Instead of a source: a checked curation folder to fold into "
+                                                        "the document."},
+            "dry_run": {"type": "boolean", "description": "Say what would be written; write nothing."},
+            "kind": {"type": "string", "enum": ["table", "document", "graph"], "description": "How to read the file "
+                                                                                             "(default: detected)."},
+            "sheet": {"type": "string"}, "header_row": {"type": "integer"}, "range": {"type": "string"},
+            "recorded_at": {"type": "string", "description": "A table: when the data were recorded (ISO 8601 with "
+                                                             "a time zone)."},
+            "origin": {"type": "string", "enum": ["recorded", "computed", "reported"]},
+            "bind": {"type": "object", "additionalProperties": {"type": "string"},
+                     "description": "A table: role -> column, as a question asks."},
+            "confirm": {"type": "array", "items": {"type": "string"},
+                        "description": "A table: assumptions accepted (unit:<column>), as a question asks."},
+            "template": {"type": "string"}, "namespace": {"type": "string"},
+            "data_rights": {"type": "string", "enum": ["own", "open", "public_domain", "restricted", "in_copyright"]},
+            "from_source": {"type": "string", "description": "A table: the Source (of the document) the data belong "
+                                                             "to; the Dataset is REPORTED_IN it."},
+            "locator": {"type": "string", "description": "With from_source: where (Table 2, SI section S3)."},
+            "doi": {"type": "string", "description": "A document: its DOI, when the file is its PDF or text."},
+            "email": {"type": "string"}, "source_kind": {"type": "string"},
+            "merge": {"type": "boolean", "description": "A graph: merge it (default: validate only)."}}},
+    },
+    {
+        "name": "scale_data_new",
+        "description": "Write an empty, valid research_data document (the header pinning the schema version, its "
+                       "stewardship and the Project and Institution records it names) to add sources to; inside a "
+                       "data repository its policy's defaults.stewardship applies. Refused in the SCALE framework "
+                       "repository.",
+        "input_schema": {"type": "object", "required": ["file"], "properties": {
+            "file": {"type": "string", "description": "The new .json file: in the working directory, or absolute "
+                                                      "inside a data repository."},
+            "project": {"type": "string"}, "contributor": {"type": "string"},
+            "access": {"type": "string", "enum": ["public", "consortium", "project", "institution"]},
+            "title": {"type": "string"}}},
+    },
+    {
         "name": "scale_data_verify",
         "description": "Check a document's tabular Datasets against local copies of their files: the sha256 of the bytes "
                        "and that each cited cell holds the recorded value. A Dataset whose file is not at hand is "
@@ -324,7 +377,8 @@ TOOLS: list[dict] = [
     {
         "name": "scale_skills",
         "description": "List the SCALE skills (versioned procedures: index-sources, fetch-corpus, curate-corpus, "
-                       "query-graph, map-coverage, scan-conflicts, export-graph, evolve-schema, triage-feedback), or "
+                       "query-graph, map-coverage, scan-conflicts, export-graph, evolve-schema, triage-feedback, "
+                       "first-paper, upgrade-curation, add-source), or "
                        "return one "
                        "skill's text, or one of the reference files its text points to (e.g. curate-corpus's "
                        "references/recipes.md). curate-source and curate-dataset name curate-corpus.",
@@ -489,6 +543,9 @@ class ScaleToolkit:
             return None
         if isinstance(arguments.get("path"), str) and arguments["path"]:
             target = self._path(arguments["path"])
+        elif name == "scale_add_source":
+            self._egress_add_source(arguments)
+            return None                             # it writes the destination: what it returns is checked here
         elif name == "scale_data_add" and isinstance(arguments.get("into"), str) and arguments["into"]:
             target = self._path(arguments["into"])  # the records written there, and returned, take its access
         elif name == "scale_data_match" and isinstance(arguments.get("file"), str) and arguments["file"]:
@@ -533,6 +590,46 @@ class ScaleToolkit:
                                "(read it without a gate to see why)") from exc
         self.egress.check(doc, f"the document {arguments.get('path') or arguments.get('folder')}", target)
         return (target, before)
+
+    def _egress_add_source(self, arguments: dict) -> None:
+        """scale_add_source returns what it adds and reads: every document it draws from is checked (the destination,
+        a graph to merge, a curation folder's graph), and a data file inside a data repository carries that
+        repository's default access, as for scale_data_match. A document that cannot be read is refused."""
+        from .audience import find_policy, parse_policy
+        from .egress import EgressDenied
+        docs: list[tuple[str, Path]] = []
+        if isinstance(arguments.get("into"), str) and arguments["into"]:
+            docs.append(("the destination", self._path(arguments["into"])))
+        if isinstance(arguments.get("finish"), str) and arguments["finish"]:
+            from .curate import _folder
+            try:
+                docs.append(("the curation folder's graph", _folder(self._path(arguments["finish"]))[2]))
+            except (ScaleError, OSError, ValueError, KeyError) as exc:
+                raise EgressDenied("egress denied: the curation folder cannot be read to check its access; nothing "
+                                   "was sent") from exc
+        src = arguments.get("source")
+        sp = self._path(src) if isinstance(src, str) and src else None
+        if sp is not None and sp.is_file():
+            if sp.suffix.lower() == ".json":
+                docs.append(("the graph to add", sp))
+            try:
+                pf = find_policy(sp)
+                st = (parse_policy(load_yaml(pf), str(pf)).get("defaults") or {}).get("stewardship") or {} if pf else None
+            except (ScaleError, OSError, ValueError) as exc:
+                raise EgressDenied("egress denied: the data repository's policy cannot be read to check the file's "
+                                   "access; nothing was sent") from exc
+            if st is not None:
+                self.egress.check({"graph": {"stewardship": st}, "nodes": [], "links": []},
+                                  f"the file {src} (data repository {pf.parent})", sp)
+        for what, p in docs:
+            if not p.exists():
+                continue                            # the tool says what is missing; nothing is read
+            try:
+                doc = load_doc(p)
+            except Exception as exc:                 # noqa: BLE001 - its text may name private records
+                raise EgressDenied(f"egress denied: {what} cannot be read to check its access; nothing was sent") \
+                    from exc
+            self.egress.check(doc if isinstance(doc, dict) else {}, f"{what} {p.name}", p)
 
     def _path(self, path: str) -> Path:
         """A document path: absolute as given, else relative to the working directory."""
@@ -713,8 +810,25 @@ class ScaleToolkit:
         name = None if domain == "core" else (domain or next((n for n, m in layout.graph_manifests(self.repo).items()
                                                                if m == man), None))
         doc = template(name if name in (spec.get("profiles") or {}) else None, spec["version"])
+        # inside a data repository (the working directory's, else the current directory's) the template states the
+        # stewardship its policy gives new documents, and names the project and institutions that stewardship does
+        from .datarepo import repository_defaults
+        pf, dflt = repository_defaults(self.workspace)
+        if pf is None:
+            pf, dflt = repository_defaults(Path.cwd())
+        stewarded = None
+        if pf is not None and dflt:
+            st = {**doc["graph"]["stewardship"], **{k: v for k, v in dflt.items() if v not in (None, "", [])}}
+            doc["graph"]["stewardship"] = st
+            names = {"ex:org/my-lab": st["contributed_by"][0], "ex:project/my-project": st["project"]}
+            doc["nodes"] = [{**n, "id": names.get(n["id"], n["id"])} for n in doc["nodes"]]
+            doc["nodes"][1:1] = [{"id": i, "label": "Institution", "props": {"name": i.rsplit("/", 1)[-1],
+                                                                               "origin": "curated"}}
+                                 for i in st["contributed_by"][1:]]
+            stewarded = str(pf)
         rep = pgraph.validate(doc, spec).as_dict()
         return {"document": doc, "valid": rep["valid"], "schema_version": spec["version"],
+                **({"stewardship_from": stewarded} if stewarded else {}),
                 "notes": ["Replace every ex: id with your own prefix (a CURIE: prefix:path); ids are unique across nodes and links.",
                           "Each record that states something from a source carries evidence: source, locator, kind and a short "
                           "verbatim quote; derive REPORTED_IN links from the evidence.",
@@ -1007,6 +1121,39 @@ class ScaleToolkit:
         for c in res["candidates"]:
             c.pop("mapping", None)                  # the YAML says it, once
         return res
+
+    def _writable(self, path: str, what: str) -> Path:
+        """A document a tool writes: in the working directory, or in a data repository (``scale data init``); never in
+        the SCALE framework repository."""
+        from .audience import find_policy
+        from .datarepo import refuse_framework
+        p = self._path(path).resolve()
+        refuse_framework(p, what)
+        if not (p.is_relative_to(self.workspace) or find_policy(p) is not None):
+            raise ScaleError(f"{path}: a tool writes documents only in the working directory ({self.workspace}) or in a "
+                             "data repository (scale data init)")
+        return p
+
+    def _scale_add_source(self, into: str, source: str | None = None, finish: str | None = None, **opts) -> dict:
+        from . import addsource
+        known = {"dry_run", "kind", "sheet", "header_row", "range", "recorded_at", "origin", "bind", "confirm", "template",
+                 "namespace", "data_rights", "from_source", "locator", "doi", "email", "source_kind", "merge"}
+        if set(opts) - known:
+            return {"error": f"unknown arguments {sorted(set(opts) - known)}"}
+        if opts.get("bind") is not None and (not isinstance(opts["bind"], dict)
+                                             or not all(isinstance(v, str) for v in opts["bind"].values())):
+            return {"error": "bind maps a role to a column name"}
+        target = self._writable(into, "a source added to a graph of project data")
+        if source and self._path(source).exists():
+            source = str(self._path(source))
+        return addsource.add(source, target, repo=self.repo,
+                             finish_folder=str(self._path(finish)) if finish else None, **opts)
+
+    def _scale_data_new(self, file: str, project: str | None = None, contributor: str | None = None,
+                        access: str | None = None, title: str | None = None) -> dict:
+        from .datarepo import new_document
+        return new_document(self._writable(file, "a document of project data"), project=project,
+                            contributor=contributor, access=access, title=title, repo=self.repo)
 
     def _scale_data_verify(self, document: dict | None = None, path: str | None = None,
                            files: dict | None = None) -> dict:
