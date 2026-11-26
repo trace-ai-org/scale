@@ -463,6 +463,8 @@ class ScaleToolkit:
             return None
         if isinstance(arguments.get("path"), str) and arguments["path"]:
             target = self._path(arguments["path"])
+        elif name == "scale_data_add" and isinstance(arguments.get("into"), str) and arguments["into"]:
+            target = self._path(arguments["into"])  # the records written there, and returned, take its access
         elif isinstance(arguments.get("folder"), str) and name in ("scale_source_check", "scale_source_finish"):
             from .curate import _folder
             try:
