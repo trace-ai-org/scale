@@ -1,0 +1,5 @@
+calc_id,surface,adsorbate,functional,status,E_ads (eV)
+C1,Ni(111),CO,RPBE,completed,-1.62
+C2,Ni(111),H,RPBE,completed,-0.47
+C3,Ni(211),CO,RPBE,completed,-1.88
+C4,Ni(211),O,RPBE,failed,

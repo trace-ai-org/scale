@@ -6,3 +6,13 @@ fixtures:
   - examples/methanol-synthesis-public/pdfs/*.pdf
   reason: the public-domain (US) source PDFs of the methanol synthesis example, each listed with its sha256 in the
     example's README
+- paths:
+  - domain/examples/scale-catal/data-ingest-examples/*.csv
+  reason: the synthetic tables of the data-ingest worked example (a CO2RR Faradaic-efficiency table and a DFT
+    adsorption-energy table, made up for docs/data.md), compiled by `scale data add` with the maps beside them
+- paths:
+  - domain/examples/scale-catal/data-mapping-examples/*.csv
+  - domain/examples/scale-catal/data-mapping-examples/*.xlsx
+  reason: the synthetic laboratory files of the built-in-mapping example (a CO2RR workbook, a thermal test, kinetics,
+    DFT energies and a characterization summary, all values invented for docs/data.md), one per mapping template of
+    domain/data-mappings, matched by `scale data match` and compiled by `scale data add`

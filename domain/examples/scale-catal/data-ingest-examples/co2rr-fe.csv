@@ -1,0 +1,10 @@
+run_id,result_id,recorded_at,potential_V,product_id,assay_id,phase,stream,fe_percent
+R1,fe_co,2026-03-02T10:00:00Z,-0.8,ex:di/species/co,ex:di/assay/gc,gas,outlet gas,62.5
+R1,fe_h2,2026-03-02T10:00:00Z,-0.8,ex:di/species/h2,ex:di/assay/gc,gas,outlet gas,30.1
+R1,fe_formate,2026-03-02T10:00:00Z,-0.8,ex:di/species/formate,ex:di/assay/nmr,liquid,catholyte,4.2
+R2,fe_co,2026-03-02T14:00:00Z,-1.0,ex:di/species/co,ex:di/assay/gc,gas,outlet gas,48.0
+R2,fe_h2,2026-03-02T14:00:00Z,-1.0,ex:di/species/h2,ex:di/assay/gc,gas,outlet gas,44.3
+R2,fe_formate,2026-03-02T14:00:00Z,-1.0,ex:di/species/formate,ex:di/assay/nmr,liquid,catholyte,<0.5
+R3,fe_co,2026-03-03T09:30:00Z,-1.2,ex:di/species/co,ex:di/assay/gc,gas,outlet gas,21.7
+R3,fe_h2,2026-03-03T09:30:00Z,-1.2,ex:di/species/h2,ex:di/assay/gc,gas,outlet gas,71.9
+R3,fe_formate,2026-03-03T09:30:00Z,-1.2,ex:di/species/formate,ex:di/assay/nmr,liquid,catholyte,

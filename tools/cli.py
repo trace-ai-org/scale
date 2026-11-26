@@ -1349,6 +1349,148 @@ def cmd_data_init(args):
 
 # ---------------------------------------------------------------- parser
 
+def cmd_data_add(args):
+    from . import dataingest
+    res = dataingest.add(args.file, args.map, args.into, repo=_repo(args), dry_run=args.dry_run)
+    if args.format == "json":
+        _emit(res, args)
+        return
+    what = "would add" if args.dry_run else "added"
+    print(f"{args.into}: {what} {len(res['added'])} records and links from {args.file} (dataset {res['dataset']}, sha256 "
+          f"{res['sha256']}): {res['records']} records, {res['results']} results; {len(res['unchanged'])} already there"
+          + ("; written" if res.get("written") else "; nothing written" if not args.dry_run else ""))
+    if res.get("input"):
+        x = res["input"]
+        print(f"  read {x['format']}" + (f" sheet {x['sheet']!r}" if x.get("sheet") else "")
+              + f", header row {x['header_row']}, cells {x['cells']}"
+              + (f"; {x['rows_ignored_after_a_blank_row']} rows after a blank row not read"
+                 if x.get("rows_ignored_after_a_blank_row") else "")
+              + (f"; the original file is {x['file_dataset']} (sha256 {x['file_sha256']})" if x.get("file_dataset") else ""))
+    if res.get("created"):
+        print(f"  created {len(res['created'])} reference records: {', '.join(res['created'][:12])}"
+              + (" ..." if len(res["created"]) > 12 else ""))
+    for h, rid in (res.get("reused") or {}).items():
+        print(f"  reference {h}: the document's {rid}")
+    v = res["validation"]
+    print(f"  structure: {'valid' if v['valid'] else 'INVALID'} ({v['errors']} errors), {v['new_warnings']} new warnings "
+          "(scientific comparability and plausibility, kept as recorded)")
+    for w in res["warnings"][:20]:
+        print(f"    {w['record']}: {w['message']}")
+    for ref, c in res["checklist"].items():
+        print(f"  checklist {ref}: {c['violations']} must items missing on the imported records")
+        for x in c["first"][:5]:
+            print(f"    {x['record']}: {x['message']}")
+    if args.dry_run:
+        print(to_json({"nodes": res["nodes"], "links": res["links"]}))
+
+
+def _pairs(items: list[str] | None, flag: str) -> dict[str, str]:
+    out = {}
+    for pair in items or []:
+        k, _, v = pair.partition("=")
+        if not k or not v:
+            raise ScaleError(f"{flag} expects <name>=<value>, got {pair!r}")
+        out[k] = v
+    return out
+
+
+def cmd_data_match(args):
+    from . import datamatch
+    templates = datamatch.load_templates(_repo(args))
+    if args.list:
+        if args.format == "json":
+            _emit({"templates": datamatch.describe(templates)}, args)
+            return
+        for t in datamatch.describe(templates):
+            print(f"{t['id']}: {t['title']}")
+            print("  roles (* required): " + ", ".join(f"{r}{'*' if x['required'] else ''}"
+                                                      + (f" ({x['quantity']})" if x.get("quantity") else "")
+                                                      for r, x in t["roles"].items()))
+            if t.get("example"):
+                print(f"  example: domain/{t['example']}")
+        return
+    if not args.file:
+        raise ScaleError("scale data match FILE (or --list)")
+    from . import pgraph
+    spec = pgraph.load_spec(_repo(args) / layout.DOMAIN / layout.DOMAIN_GRAPH_MANIFEST)
+    options = {k: getattr(args, k) for k in ("delimiter", "encoding", "decimal", "range") if getattr(args, k, None)}
+    res = datamatch.match(Path(args.file).read_bytes(), Path(args.file).name, templates, spec, sheet=args.sheet,
+                          header_row=args.header_row, template=args.template, bind=_pairs(args.bind, "--bind"),
+                          namespace=args.namespace, origin=args.origin, recorded_at=args.recorded_at, top=args.top,
+                          options=options)
+    best = res["candidates"][0] if res["candidates"] else None
+    if args.save:
+        if best is None:
+            raise ScaleError(f"{args.file}: no built-in mapping fits; nothing saved")
+        dest = Path(args.save)
+        if dest.exists() and not args.force:
+            raise ScaleError(f"{dest} exists; give --force to replace it")
+        datamatch.save(dest, best["mapping_yaml"])
+    if args.format == "json":
+        _emit(res, args)
+    else:
+        for r in res["reading"]:
+            where = f"sheet {r['sheet']!r}: " if r.get("sheet") else ""
+            if r.get("error"):
+                print(f"{args.file}: {where}{r['error']}")
+                continue
+            print(f"{args.file}: {where}{r['rows']} rows, cells {r.get('cells')}, read as {r['recipe']}")
+        if best is None:
+            print("no built-in mapping fits (scale data match --list shows them)")
+        for k, c in enumerate(res["candidates"]):
+            print(f"\n{'best' if k == 0 else 'also'}: {c['template']} (score {c['score']}"
+                  + (f", sheet {c['sheet']!r}" if c.get("sheet") else "") + ")"
+                  + ("" if c["complete"] else " INCOMPLETE"))
+            if k:
+                continue
+            for role, b in c["bindings"].items():
+                unit = (f", unit {b['unit']!r}" + (" (header)" if b.get("unit_from_header") else " (assumed)")
+                        if "unit" in b else "")
+                print(f"  {role} <- {b['column']!r} ({'bound by you' if b['by'] == 'you' else 'score ' + str(b['score'])}"
+                      f"{unit})")
+            for role, cols in c["melt"].items():
+                print(f"  {role} <- " + ", ".join(f"{x['column']!r} ({x.get('target') or x['id']})" for x in cols))
+            for u in c["uncertain"]:
+                what = u.get("column") or u.get("role")
+                print(f"  UNCERTAIN {what + ': ' if what else ''}{u['why']}"
+                      + (" [" + ", ".join(f"{x['column']} {x['score']}" for x in u.get("candidates") or []) + "]"
+                         if u.get("candidates") else ""))
+            for x in c["confirm"]:
+                print(f"  CONFIRM {x}")
+            if c["unmapped_columns"]:
+                print(f"  not mapped: {', '.join(c['unmapped_columns'])}")
+            for p in c["problems"]:
+                print(f"  PROBLEM {p}")
+        if args.save and best is not None:
+            print(f"\nwrote {args.save} ({best['template']}); next: scale data add {args.file} --map {args.save} "
+                  "--into <document.json> --dry-run")
+        elif best is not None:
+            print("\nsave the mapping with --save <name>.map.yaml (or read it with --format json: mapping_yaml)")
+
+
+def cmd_data_verify(args):
+    from . import datatable
+    files = {}
+    for pair in args.file or []:
+        did, _, path = pair.partition("=")
+        if not path:
+            raise ScaleError(f"--file expects <dataset id>=<path>, got {pair!r}")
+        files[did] = path
+    res = datatable.verify(load_doc(args.doc), files, Path(args.doc).resolve().parent)
+    if args.format == "json":
+        _emit(res, args)
+    else:
+        print(f"{args.doc}: {res['status'].upper()}")
+        for d in res["datasets"]:
+            extra = (f", {d['matched']}/{d['checked']} cells hold the recorded values" if "checked" in d else "")
+            print(f"  {d['dataset']}: {d['status']} ({d['cells']} cited cells{extra})"
+                  + (f": {d['reason']}" if d.get("reason") else ""))
+            for p in (d.get("problems") or [])[:30]:
+                print(f"    {p}")
+    if res["status"] == "failed" or (args.require_all and res["status"] != "verified"):
+        raise SystemExit(1)
+
+
 def cmd_site_build(args):
     from . import site
     print(json.dumps(site.build(_repo(args), Path(args.out)), indent=1))
@@ -1773,8 +1915,10 @@ def build_parser() -> argparse.ArgumentParser:
     sp.add_argument("--path", help="the clone (default: the git repository of the current directory)")
     sp.add_argument("--json", action="store_true", help="machine-readable result")
 
-    da = sub.add_parser("data", help="data of one's own: a private data repository (docs/private-data.md) and the "
-                        "design matrix for experiment-design agents").add_subparsers(dest="sub", required=True)
+    da = sub.add_parser("data", help="data of one's own: a private data repository (docs/private-data.md), the "
+                        "design matrix for experiment-design agents, and tabular data (a CSV file or an .xlsx sheet) into "
+                        "a document by a built-in or declarative mapping, with checks of the cells it cites"
+                        ).add_subparsers(dest="sub", required=True)
     sp = add("init", cmd_data_init, "scaffold a data repository: a policy (readers, remotes, raw data, egress; "
              "scale-data.yaml), rights.yaml, a README, ignored raw/index/exports/cache/work folders, the guard's hooks, "
              "mode 0700 and no remote", da)
@@ -1802,6 +1946,47 @@ def build_parser() -> argparse.ArgumentParser:
     sp.add_argument("--sha256", help="the digest the file should have (default: the Dataset's)")
     sp.add_argument("--csv", help="also write the points as CSV")
     out_opts(sp)
+    sp = add("add", cmd_data_add, "compile a data file into records of a document by a mapping (mapping_version 1 or 2; "
+             "scale data match writes one): a Dataset with its sha256 and table, records with stable ids, each value "
+             "citing its cell; refuses duplicate keys, conflicts, unresolved references, malformed numbers and what "
+             "would not validate", da)
+    sp.add_argument("file", help="the data file: a CSV file (scale_csv_v1), or, by a version 2 mapping's input block, a "
+                    "CSV file of another dialect or a sheet of an .xlsx workbook")
+    sp.add_argument("--map", required=True, help="the mapping (YAML, mapping_version 1 or 2)")
+    sp.add_argument("--into", required=True, help="the destination document (an existing .json file)")
+    sp.add_argument("--dry-run", action="store_true", help="print what would be written; write nothing")
+    out_opts(sp, ("text", "json"))
+    sp = add("match", cmd_data_match, "find the built-in mapping (domain/data-mappings) that fits a data file (CSV of "
+             "any common dialect, or a sheet of an .xlsx workbook): the columns each role binds, the wide columns it "
+             "melts, their units, what is uncertain (never guessed silently) and a mapping to save for scale data add", da)
+    sp.add_argument("file", nargs="?", help="the data file (.csv, .tsv, .txt or .xlsx)")
+    sp.add_argument("--list", action="store_true", help="list the built-in mappings and their roles")
+    sp.add_argument("--sheet", help="the workbook's sheet (default: every sheet is tried)")
+    sp.add_argument("--header-row", type=int, help="the header's row number, from 1 (default: found)")
+    sp.add_argument("--range", help="the cells to read, as an A1 range (B3:H20)")
+    sp.add_argument("--delimiter", help="a CSV file's delimiter (default: detected)")
+    sp.add_argument("--encoding", help="a CSV file's encoding (default: detected)")
+    sp.add_argument("--decimal", choices=[".", ","], help="the decimal mark (default: detected)")
+    sp.add_argument("--template", help="match this built-in mapping only")
+    sp.add_argument("--bind", action="append", metavar="ROLE=COLUMN", help="bind a role to a column (repeatable); "
+                    "settles an uncertain or missing binding")
+    sp.add_argument("--namespace", default="lab", help="the prefix of the ids the mapping makes (default: lab)")
+    sp.add_argument("--origin", choices=["recorded", "computed", "reported", "synthetic"],
+                    help="the records' origin (default: the mapping's; recorded needs a recording time)")
+    sp.add_argument("--recorded-at", help="when the data were recorded (ISO 8601 with a time zone), for every record")
+    sp.add_argument("--top", type=int, default=3, help="how many mappings to return, best first (default 3)")
+    sp.add_argument("--save", help="write the best mapping (YAML) to this file")
+    sp.add_argument("--force", action="store_true", help="replace the file --save names")
+    out_opts(sp, ("text", "json"))
+    sp = add("verify", cmd_data_verify, "check a document's tabular Datasets against local copies: the sha256 of the "
+             "bytes and that each cited cell holds the recorded value (unverified when a file is not at hand; nothing "
+             "is fetched)", da)
+    sp.add_argument("doc", help="the document")
+    sp.add_argument("--file", action="append", metavar="ID=PATH",
+                    help="a local copy of a Dataset's file (repeatable; default: its uri when that is a local path, "
+                    "relative to the document)")
+    sp.add_argument("--require-all", action="store_true", help="fail unless every Dataset is verified")
+    out_opts(sp, ("text", "json"))
 
     st = sub.add_parser("site", help="the static site: the graph explorer, published by GitHub Pages").add_subparsers(
         dest="sub", required=True)

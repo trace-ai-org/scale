@@ -46,6 +46,7 @@ SALT = REPO / "domain/examples/scale-catal/synthesis-examples/salt-matrix-anneal
 CHAIN = REPO / "domain/examples/scale-catal/product-measurement-examples/chain-growth-probability.json"
 FTS = REPO / "domain/examples/scale-catal/fts-examples/fts-conditions.json"
 HALOGEN = REPO / "domain/examples/scale-catal/synthesis-examples/halogen-source.json"
+INGEST = REPO / "domain/examples/scale-catal/data-ingest-examples/data-ingest.json"
 
 
 def test_node(doc: dict) -> dict:
@@ -471,6 +472,16 @@ def main() -> None:
         e["props"]["synthesis_function"] = ["halide_source", "ph_modifier"]
     defect("halogen-source-not-in-vocabulary", "an input that supplies a halogen, its function misspelt halide_source",
            halide_source, base=load_doc(HALOGEN))
+
+    # a dataset cell (0.8.4) names its row by the whole primary key, and a value is in the unit of the column it cites
+    def cell_of(d: dict, local: str, eid: str) -> dict:
+        return next(e for e in node(d, local)["props"]["evidence"] if e["id"] == eid)
+
+    defect("dataset-cell-without-its-whole-key", "a cell named by part of the table's primary key (run_id only)",
+           lambda d: cell_of(d, "R1", "fe_percent.R1,fe_co")["dataset_cell"]["row_key"].pop(1), base=load_doc(INGEST))
+    defect("dataset-cell-in-another-unit", "a Faradaic efficiency in fraction citing a column in percent",
+           lambda d: next(x for x in node(d, "R1")["props"]["result_values"] if x["id"] == "fe_co").update(
+               unit="1", value=0.625), base=load_doc(INGEST))
 
 
 if __name__ == "__main__":

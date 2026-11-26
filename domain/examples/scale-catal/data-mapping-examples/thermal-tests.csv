@@ -1,0 +1,8 @@
+# CO2 methanation, fixed bed, 100 mg catalyst (synthetic example, values invented)
+Operator;example
+
+Run;Catalyst;T (°C);P (bar);GHSV (h-1);X CO2 (%);S CH4 (%);S CO (%)
+T1;Ni-Al2O3-1;250;10;12000;18,4;97,1;2,9
+T2;Ni-Al2O3-1;300;10;12000;46,2;98,3;1,7
+T3;Ni-Al2O3-1;350;10;12000;71,5;98,9;1,1
+T4;Ni-Al2O3-1;400;10;12000;79,0;97,6;2,4

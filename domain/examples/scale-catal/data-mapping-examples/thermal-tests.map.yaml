@@ -1,0 +1,141 @@
+# scale data match: built-in mapping thermal-catalytic-test (Thermal catalytic tests, conversion, selectivity and yield vs temperature, pressure and space velocity), score 1.0
+# file thermal-tests.csv, cells A4:H8
+# uncertain: the header row was found, not given: row 4; give --header-row to settle it
+# uncertain: decimal commas read as decimal points (12,5 as 12.5); the mapping records input.decimal
+# confirm: each row is one test condition (one CatalyticTest); rows of one run at several temperatures are several tests
+# confirm: a blank conversion, selectivity or yield is recorded as not_measured, and a cell such as <0.1 as below the detection limit
+# confirm: selectivities are of the products named, on the basis the laboratory states (carbon or molar); add it as the result's basis if it is known
+# confirm: a sample the document does not hold is created as a CatalystSample of sample_kind other; set its form
+mapping_version: 2
+input:
+  format: csv
+  header_row: 4
+  delimiter: ;
+  encoding: cp1252
+  decimal: ','
+dataset:
+  id_prefix: ex-dm:data/
+  primary_key:
+  - Run
+references:
+  conversion:
+    id: ex-dm:variable/conversion
+    label: Variable
+    props:
+      name: conversion
+      scale: quantitative
+      quantity_kind: conversion
+      unit: '%'
+    reuse:
+    - quantity_kind
+  selectivity:
+    id: ex-dm:variable/selectivity
+    label: Variable
+    props:
+      name: selectivity
+      scale: quantitative
+      quantity_kind: selectivity
+      unit: '%'
+    reuse:
+    - quantity_kind
+lookups:
+  species:
+    label: ChemicalSpecies
+    match:
+    - formula
+    - name
+    aliases:
+      carbon dioxide: CO2
+      carbon monoxide: CO
+      hydrogen: H2
+      methane: CH4
+      methanol: CH3OH
+      MeOH: CH3OH
+      dimethyl ether: CH3OCH3
+      DME: CH3OCH3
+      ethane: C2H6
+      ethylene: C2H4
+      ethene: C2H4
+      propane: C3H8
+      propylene: C3H6
+      propene: C3H6
+      water: H2O
+      ammonia: NH3
+    create:
+      id_prefix: ex-dm:species/
+      as: formula
+  sample:
+    label: CatalystSample
+    match:
+    - name
+    create:
+      id_prefix: ex-dm:sample/
+      as: name
+      props:
+        sample_kind: other
+records:
+- as: test
+  label: CatalyticTest
+  key:
+  - Run
+  name: Thermal catalytic test
+  origin: synthetic
+  properties:
+    test_kind:
+      literal: activity
+    experiment_kind:
+      literal: physical
+    driving_forces:
+      literal:
+      - thermo
+    temperature:
+      column: T (°C)
+      unit_from_header: true
+    pressure:
+      column: P (bar)
+      unit_from_header: true
+      missing:
+        '':
+          status: not_reported
+          missing_reason: not_stated_in_source
+    space_velocity:
+      column: GHSV (h-1)
+      unit_from_header: true
+      missing:
+        '':
+          status: not_reported
+          missing_reason: not_stated_in_source
+  results:
+  - variable: '@conversion'
+    target_lookup: species
+    unit_from_header: true
+    melt:
+    - column: X CO2 (%)
+      id: x_co2
+      target: CO2
+    censor:
+    - prefix: <
+      as: below_detection_limit
+    missing:
+      '':
+        status: not_measured
+  - variable: '@selectivity'
+    target_lookup: species
+    unit_from_header: true
+    melt:
+    - column: S CH4 (%)
+      id: s_ch4
+      target: CH4
+    - column: S CO (%)
+      id: s_co
+      target: CO
+    censor:
+    - prefix: <
+      as: below_detection_limit
+    missing:
+      '':
+        status: not_measured
+  links:
+  - type: USES_CATALYST
+    target_column: Catalyst
+    target_lookup: sample

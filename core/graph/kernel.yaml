@@ -78,6 +78,10 @@ property_types:
   record_ref: A reference to a record or to one property of it (below).
   stewardship: A stewardship object (below).
   record_check: A record check (below).
+  dataset_cell: A pointer to one cell of a tabular Dataset (below).
+  dataset_key: One column of a row key and the value it holds (below).
+  dataset_table: The layout of a tabular Dataset (below).
+  dataset_column: One column of a tabular Dataset (below).
   date: An ISO 8601 calendar date at the precision the source gives — YYYY, YYYY-MM or YYYY-MM-DD.
   datetime: An ISO 8601 date-time with a time zone, e.g. 2026-09-27T14:05:00Z.
   status_check: Whether a source or dataset was checked for notices (retraction, correction, concern),
@@ -425,6 +429,16 @@ evidence:
       description: An independent second visual reading of the same region by another curator, who did
         not see the first transcription; its numbers must agree with the transcription for the evidence
         to count where OCR does not confirm it.
+    dataset_cell:
+      type: dataset_cell
+      maturity: provisional
+      description: |
+        The one cell of a tabular Dataset that states what the evidence supports: its column and its row (by
+        the row's key, else by its position). Only with kind dataset_row and a Dataset source that describes
+        its table (table), names its version or uri and its sha256, so that the cell can be found again in
+        the exact bytes cited and checked (`scale data verify`). A value cites its cell through evidence_ids,
+        so the route from a value to its data is the same for literature tables, experimental and
+        computational data: value.evidence_ids -> evidence.dataset_cell -> evidence.source (a Dataset).
 record_ref:
   description: |
     A reference to a record, or to one part of it: a result of an experiment, a value on a
@@ -1548,6 +1562,13 @@ nodes:
         description: When the dataset (this version) was issued, at the precision known (DataCite dateType
           Issued).
         maturity: provisional
+      table:
+        type: dataset_table
+        maturity: provisional
+        description: The layout of a tabular dataset (a CSV file read under a named profile), its primary key
+          and its columns, each with its datatype and, for a quantity, the Variable it holds values of, its unit
+          and basis. Evidence names one cell of it (evidence.dataset_cell). New bytes are a new Dataset record
+          (UPDATES links it to the one it replaces); a sha256 is never reused for other bytes.
   Person:
     maps_to:
     - foaf Person
@@ -2747,6 +2768,120 @@ record_check:
   - An acknowledgement names a record the check covers, a warning and a reason. A warning it matches is listed as
     acknowledged, with who acknowledged it and why, and no longer counts as open; an acknowledgement no warning
     matches is reported (advisory). A warning no acknowledgement matches stays open.
+dataset_cell:
+  maturity: provisional
+  description: |
+    One cell of a tabular Dataset (Dataset.table), named by its column and its row: by the row's key (row_key,
+    the value of every primary-key column) or, where the data has no key, by its position (row_index, zero-based
+    among the data rows of the checksummed file, the header excluded). Prefer keys: a position names another
+    row when the file is sorted again, and a key does not.
+  required:
+  - column
+  fields:
+    column:
+      type: string
+      description: The name of the column, as in the table's header.
+    row_key:
+      type: list
+      items:
+        type: dataset_key
+      description: The row's primary key, every primary-key column once, each with the value the file holds as
+        text (an identifier such as "001" stays as written).
+    row_index:
+      type: integer
+      description: The row's position among the data rows of the file, from 0, the header excluded.
+  rules:
+  - A dataset_cell goes on evidence of kind dataset_row whose source is a Dataset with a table, a version or a uri,
+    and a sha256 of 64 hexadecimal characters.
+  - It names its row by exactly one of row_key and row_index; a row_key names every primary-key column of the table
+    exactly once and no other column; row_index is at least 0 (and below the table's rows when stated).
+  - Its column is a column of the table.
+  - A numeric value that cites a cell of a number or integer column is in the column's unit; its variable and basis
+    are the column's when both state one; a column a result entry cites, or a column holding values of a variable,
+    names a quantitative Variable with a quantity_kind and a unit (an error otherwise). Nothing is converted.
+dataset_key:
+  maturity: provisional
+  description: One primary-key column of a row and the value the row holds in it, as text.
+  required:
+  - column
+  - value
+  fields:
+    column:
+      type: string
+    value:
+      type: string
+      description: The cell's text as the file holds it (never a number read from it).
+dataset_table:
+  maturity: provisional
+  description: |
+    The layout of a tabular Dataset. The profile names how the bytes are read: scale_csv_v1 is UTF-8, comma
+    delimited, double-quote escaped, with one header row and no skipped or comment rows; a header that names a
+    column twice is refused. Another dialect is another profile.
+  required:
+  - profile
+  - primary_key
+  - columns
+  fields:
+    profile:
+      type: enum
+      values:
+      - scale_csv_v1
+    primary_key:
+      type: list
+      items:
+        type: string
+      description: The columns whose values together identify one row (empty for data without a key, whose cells
+        are named by row_index).
+    columns:
+      type: list
+      items:
+        type: dataset_column
+      description: Every column of the header, in its order.
+    rows:
+      type: integer
+      description: The number of data rows (the header excluded).
+    ingest:
+      type: map
+      items:
+        type: string
+      description: 'Written by `scale data add`: what compiled the records from the file, as digests and versions
+        (mapping_sha256, tool, schema_version, schema_sha256), so that the same file, mapping, tool and schema give
+        the same records.'
+  rules:
+  - Column names are unique; every primary-key column is a column; a primary key names a column once.
+dataset_column:
+  maturity: provisional
+  description: One column of a tabular Dataset.
+  required:
+  - name
+  - datatype
+  fields:
+    name:
+      type: string
+    datatype:
+      type: enum
+      values:
+      - string
+      - integer
+      - number
+      - boolean
+      - datetime
+      description: The type of the column's values once read; a cell may also hold a token the mapping that read
+        it names (a blank, a censoring prefix), recorded as a missing value or a bound, never as zero.
+    variable:
+      type: ref
+      targets:
+      - Variable
+      description: The Variable the column holds values of; its quantity_kind gives the column's quantity contract.
+    unit:
+      type: string
+      description: The unit of the column's numbers, as written ("%", "eV", "V vs RHE").
+    basis:
+      type: text
+      description: What the column's values are normalized to or computed on.
+  rules:
+  - A number or integer column naming a variable names a quantitative Variable with a quantity_kind, and a unit of
+    one of its kind's dimensions.
 quantities:
   maturity: provisional
   description: |

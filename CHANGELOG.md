@@ -16,6 +16,21 @@
   pinned and checked), selects a point's record on click, downloads SVG, PNG, CSV and JSON, reads a local file attached
   to a Dataset in the browser only, and gives a reader's own model a plot tool. The query-graph skill points agents to
   it (docs/analyze.md).
+- **Built-in data mappings: a laboratory's file into a document without writing a mapping (tools; no schema change, no
+  migration).** `scale data match FILE` (and the agent tool `scale_data_match`) scores the reviewed mapping templates
+  of the new library `domain/data-mappings/` (CO2RR Faradaic efficiency and partial current density vs potential,
+  thermal catalytic tests, kinetics with a TOF's site basis, DFT adsorption energies, characterization summaries)
+  against the file's header and sample values, binds each role to a column, melts wide columns into one result per
+  column, reads units from headers, reports every uncertain binding with its candidates (a role two columns fit is
+  left unbound, never guessed) and writes a complete mapping for `scale data add`, reusable for files of the same
+  layout. `scale data add` reads .xlsx sheets and CSV dialects (delimiter, encoding, header row and preamble, decimal
+  comma) by a reader in pure Python: the table is written as `scale_csv_v1`, recorded as a derived Dataset whose
+  `table.ingest` holds the recipe, beside the original file's own Dataset, and `scale data verify` extracts it again
+  from the file. Mappings gain `mapping_version: 2` (version 1 files are read as before): an `input` block, `melt`,
+  `unit_from_header` checked by the quantity contracts, `lookups` that find records by formula or name or create them
+  (a ChemicalSpecies from its formula), `references` reused by kind, several records per pass with `target_record`
+  links, `basis_column` and `unresolved_target_column`. A synthetic example per template
+  (`domain/examples/scale-catal/data-mapping-examples/`, listed in `governance/public-fixtures.yaml`), docs/data.md.
 
 - **Querying across knowledge graphs, a design matrix and a write-back convention (tools; no schema change, no
   migration).** `scale graph query` and `scale graph search` take several graphs (`--graph ALIAS=FILE`, repeated), as do
@@ -30,6 +45,27 @@
   digests and evidence, the access), refusing ambiguous pivots and incompatible outcomes. `tools/campaign.py` writes
   an agent's proposals (proposed experiments, predictions) and their results (recorded records that REVISE the
   proposal and TEST the prediction) back into a graph. Single-graph calls are unchanged (docs/querying.md).
+
+- **A value's link to its data cell, and tabular data into documents (schema 0.8.4, additive, provisional; no
+  migration).** The kernel's evidence item gains `dataset_cell` (a column, and the row by its key, every primary-key
+  column once, or by an opted-in zero-based position) and Dataset gains `table` (profile `scale_csv_v1`, primary key,
+  typed columns with the Variable, unit and basis of a quantity, the row count and what compiled it), as the kernel
+  structures `dataset_cell`, `dataset_key`, `dataset_table` and `dataset_column`. One route from a value to its data,
+  for literature, experimental and computational values alike: `value.evidence_ids` -> `evidence.dataset_cell` ->
+  `evidence.source`, a Dataset named by version or uri and the sha256 of its bytes. The validator checks a cell's
+  evidence kind, its Dataset (a table, a version or uri, a 64-hex sha256), its row selector and column, and that a
+  numeric value is in its column's unit, variable and basis, a result's column naming a quantitative Variable whose
+  kind the column's unit fits; the schema diff now compares the kernel structures. `scale data add FILE.csv --map
+  MAP.yaml --into DOC [--dry-run]` compiles a table by a declarative mapping (`mapping_version: 1`, unknown keys
+  refused, no code) into a Dataset, records with stable ids, result entries each citing its cells, REPORTED_IN and the
+  links named; it refuses duplicate keys, conflicting run-level properties, unresolved references, malformed numbers,
+  unnamed blanks and tokens and any new validation error, maps tokens only to missingness or bounds (never zero),
+  records the mapping, tool and schema digests and is idempotent. `scale data verify` checks the bytes and each cited
+  cell against a local copy (unverified without one; nothing fetched); the agent tools `scale_data_add` and
+  `scale_data_verify` do the same. Worked example `data-ingest-examples/` (a CO2RR Faradaic-efficiency table and a
+  DFT adsorption-energy table, synthetic), counterexamples `dataset-cell-without-its-whole-key.json` and
+  `dataset-cell-in-another-unit.json`, docs/data.md. Documents pinning 0.8.3 stay valid.
+
 - **Private-data protection (tools, service, explorer; no schema change, no migration).** `scale data init DIR`
   scaffolds a data repository of one's own (a policy file, `scale-data.yaml`, naming its readers, remotes, raw-data
   patterns and approved model endpoints; `rights.yaml`; ignored raw/index/exports/cache/work folders; mode 0700; no

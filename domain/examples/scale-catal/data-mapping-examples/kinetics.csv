@@ -1,0 +1,4 @@
+run,catalyst,species,T (K),P (bar),rate (mol g-1 s-1),TOF (s-1),site basis
+K1,Ni-Al2O3-1,CH4,493,1,1.2e-6,0.011,H2 chemisorption
+K2,Ni-Al2O3-1,CH4,503,1,2.0e-6,0.018,H2 chemisorption
+K3,Ni-Al2O3-1,CH4,513,1,3.3e-6,0.030,H2 chemisorption

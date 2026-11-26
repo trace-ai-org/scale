@@ -42,7 +42,8 @@ from . import layout
 from .util import ScaleError, load_yaml
 
 KERNEL_KEYS = ("format", "property_types", "value", "evidence", "record_ref", "stewardship", "status_check",
-               "record_check", "common", "extensions", "rules", "quantities")
+               "record_check", "dataset_cell", "dataset_key", "dataset_table", "dataset_column", "common", "extensions",
+               "rules", "quantities")
 PREFIX_REGISTRY = Path(layout.PREFIX_REGISTRY)
 
 
@@ -321,7 +322,8 @@ def assemble_manifest(man: dict, base: Path) -> dict:
         expand_defs(r["properties"])
     for ed in edges.values():
         expand_defs(ed.get("properties") or {})
-    for k in ("value", "evidence", "record_ref", "stewardship", "common", "format"):
+    for k in ("value", "evidence", "record_ref", "stewardship", "common", "format", "dataset_cell", "dataset_key",
+              "dataset_table", "dataset_column"):
         if k in spec:
             expand_defs(spec[k])
 

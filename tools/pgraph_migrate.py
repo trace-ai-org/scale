@@ -43,6 +43,7 @@ STEPS: dict[str, tuple[str, str]] = {
     "0.8.0": ("0.8.1", 'additive change'),
     "0.8.1": ("0.8.2", 'additive change'),
     "0.8.2": ("0.8.3", 'HAS_INPUT.synthesis_function gains halogen_source (an input that supplies a halogen incorporated into the material); nothing to rewrite'),
+    "0.8.3": ("0.8.4", 'evidence.dataset_cell (a cell of a tabular Dataset by row key or position) and Dataset.table (profile scale_csv_v1, primary key, typed columns with their Variable, unit and basis); additive, provisional'),
 }
 
 

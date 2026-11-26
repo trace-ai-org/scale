@@ -1,0 +1,225 @@
+# A built-in mapping template of `scale data match` (docs/data.md, "Built-in mappings"); provisional.
+template_version: 1
+id: thermal-catalytic-test
+title: Thermal catalytic tests, conversion, selectivity and yield vs temperature, pressure and space velocity
+description: |
+  One row per test condition of a thermally driven reactor test: its temperature, optionally its pressure, space
+  velocity (GHSV or WHSV, told apart by the unit) and time on stream, and the conversion of each reactant (X CO2 (%)),
+  the selectivity (S CH4 (%)) and the yield (Y CH4 (%)) of each product in its own column. Each row becomes a
+  CatalyticTest (driving force thermo) with one result entry per species and quantity; the species named in a header
+  is looked up by formula or name, and created from its formula when the document has none.
+maturity: provisional
+driving_forces: [thermo]
+default_origin: recorded
+require_one_of:
+- [conversion, selectivity, yield]
+example: examples/scale-catal/data-mapping-examples/thermal-tests.csv
+roles:
+  run:
+    kind: text
+    required: true
+    synonyms: [run, run id, run no, test, test id, experiment, exp, condition, point, entry, id]
+  sample:
+    kind: text
+    synonyms: [sample, sample id, catalyst, catalyst id, material, catalyst sample]
+  recorded_at:
+    kind: datetime
+    synonyms: [recorded at, date, date time, datetime, timestamp, start time, started at, measured at]
+  temperature:
+    kind: number
+    required: true
+    quantity: temperature
+    default_unit: °C
+    synonyms: [t, temp, temperature, reaction temperature, t reaction, t bed, bed temperature, catalyst temperature, t cat,
+      reactor temperature]
+  pressure:
+    kind: number
+    quantity: pressure
+    default_unit: bar
+    synonyms: [p, pressure, total pressure, reaction pressure, p total, ptot]
+  space_velocity:
+    kind: number
+    quantity: space_velocity
+    default_unit: h-1
+    synonyms: [ghsv, whsv, sv, space velocity, gas hourly space velocity, weight hourly space velocity, whsv gas]
+  time_on_stream:
+    kind: number
+    default_unit: h
+    synonyms: [tos, time on stream, t os, time, time on line]
+  conversion:
+    kind: melt
+    id: x
+    quantity: conversion
+    default_unit: '%'
+    exclude_targets: [total, sum]
+    patterns:
+    - ^(?:x|conv\.?|conversion)[\s_:-]+(?:of[\s_]+)?(?P<target>[A-Za-z][A-Za-z0-9+\-]*)$
+  selectivity:
+    kind: melt
+    id: s
+    quantity: selectivity
+    default_unit: '%'
+    exclude_targets: [total, sum, balance, others, other]
+    patterns:
+    - ^(?:s|sel\.?|selectivity)[\s_:-]+(?:to[\s_]+|of[\s_]+)?(?P<target>[A-Za-z][A-Za-z0-9+\-]*)$
+  yield:
+    kind: melt
+    id: 'y'
+    quantity: product_yield
+    default_unit: '%'
+    exclude_targets: [total, sum]
+    patterns:
+    - ^(?:y|yield)[\s_:-]+(?:of[\s_]+)?(?P<target>[A-Za-z][A-Za-z0-9+\-]*)$
+confirm:
+- each row is one test condition (one CatalyticTest); rows of one run at several temperatures are several tests
+- a blank conversion, selectivity or yield is recorded as not_measured, and a cell such as <0.1 as below the detection limit
+- selectivities are of the products named, on the basis the laboratory states (carbon or molar); add it as the result's
+  basis if it is known
+- a sample the document does not hold is created as a CatalystSample of sample_kind other; set its form
+mapping:
+  mapping_version: 2
+  input: '{{input}}'
+  dataset:
+    id_prefix: '{{ns}}:data/'
+    primary_key: ['{{column:run}}']
+  references:
+    conversion:
+      when: conversion
+      id: '{{ns}}:variable/conversion'
+      label: Variable
+      props:
+        name: conversion
+        scale: quantitative
+        quantity_kind: conversion
+        unit: '%'
+      reuse: [quantity_kind]
+    selectivity:
+      when: selectivity
+      id: '{{ns}}:variable/selectivity'
+      label: Variable
+      props:
+        name: selectivity
+        scale: quantitative
+        quantity_kind: selectivity
+        unit: '%'
+      reuse: [quantity_kind]
+    yield:
+      when: yield
+      id: '{{ns}}:variable/yield'
+      label: Variable
+      props:
+        name: product yield
+        scale: quantitative
+        quantity_kind: product_yield
+        unit: '%'
+      reuse: [quantity_kind]
+  lookups:
+    species:
+      label: ChemicalSpecies
+      match: [formula, name]
+      aliases:
+        carbon dioxide: CO2
+        carbon monoxide: CO
+        hydrogen: H2
+        methane: CH4
+        methanol: CH3OH
+        MeOH: CH3OH
+        dimethyl ether: CH3OCH3
+        DME: CH3OCH3
+        ethane: C2H6
+        ethylene: C2H4
+        ethene: C2H4
+        propane: C3H8
+        propylene: C3H6
+        propene: C3H6
+        water: H2O
+        ammonia: NH3
+      create:
+        id_prefix: '{{ns}}:species/'
+        as: formula
+    sample:
+      when: sample
+      label: CatalystSample
+      match: [name]
+      create:
+        id_prefix: '{{ns}}:sample/'
+        as: name
+        props:
+          sample_kind: other
+  records:
+  - as: test
+    label: CatalyticTest
+    key: ['{{column:run}}']
+    name: Thermal catalytic test
+    origin: '{{origin}}'
+    recorded_at_column: '{{column:recorded_at}}'
+    recorded_at: '{{recorded_at}}'
+    properties:
+      test_kind:
+        literal: activity
+      experiment_kind:
+        literal: physical
+      driving_forces:
+        literal: [thermo]
+      temperature:
+        column: '{{column:temperature}}'
+        unit: '{{unit:temperature}}'
+      pressure:
+        when: pressure
+        column: '{{column:pressure}}'
+        unit: '{{unit:pressure}}'
+        missing:
+          ? ''
+          : status: not_reported
+            missing_reason: not_stated_in_source
+      space_velocity:
+        when: space_velocity
+        column: '{{column:space_velocity}}'
+        unit: '{{unit:space_velocity}}'
+        missing:
+          ? ''
+          : status: not_reported
+            missing_reason: not_stated_in_source
+      time_on_stream:
+        when: time_on_stream
+        column: '{{column:time_on_stream}}'
+        unit: '{{unit:time_on_stream}}'
+    results:
+    - when: conversion
+      variable: '@conversion'
+      target_lookup: species
+      unit: '{{unit:conversion}}'
+      melt: '{{melt:conversion}}'
+      censor:
+      - prefix: <
+        as: below_detection_limit
+      missing:
+        ? ''
+        : status: not_measured
+    - when: selectivity
+      variable: '@selectivity'
+      target_lookup: species
+      unit: '{{unit:selectivity}}'
+      melt: '{{melt:selectivity}}'
+      censor:
+      - prefix: <
+        as: below_detection_limit
+      missing:
+        ? ''
+        : status: not_measured
+    - when: yield
+      variable: '@yield'
+      target_lookup: species
+      unit: '{{unit:yield}}'
+      melt: '{{melt:yield}}'
+      censor:
+      - prefix: <
+        as: below_detection_limit
+      missing:
+        ? ''
+        : status: not_measured
+    links:
+    - when: sample
+      type: USES_CATALYST
+      target_column: '{{column:sample}}'
+      target_lookup: sample

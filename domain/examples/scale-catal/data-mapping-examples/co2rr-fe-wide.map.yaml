@@ -1,0 +1,139 @@
+# scale data match: built-in mapping co2rr-faradaic-efficiency (CO2 electroreduction, Faradaic efficiency (and partial current density) vs potential), score 0.972
+# file co2rr-fe-wide.xlsx, sheet 'FE', cells A4:I7
+# uncertain: sheet 'FE' of 'Notes', 'FE', 'GC calibration'; give --sheet to choose another
+# uncertain: the header row was found, not given: row 4; give --header-row to settle it
+# uncertain: 1 non-empty rows after a blank row are not read (cells A4:I7 are); give input.range to read another block
+# confirm: control_mode potentiostatic (each run held at its potential); change it for galvanostatic runs
+# confirm: a blank efficiency or current is recorded as not_measured, and a cell such as <0.5 as below the detection limit
+# confirm: current densities are per geometric electrode area (current_normalization geometric_area)
+# confirm: a sample the document does not hold is created as a CatalystSample of sample_kind other; set its form
+# not mapped: FE total (%)
+mapping_version: 2
+input:
+  format: xlsx
+  sheet: FE
+  header_row: 4
+dataset:
+  id_prefix: ex-dm:data/
+  primary_key:
+  - Run
+references:
+  fe:
+    id: ex-dm:variable/faradaic-efficiency
+    label: Variable
+    props:
+      name: Faradaic efficiency
+      scale: quantitative
+      quantity_kind: faradaic_efficiency
+      unit: '%'
+    reuse:
+    - quantity_kind
+  partial_j:
+    id: ex-dm:variable/partial-current-density
+    label: Variable
+    props:
+      name: partial current density
+      scale: quantitative
+      quantity_kind: partial_current_density
+      unit: mA/cm2
+    reuse:
+    - quantity_kind
+lookups:
+  species:
+    label: ChemicalSpecies
+    match:
+    - formula
+    - name
+    aliases:
+      carbon monoxide: CO
+      hydrogen: H2
+      formate: HCOO-
+      HCOO: HCOO-
+      formic acid: HCOOH
+      methane: CH4
+      ethylene: C2H4
+      ethene: C2H4
+      ethanol: C2H5OH
+      EtOH: C2H5OH
+      methanol: CH3OH
+      MeOH: CH3OH
+      acetate: CH3COO-
+      n-propanol: C3H7OH
+      propanol: C3H7OH
+    create:
+      id_prefix: ex-dm:species/
+      as: formula
+  sample:
+    label: CatalystSample
+    match:
+    - name
+    create:
+      id_prefix: ex-dm:sample/
+      as: name
+      props:
+        sample_kind: other
+records:
+- as: test
+  label: CatalyticTest
+  key:
+  - Run
+  name: CO2 electroreduction
+  origin: synthetic
+  properties:
+    test_kind:
+      literal: activity
+    experiment_kind:
+      literal: physical
+    driving_forces:
+      literal:
+      - electro
+    control_mode:
+      literal: potentiostatic
+    electrode_potential:
+      column: E (V vs RHE)
+      unit_from_header: true
+    current_density:
+      column: j total (mA/cm2)
+      unit_from_header: true
+      missing:
+        '':
+          status: not_measured
+    current_normalization:
+      literal: geometric_area
+  results:
+  - variable: '@fe'
+    target_lookup: species
+    unit_from_header: true
+    melt:
+    - column: FE CO (%)
+      id: fe_co
+      target: CO
+    - column: FE H2 (%)
+      id: fe_h2
+      target: H2
+    - column: FE HCOO- (%)
+      id: fe_hcoo
+      target: HCOO-
+    censor:
+    - prefix: <
+      as: below_detection_limit
+    missing:
+      '':
+        status: not_measured
+  - variable: '@partial_j'
+    target_lookup: species
+    unit_from_header: true
+    melt:
+    - column: j CO (mA/cm2)
+      id: j_co
+      target: CO
+    censor:
+    - prefix: <
+      as: below_detection_limit
+    missing:
+      '':
+        status: not_measured
+  links:
+  - type: USES_CATALYST
+    target_column: Electrode
+    target_lookup: sample

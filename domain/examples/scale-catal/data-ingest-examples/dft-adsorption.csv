@@ -1,0 +1,7 @@
+calculation_id,result_id,surface,functional,charge_treatment,run_status,status_reason,input_dataset_id,environment_dataset_id,reaction_id,adsorption_energy_eV
+C1,co_adsorption,Cu(111),RPBE,constant_charge,completed,,ex:di/dataset/dft-inputs,ex:di/dataset/dft-environment,ex:di/reaction/co-adsorption,-0.52
+C1,h_adsorption,Cu(111),RPBE,constant_charge,completed,,ex:di/dataset/dft-inputs,ex:di/dataset/dft-environment,ex:di/reaction/h-adsorption,0.11
+C2,co_adsorption,Ag(111),RPBE,constant_charge,completed,,ex:di/dataset/dft-inputs,ex:di/dataset/dft-environment,ex:di/reaction/co-adsorption,-0.08
+C2,h_adsorption,Ag(111),RPBE,constant_charge,completed,,ex:di/dataset/dft-inputs,ex:di/dataset/dft-environment,ex:di/reaction/h-adsorption,0.47
+C3,co_adsorption,Au(111),RPBE,constant_charge,failed,SCF not converged after 300 steps,ex:di/dataset/dft-inputs,ex:di/dataset/dft-environment,ex:di/reaction/co-adsorption,
+C3,h_adsorption,Au(111),RPBE,constant_charge,failed,SCF not converged after 300 steps,ex:di/dataset/dft-inputs,ex:di/dataset/dft-environment,ex:di/reaction/h-adsorption,

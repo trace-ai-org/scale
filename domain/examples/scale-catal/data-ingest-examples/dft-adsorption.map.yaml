@@ -1,0 +1,50 @@
+# DFT adsorption energies (synthetic) into Computation records: one record per calculation_id, one result entry per
+# row; a failed calculation keeps its status and reason, and its energies are recorded as not measured, never zero.
+# `scale data add dft-adsorption.csv --map dft-adsorption.map.yaml --into seed.json`.
+# The destination here is a synthetic example, so the records are origin synthetic; a group's own mapping says
+# origin: computed and writes into its own research_data document.
+mapping_version: 1
+dataset:
+  id: ex:di/dataset/dft-adsorption
+  name: CO and H adsorption energies on close-packed metals, RPBE (synthetic)
+  version: "1"
+  uri: dft-adsorption.csv
+  profile: scale_csv_v1
+  primary_key: [calculation_id, result_id]
+  licence: CC-BY-4.0
+record:
+  label: Computation
+  id_prefix: ex:di/computation/
+  key: [calculation_id]
+  name: Adsorption energies
+  name_column: surface
+  origin: synthetic
+  properties:
+    computation_kind:
+      literal: electronic_structure
+    level_of_theory:
+      column: functional
+      representation: text_value
+    charge_treatment:
+      column: charge_treatment
+    experiment_status:
+      column: run_status
+    status_reason:
+      column: status_reason
+      missing:
+        "": omit
+    configuration:
+      ref_column: input_dataset_id
+    execution_environment:
+      ref_column: environment_dataset_id
+result:
+  id_column: result_id
+  column: adsorption_energy_eV
+  variable: ex:di/variable/adsorption-energy
+  unit: eV
+  target_column: reaction_id
+  produced_by: self
+  missing:
+    "":
+      status: not_measured
+      note: the calculation failed; no energy was obtained
