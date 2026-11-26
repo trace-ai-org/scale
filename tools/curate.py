@@ -225,6 +225,22 @@ def start(out: Path, doi: str | None = None, pdf: Path | None = None, text: Path
     meta = resolve_doi(doi, email or os.environ.get(EMAIL_ENV), get) if doi else {"title": None, "notes": []}
     slug = slug_of(doi, Path(pdf) if pdf else Path(text) if text else None)
     out = Path(out)
+    project = project or f"ex:pub/project/{slug}"
+    header_st = {"contributed_by": st["contributed_by"], "project": project, "access": st["access"],
+                 **{k: v for k, v in st.items() if k not in ("contributed_by", "project", "access")}}
+    # a graph not for the public never starts in the framework repository, and one in a data repository admits at
+    # least the repository's readers (a project of its own, an institution of its own, is refused there)
+    if header_st["access"] != "public":
+        from .datarepo import refuse_framework
+        refuse_framework(out, "a curation folder of project data")
+    if policy_file is not None:
+        from .audience import audience_problems, parse_policy
+        from .util import load_yaml
+        probe = {"graph": {"stewardship": header_st}, "nodes": [], "links": []}
+        problems = audience_problems(probe, out.name, parse_policy(load_yaml(policy_file), str(policy_file))["readers"])
+        if problems:
+            raise ScaleError("; ".join(problems) + f" ({policy_file}): the repository's hooks would refuse it; nothing "
+                             "was written")
     if (out / f"{slug}.graph.json").exists():
         raise ScaleError(f"{out}: already holds {slug}.graph.json; curate it there, or give another --out")
     out.mkdir(parents=True, exist_ok=True)
@@ -275,10 +291,7 @@ def start(out: Path, doi: str | None = None, pdf: Path | None = None, text: Path
         "retrieved_on": today.isoformat() if retrieved_from else None, "origin": "curated"}.items() if v is not None}
     title = " ".join((meta.get("title") or slug).split())
     graph_title = title          # whole: a short title is made where one is needed (a kg-bundle, a graph card)
-    project = project or f"ex:pub/project/{slug}"
     stewards = [_steward(repo, c) for c in st["contributed_by"]]
-    header_st = {"contributed_by": st["contributed_by"], "project": project, "access": st["access"],
-                 **{k: v for k, v in st.items() if k not in ("contributed_by", "project", "access")}}
     doc = {"directed": True, "multigraph": True,
            "graph": {"schema": spec["schema"], "schema_version": version, "graph_id": f"ex:pub/graph/{slug}",
                      "title": graph_title,

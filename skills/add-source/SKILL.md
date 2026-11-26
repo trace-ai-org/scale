@@ -95,13 +95,16 @@ settles it:
 | `bind:<role>` | which column holds it (the candidates are listed) | `--bind <role>=<column>` |
 | `unit:<column>` | whether the unit assumed is right | `--confirm unit:<column>`, or they write the unit in the header |
 | `sheet` | which sheet of the workbook | `--sheet <name>` |
-| `rights` | the licence of a publication's table | `--data-rights in_copyright` (or open, public_domain) |
+| `template` | which kind of table it is, when two built-in mappings fit as well | `--template <id>` |
+| `assumptions:<template>` | whether what the mapping records for every row is right (a control mode, a normalization, what a blank means) | `--confirm assumptions:<template>`; if not, the file or a mapping of their own says it |
+| `rights` | the licence of a publication's table (asked for any table given `--from-source`) | `--data-rights in_copyright` (or open, public_domain, own) |
 | `fix:<column>` | to correct cells no rule reads (`n.d.`, a text in a number column) in the file | none: the file changes |
 
 Put the person's answers into the `retry` command it prints (its upper-case words, `COLUMN`, `YYYY-...`, are
 placeholders) and run it. **Never answer a question yourself**, not even with the suggestion: a guessed column, unit or
-date is a wrong record that looks right. The notes (a header row found, decimal commas) and the assumptions
-(`assumed (check it)`) are reported: read them to the person.
+date is a wrong record that looks right. The notes (a header row found, decimal
+commas) are reported: read them to the person. Nothing is written, copied into `raw/` or saved until every question
+is answered and every cited cell is checked against the file.
 
 When the table is a publication's (its Table 2, its SI), add the publication first (step 4) and then the table with
 `--from-source <the Source id> --locator "Table 2"`: the Dataset is then REPORTED_IN the publication.

@@ -21,7 +21,7 @@ a DOI or its text), a table (CSV, Excel) or a graph file. An agent does the same
 SCALE framework repository, whose readers are the public):
 
 ```bash
-pip install scale-catal                     # or: uvx scale-catal ...
+pip install "scale-catal[pdf]"              # [pdf]: reading PDFs (PyMuPDF; OCR needs tesseract)
 scale data init ~/data/co2 --project lab:project/co2 --contributor lab:org/ni-group
 ```
 
@@ -43,7 +43,7 @@ scale add-source colleague.json --into graphs/lab.json --merge              # a 
 | the source | what `scale add-source` does |
 |---|---|
 | a table (`.csv` of any common dialect, `.xlsx`, text laid out in columns) | matches the built-in mappings ([below](#built-in-mappings-scale-data-match)); when nothing is uncertain it imports the table (`scale data add`), validates the document and checks every cited cell against the file (`scale data verify`); a file from outside the repository is copied into `raw/`, its mapping saved in `work/mappings/`, and the rights entry of its Datasets (whose cells the document quotes) written to `rights.yaml`: `--data-rights own` by default, the project's own data |
-| uncertain | writes nothing and asks (exit 1): each **question** names what is unsure and the option that settles it, `--bind ROLE=COLUMN` (two columns fit, or one by a similar name), `--confirm unit:COLUMN` (a unit the header does not write), `--recorded-at` or `--origin reported` (when the data were recorded), `--sheet` (several sheets fit), `--data-rights` (a publication's table); cells no rule reads are fixed in the file. The notes (a header row found, decimal commas) and the mapping's assumptions are reported, never asked |
+| uncertain | writes nothing and asks (exit 1): each **question** names what is unsure and the option that settles it, `--bind ROLE=COLUMN` (two columns fit, or one by a similar name), `--confirm unit:COLUMN` (a unit the header does not write), `--recorded-at` or `--origin reported` (when the data were recorded), `--sheet` (several sheets fit), `--template` (two kinds of table fit as well), `--confirm assumptions:TEMPLATE` (what the mapping records for every row: a control mode, a normalization, what a blank means), `--data-rights` (a publication's table, or any table given `--from-source`); cells no rule reads are fixed in the file. The notes (a header row found, decimal commas) are reported, never asked. Nothing is written, copied or saved until every question is answered and the cells are verified against the file |
 | a publication (PDF, DOI, `.txt`) | starts a curation folder in the repository's `work/sources/<slug>/` (kept on the computer) with the document's stewardship (`scale source start`); an agent curates it by the curate-corpus skill and `scale source check` holds it to the schema, the page texts and the copyright cap; `--finish FOLDER` folds the graph into the document (records keep their ids, the Source's rights entry goes to `rights.yaml`, the result must validate). A DOI with no open-access copy under an open licence asks for the PDF (`--doi DOI` with the file) |
 | a graph (`.json`) | validates it; `--merge` adds its records, refusing a record the document holds with other content, a graph of another schema version and records the repository's readers may not read; each record keeps its audience |
 | a table of a publication | `--from-source SOURCE_ID --locator "Table 2"`: the Dataset cites the publication's Source and is REPORTED_IN it |

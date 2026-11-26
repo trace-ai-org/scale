@@ -607,10 +607,15 @@ class ScaleToolkit:
             except (ScaleError, OSError, ValueError, KeyError) as exc:
                 raise EgressDenied("egress denied: the curation folder cannot be read to check its access; nothing "
                                    "was sent") from exc
-        src = arguments.get("source")
-        sp = self._path(src) if isinstance(src, str) and src else None
+        src = self._source_arg(arguments.get("source"))
+        sp = Path(src) if isinstance(src, str) and src and Path(src).is_absolute() else None
         if sp is not None and sp.is_file():
-            if sp.suffix.lower() == ".json":
+            from .addsource import detect
+            try:
+                route = detect(str(sp), arguments.get("kind"))["route"]
+            except ScaleError:
+                route = None                            # the tool refuses it; nothing of it is returned
+            if route == "graph" or sp.suffix.lower() == ".json":
                 docs.append(("the graph to add", sp))
             try:
                 pf = find_policy(sp)
@@ -826,6 +831,8 @@ class ScaleToolkit:
                                                                                "origin": "curated"}}
                                  for i in st["contributed_by"][1:]]
             stewarded = str(pf)
+            if self.egress is not None:          # the ids it names are the repository's: gated as a document
+                self.egress.check(doc, "the template (its stewardship and records)", pf)
         rep = pgraph.validate(doc, spec).as_dict()
         return {"document": doc, "valid": rep["valid"], "schema_version": spec["version"],
                 **({"stewardship_from": stewarded} if stewarded else {}),
@@ -1134,6 +1141,21 @@ class ScaleToolkit:
                              "data repository (scale data init)")
         return p
 
+    def _source_arg(self, source: str | None) -> str | None:
+        """A source as the toolkit reads it: a file relative to the working directory (or absolute), else a DOI; never a
+        file of the process's current directory, which the gate did not check."""
+        if not isinstance(source, str) or not source:
+            return source
+        p = self._path(source)
+        if p.exists():
+            return str(p)
+        from .curate import normalize_doi
+        try:
+            normalize_doi(source)
+            return source
+        except ScaleError:
+            return str(p)                                # not there: the router says so
+
     def _scale_add_source(self, into: str, source: str | None = None, finish: str | None = None, **opts) -> dict:
         from . import addsource
         known = {"dry_run", "kind", "sheet", "header_row", "range", "recorded_at", "origin", "bind", "confirm", "template",
@@ -1144,16 +1166,19 @@ class ScaleToolkit:
                                              or not all(isinstance(v, str) for v in opts["bind"].values())):
             return {"error": "bind maps a role to a column name"}
         target = self._writable(into, "a source added to a graph of project data")
-        if source and self._path(source).exists():
-            source = str(self._path(source))
+        source = self._source_arg(source)
         return addsource.add(source, target, repo=self.repo,
                              finish_folder=str(self._path(finish)) if finish else None, **opts)
 
     def _scale_data_new(self, file: str, project: str | None = None, contributor: str | None = None,
                         access: str | None = None, title: str | None = None) -> dict:
         from .datarepo import new_document
-        return new_document(self._writable(file, "a document of project data"), project=project,
-                            contributor=contributor, access=access, title=title, repo=self.repo)
+        res = new_document(self._writable(file, "a document of project data"), project=project,
+                           contributor=contributor, access=access, title=title, repo=self.repo)
+        if self.egress is not None:                     # it names the document's project and institutions
+            self.egress.check({"graph": {"stewardship": res["stewardship"]}, "nodes": [], "links": []},
+                              f"the new document {file}", res["written"])
+        return res
 
     def _scale_data_verify(self, document: dict | None = None, path: str | None = None,
                            files: dict | None = None) -> dict:

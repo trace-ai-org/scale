@@ -73,6 +73,14 @@ def _data_rights(choice: str | None, origin: str | None, name: str) -> dict:
             "basis": f"{name}: stated with scale add-source --data-rights {choice}"}
 
 
+_RIGHTS_Q = {"id": "rights", "about": "the rights of the table",
+             "why": "a table of a publication is quoted cell by cell: its rights decide how much may be kept verbatim "
+                    "(in_copyright caps the quotes; open or public_domain when its licence says so; own when it is "
+                    "your own data that you published)",
+             "settle": {"options": ["--data-rights CLASS", *(f"--data-rights {c}" for c in
+                                                             ("in_copyright", "open", "public_domain", "own"))],
+                        "tool_arguments": {"data_rights": "CLASS"}},
+             "candidates": ["in_copyright", "open", "public_domain", "own"]}
 # uncertain items of a match that are notes (reported, not asked): how the file was read
 NOTE = re.compile(r"^(the header row was found|decimal commas|cells formatted as percentages|\d+ non-empty rows after)")
 
@@ -170,9 +178,32 @@ def _spec(repo: Path, doc: dict) -> dict:
     return pgraph.load_spec(pgraph.spec_for(repo, (doc.get("graph") or {}).get("schema_version"), None, doc))
 
 
+def _root(dest: dict) -> Path:
+    """Where the router may write: the data repository, else the destination's folder."""
+    return (dest["data_repository"] or dest["path"].parent).resolve()
+
+
+def _safe(target: Path, dest: dict) -> Path:
+    """A path the router writes, checked where it really lands (links followed): inside :func:`_root`, never in the
+    framework repository."""
+    t = Path(target).resolve()
+    if not t.is_relative_to(_root(dest)):
+        _fail(f"{target} leads to {t}, outside {_root(dest)}: scale add-source writes only there (a linked folder or "
+              "file that leads elsewhere is refused)")
+    refuse_framework(t, "the working material of a source")
+    return Path(target)
+
+
 def _work(dest: dict) -> Path:
     """Working material (curation folders, mappings): the data repository's work/ (git-ignored), else work/ beside DOC."""
-    return (dest["data_repository"] or dest["path"].parent) / "work"
+    return _safe(Path(_root(dest)) / "work", dest)
+
+
+def _audience_of(dest: dict, doc: dict) -> dict:
+    """Who reads the destination: its data repository's readers, else the document's own header stewardship."""
+    if dest["policy"] is not None:
+        return dest["policy"]["readers"]
+    return pgraph.stewardship_of((doc.get("graph") or {}).get("stewardship"))
 
 
 def _audience(dest: dict, doc: dict) -> None:
@@ -180,6 +211,20 @@ def _audience(dest: dict, doc: dict) -> None:
         problems = audience_problems(doc, dest["path"].name, dest["policy"]["readers"])
         if problems:
             _fail("; ".join(problems[:5]) + ": the data repository's readers may not read it, so nothing was written")
+
+
+def _source_audience(path: Path, dest: dict, doc: dict) -> None:
+    """A file kept in a data repository carries that repository's default stewardship: it goes into a destination only
+    when every reader of the destination may read it (an institution's file never enters a project's graph)."""
+    pf = find_policy(path)
+    if pf is None or (dest["policy_file"] is not None and pf.resolve() == dest["policy_file"].resolve()):
+        return
+    st = (parse_policy(load_yaml(pf), str(pf)).get("defaults") or {}).get("stewardship") or {"access": "institution"}
+    probe = {"graph": {"stewardship": st}, "nodes": [], "links": []}
+    if audience_problems(probe, path.name, _audience_of(dest, doc)):
+        _fail(f"{path} is in the data repository {pf.parent}, whose data may be read by fewer readers than "
+              f"{dest['path'].name}'s; nothing was written (add it to a document of that repository, or have its "
+              "partners clear it first)")
 
 
 def _new_errors(before: dict, after: dict, spec: dict) -> tuple[list[dict], object]:
@@ -204,8 +249,8 @@ REMINDER = ("{doc} is the durable copy: commit it in its data repository (git ad
 # ------------------------------------------------------------------------------------------ tables
 def _command(source: str, into: str, opts: dict, extra: list[str]) -> str:
     parts = ["scale", "add-source", source, "--into", into]
-    for k in ("sheet", "header_row", "range", "template", "origin", "recorded_at", "namespace", "from_source", "locator",
-              "data_rights"):
+    for k in ("kind", "sheet", "header_row", "range", "template", "origin", "recorded_at", "namespace", "from_source",
+              "locator", "data_rights"):
         if opts.get(k) is not None and not any(x.startswith(f"--{k.replace('_', '-')} ") for x in extra):
             parts += [f"--{k.replace('_', '-')}", str(opts[k])]
     for role, col in (opts.get("bind") or {}).items():
@@ -267,24 +312,54 @@ def _questions(best: dict, res: dict, opts: dict, header: list[str]) -> tuple[li
     if not best["complete"] and not questions:
         ask("mapping", "the mapping", "the mapping is not complete: " + "; ".join(best["problems"] or ["?CHOOSE left"]),
             ["--template ID   # another built-in mapping: scale data match --list"], {})
+    # another kind of table that fits as well: which one it is, the person says
+    rivals = [c for c in res["candidates"][1:] if c["template"] != best["template"] and c.get("sheet") == best.get("sheet")
+              and c["complete"] and c["score"] >= best["score"] - datamatch.AMBIGUITY]
+    if rivals and opts.get("template") is None:
+        kinds = [best["template"], *[c["template"] for c in rivals]]
+        ask("template", "which kind of table", "more than one built-in mapping fits it as well ("
+            + ", ".join(f"{c['template']} {c['score']}" for c in [best, *rivals]) + ")",
+            [f"--template {t}" for t in kinds], {"template": best["template"]}, kinds)
+    # what the mapping assumes about the experiment (a control mode, a normalization, what a blank means)
+    if best["confirm"]:
+        qid = f"assumptions:{best['template']}"
+        if qid not in confirmed:
+            ask(qid, "what the mapping assumes", "the mapping records these as stated for every row: "
+                + "; ".join(best["confirm"]) + ". Confirm them, or say what differs (then the file, or a mapping of "
+                "your own, states it: docs/data.md)", [f"--confirm {qid}"], {"confirm": [qid]}, best["confirm"])
     return questions, notes
 
 
-def _raw_copy(src: Path, dest: dict, dry_run: bool) -> tuple[Path, str | None]:
-    """Inside a data repository, a file from outside it is copied into raw/ (git-ignored) so the Dataset's uri keeps
-    pointing at the bytes; a different file of the same name there is never replaced."""
+def _raw_target(src: Path, data: bytes, dest: dict) -> Path | None:
+    """Inside a data repository, where a file from outside it is copied (raw/, git-ignored) so that the Dataset's uri
+    keeps pointing at the bytes: its name, or its name with the bytes' digest when another file holds the name. None:
+    no copy (no data repository, or the file is already in it)."""
     repo = dest["data_repository"]
-    if repo is None or repo in src.parents:
-        return src, None
-    raw = repo / "raw"
+    if repo is None or repo.resolve() in src.resolve().parents:
+        return None
+    raw = _safe(repo / "raw", dest)
     target = raw / src.name
-    if target.exists() and target.read_bytes() != src.read_bytes():
+    if target.exists() and target.read_bytes() != data:
         from .datatable import sha256
-        target = raw / f"{src.stem}-{sha256(src.read_bytes())[:12]}{src.suffix}"
-    if not dry_run and not target.exists():
-        raw.mkdir(exist_ok=True)
-        shutil.copyfile(src, target)
-    return target, str(target)
+        target = raw / f"{src.stem}-{sha256(data)[:12]}{src.suffix}"
+        if target.exists() and target.read_bytes() != data:
+            _fail(f"{target} exists with other bytes than {src}; move it aside first")
+    return _safe(target, dest)
+
+
+def _copy_raw(src_data: bytes, target: Path) -> None:
+    if target.exists():
+        return
+    target.parent.mkdir(exist_ok=True)
+    import tempfile
+    fd, tmp = tempfile.mkstemp(prefix=f".{target.name}.", dir=target.parent)
+    try:
+        with os.fdopen(fd, "wb") as f:
+            f.write(src_data)
+        os.replace(tmp, target)
+    except BaseException:
+        Path(tmp).unlink(missing_ok=True)
+        raise
 
 
 def _link_source(doc: dict, dataset_id: str, source_id: str, locator: str | None) -> list[str]:
@@ -312,6 +387,11 @@ def _link_source(doc: dict, dataset_id: str, source_id: str, locator: str | None
 
 def _table(source: str, det: dict, dest: dict, doc: dict, spec: dict, repo: Path, opts: dict) -> dict:
     path = Path(det["path"])
+    _source_audience(path, dest, doc)
+    if opts.get("from_source") and not any(n.get("id") == opts["from_source"] and n.get("label") == "Source"
+                                           for n in doc["nodes"]):
+        _fail(f"--from-source {opts['from_source']}: the destination holds no Source of that id; add the publication "
+              "first (scale add-source <its PDF or DOI> --into <doc>, then --finish)")
     data = path.read_bytes()
     st = (doc.get("graph") or {}).get("stewardship") or {}
     ns = opts.get("namespace")
@@ -338,6 +418,13 @@ def _table(source: str, det: dict, dest: dict, doc: dict, spec: dict, repo: Path
     best = res["candidates"][0]
     header = next((r["header"] for r in res["reading"] if r.get("sheet") == best.get("sheet")), [])
     questions, notes = _questions(best, res, opts, header)
+    if questions and opts.get("data_rights") is None:           # asked with the others, not in a second round
+        try:
+            origin0 = load_mapping(best["mapping_yaml"].encode("utf-8"))["records"][0]["origin"]
+        except ScaleError:
+            origin0 = opts.get("origin")
+        if origin0 == "reported" or opts.get("from_source"):
+            questions.append(_RIGHTS_Q)
     out = {"route": "table", "into": into, "template": best["template"], "title": best["title"],
            "score": best["score"], "sheet": best.get("sheet"),
            "bindings": {r: b["column"] for r, b in best["bindings"].items()},
@@ -355,7 +442,8 @@ def _table(source: str, det: dict, dest: dict, doc: dict, spec: dict, repo: Path
                                                                             "arguments": tool},
                 "next": ["answer each question (the person who knows the data, never a guess), then run the retry "
                          "command with the answers in place of the suggested values"]}
-    file_path, copied = _raw_copy(path, dest, opts.get("dry_run", False))
+    target = _raw_target(path, data, dest)
+    file_path = target or path
     try:
         uri = Path(os.path.relpath(file_path, dest["path"].parent)).as_posix()
     except ValueError:
@@ -371,14 +459,13 @@ def _table(source: str, det: dict, dest: dict, doc: dict, spec: dict, repo: Path
     data_rights = opts.get("data_rights")
     if data_rights is not None and data_rights not in DATA_RIGHTS:
         _fail(f"--data-rights is one of {', '.join(DATA_RIGHTS)}")
-    if need and data_rights is None and origin == "reported":
-        q = {"id": "rights", "about": "the rights of the table",
-             "why": "a table read from a publication is quoted cell by cell: its rights decide how much may be kept "
-                    "verbatim (in_copyright caps the quotes; open or public_domain when its licence says so)",
-             "settle": {"options": [f"--data-rights {c}" for c in ("in_copyright", "open", "public_domain")],
-                        "tool_arguments": {"data_rights": "in_copyright"}}}
+    if need and data_rights is None and (origin == "reported" or opts.get("from_source")):
+        q = _RIGHTS_Q
         return {**out, "status": "questions", "written": None, "questions": [q],
                 "retry": _command(source, into, opts, ["--data-rights CLASS"]),
+                "retry_tool": {"tool": "scale_add_source", "arguments": {
+                    "source": source, "into": into, **{k: v for k, v in opts.items() if v not in (None, [], {})},
+                    "data_rights": "CLASS"}},
                 "next": ["say what the publication's licence is (the person who knows it, never a guess)"]}
     entries = {x: _data_rights(data_rights, origin, path.name) for x in need}
     linked: list[str] = []
@@ -389,36 +476,44 @@ def _table(source: str, det: dict, dest: dict, doc: dict, spec: dict, repo: Path
             _fail("linking the data to the publication would make the document invalid: "
                   + "; ".join(f"{e['record']}: {e['message']}" for e in fresh[:10]))
     _audience(dest, new)
+    rights_plan = _rights_plan(dest, entries)               # a conflicting entry refuses before anything is written
+    _cap(dest, new, rights_plan, set(entries) | {p["dataset"], dataset})
+    # every cited cell is checked against the file before anything is written
+    from .datatable import verify
+    v = verify(new, files={dataset: path}, base=dest["path"].parent)
+    mine = [x for x in v["datasets"] if x["dataset"] in (p["dataset"], dataset)]
+    vstatus = "failed" if any(x["status"] == "failed" for x in mine) else \
+        "verified" if mine and all(x["status"] == "verified" for x in mine) else "unverified"
+    if vstatus == "failed":
+        _fail(f"the cells the records would cite do not hold their values in {path} ("
+              + "; ".join(pr for x in mine for pr in x.get("problems") or [])[:500] + "); nothing was written")
     rep = pgraph.validate(new, spec)
     ids = {n["id"] for n in p["nodes"]}
     out.update({"dataset": p["dataset"], "file_dataset": p.get("input", {}).get("file_dataset"),
                 "records": p["records"], "results": p["results"], "added": len(p["added"]) + len(linked),
                 "unchanged": len(p["unchanged"]), "created": p.get("created", []),
                 "linked_to_source": linked, "validation": p["validation"], "warnings": p["warnings"][:20],
-                "checklist": _checklist(rep, ids), "raw_copy": copied})
+                "checklist": _checklist(rep, ids), "raw_copy": str(target) if target else None,
+                "verify": {"status": vstatus, "datasets": mine}})
     if opts.get("dry_run"):
         return {**out, "status": "dry_run", "written": None, "would_add": p["added"] + linked,
                 "rights_entries": entries,
-                "next": [_command(source, into, opts, []).replace(" --dry-run", "") + "   # to write it"]}
-    work = _work(dest) / "mappings"
-    work.mkdir(parents=True, exist_ok=True)
-    mpath = work / f"{re.sub(r'[^A-Za-z0-9._-]+', '-', path.stem)}.{best['template']}.map.yaml"
-    datamatch.save(mpath, best["mapping_yaml"])
+                "next": [_command(source, into, {**opts, "dry_run": None}, []) + "   # to write it"]}
     written = None
+    mpath = _safe(_work(dest) / "mappings", dest)
+    mpath.mkdir(parents=True, exist_ok=True)
+    mpath = _safe(mpath / f"{re.sub(r'[^A-Za-z0-9._-]+', '-', path.stem)}.{best['template']}.map.yaml", dest)
     if p["added"] or linked:
+        if target is not None:
+            _copy_raw(data, target)
+        datamatch.save(mpath, best["mapping_yaml"])
         write_atomic(dest["path"], new)
         written = into
-        if entries:
-            out["rights"] = _merge_rights(dest, entries, False)
-    from .datatable import verify
-    v = verify(new, base=dest["path"].parent)
-    mine = [x for x in v["datasets"] if x["dataset"] in (p["dataset"], dataset)]
-    status = "failed" if any(x["status"] == "failed" for x in mine) else \
-        "verified" if mine and all(x["status"] == "verified" for x in mine) else "unverified"
-    return {**out, "status": "added" if written else "unchanged", "written": written, "mapping": str(mpath),
-            "verify": {"status": status, "datasets": mine},
+        out["rights"] = _rights_commit(rights_plan)
+    return {**out, "status": "added" if written else "unchanged", "written": written,
+            "mapping": str(mpath) if written else None,
             "next": [f"scale graph validate {into}", f"scale data verify {into}",
-                     "open the document in the graph explorer (Open a graph) to look at it",
+                     "open the document in the graph explorer (Open a graph or bundle) to look at it",
                      REMINDER.format(doc=into)]}
 
 
@@ -433,20 +528,39 @@ def _cached(get):
     return g
 
 
+def _identity(path: Path | None, doi: str | None) -> dict:
+    """What a curation folder was started from: the DOI and the digest of the file, so that another file of the same
+    name never reuses it."""
+    from .datatable import sha256
+    return {"doi": doi, "sha256": sha256(path.read_bytes()) if path else None}
+
+
 def _document(source: str, det: dict, dest: dict, doc: dict, repo: Path, opts: dict, get) -> dict:
     into = str(dest["path"])
     path = Path(det["path"]) if det.get("path") else None
+    if path is not None:
+        _source_audience(path, dest, doc)
     doi = det.get("doi") or opts.get("doi")
     if doi:
         doi = curate.normalize_doi(doi)
     if opts.get("source_kind") is not None and opts["source_kind"] not in SOURCE_KINDS:
         _fail(f"--source-kind is one of {', '.join(SOURCE_KINDS)}")
     slug = curate.slug_of(doi, path)
-    folder = _work(dest) / "sources" / slug
-    nxt = _curation_steps(folder, slug, into)
+    ident = _identity(path, doi)
+    sources = _safe(_work(dest) / "sources", dest)
+    folder = _safe(sources / slug, dest)
+    marker = "added-from.json"
     if (folder / "source.json").is_file():
-        return {"route": "document", "status": "started", "into": into, "folder": str(folder), "written": None,
-                "already": True, "next": nxt}
+        same = (folder / marker).is_file() and load_doc(folder / marker) == ident
+        if same:
+            return {"route": "document", "status": "started", "into": into, "folder": str(folder), "written": None,
+                    "already": True, "next": _curation_steps(folder, slug, into)}
+        slug = f"{slug}-{(ident['sha256'] or curate.normalize_doi(doi).replace('/', '-'))[:8]}"
+        folder = _safe(sources / slug, dest)        # another source of the same name: a folder of its own
+        if (folder / "source.json").is_file():
+            return {"route": "document", "status": "started", "into": into, "folder": str(folder), "written": None,
+                    "already": True, "next": _curation_steps(folder, slug, into)}
+    nxt = _curation_steps(folder, slug, into)
     get = _cached(get)
     if path is None:                                  # a DOI alone: curate only from a copy under an open licence
         email = opts.get("email") or os.environ.get(curate.EMAIL_ENV)
@@ -461,7 +575,7 @@ def _document(source: str, det: dict, dest: dict, doc: dict, repo: Path, opts: d
                                           + ("" if email else " (no contact address: give --email to look for one)")
                                           + "; SCALE reads the publication from its PDF or text",
                                    "settle": {"options": [f"scale add-source PDF_FILE --doi {doi} --into {into}",
-                                                          f"--email ADDRESS"],
+                                                          "--email ADDRESS"],
                                               "tool_arguments": {"source": "PDF_FILE", "doi": doi}}}],
                     "retry": f"scale add-source PDF_FILE --doi {doi} --into {shlex.quote(into)}"}
     st = (doc.get("graph") or {}).get("stewardship") or {}
@@ -471,8 +585,11 @@ def _document(source: str, det: dict, dest: dict, doc: dict, repo: Path, opts: d
     by = st.get("contributed_by") or []
     res = curate.start(folder, doi=doi, pdf=path if det["format"] == "pdf" else None,
                        text=path if det["format"] in ("text", "csv") else None, email=opts.get("email"),
+                       version=(doc.get("graph") or {}).get("schema_version"),
                        contributor=by[0] if by else None, project=st.get("project"), repo=repo, get=get,
                        stewardship=dict(st), source_kind=opts.get("source_kind"))
+    from .util import write_canonical
+    write_canonical(folder / marker, ident)
     # the records DOC's header names are DOC's: the folder holds the same copies, so finishing never conflicts
     gpath = folder / res["graph"]
     g = load_doc(gpath)
@@ -500,10 +617,27 @@ def _curation_steps(folder: Path, slug: str, into: str) -> list[str]:
 
 
 # ------------------------------------------------------------------------------------------ merging a graph
-def _merge(doc: dict, incoming: dict) -> tuple[dict, list[str], list[str], list[str]]:
-    """``incoming``'s records added to ``doc``: identical ones are unchanged, the Project and Institution records
-    ``doc``'s header names stay ``doc``'s, any other record ``doc`` holds with other content is a conflict. Each added
-    record keeps the audience it had in ``incoming`` (written on its own stewardship where ``doc``'s header differs)."""
+def _rebase(r: dict, src_dir: Path | None, dest_dir: Path) -> dict:
+    """A Dataset's local uri (a path relative to its document) made relative to the destination, so that it still
+    names the same file."""
+    props = r.get("props")
+    uri = props.get("uri") if r.get("label") == "Dataset" and isinstance(props, dict) else None
+    if src_dir is None or not isinstance(uri, str) or not uri or re.match(r"^[a-z][a-z0-9+.-]*:", uri, re.I) \
+            or Path(uri).is_absolute():
+        return r
+    try:
+        new = Path(os.path.relpath((src_dir / uri).resolve(), dest_dir)).as_posix()
+    except ValueError:
+        new = str((src_dir / uri).resolve())
+    return r if new == uri else {**r, "props": {**props, "uri": new}}
+
+
+def _merge(doc: dict, incoming: dict, src_dir: Path | None = None, dest_dir: Path | None = None
+           ) -> tuple[dict, list[str], list[str], list[str]]:
+    """``incoming``'s records added to ``doc``: each as it would be written (its audience kept: written on its own
+    stewardship where ``doc``'s header would give it another; a Dataset's local uri rebased); one ``doc`` holds alike
+    is unchanged, the Project and Institution records ``doc``'s header names stay ``doc``'s, any other record ``doc``
+    holds with other content is a conflict."""
     out = copy.deepcopy(doc)
     st = pgraph.stewardship_of((doc.get("graph") or {}).get("stewardship"))
     keep = {st.get("project"), *(st.get("contributed_by") or [])}
@@ -511,26 +645,35 @@ def _merge(doc: dict, incoming: dict) -> tuple[dict, list[str], list[str], list[
     added, unchanged, conflicts = [], [], []
     for kind in ("nodes", "links"):
         for r in incoming.get(kind) or []:
+            w = pgraph._own_audience(incoming, copy.deepcopy(r), st)
+            if dest_dir is not None:
+                w = _rebase(w, src_dir, dest_dir)
             cur = have.get(r.get("id"))
             if cur is not None:
-                if json.dumps(cur, sort_keys=True) == json.dumps(r, sort_keys=True) or \
-                        (r["id"] in keep and cur.get("label") == r.get("label")):
+                same = any(json.dumps(cur, sort_keys=True) == json.dumps(x, sort_keys=True) for x in (w, r))
+                ours = (r["id"] in keep and cur.get("label") == r.get("label")) or \
+                    (kind == "links" and r.get("source") in keep and r.get("target") in keep
+                     and cur.get("type") == r.get("type"))
+                if same or ours:
                     unchanged.append(r["id"])
                 else:
                     conflicts.append(r["id"])
                 continue
-            out[kind].append(pgraph._own_audience(incoming, copy.deepcopy(r), st))
+            out[kind].append(w)
             added.append(r["id"])
     return out, added, unchanged, conflicts
 
 
-def _fold(dest: dict, doc: dict, incoming: dict, repo: Path, what: str, dry_run: bool) -> dict:
+def _fold(dest: dict, doc: dict, incoming: dict, repo: Path, what: str, dry_run: bool, entries: dict,
+          src_dir: Path | None = None) -> dict:
+    """Merge ``incoming`` into the destination with the rights ``entries`` of the sources it quotes: every check
+    (version, conflicts, validity, audience, rights, the copyright cap) before anything is written."""
     spec = _spec(repo, doc)
     if (incoming.get("graph") or {}).get("schema_version") != (doc.get("graph") or {}).get("schema_version"):
         _fail(f"{what} pins scale-catal {(incoming.get('graph') or {}).get('schema_version')} and the destination "
               f"{(doc.get('graph') or {}).get('schema_version')}: move one to the other's version first "
               "(scale graph migrate, or scale graph upgrade)")
-    out, added, unchanged, conflicts = _merge(doc, incoming)
+    out, added, unchanged, conflicts = _merge(doc, incoming, src_dir, dest["path"].parent)
     if conflicts:
         _fail(f"{len(conflicts)} records of {what} are in the destination with other content "
               f"({', '.join(conflicts[:8])}{' ...' if len(conflicts) > 8 else ''}); nothing was merged: a merge never "
@@ -540,50 +683,87 @@ def _fold(dest: dict, doc: dict, incoming: dict, repo: Path, what: str, dry_run:
         _fail(f"merging {what} would make the destination invalid:\n"
               + "\n".join(f"  {e['record']}: {e['message']}" for e in fresh[:20]))
     _audience(dest, out)
+    rights_plan = _rights_plan(dest, entries)
+    _cap(dest, out, rights_plan, set(entries))
     res = {"into": str(dest["path"]), "added": len(added), "unchanged": len(unchanged), "added_ids": added[:50],
            "validation": {"valid": rep.ok, "errors": len(rep.errors), "warnings": len(rep.warnings)},
            "checklist": _checklist(rep, set(added))}
     if dry_run:
-        return {**res, "status": "dry_run", "written": None}
+        return {**res, "status": "dry_run", "written": None, "rights": rights_plan["summary"]}
     if added:
         write_atomic(dest["path"], out)
-    return {**res, "status": "merged" if added else "unchanged", "written": str(dest["path"]) if added else None}
+    rights = _rights_commit(rights_plan)
+    return {**res, "status": "merged" if added else "unchanged", "written": str(dest["path"]) if added else None,
+            "rights": rights}
 
 
 def _rights_file(dest: dict) -> Path:
-    """The rights file the destination's quotes are read against: the nearest rights.yaml at or above the document,
-    within its data repository; else one beside the document."""
+    """The rights file the destination's quotes are read against: in a data repository, the nearest rights.yaml at or
+    above the document within it (else the repository's own); elsewhere, the one beside the document."""
     top = dest["data_repository"]
-    for d in [dest["path"].parent, *dest["path"].parent.parents]:
-        if (d / "rights.yaml").is_file():
-            return d / "rights.yaml"
-        if top is not None and d == top:
-            break
-    return (top or dest["path"].parent) / "rights.yaml"
+    if top is not None:
+        for d in [dest["path"].parent, *dest["path"].parent.parents]:
+            if (d / "rights.yaml").is_file():
+                return _safe(d / "rights.yaml", dest)
+            if d == top:
+                break
+        return _safe(top / "rights.yaml", dest)
+    return _safe(dest["path"].parent / "rights.yaml", dest)
 
 
-def _merge_rights(dest: dict, entries: dict[str, dict], dry_run: bool) -> dict:
+def _rights_plan(dest: dict, entries: dict[str, dict]) -> dict:
+    """The rights file with ``entries`` added, checked (a malformed file, or an entry that differs from the file's,
+    refuses), nothing written: :func:`_rights_commit` writes it."""
     from . import rights
     rf = _rights_file(dest)
     data = load_yaml(rf) if rf.is_file() else {}
     data = data if isinstance(data, dict) else {}
-    have = dict(data.get("sources") or {})
     if rf.is_file():
-        rights.load_rights(rf)                         # a malformed file is refused before it is extended
+        rights.load_rights(rf)
+    have = dict(data.get("sources") or {})
     new, same = {}, []
     for sid, e in entries.items():
         if sid in have:
             if have[sid] != e:
-                _fail(f"{rf}: {sid} has another rights entry ({have[sid]}) than the curation folder's ({e}); settle "
-                      "which is right and make them the same before merging")
+                _fail(f"{rf}: {sid} has another rights entry ({have[sid]}) than the one this source brings ({e}); "
+                      "settle which is right and make them the same first; nothing was written")
             same.append(sid)
         else:
             new[sid] = e
-    if new and not dry_run:
-        data["sources"] = {**have, **new}
-        rf.write_text("# The rights of the sources the documents quote (scale evidence report; scale add-source adds "
-                      "the entries of the sources it folds in).\n" + dump_yaml(data), encoding="utf-8")
-    return {"file": str(rf), "added": sorted(new), "unchanged": same}
+    merged = {**data, "sources": {**have, **new}}
+    rights.parse_rights(merged, rf)
+    return {"file": rf, "data": merged if new else None,
+            "summary": {"file": str(rf), "added": sorted(new), "unchanged": same}}
+
+
+def _rights_commit(plan_: dict) -> dict:
+    if plan_["data"] is not None:
+        import tempfile
+        rf = plan_["file"]
+        fd, tmp = tempfile.mkstemp(prefix=f".{rf.name}.", dir=rf.parent)
+        try:
+            with os.fdopen(fd, "w", encoding="utf-8") as f:
+                f.write("# The rights of the sources the documents quote (scale evidence report; scale add-source "
+                        "adds the entries of what it adds).\n" + dump_yaml(plan_["data"]))
+            os.replace(tmp, rf)
+        except BaseException:
+            Path(tmp).unlink(missing_ok=True)
+            raise
+    return plan_["summary"]
+
+
+def _cap(dest: dict, doc: dict, rights_plan: dict, ids: set[str]) -> None:
+    """The copyright cap of the destination (unless its data repository sets copyright_cap: false), for the sources
+    ``ids`` this addition quotes, under the rights file as it will be."""
+    from . import rights
+    if dest["policy"] is not None and not dest["policy"]["copyright_cap"]:
+        return
+    data = rights_plan["data"] or (load_yaml(rights_plan["file"]) if rights_plan["file"].is_file() else None) or \
+        {"sources": {}}
+    rep = rights.report(doc, rights.parse_rights(data, rights_plan["file"]))
+    bad = [v for v in rep["violations"] if any(v.startswith(f"{i}:") for i in ids)]
+    if bad:
+        _fail("the quotes would exceed the copyright cap (" + "; ".join(bad[:5]) + "); nothing was written")
 
 
 def finish(folder: str | Path, into: str | Path, repo: Path | None = None, dry_run: bool = False) -> dict:
@@ -600,13 +780,12 @@ def finish(folder: str | Path, into: str | Path, repo: Path | None = None, dry_r
     cap_applies = dest["policy"] is None or dest["policy"]["copyright_cap"]
     if cap_applies and not chk["cap"]["ok"]:
         _fail(f"{gpath} quotes beyond the copyright cap ({chk['cap']['violations'][:3]}); shorten the quotes first")
-    doc = load_doc(dest["path"])
+    doc = _load_dest(dest)
     g = load_doc(gpath)
     from . import rights
-    entries = {k: v for k, v in rights.load_rights(d / "rights.yaml").items()
+    entries = {k: _plain(v) for k, v in rights.load_rights(d / "rights.yaml").items()
                if any(n["id"] == k for n in g["nodes"])}
-    res = _fold(dest, doc, g, repo, str(gpath), dry_run)
-    res["rights"] = _merge_rights(dest, {k: _plain(v) for k, v in entries.items()}, dry_run) if entries else None
+    res = _fold(dest, doc, g, repo, str(gpath), dry_run, entries, gpath.parent)
     res.update(route="document", folder=str(d), source_id=info.get("source_id"),
                conformance=chk.get("conformance"), values_flagged=chk["values"].get("flag", 0),
                next=[f"scale graph validate {dest['path']}", REMINDER.format(doc=dest["path"])])
@@ -616,6 +795,16 @@ def finish(folder: str | Path, into: str | Path, repo: Path | None = None, dry_r
 def _plain(entry: dict) -> dict:
     """A rights entry as its file writes it (the keys load_rights reads)."""
     return {k: v for k, v in entry.items() if v is not None}
+
+
+def _cited(g: dict) -> set[str]:
+    """The sources a graph quotes: every Source and every Dataset its evidence cites."""
+    out = {n["id"] for n in g["nodes"] if n.get("label") == "Source"}
+    for r in [*g["nodes"], *g["links"]]:
+        for ev in (r.get("props") or {}).get("evidence") or []:
+            if isinstance(ev, dict) and isinstance(ev.get("source"), str):
+                out.add(ev["source"])
+    return out
 
 
 def _graph(source: str, det: dict, dest: dict, doc: dict, repo: Path, opts: dict) -> dict:
@@ -640,18 +829,28 @@ def _graph(source: str, det: dict, dest: dict, doc: dict, repo: Path, opts: dict
                 "next": [_command(source, str(dest["path"]), opts, ["--merge"]) + "   # to merge it into the document",
                          f"or query it beside the document without merging: scale graph query --graph a={dest['path']} "
                          f"--graph b={p} PLAN"]}
-    res = _fold(dest, doc, g, repo, str(p), opts.get("dry_run", False))
     from . import rights
-    srcs = {n["id"] for n in g["nodes"] if n.get("label") == "Source"}
-    rf = next((x / "rights.yaml" for x in [p.parent, *p.parent.parents][:3] if (x / "rights.yaml").is_file()), None)
+    srcs = _cited(g)
+    rf = rights.rights_file(p)
     entries = {k: _plain(v) for k, v in rights.load_rights(rf).items() if k in srcs} if rf else {}
-    res["rights"] = _merge_rights(dest, entries, opts.get("dry_run", False)) if entries else None
-    missing = sorted(srcs - set(entries) - set((load_yaml(_rights_file(dest)) or {}).get("sources") or {})
-                     if _rights_file(dest).is_file() else srcs - set(entries))
+    res = _fold(dest, doc, g, repo, str(p), opts.get("dry_run", False), entries, p.parent)
+    have = set(((load_yaml(_rights_file(dest)) or {}).get("sources") or {}) if _rights_file(dest).is_file() else ())
+    missing = sorted(srcs - set(entries) - have)
     if missing:
-        res["warnings_rights"] = (f"{len(missing)} Sources have no rights entry in {_rights_file(dest)} "
-                                  f"({', '.join(missing[:5])}): add one (class, licence, basis) before committing")
+        res["warnings_rights"] = (f"{len(missing)} sources the graph quotes have no rights entry in "
+                                  f"{_rights_file(dest)} ({', '.join(missing[:5])}): add one (class, licence, basis) "
+                                  "before committing")
     return {**base, **res, "next": [f"scale graph validate {dest['path']}", REMINDER.format(doc=dest["path"])]}
+
+
+def _load_dest(dest: dict) -> dict:
+    try:
+        doc = load_doc(dest["path"])
+    except Exception as exc:                          # noqa: BLE001
+        raise ScaleError(f"{dest['path']}: not a readable scale-catal document ({exc})") from None
+    if not isinstance(doc, dict) or not isinstance(doc.get("nodes"), list) or not isinstance(doc.get("links"), list):
+        _fail(f"{dest['path']}: not a scale-catal document (node-link JSON with nodes and links)")
+    return doc
 
 
 # ------------------------------------------------------------------------------------------ the entry point
@@ -669,9 +868,7 @@ def add(source: str | None, into: str | Path, repo: Path | None = None, finish_f
         _fail("give a file (a PDF, a CSV or .xlsx table, a JSON graph, a text file) or a DOI, or --finish FOLDER")
     det = detect(str(source), opts.get("kind"))
     dest = destination(into)
-    doc = load_doc(dest["path"])
-    if not isinstance(doc, dict) or not isinstance(doc.get("nodes"), list):
-        _fail(f"{into}: not a scale-catal document")
+    doc = _load_dest(dest)
     if det["route"] == "table":
         if opts.get("merge") or opts.get("doi"):
             _fail("--merge is for a graph and --doi for a document; this is a table")
@@ -706,8 +903,9 @@ def text_report(res: dict) -> str:
         lines.append(f"  then: {res['retry']}")
     for n in res.get("notes") or []:
         lines.append(f"  note: {n}")
-    for a in res.get("assumptions") or []:
-        lines.append(f"  assumed (check it): {a}")
+    if not any(q["id"].startswith("assumptions:") for q in res.get("questions") or []):
+        for a in res.get("assumptions") or []:
+            lines.append(f"  assumed (confirmed): {a}")
     if res.get("unmapped_columns"):
         lines.append(f"  not read: {', '.join(res['unmapped_columns'])}")
     if res.get("records") is not None:

@@ -51,7 +51,13 @@ def lab(tmp_path):
     return d
 
 
+CONFIRMED = [f"assumptions:{t}" for t in ("co2rr-faradaic-efficiency", "thermal-catalytic-test", "kinetics-rates",
+                                            "dft-adsorption-energy", "characterization-summary")]
+
+
 def add(source, into, **kw):
+    """The router, with the mappings' assumptions confirmed (a test of the question itself passes confirm=[])."""
+    kw.setdefault("confirm", CONFIRMED)
     return addsource.add(str(source), into, repo=REPO, **kw)
 
 
@@ -195,9 +201,10 @@ def test_a_csv_table_is_imported_verified_and_committed_when_nothing_is_uncertai
 def test_an_xlsx_table_asks_first_and_imports_once_answered(lab, capsys):
     doc_path = lab / "graphs/lab.json"
     before = doc_path.read_bytes()
-    q = add(X / "co2rr-fe-wide.xlsx", doc_path)
+    q = add(X / "co2rr-fe-wide.xlsx", doc_path, confirm=[])
     assert q["status"] == "questions" and q["written"] is None and doc_path.read_bytes() == before
-    assert [x["id"] for x in q["questions"]] == ["recorded_at"]
+    assert [x["id"] for x in q["questions"]] == ["recorded_at", "assumptions:co2rr-faradaic-efficiency"]
+    assert not (lab / "raw").exists() or not any((lab / "raw").iterdir())         # nothing copied either
     assert "--recorded-at YYYY-MM-DDThh:mm:ssZ" in q["retry"] and q["sheet"] == "FE"
     assert q["retry_tool"]["arguments"]["recorded_at"] == "YYYY-MM-DDThh:mm:ssZ"
     assert any("header row was found" in n for n in q["notes"]) and q["assumptions"]
@@ -223,7 +230,7 @@ def test_an_uncertain_match_returns_questions_and_never_a_guess(lab, tmp_path):
     ids = {x["id"] for x in q["questions"]}
     assert "bind:temperature" in ids and "unit:Reactor temp" in ids          # a similar name; a unit assumed
     res = add(tmp_path / "u.csv", doc_path, origin="computed", template="thermal-catalytic-test",
-              bind={"temperature": "Reactor temp"}, confirm=["unit:Reactor temp"])
+              bind={"temperature": "Reactor temp"}, confirm=["unit:Reactor temp", *CONFIRMED])
     assert res["status"] == "added", res.get("questions")
     # a publication's table asks for its rights
     q = add(tmp_path / "t.csv", doc_path, origin="reported", template="thermal-catalytic-test",
@@ -353,7 +360,8 @@ def test_the_tool_routes_and_is_gated_by_the_destinations_access(lab, tmp_path):
     made = pub.call("scale_data_new", {"file": "pub.json", "project": "lab:project/p", "contributor": "lab:org/x",
                                       "access": "public"})
     assert made["valid"], made
-    out = pub.call("scale_add_source", {"source": str(X / "dft-energies.csv"), "into": "pub.json", "origin": "computed"})
+    out = pub.call("scale_add_source", {"source": str(X / "dft-energies.csv"), "into": "pub.json", "origin": "computed",
+                                        "confirm": CONFIRMED})
     assert out["status"] == "added", out
 
 
@@ -363,4 +371,102 @@ def test_the_policy_text_and_readme_say_the_writers_apply_the_defaults(lab):
     pol = audience.load_policy(lab / "scale-data.yaml")
     assert pol["defaults"]["stewardship"]["project"] == PROJECT
     assert load_yaml(lab / "scale-data.yaml")["defaults"]["stewardship"]["access"] == "project"
-    shutil.rmtree(lab / "work", ignore_errors=True)
+
+
+# ------------------------------------------------------------------------------------------ what is refused, and when
+def test_a_file_of_a_narrower_repository_never_enters_a_wider_one(tmp_path, lab):
+    inst = tmp_path / "inst"
+    datarepo.init(inst, access="institution", institutions=["lab:org/ni-group"])
+    shutil.copy(X / "kinetics.csv", inst / "raw" / "k.csv")
+    (inst / "raw" / "paper.txt").write_text(TEXT)
+    before = (lab / "graphs/lab.json").read_bytes()
+    for f in ("k.csv", "paper.txt"):
+        with pytest.raises(ScaleError, match="fewer readers"):
+            add(inst / "raw" / f, lab / "graphs/lab.json", recorded_at="2026-03-02T10:00:00Z")
+    assert (lab / "graphs/lab.json").read_bytes() == before and not (lab / "raw/k.csv").exists()
+    # the agent tool reads a graph by what it is, whatever its name: a private graph named .txt is gated too
+    private = load_doc(inst / "graphs/lab.json")
+    private["nodes"][0]["props"]["note"] = CANARY
+    write_canonical(inst / "raw" / "graph.txt", private)
+    ws = tmp_path / "ws"
+    ws.mkdir()
+    datarepo.new_document(ws / "pub.json", project="lab:project/p", contributor="lab:org/x", access="public", repo=REPO)
+    tk = ScaleToolkit(workspace=ws, repo=REPO, egress=EgressGate("anthropic", []))
+    out = tk.call("scale_add_source", {"source": str(inst / "raw" / "graph.txt"), "into": "pub.json"})
+    assert "egress denied" in out.get("error", "") and CANARY not in json.dumps(out)
+    out = ScaleToolkit(workspace=inst / "work", repo=REPO, egress=EgressGate("anthropic", [])).call("scale_template", {})
+    assert "egress denied" in out.get("error", "")
+
+
+def test_source_start_refuses_the_framework_and_a_narrower_project_in_a_repository(lab, tmp_path):
+    (tmp_path / "paper.txt").write_text(TEXT)
+    with pytest.raises(ScaleError, match="SCALE framework repository"):
+        curate.start(REPO / "graphs" / "x-folder", text=tmp_path / "paper.txt", repo=REPO,
+                     stewardship={"access": "project", "project": "lab:project/p", "contributed_by": ["lab:org/x"]})
+    assert not (REPO / "graphs" / "x-folder").exists()
+    with pytest.raises(ScaleError, match="fewer readers|may be read only"):
+        curate.start(lab / "work/sources/other", text=tmp_path / "paper.txt", repo=REPO, project="lab:project/other")
+    assert not (lab / "work/sources/other").exists()
+
+
+def test_writes_through_a_link_that_leads_elsewhere_are_refused(lab, tmp_path):
+    elsewhere = tmp_path / "elsewhere"
+    elsewhere.mkdir()
+    shutil.rmtree(lab / "work")
+    (lab / "work").symlink_to(elsewhere)
+    (tmp_path / "paper.txt").write_text(TEXT)
+    with pytest.raises(ScaleError, match="outside"):
+        add(tmp_path / "paper.txt", lab / "graphs/lab.json")
+    assert not any(elsewhere.iterdir())
+
+
+def test_nothing_is_written_when_a_late_check_fails(lab, tmp_path):
+    doc_path = lab / "graphs/lab.json"
+    # a different file holds the raw copy's names: refused before anything is written
+    (lab / "raw" / "kinetics.csv").write_text("other bytes\n")
+    from scale.datatable import sha256
+    digest = sha256((X / "kinetics.csv").read_bytes())[:12]
+    (lab / "raw" / f"kinetics-{digest}.csv").write_text("corrupt\n")
+    before = doc_path.read_bytes()
+    with pytest.raises(ScaleError, match="other bytes"):
+        add(X / "kinetics.csv", doc_path, recorded_at="2026-03-02T10:00:00Z")
+    assert doc_path.read_bytes() == before and not (lab / "work/mappings").exists()
+    # a rights entry that differs from the destination's refuses the merge before the graph is written
+    g = load_doc(doc_path)
+    g["graph"]["graph_id"] = "lab:graph/other"
+    g["nodes"].append({"id": "ex:src/1", "label": "Source", "props": {"name": "s", "kind": "article", "title": "S", "origin": "curated"}})
+    (tmp_path / "g").mkdir()
+    write_canonical(tmp_path / "g" / "other.json", g)
+    (tmp_path / "g" / "rights.yaml").write_text("sources:\n  ex:src/1: {class: open, licence: CC-BY-4.0, basis: stated}\n")
+    (lab / "rights.yaml").write_text("sources:\n  ex:src/1: {class: in_copyright, licence: none, basis: none found}\n")
+    with pytest.raises(ScaleError, match="another rights entry"):
+        add(tmp_path / "g" / "other.json", doc_path, merge=True)
+    assert doc_path.read_bytes() == before
+    (lab / "graphs" / "broken.json").write_text("{not json")
+    with pytest.raises(ScaleError, match="not a readable"):
+        add(X / "kinetics.csv", lab / "graphs" / "broken.json")
+
+
+def test_a_second_merge_and_a_second_paper_of_the_same_name(lab, tmp_path):
+    doc_path = lab / "graphs/lab.json"
+    doc = load_doc(doc_path)
+    other = {**doc, "graph": {**doc["graph"], "graph_id": "lab:graph/c", "stewardship": {
+        "access": "public", "project": PROJECT, "contributed_by": ["lab:org/ni-group"]}},
+        "nodes": [*doc["nodes"], {"id": "lab:org/c3", "label": "Institution", "props": {"name": "c3", "origin": "curated"}}]}
+    write_canonical(tmp_path / "c.json", other)
+    assert add(tmp_path / "c.json", doc_path, merge=True)["status"] == "merged"
+    assert add(tmp_path / "c.json", doc_path, merge=True)["status"] == "unchanged"
+    (tmp_path / "a").mkdir()
+    (tmp_path / "b").mkdir()
+    (tmp_path / "a" / "paper.txt").write_text(TEXT)
+    (tmp_path / "b" / "paper.txt").write_text(TEXT.replace("46.2", "51.0"))
+    one = add(tmp_path / "a" / "paper.txt", doc_path)
+    two = add(tmp_path / "b" / "paper.txt", doc_path)
+    assert one["folder"] != two["folder"] and not two.get("already")
+    assert add(tmp_path / "a" / "paper.txt", doc_path)["already"]
+
+
+def test_a_retry_keeps_the_route_it_was_given(lab, tmp_path):
+    (tmp_path / "runs.txt").write_text("run,T (K),rate (mol g-1 s-1)\nA,500,1.2\n")
+    q = add(tmp_path / "runs.txt", lab / "graphs/lab.json", kind="table", template="kinetics-rates")
+    assert q["status"] == "questions" and "--kind table" in q["retry"]

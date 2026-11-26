@@ -61,7 +61,7 @@ Your measurements, calculations and the papers you work from become a graph of y
 repository that is never this one ([docs/data.md](docs/data.md#your-own-data-from-any-source)):
 
 ```bash
-pip install scale-catal
+pip install "scale-catal[pdf]"     # [pdf]: reading PDFs
 scale data init ~/data/co2 --project lab:project/co2 --contributor lab:org/ni-group   # private repository, starter graph
 cd ~/data/co2
 scale add-source ~/Downloads/fe-runs.xlsx --into graphs/lab.json     # a table: imported, or questions back
