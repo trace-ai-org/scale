@@ -652,7 +652,11 @@ def test_each_graph_has_one_level_from_one_table_decided_by_what_its_document_sa
     assert '!closed.length ? "personal" : closed.includes("institution") ? "private" : "team"' in lk and 'if (!doc) return "private"' in lk
     # one casing: as the table writes it, never upper-cased; every badge carries its definition; Unsaved stays apart
     assert "text-transform: uppercase" not in css[css.index(".gx-graph-scope {"):css.index(".gx-graph-detail")]
-    assert 'title="${esc(tip)}">${esc(label)}</span>' in js and "gx-badge-unsaved" in js and "${levelBadge(e)}" in js
+    assert 'title="${esc(tip)}' in js and "${levelBadge(e, !L.saved)}" in js and "levelBadge(e)" in js
+    # Unsaved is a dot on the level's badge (its tooltip and its label kept), so a title keeps its room; graphs of one
+    # title are told apart by their order
+    assert 'class="gx-badge-unsaved" role="img" aria-label="Unsaved, not downloaded"' in js and ".gx-graph-scope.is-unsaved" in css
+    assert "`(${nth.get(e)}) ${e.title}`" in js
     # Contribute only on a Personal graph; a synthetic example says so in its tooltip; the picker names the level
     assert '(level === "personal" ? contribButton() : "")' in js and "synthetic: made up to show the format" in js
     add = (REPO / "site/addsource.js").read_text()

@@ -551,3 +551,6 @@ button.gx-add-graph { width: 100%; font: inherit; color: inherit; cursor: pointe
 .gx-batch-stage { margin-top: 12px; }
 .gx-batch-head { margin: 0 0 8px; padding: 6px 10px; border-radius: 8px; background: var(--bg-input); }
 @media (max-width: 600px) { .gx-batch-row { grid-template-columns: 18px minmax(0, 1fr) auto; } .gx-batch-state { grid-column: 2 / -1; } }
+.gx-graph-scope.is-unsaved { position: relative; padding-right: 13px; }
+.gx-graph-scope .gx-badge-unsaved { position: absolute; right: 4px; top: 50%; width: 6px; height: 6px; margin-top: -3px; padding: 0;
+  border-radius: 50%; background: var(--select); box-shadow: 0 0 0 1.5px var(--bg); }

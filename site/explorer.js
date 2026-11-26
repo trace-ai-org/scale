@@ -93,7 +93,13 @@ function levelOf(e) {
   const k = levelKey(e), L = LEVELS[k];
   return [L.label, L.colour, L.tip + (k === "example" && synthetic(e) ? " (synthetic: made up to show the format, not evidence about the world)" : ""), k];
 }
-const levelBadge = (e) => { const [label, , tip] = levelOf(e); return `<span class="gx-graph-scope" title="${esc(tip)}">${esc(label)}</span>`; };
+// the level's badge; Unsaved (a graph made here, not downloaded) is a dot on it, with its own tooltip and label
+const UNSAVED_TIP = "Unsaved: not downloaded yet; download it to keep it";
+const levelBadge = (e, unsaved = false) => {
+  const [label, , tip] = levelOf(e);
+  return `<span class="gx-graph-scope${unsaved ? " is-unsaved" : ""}" title="${esc(tip)}${unsaved ? ` · ${UNSAVED_TIP}` : ""}">${esc(label)}${unsaved
+    ? `<span class="gx-badge-unsaved" role="img" aria-label="Unsaved, not downloaded" title="${UNSAVED_TIP}"></span>` : ""}</span>`;
+};
 const CARET = `<svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6 L15 12 L9 18"/></svg>`;
 
 // ------------------------------------------------------------------------------------------ curating a source
@@ -963,17 +969,20 @@ function renderUnsaved() {
 function renderGraphs() {
   renderUnsaved();
   const list = allEntries();
+  // graphs of one title told apart by their order (2, 3, …), in the list and the row's tooltip
+  const seen = new Map(), nth = new Map();
+  for (const e of list) { const n = (seen.get(e.title) || 0) + 1; seen.set(e.title, n); if (n > 1) nth.set(e, n); }
   $("graphs").innerHTML = list.map((e) => {
+    const shown = nth.has(e) ? `(${nth.get(e)}) ${e.title}` : e.title;   // first, where a cut title still shows it
     const [, c, , level] = levelOf(e), active = G && G.entry === e, open = active && !folded;
     const mineRow = own && e === own.entry, sent = mineRow && sentToCommons(), L = labOf(e);
     // a private graph: its download, its Unsaved state beside its level (never instead of it); a personal graph: its
     // Contribute, or the catal-commons link once sent
-    const action = L ? `<button type="button" class="gx-icon-btn gx-lab-dl" data-download="${esc(L.id)}" title="Download (one zip: the graph, its mappings, its sources and a manifest)" aria-label="Download ${esc(e.title)}">${DOWNLOAD_ICON}</button>${L.saved
-      ? "" : `<span class="gx-badge-unsaved" title="Unsaved: not downloaded yet; download it to keep it">Unsaved</span>`}${levelBadge(e)}` : mineRow ? (sent ? `<a class="gx-graph-scope gx-graph-sent" href="${esc(own.prUrl)}" target="_blank" rel="noopener"
+    const action = L ? `<button type="button" class="gx-icon-btn gx-lab-dl" data-download="${esc(L.id)}" title="Download (one zip: the graph, its mappings, its sources and a manifest)" aria-label="Download ${esc(e.title)}">${DOWNLOAD_ICON}</button>${levelBadge(e, !L.saved)}` : mineRow ? (sent ? `<a class="gx-graph-scope gx-graph-sent" href="${esc(own.prUrl)}" target="_blank" rel="noopener"
         title="Contributed to catal-commons: its pull request, for a person to review">Catal-Commons</a>` : (level === "personal" ? contribButton() : "") + levelBadge(e)) : "";
-    return `<div role="listitem" class="gx-graph-row${action ? " has-action" : ""}" style="--dot:${c}"><button class="gx-graph-item${active ? " is-active" : ""}" type="button" data-id="${esc(e.id)}" title="${esc(e.title)}"
+    return `<div role="listitem" class="gx-graph-row${action ? " has-action" : ""}" style="--dot:${c}"><button class="gx-graph-item${active ? " is-active" : ""}" type="button" data-id="${esc(e.id)}" title="${esc(shown)}"
         aria-expanded="${open}"><span class="gx-graph-caret">${CARET}</span><span class="gx-graph-dot"></span>
-        <span class="gx-graph-title">${esc(e.title)}</span>${action ? "" : levelBadge(e)}</button>`
+        <span class="gx-graph-title">${esc(shown)}</span>${action ? "" : levelBadge(e)}</button>`
       + (action ? `<span class="gx-graph-actions">${action}</span>` : "")
       + `${open ? details() : ""}</div>`;
   }).join("") || `<p class="gx-muted">No graphs are listed: open a file.</p>`;
