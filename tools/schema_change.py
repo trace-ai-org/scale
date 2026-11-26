@@ -123,6 +123,19 @@ def diff_specs(a: dict, b: dict) -> dict:
         ra, rb = set((a.get(where) or {}).get("required") or []), set((b.get(where) or {}).get("required") or [])
         out["narrowed"] += [f"{where} requires {x}" for x in sorted(rb - ra)]
         out["loosened"] += [f"{where} no longer requires {x}" for x in sorted(ra - rb)]
+    # the kernel's other structures a property names as its type (status_check, record_check, the dataset ones): a new
+    # one is an addition (nothing used it before), one removed a removal, and in both their fields and requirements
+    for where in pgraph.STRUCTURES:
+        sa, sb = a.get(where), b.get(where)
+        if not isinstance(sa, dict) and not isinstance(sb, dict):
+            continue
+        if not isinstance(sa, dict) or not isinstance(sb, dict):
+            (out["added"] if not isinstance(sa, dict) else out["removed"]).append(where)
+            continue
+        cmp_props(where, sa.get("fields") or {}, sb.get("fields") or {})
+        ra, rb = set(sa.get("required") or []), set(sb.get("required") or [])
+        out["narrowed"] += [f"{where} requires {x}" for x in sorted(rb - ra)]
+        out["loosened"] += [f"{where} no longer requires {x}" for x in sorted(ra - rb)]
     for kind in ("nodes", "edges"):
         for n in sorted(set(a[kind]) | set(b[kind])):
             if n not in a[kind]:
@@ -484,9 +497,11 @@ def _not_provisional(repo: Path, d: dict) -> list[str]:
             if "provisional" not in (block.get("maturity"), (entry or {}).get("maturity") if isinstance(entry, dict) else None):
                 out.append(path)
             continue
-        if parts[0] == "value" and len(parts) == 2:               # a field of the kernel's value object
-            field = ((kernel.get("value") or {}).get("fields") or {}).get(parts[1]) or {}
-            if "provisional" not in (field.get("maturity"), kernel.get("maturity")):
+        if parts[0] in ("value", "evidence", *pgraph.STRUCTURES) and len(parts) <= 2:   # a kernel structure or a field
+            block = kernel.get(parts[0]) or {}
+            field = ((block.get("fields") or {}).get(parts[1]) or {}) if len(parts) == 2 else {}
+            own = block.get("maturity") if parts[0] in pgraph.STRUCTURES else None   # a structure's covers its fields
+            if "provisional" not in (field.get("maturity"), own, kernel.get("maturity")):
                 out.append(path)
             continue
         if parts[0] not in ("nodes", "edges") or len(parts) not in (2, 3):

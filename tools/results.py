@@ -80,7 +80,7 @@ def pointer(prop: str, key: Any, x: Any) -> str:
     id, ``/prop/<position>`` for one without, ``/prop/<key>`` for a map entry."""
     if key is None:
         return f"/{_esc(prop)}"
-    if isinstance(key, int) and isinstance(x, dict) and isinstance(x.get("id"), str) and ID.match(x["id"]):
+    if isinstance(key, int) and isinstance(x, dict) and isinstance(x.get("id"), str) and ID.fullmatch(x["id"]):
         return f"/{_esc(prop)}/{x['id']}"
     return f"/{_esc(prop)}/{_esc(str(key))}"
 
@@ -165,7 +165,7 @@ def check_document(doc: dict, spec: dict, rep) -> None:
         for path, v in values_in(props):
             where = name(path, v)
             if "id" in v:
-                if not isinstance(v["id"], str) or not ID.match(v["id"]):
+                if not isinstance(v["id"], str) or not ID.fullmatch(v["id"]):
                     rep.add("error", rid, f"{where}: id {v['id']!r} is not snake_case (a letter, then letters, digits and "
                                           "underscores; never only digits, which a pointer reads as a position)")
                 else:

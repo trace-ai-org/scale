@@ -447,6 +447,17 @@ def test_a_query_across_graphs_is_gated_graph_by_graph(tmp_path):
     assert "error" not in out
 
 
+def test_importing_data_into_a_private_document_is_gated(tmp_path):
+    """scale_data_add returns the records it writes: the destination document's access decides whether they may go to
+    the endpoint, as for any tool that reads a document."""
+    ws = tmp_path / "ws"
+    ws.mkdir()
+    (ws / "p.json").write_text(json.dumps(doc("project", PROJECT_A, name=CANARY)))
+    kit = ScaleToolkit(workspace=ws, repo=REPO, egress=EgressGate("anthropic", []))
+    out = kit.call("scale_data_add", {"csv": "x.csv", "mapping": "m.yaml", "into": "p.json", "dry_run": True})
+    assert "egress denied" in out.get("error", "") and CANARY not in json.dumps(out)
+
+
 def test_scale_call_is_gated_by_the_environment(tmp_path, monkeypatch, capsys):
     ws = tmp_path / "ws"
     ws.mkdir()

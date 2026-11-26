@@ -211,6 +211,9 @@ source must be within its cap.
 - **Tables, cell by cell.** One cell is one value; the locator names the table, row and column; the
   unit comes from the column header; footnotes are read; a number in parentheses is an uncertainty
   when a footnote or the methods say so.
+- **Data files.** A table kept as a file (a laboratory's or a calculation's CSV, a paper's data deposit) is a
+  Dataset, and a value cites its cell with `dataset_cell` (its column and its row key); `scale data add` compiles a
+  file by a declarative mapping and `scale data verify` checks each cited cell ([data.md](data.md)).
 - **Several printed forms** of one value: the most precise explicit one carries it, the others stay as
   evidence; forms that disagree are `ambiguous_in_source`.
 - **Figures.** Calibrate each axis on at least two ticks and say whether it is linear or logarithmic.
