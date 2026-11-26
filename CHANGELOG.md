@@ -2,6 +2,20 @@
 
 ## Unreleased
 
+- **Querying across knowledge graphs, a design matrix and a write-back convention (tools; no schema change, no
+  migration).** `scale graph query` and `scale graph search` take several graphs (`--graph ALIAS=FILE`, repeated), as do
+  the agent tools (`graphs`): each graph is queried on its own under the schema version it pins, with its spec digest
+  checked, and nothing is merged; every row says its graph; a graph that cannot be read, pins a version the tools do
+  not hold or cannot express the plan makes the answer partial; rows of different graphs join only through an
+  evidenced identity map of shared reference records (`--identity-map`), and one id or one mapping with two
+  definitions is an `identity_conflict`; ranking and limits apply after federation; a scientific comparison groups
+  rows of several graphs only on one unit, kind, context and quantity contract; the answer's access is the
+  intersection of the graphs' audiences. `scale data matrix` writes a typed table and its canonical manifest for
+  experiment-design agents under a contract (explicit row identity, feature and outcome roles, typed missingness,
+  digests and evidence, the access), refusing ambiguous pivots and incompatible outcomes. `tools/campaign.py` writes
+  an agent's proposals (proposed experiments, predictions) and their results (recorded records that REVISE the
+  proposal and TEST the prediction) back into a graph. Single-graph calls are unchanged (docs/querying.md).
+
 - **A value's link to its data cell, and tabular data into documents (schema 0.8.4, additive, provisional; no
   migration).** The kernel's evidence item gains `dataset_cell` (a column, and the row by its key, every primary-key
   column once, or by an opted-in zero-based position) and Dataset gains `table` (profile `scale_csv_v1`, primary key,

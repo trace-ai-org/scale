@@ -597,10 +597,47 @@ def cmd_graph_index(args):
            "dim": int(ix.vectors.shape[1]) if len(ix.items) else 0, "graph_sha256": ix.graph_sha256}, args)
 
 
+def _federated_members(args) -> list[dict]:
+    """The graphs of a call with ``--graph alias=file`` (repeated), each under the schema it pins (or --spec), with the
+    spec digests ``--spec-sha256 alias=digest`` binds (:mod:`federation`)."""
+    from . import federation
+    from .passages import index_for
+    pairs = federation.parse_graph_args(args.graph)
+    expect = {}
+    for x in getattr(args, "spec_sha256", None) or []:
+        a, sep, d = x.partition("=")
+        if not sep or a not in dict(pairs):
+            raise ScaleError(f"--spec-sha256 expects <alias>=<sha256> for an alias --graph names (got {x!r})")
+        expect[a] = d
+    recorded = federation.recorded_digests(_repo(args))
+    out = []
+    for alias, path in pairs:
+        m = federation.load_member(alias, path, lambda doc: _graph_spec(args, doc), expect_spec=expect.get(alias),
+                                   recorded=recorded)
+        if m.get("doc") is not None:
+            m["index"] = lambda path=path, doc=m["doc"]: index_for(_index_stem(path, None), doc)
+        out.append(m)
+    return out
+
+
 def cmd_graph_search(args):
     from . import pgraph
     from .passages import index_for
     from .pgraph_query import document_access
+    if args.graph:
+        from . import federation
+        if args.query is not None or args.index:
+            raise ScaleError("with --graph, give only the query (each graph's index is the one beside it)")
+        res = federation.search(_federated_members(args), args.file, k=args.k, mode=args.mode,
+                                published_before=args.published_before)
+        md = "\n".join([f"# {args.file}", "", f"access: **{res['access']['level']}** (intersection)"
+                        + (f" · {res['access']['note']}" if res["access"]["level"] != "public" else ""), ""]
+                       + [f"{i}. [{h['graph']} #{h['rank_in_graph']}] {h['label']} {h['record_name']} — {h['source_year']}, "
+                          f"{h['locator']}: “{h['text']}”" for i, h in enumerate(res["hits"], 1)]) + "\n"
+        _emit(res, args, md)
+        return 0
+    if args.query is None:
+        raise ScaleError("give a graph file and a query (or --graph alias=file ... and the query)")
     doc = load_doc(args.file)
     ix = index_for(_index_stem(args.file, args.index), doc)     # only an index of this document, else built from it
     nodes = {n["id"]: n for n in doc["nodes"]}
@@ -630,6 +667,18 @@ def cmd_graph_search(args):
 def cmd_graph_query(args):
     from . import pgraph_query
     from .passages import index_for
+    if args.graph:
+        from . import federation
+        if args.plan is not None or args.index:
+            raise ScaleError("with --graph, give only the plan (each graph's index is the one beside it)")
+        res = federation.run(_federated_members(args), load_doc(args.file),
+                             federation.load_identity_map(args.identity_map) if args.identity_map else None)
+        _emit(res, args, federation.render_markdown(res))
+        return 0 if res["status"] != "unavailable" else 1
+    if args.identity_map:
+        raise ScaleError("--identity-map identifies records across graphs: name them with --graph alias=file")
+    if args.plan is None:
+        raise ScaleError("give a graph file and a plan (or --graph alias=file ... and the plan)")
     doc = load_doc(args.file)
     spec = _graph_spec(args, doc)
     plan = load_doc(args.plan)
@@ -1103,6 +1152,16 @@ def cmd_ci_spec_changes(args):
     return 0 if res["ok"] else 1
 
 
+def cmd_data_matrix(args):
+    from . import designmatrix, federation
+    if not args.graph:
+        raise ScaleError("name the graphs with --graph alias=file (one or more)")
+    imap = federation.load_identity_map(args.identity_map) if args.identity_map else None
+    csv_text, manifest = designmatrix.build(_federated_members(args), load_doc(args.plan), load_doc(args.contract), imap)
+    print(to_json(designmatrix.write(args.out, csv_text, manifest)))
+    return 0
+
+
 def cmd_kg_update(args):
     from .kg import update, update_text
     res = update(_repo(args), Path(args.data), args.domain, args.to, dry_run=args.dry_run, reindex=not args.no_index)
@@ -1393,14 +1452,26 @@ def build_parser() -> argparse.ArgumentParser:
     sp = add("index", cmd_graph_index, "build the evidence index: a vector and term statistics per evidence quote", gr)
     sp.add_argument("file"); sp.add_argument("--index", help="index path stem (default: <graph>.evidence)")
     sp.add_argument("--embedder", default="scale-hash-v2"); out_opts(sp)
+    def federation_opts(sp, identity=True):
+        sp.add_argument("--graph", action="append", metavar="ALIAS=FILE",
+                        help="query several graphs without merging them, each with an alias (repeatable); the "
+                             "positional argument is then only the plan or query (docs/querying.md, Querying across graphs)")
+        sp.add_argument("--spec-sha256", action="append", metavar="ALIAS=SHA256",
+                        help="bind a graph's schema to a spec digest; another digest is spec_mismatch (repeatable)")
+        if identity:
+            sp.add_argument("--identity-map", help="an evidenced identity map of shared reference records across the graphs")
     sp = add("search", cmd_graph_search, "search evidence by words and meaning; hits lead to the records that cite them", gr)
-    sp.add_argument("file"); sp.add_argument("query"); sp.add_argument("--index"); sp.add_argument("-k", type=_positive, default=10)
+    sp.add_argument("file", help="the graph (or, with --graph, the query)"); sp.add_argument("query", nargs="?")
+    sp.add_argument("--index"); sp.add_argument("-k", type=_positive, default=10)
     sp.add_argument("--mode", choices=["hybrid", "vector", "keyword", "rrf"], default="hybrid")
     sp.add_argument("--published-before", help="only evidence from sources published before this date (YYYY or YYYY-MM-DD)")
-    out_opts(sp, ("json", "markdown"))
-    sp = add("query", cmd_graph_query, "run a graph query plan (patterns, filters, evidence search, dated paths)", gr)
-    sp.add_argument("file"); sp.add_argument("plan"); sp.add_argument("--index"); sp.add_argument("--spec")
-    out_opts(sp, ("json", "markdown"))
+    sp.add_argument("--spec", help="a schema manifest (default: chosen by each document)")
+    federation_opts(sp, identity=False); out_opts(sp, ("json", "markdown"))
+    sp = add("query", cmd_graph_query, "run a graph query plan (patterns, filters, evidence search, dated paths); with "
+             "--graph, over several graphs without merging them", gr)
+    sp.add_argument("file", help="the graph (or, with --graph, the plan)"); sp.add_argument("plan", nargs="?")
+    sp.add_argument("--index"); sp.add_argument("--spec")
+    federation_opts(sp); out_opts(sp, ("json", "markdown"))
 
     gap = sub.add_parser("gap", help="gap reports and GitHub issues").add_subparsers(dest="sub", required=True)
     sp = add("list", cmd_gap_list, "list gap reports in a directory", gap)
@@ -1679,8 +1750,9 @@ def build_parser() -> argparse.ArgumentParser:
     sp.add_argument("--path", help="the clone (default: the git repository of the current directory)")
     sp.add_argument("--json", action="store_true", help="machine-readable result")
 
-    da = sub.add_parser("data", help="data: a private data repository of one's own, apart from this repository "
-                        "(docs/private-data.md), and tabular data (a CSV file) into a document by a declarative mapping, and checks of the cells it cites").add_subparsers(dest="sub", required=True)
+    da = sub.add_parser("data", help="data of one's own: a private data repository (docs/private-data.md), the "
+                        "design matrix for experiment-design agents, and tabular data (a CSV file) into a document by "
+                        "a declarative mapping, with checks of the cells it cites").add_subparsers(dest="sub", required=True)
     sp = add("init", cmd_data_init, "scaffold a data repository: a policy (readers, remotes, raw data, egress; "
              "scale-data.yaml), rights.yaml, a README, ignored raw/index/exports/cache/work folders, the guard's hooks, "
              "mode 0700 and no remote", da)
@@ -1690,6 +1762,14 @@ def build_parser() -> argparse.ArgumentParser:
     sp.add_argument("--project", help="the project id (required for --access project)")
     sp.add_argument("--institution", action="append", help="an institution id (for --access institution; repeat)")
     sp.add_argument("--title", help="the README's title")
+    sp = add("matrix", cmd_data_matrix, "a typed table (CSV) and its canonical JSON manifest from a query plan over one "
+             "or several graphs and a matrix contract: explicit row identity, feature and outcome roles, typed "
+             "missingness, provenance and the answer's access; ambiguous pivots and incompatible outcomes refused", da)
+    sp.add_argument("--plan", required=True, help="the graph query plan (YAML or JSON)")
+    sp.add_argument("--contract", required=True, help="the matrix contract (YAML or JSON)")
+    sp.add_argument("--out", required=True, help="the directory to write matrix.csv and matrix.manifest.json into")
+    sp.add_argument("--spec", help="a schema manifest (default: chosen by each document)")
+    federation_opts(sp)
     sp = add("add", cmd_data_add, "compile a CSV file into records of a document by a mapping (mapping_version 1): a "
              "Dataset with its sha256 and table, records with stable ids, each value citing its cell; refuses duplicate "
              "keys, conflicts, unresolved references, malformed numbers and what would not validate", da)
