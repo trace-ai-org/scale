@@ -195,7 +195,7 @@ def start(out: Path, doi: str | None = None, pdf: Path | None = None, text: Path
           domain: str | None = "catalysis", version: str | None = None, email: str | None = None,
           contributor: str | None = None, project: str | None = None, repo: Path | None = None,
           get: Fetch = fetch, today: _dt.date | None = None, stewardship: dict | None = None,
-          source_kind: str | None = None) -> dict:
+          source_kind: str | None = None, slug: str | None = None) -> dict:
     """Write the working folder for one source (see the module docstring) and return what was done.
 
     The graph's stewardship is ``stewardship`` when given (a destination's, by ``scale add-source``), else the
@@ -223,7 +223,9 @@ def start(out: Path, doi: str | None = None, pdf: Path | None = None, text: Path
     version = spec["version"]
     doi = normalize_doi(doi) if doi else None
     meta = resolve_doi(doi, email or os.environ.get(EMAIL_ENV), get) if doi else {"title": None, "notes": []}
-    slug = slug_of(doi, Path(pdf) if pdf else Path(text) if text else None)
+    slug = slug or slug_of(doi, Path(pdf) if pdf else Path(text) if text else None)
+    if not re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9._-]*", slug):
+        raise ScaleError(f"slug {slug!r}: letters, digits, '.', '_' and '-'")
     out = Path(out)
     project = project or f"ex:pub/project/{slug}"
     header_st = {"contributed_by": st["contributed_by"], "project": project, "access": st["access"],

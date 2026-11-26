@@ -6,6 +6,7 @@ text is a text file, and the tables are the public synthetic examples of the bui
 import json
 import shutil
 import subprocess
+from pathlib import Path
 
 import pytest
 
@@ -396,6 +397,14 @@ def test_a_file_of_a_narrower_repository_never_enters_a_wider_one(tmp_path, lab)
     assert "egress denied" in out.get("error", "") and CANARY not in json.dumps(out)
     out = ScaleToolkit(workspace=inst / "work", repo=REPO, egress=EgressGate("anthropic", [])).call("scale_template", {})
     assert "egress denied" in out.get("error", "")
+    out = ScaleToolkit(workspace=inst, repo=REPO, egress=EgressGate("anthropic", [])).call(
+        "scale_data_new", {"file": "graphs/new.json"})
+    assert "egress denied" in out.get("error", "") and not (inst / "graphs/new.json").exists()
+    # a file of a project repository never enters a public document of that same repository either
+    datarepo.new_document(lab / "graphs/open.json", access="public", repo=REPO)
+    shutil.copy(X / "kinetics.csv", lab / "raw" / "k.csv")
+    with pytest.raises(ScaleError, match="fewer readers"):
+        add(lab / "raw" / "k.csv", lab / "graphs/open.json", recorded_at="2026-03-02T10:00:00Z")
 
 
 def test_source_start_refuses_the_framework_and_a_narrower_project_in_a_repository(lab, tmp_path):
@@ -463,6 +472,8 @@ def test_a_second_merge_and_a_second_paper_of_the_same_name(lab, tmp_path):
     one = add(tmp_path / "a" / "paper.txt", doc_path)
     two = add(tmp_path / "b" / "paper.txt", doc_path)
     assert one["folder"] != two["folder"] and not two.get("already")
+    assert one["source_id"] != two["source_id"] and Path(two["graph"]).is_file()
+    assert Path(two["graph"]).parent == Path(two["folder"])
     assert add(tmp_path / "a" / "paper.txt", doc_path)["already"]
 
 

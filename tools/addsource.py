@@ -200,9 +200,7 @@ def _work(dest: dict) -> Path:
 
 
 def _audience_of(dest: dict, doc: dict) -> dict:
-    """Who reads the destination: its data repository's readers, else the document's own header stewardship."""
-    if dest["policy"] is not None:
-        return dest["policy"]["readers"]
+    """Who reads what the router adds: the destination document's header stewardship, which the records take."""
     return pgraph.stewardship_of((doc.get("graph") or {}).get("stewardship"))
 
 
@@ -217,13 +215,13 @@ def _source_audience(path: Path, dest: dict, doc: dict) -> None:
     """A file kept in a data repository carries that repository's default stewardship: it goes into a destination only
     when every reader of the destination may read it (an institution's file never enters a project's graph)."""
     pf = find_policy(path)
-    if pf is None or (dest["policy_file"] is not None and pf.resolve() == dest["policy_file"].resolve()):
+    if pf is None:
         return
     st = (parse_policy(load_yaml(pf), str(pf)).get("defaults") or {}).get("stewardship") or {"access": "institution"}
     probe = {"graph": {"stewardship": st}, "nodes": [], "links": []}
     if audience_problems(probe, path.name, _audience_of(dest, doc)):
         _fail(f"{path} is in the data repository {pf.parent}, whose data may be read by fewer readers than "
-              f"{dest['path'].name}'s; nothing was written (add it to a document of that repository, or have its "
+              f"{dest['path'].name}'s header admits; nothing was written (add it to a document of that repository, or have its "
               "partners clear it first)")
 
 
@@ -507,9 +505,9 @@ def _table(source: str, det: dict, dest: dict, doc: dict, spec: dict, repo: Path
         if target is not None:
             _copy_raw(data, target)
         datamatch.save(mpath, best["mapping_yaml"])
+        out["rights"] = _rights_commit(rights_plan)
         write_atomic(dest["path"], new)
         written = into
-        out["rights"] = _rights_commit(rights_plan)
     return {**out, "status": "added" if written else "unchanged", "written": written,
             "mapping": str(mpath) if written else None,
             "next": [f"scale graph validate {into}", f"scale data verify {into}",
@@ -585,7 +583,7 @@ def _document(source: str, det: dict, dest: dict, doc: dict, repo: Path, opts: d
     by = st.get("contributed_by") or []
     res = curate.start(folder, doi=doi, pdf=path if det["format"] == "pdf" else None,
                        text=path if det["format"] in ("text", "csv") else None, email=opts.get("email"),
-                       version=(doc.get("graph") or {}).get("schema_version"),
+                       version=(doc.get("graph") or {}).get("schema_version"), slug=slug,
                        contributor=by[0] if by else None, project=st.get("project"), repo=repo, get=get,
                        stewardship=dict(st), source_kind=opts.get("source_kind"))
     from .util import write_canonical
@@ -653,7 +651,8 @@ def _merge(doc: dict, incoming: dict, src_dir: Path | None = None, dest_dir: Pat
                 same = any(json.dumps(cur, sort_keys=True) == json.dumps(x, sort_keys=True) for x in (w, r))
                 ours = (r["id"] in keep and cur.get("label") == r.get("label")) or \
                     (kind == "links" and r.get("source") in keep and r.get("target") in keep
-                     and cur.get("type") == r.get("type"))
+                     and (cur.get("type"), cur.get("source"), cur.get("target"))
+                     == (r.get("type"), r.get("source"), r.get("target")))
                 if same or ours:
                     unchanged.append(r["id"])
                 else:
@@ -690,9 +689,9 @@ def _fold(dest: dict, doc: dict, incoming: dict, repo: Path, what: str, dry_run:
            "checklist": _checklist(rep, set(added))}
     if dry_run:
         return {**res, "status": "dry_run", "written": None, "rights": rights_plan["summary"]}
+    rights = _rights_commit(rights_plan)          # first: an extra rights entry is harmless, a graph without its own is not
     if added:
         write_atomic(dest["path"], out)
-    rights = _rights_commit(rights_plan)
     return {**res, "status": "merged" if added else "unchanged", "written": str(dest["path"]) if added else None,
             "rights": rights}
 
@@ -928,6 +927,10 @@ def text_report(res: dict) -> str:
         lines.append(f"  checklist {ref}: {c['missing']} must items still missing on the added records")
         for x in c["first"][:5]:
             lines.append(f"    {x['record']}: {x['message']}")
+        if c["missing"]:
+            lines.append(f"    ({c['missing']} in all: what the file does not say, such as a test's reaction, feed or "
+                         "electrolyte; add those records when you know them (scale graph describe CatalyticTest "
+                         "--domain catalysis), never typical values)")
     if res.get("rights"):
         r = res["rights"]
         lines.append(f"  rights: {', '.join(r['added']) or 'nothing new'} in {r['file']}")
@@ -935,6 +938,9 @@ def text_report(res: dict) -> str:
         lines.append(f"  WARNING {res['warnings_rights']}")
     if res.get("folder") and res["route"] == "document" and res["status"] in ("started", "dry_run"):
         lines.append(f"  curation folder: {res['folder']}" + (" (already started)" if res.get("already") else ""))
+        if res.get("source_id"):
+            lines.append(f"  source id: {res['source_id']} (nothing of the source is in the document until --finish; "
+                         "--from-source names it for its tables)")
     if res.get("mapping"):
         lines.append(f"  mapping saved: {res['mapping']}")
     for n in res.get("next") or []:

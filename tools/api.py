@@ -1151,8 +1151,7 @@ class ScaleToolkit:
             return str(p)
         from .curate import normalize_doi
         try:
-            normalize_doi(source)
-            return source
+            return "doi:" + normalize_doi(source)       # a DOI never names a file of the current directory
         except ScaleError:
             return str(p)                                # not there: the router says so
 
@@ -1173,12 +1172,14 @@ class ScaleToolkit:
     def _scale_data_new(self, file: str, project: str | None = None, contributor: str | None = None,
                         access: str | None = None, title: str | None = None) -> dict:
         from .datarepo import new_document
-        res = new_document(self._writable(file, "a document of project data"), project=project,
-                           contributor=contributor, access=access, title=title, repo=self.repo)
-        if self.egress is not None:                     # it names the document's project and institutions
-            self.egress.check({"graph": {"stewardship": res["stewardship"]}, "nodes": [], "links": []},
-                              f"the new document {file}", res["written"])
-        return res
+        from .datarepo import stewardship_for
+        target = self._writable(file, "a document of project data")
+        if self.egress is not None:                     # it names the document's project and institutions: checked first
+            st, _ = stewardship_for(target, project, contributor, access)
+            self.egress.check({"graph": {"stewardship": st}, "nodes": [], "links": []}, f"the new document {file}",
+                              target)
+        return new_document(target, project=project, contributor=contributor, access=access, title=title,
+                            repo=self.repo)
 
     def _scale_data_verify(self, document: dict | None = None, path: str | None = None,
                            files: dict | None = None) -> dict:
