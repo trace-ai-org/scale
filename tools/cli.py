@@ -809,7 +809,8 @@ def cmd_call(args):
     if not isinstance(arguments, dict):
         print(to_json({"error": "arguments must be a JSON object"}))
         return 1
-    tk = ScaleToolkit(workspace=args.workspace, repo=getattr(args, "repo", None))
+    from .egress import EgressGate
+    tk = ScaleToolkit(workspace=args.workspace, repo=getattr(args, "repo", None), egress=EgressGate.from_env())
     result = tk.call(args.tool, arguments)
     print(json.dumps(result, ensure_ascii=False, indent=None if args.compact else 2, default=str))
     return 1 if isinstance(result, dict) and "error" in result else 0
@@ -1189,6 +1190,42 @@ def cmd_evidence_access(args):
     problems = rights.access_problems(repo, docs)
     print(to_json({"documents": len(docs), "problems": problems, "ok": not problems}))
     return 0 if not problems else 1
+
+
+def cmd_guard_install(args):
+    from . import guard
+    res = guard.install(guard.toplevel(args.path), force=args.force)
+    print(to_json(res))
+    return 0
+
+
+def cmd_guard_check(args):
+    from . import guard
+    repo = guard.toplevel(args.path)
+    if sum(bool(x) for x in (args.staged, args.all, args.push)) != 1:
+        raise ScaleError("give one of --staged, --all [--rev REV] or --push REMOTE [RANGE]")
+    if args.staged:
+        res = guard.check_staged(repo)
+    elif args.all:
+        res = guard.check_all(repo, args.rev)
+    else:
+        remote, *rng = args.push
+        if len(rng) > 1:
+            raise ScaleError("--push takes a remote and, optionally, one revision range")
+        lines = None if rng else guard.parse_push_lines(sys.stdin.read())
+        res = guard.check_push(repo, remote, args.url, lines, rng[0] if rng else None)
+    if args.json:
+        print(to_json(res))
+    else:
+        print(guard.report_text(res), file=sys.stderr if not res["ok"] else sys.stdout)
+    return 0 if res["ok"] else 1
+
+
+def cmd_data_init(args):
+    from . import datarepo
+    print(to_json(datarepo.init(args.directory, access=args.access, project=args.project,
+                                institutions=args.institution, title=args.title)))
+    return 0
 
 
 # ---------------------------------------------------------------- parser
@@ -1624,8 +1661,35 @@ def build_parser() -> argparse.ArgumentParser:
     sp.add_argument("--no-index", action="store_true", help="do not rebuild the evidence index of a changed document")
     sp.add_argument("--out", help="also write the report (JSON) here")
 
-    da = sub.add_parser("data", help="tabular data (a CSV file) into a document by a declarative mapping, and checks of "
-                        "the cells it cites").add_subparsers(dest="sub", required=True)
+    gd = sub.add_parser("guard", help="git hooks that keep private data out of a repository whose readers may not read "
+                        "it (docs/private-data.md)").add_subparsers(dest="sub", required=True)
+    sp = add("install", cmd_guard_install, "write the pre-commit and pre-push hooks into a clone (this repository, or a "
+             "data repository); they prevent accidents only (--no-verify skips them)", gd)
+    sp.add_argument("--path", help="the clone (default: the git repository of the current directory)")
+    sp.add_argument("--force", action="store_true", help="keep an existing hook of another origin and run it after the guard")
+    sp = add("check", cmd_guard_check, "check the staged snapshot (--staged), every tracked file (--all), or every "
+             "commit a push sends (--push REMOTE [RANGE]; without a range, git's pre-push lines on stdin): documents "
+             "every reader of the repository may read, well formed, quotes within the copyright cap, no undeclared raw "
+             "data; exit 1 when anything is refused", gd)
+    sp.add_argument("--staged", action="store_true", help="the snapshot the next commit records (the index)")
+    sp.add_argument("--all", action="store_true", help="every path of the index (or of --rev)")
+    sp.add_argument("--rev", help="with --all: a commit to check instead of the index")
+    sp.add_argument("--push", nargs="+", metavar="REMOTE [RANGE]", help="the remote pushed to and, optionally, a range")
+    sp.add_argument("--url", help="with --push: the remote's URL (default: git remote get-url)")
+    sp.add_argument("--path", help="the clone (default: the git repository of the current directory)")
+    sp.add_argument("--json", action="store_true", help="machine-readable result")
+
+    da = sub.add_parser("data", help="data: a private data repository of one's own, apart from this repository "
+                        "(docs/private-data.md), and tabular data (a CSV file) into a document by a declarative mapping, and checks of the cells it cites").add_subparsers(dest="sub", required=True)
+    sp = add("init", cmd_data_init, "scaffold a data repository: a policy (readers, remotes, raw data, egress; "
+             "scale-data.yaml), rights.yaml, a README, ignored raw/index/exports/cache/work folders, the guard's hooks, "
+             "mode 0700 and no remote", da)
+    sp.add_argument("directory", help="a new or empty folder outside any git repository")
+    sp.add_argument("--access", default="project", choices=["public", "consortium", "project", "institution"],
+                    help="who reads the repository (default: project)")
+    sp.add_argument("--project", help="the project id (required for --access project)")
+    sp.add_argument("--institution", action="append", help="an institution id (for --access institution; repeat)")
+    sp.add_argument("--title", help="the README's title")
     sp = add("add", cmd_data_add, "compile a CSV file into records of a document by a mapping (mapping_version 1): a "
              "Dataset with its sha256 and table, records with stable ids, each value citing its cell; refuses duplicate "
              "keys, conflicts, unresolved references, malformed numbers and what would not validate", da)
