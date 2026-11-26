@@ -1,0 +1,45 @@
+{
+  "nodes": [
+    {
+      "id": "ex-dm:species/co2",
+      "label": "ChemicalSpecies",
+      "props": {
+        "name": "CO2",
+        "charge": 0,
+        "elemental_composition": {
+          "C": 1,
+          "O": 2
+        },
+        "formula": "CO2",
+        "origin": "synthetic"
+      }
+    },
+    {
+      "id": "ex-dm:variable/fe",
+      "label": "Variable",
+      "props": {
+        "name": "Faradaic efficiency",
+        "origin": "synthetic",
+        "quantity_kind": "faradaic_efficiency",
+        "scale": "quantitative",
+        "unit": "%"
+      }
+    }
+  ],
+  "links": [],
+  "directed": true,
+  "graph": {
+    "data_status": "synthetic_example",
+    "follows_domains": [
+      "catalysis"
+    ],
+    "graph_id": "ex-dm:graph",
+    "schema": "scale-catal",
+    "schema_version": "0.8.4",
+    "stewardship": {
+      "access": "public"
+    },
+    "title": "Five laboratory tables imported by the built-in mappings of scale data match (synthetic)"
+  },
+  "multigraph": true
+}

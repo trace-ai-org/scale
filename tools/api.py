@@ -264,19 +264,45 @@ TOOLS: list[dict] = [
     },
     {
         "name": "scale_data_add",
-        "description": "Compile a CSV file into records of a document in the working directory by a declarative mapping "
-                       "(YAML, mapping_version 1): a Dataset with the file's sha256 and table, records with stable ids, "
-                       "each value citing its cell (evidence.dataset_cell). Refuses duplicate keys, conflicting run-level "
-                       "properties, unresolved references, malformed numbers, a conflict with what the document holds and "
-                       "anything that would not validate; a retry changes nothing. dry_run returns what would be written.",
+        "description": "Compile a data file into records of a document in the working directory by a declarative mapping "
+                       "(YAML, mapping_version 1 or 2; scale_data_match writes one): a Dataset with the file's sha256 "
+                       "and table, records with stable ids, each value citing its cell (evidence.dataset_cell). Refuses "
+                       "duplicate keys, conflicting run-level properties, unresolved references, malformed numbers, a "
+                       "conflict with what the document holds and anything that would not validate; a retry changes "
+                       "nothing. dry_run returns what would be written.",
         "input_schema": {"type": "object", "required": ["csv", "mapping", "into"], "properties": {
-            "csv": {"type": "string", "description": "The CSV file (profile scale_csv_v1): relative to the working "
-                                                     "directory, or absolute."},
+            "csv": {"type": "string", "description": "The data file: a CSV file (scale_csv_v1), or, by a version 2 "
+                                                     "mapping's input block, a CSV file of another dialect or a sheet "
+                                                     "of an .xlsx workbook; relative to the working directory, or "
+                                                     "absolute."},
             "mapping": {"type": "string", "description": "The mapping (YAML): relative to the working directory, or "
                                                          "absolute."},
             "into": {"type": "string", "description": "The destination document's file name in the working directory "
                                                       "(letters, digits, . _ -); it exists and holds what the rows name."},
             "dry_run": {"type": "boolean", "description": "Write nothing; return the records and links it would add."}}},
+    },
+    {
+        "name": "scale_data_match",
+        "description": "Find the built-in mapping that fits a data file (a CSV file of any common dialect, or a sheet "
+                       "of an .xlsx workbook): the templates of domain/data-mappings scored against its header and a "
+                       "sample of its values, best first, each with the column each role binds, the wide columns it "
+                       "melts into one result per column, their units, the uncertain bindings with their candidates "
+                       "(never guessed silently), what the template assumes (confirm) and a complete mapping (YAML) for "
+                       "scale_data_add. Deterministic. A file inside a data repository is gated by its access.",
+        "input_schema": {"type": "object", "required": ["file"], "properties": {
+            "file": {"type": "string", "description": "The data file: relative to the working directory, or absolute."},
+            "sheet": {"type": "string", "description": "The workbook's sheet (default: every sheet is tried)."},
+            "header_row": {"type": "integer", "description": "The header's row number, from 1 (default: found)."},
+            "template": {"type": "string", "description": "Match this built-in mapping only."},
+            "bind": {"type": "object", "additionalProperties": {"type": "string"},
+                     "description": "Role -> column: settles an uncertain or missing binding."},
+            "namespace": {"type": "string", "description": "The prefix of the ids the mapping makes (default lab)."},
+            "origin": {"type": "string", "enum": ["recorded", "computed", "reported", "synthetic"],
+                       "description": "The records' origin (default: the template's; recorded needs a recording time)."},
+            "recorded_at": {"type": "string", "description": "When the data were recorded (ISO 8601 with a time zone)."},
+            "top": {"type": "integer", "description": "How many mappings to return (default 3)."},
+            "save_as": {"type": "string", "description": "Write the best mapping (YAML) to this file name in the working "
+                                                         "directory (letters, digits, . _ -; it ends in .yaml)."}}},
     },
     {
         "name": "scale_data_verify",
@@ -465,6 +491,23 @@ class ScaleToolkit:
             target = self._path(arguments["path"])
         elif name == "scale_data_add" and isinstance(arguments.get("into"), str) and arguments["into"]:
             target = self._path(arguments["into"])  # the records written there, and returned, take its access
+        elif name == "scale_data_match" and isinstance(arguments.get("file"), str) and arguments["file"]:
+            # a data file is no document: inside a data repository it carries the repository's default access (none
+            # stated: institution), so its header and sample values go only to an endpoint approved for that
+            from .audience import find_policy, parse_policy
+            f = self._path(arguments["file"])
+            try:
+                pf = find_policy(f)
+                st = None
+                if pf:
+                    st = (parse_policy(load_yaml(pf), str(pf)).get("defaults") or {}).get("stewardship") or {}
+            except (ScaleError, OSError, ValueError) as exc:
+                raise EgressDenied("egress denied: the data repository's policy cannot be read to check the file's "
+                                   "access; nothing was sent") from exc
+            if st is not None:
+                self.egress.check({"graph": {"stewardship": st}, "nodes": [], "links": []},
+                                  f"the data file {arguments['file']} (data repository {pf.parent})", f)
+            return None
         elif isinstance(arguments.get("folder"), str) and name in ("scale_source_check", "scale_source_finish"):
             from .curate import _folder
             try:
@@ -929,6 +972,30 @@ class ScaleToolkit:
                              "or '-'"}
         target = self.workspace / (into if into.endswith(".json") else f"{into}.json")
         return dataingest.add(self._path(csv), self._path(mapping), target, repo=self.repo, dry_run=dry_run)
+
+    def _scale_data_match(self, file: str, sheet: str | None = None, header_row: int | None = None,
+                          template: str | None = None, bind: dict | None = None, namespace: str = "lab",
+                          origin: str | None = None, recorded_at: str | None = None, top: int = 3,
+                          save_as: str | None = None) -> dict:
+        from . import datamatch, pgraph
+        if bind is not None and (not isinstance(bind, dict) or not all(isinstance(v, str) for v in bind.values())):
+            return {"error": "bind maps a role to a column name"}
+        if save_as is not None and (not _NAME.match(save_as) or not save_as.endswith((".yaml", ".yml"))):
+            return {"error": "save_as is a file name in the working directory (letters, digits, '.', '_' or '-') ending "
+                             "in .yaml"}
+        p = self._path(file)
+        spec = pgraph.load_spec(self.repo / layout.DOMAIN / layout.DOMAIN_GRAPH_MANIFEST)
+        res = datamatch.match(p.read_bytes(), p.name, datamatch.load_templates(self.repo), spec, sheet=sheet,
+                              header_row=header_row, template=template, bind=bind or {}, namespace=namespace,
+                              origin=origin, recorded_at=recorded_at, top=top)
+        res["written"] = None
+        if save_as and res["candidates"]:
+            dest = self.workspace / save_as
+            dest.write_text(res["candidates"][0]["mapping_yaml"], encoding="utf-8")
+            res["written"] = str(dest)
+        for c in res["candidates"]:
+            c.pop("mapping", None)                  # the YAML says it, once
+        return res
 
     def _scale_data_verify(self, document: dict | None = None, path: str | None = None,
                            files: dict | None = None) -> dict:

@@ -73,6 +73,7 @@ domain/
 ├── competency/         # competency questions: cq-NN-*.yaml (graph query plans with expected answers)
 ├── examples/           # public synthetic example documents
 ├── mappings/           # catalysis.yaml: the catalysis terms mapped to ontology terms, and the subdomains of catalysis research
+├── data-mappings/      # the built-in mapping templates of `scale data match` (a laboratory's data file into a document)
 ├── docs/               # catalysis documentation (reporting guidance)
 └── tests/              # test_*.py, collected by pytest; fixtures
 ```
@@ -85,6 +86,7 @@ domain/
 | `competency/` | competency questions CQ-01 … CQ-34: graph query plans over the public examples, with their expected answers |
 | `examples/` | the public synthetic examples ([overview](./examples/README.md)) |
 | `mappings/catalysis.yaml` | the catalysis labels, edge types and values mapped to ontology terms (ChEBI, the Chemical Methods Ontology, REX, MOP, Allotrope, OBI and others), and the fourteen subdomains of catalysis research of Ontologies4Cat with the SCALE terms that record each ([mappings](../docs/mappings.md)) |
+| `data-mappings/` | the built-in mapping templates `scale data match` scores against a data file (CO2RR Faradaic efficiency, thermal catalytic tests, kinetics, DFT energies, characterization summaries), each with its column roles, header synonyms, wide-column patterns, quantities and default units and a `mapping_version: 2` skeleton; provisional ([data.md](../docs/data.md#built-in-mappings-scale-data-match)) |
 | `docs/` | [catalyst-state reporting](docs/reporting/catalyst-state-reporting.md), [catalyst-preparation reporting](docs/reporting/catalyst-preparation-reporting.md) and the [supporting-information index](docs/supporting-information.md) |
 | `tests/` | the catalysis tests and the invalid scale-catal fixtures (`fixtures/invalid/`, each rejected for the reason `expect.yaml` states) |
 

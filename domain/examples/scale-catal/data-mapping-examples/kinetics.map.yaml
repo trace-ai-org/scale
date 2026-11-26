@@ -1,0 +1,114 @@
+# scale data match: built-in mapping kinetics-rates (Kinetic measurements, reaction rates and turnover frequencies with their site basis), score 1.0
+# file kinetics.csv, cells A1:H4
+# confirm: each row is one kinetic measurement (one CatalyticTest of test_kind kinetics); a run holds one rate and one TOF
+# confirm: rates and TOFs are reported as measured; whether they are free of heat and mass transport limits is not stated by the table (add the transport checks to the tests if they were made)
+# confirm: a TOF keeps the cell of the site-basis column as its basis; without that column it states no basis, and TOFs counted on other sites are not one quantity
+# confirm: a sample the document does not hold is created as a CatalystSample of sample_kind other; set its form
+mapping_version: 2
+input:
+  format: csv
+  header_row: 1
+  delimiter: ','
+  encoding: utf-8
+dataset:
+  id_prefix: ex-dm:data/
+  primary_key:
+  - run
+references:
+  rate:
+    id: ex-dm:variable/reaction-rate
+    label: Variable
+    props:
+      name: reaction rate
+      scale: quantitative
+      quantity_kind: production_rate
+      unit: mol g-1 s-1
+    reuse:
+    - quantity_kind
+  tof:
+    id: ex-dm:variable/turnover-frequency
+    label: Variable
+    props:
+      name: turnover frequency
+      scale: quantitative
+      quantity_kind: turnover_frequency
+      unit: s-1
+    reuse:
+    - quantity_kind
+lookups:
+  species:
+    label: ChemicalSpecies
+    match:
+    - formula
+    - name
+    aliases:
+      carbon dioxide: CO2
+      carbon monoxide: CO
+      hydrogen: H2
+      methane: CH4
+      methanol: CH3OH
+      ethane: C2H6
+      ethylene: C2H4
+      ethene: C2H4
+      propane: C3H8
+      propylene: C3H6
+      propene: C3H6
+      ammonia: NH3
+      water: H2O
+    create:
+      id_prefix: ex-dm:species/
+      as: formula
+  sample:
+    label: CatalystSample
+    match:
+    - name
+    create:
+      id_prefix: ex-dm:sample/
+      as: name
+      props:
+        sample_kind: other
+records:
+- as: test
+  label: CatalyticTest
+  key:
+  - run
+  name: Kinetic measurement
+  origin: synthetic
+  properties:
+    test_kind:
+      literal: kinetics
+    experiment_kind:
+      literal: physical
+    driving_forces:
+      literal:
+      - thermo
+    temperature:
+      column: T (K)
+      unit_from_header: true
+    pressure:
+      column: P (bar)
+      unit_from_header: true
+  results:
+  - id: rate
+    column: rate (mol g-1 s-1)
+    variable: '@rate'
+    unit_from_header: true
+    target_column: species
+    target_lookup: species
+    missing:
+      '':
+        status: not_measured
+  - id: tof
+    column: TOF (s-1)
+    variable: '@tof'
+    unit_from_header: true
+    target_column: species
+    target_lookup: species
+    basis_column: site basis
+    missing:
+      '':
+        status: not_measured
+  links:
+  - type: USES_CATALYST
+    target_column: catalyst
+    target_lookup: sample

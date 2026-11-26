@@ -1,0 +1,103 @@
+# A built-in mapping template of `scale data match` (docs/data.md, "Built-in mappings"); provisional.
+template_version: 1
+id: dft-adsorption-energy
+title: DFT adsorption and reaction energies, one calculation per row
+description: |
+  One row per electronic-structure calculation: its id, the surface or model it is of, the adsorbate (or the species
+  the energy is of), the functional and the energy in eV (or kJ/mol), optionally its status (completed, failed) and
+  why it failed. Each row becomes a Computation (computation_kind electronic_structure, the functional as its level
+  of theory) with one result entry: the energy, whose process the table names only by its adsorbate (kept as the
+  entry's unresolved_target, cited from its cell: a reaction energy is of a Reaction, and the table does not state
+  its reference states). A failed calculation keeps its status and its energy is recorded as not measured, never
+  zero.
+maturity: provisional
+driving_forces: []
+default_origin: computed
+example: examples/scale-catal/data-mapping-examples/dft-energies.csv
+roles:
+  calc:
+    kind: text
+    required: true
+    synonyms: [calculation, calc, calc id, calculation id, job, job id, run, run id, id, structure id, system id]
+  surface:
+    kind: text
+    synonyms: [surface, facet, slab, model, structure, system, catalyst, material, site model]
+  adsorbate:
+    kind: text
+    synonyms: [adsorbate, species, intermediate, molecule, ads, adsorbed species]
+  functional:
+    kind: text
+    synonyms: [functional, xc, xc functional, exchange correlation, method, level of theory, dft functional]
+  energy:
+    kind: number
+    required: true
+    quantity: reaction_energy
+    default_unit: eV
+    synonyms: [e ads, eads, adsorption energy, binding energy, e bind, ebind, e binding, delta e, de, delta e ads, reaction
+        energy, energy, e]
+  status:
+    kind: text
+    values: [proposed, planned, running, completed, failed, aborted]
+    synonyms: [status, run status, job status, state]
+  status_reason:
+    kind: text
+    synonyms: [status reason, reason, error, failure reason, note, comment, remarks]
+confirm: ['the energy is an electronic adsorption (reaction) energy as the calculation gives it, of the adsorbate named;
+    its reference states are the laboratory''s (state them in the Variable''s description)', the adsorbate names the process
+    only in words (unresolved_target); link each energy to its Reaction (the adsorption with its reference states) when
+    the document holds one, charge_treatment constant_charge (an ordinary calculation at a fixed number of electrons); change
+    it for constant-potential calculations, 'a blank energy is recorded as not_measured (a failed or missing calculation),
+    never zero']
+mapping:
+  mapping_version: 2
+  input: '{{input}}'
+  dataset:
+    id_prefix: '{{ns}}:data/'
+    primary_key: ['{{column:calc}}']
+  references:
+    energy:
+      id: '{{ns}}:variable/adsorption-energy'
+      label: Variable
+      props:
+        name: adsorption energy (electronic)
+        scale: quantitative
+        quantity_kind: reaction_energy
+        unit: eV
+      reuse: [quantity_kind]
+  records:
+  - as: calc
+    label: Computation
+    key: ['{{column:calc}}']
+    name: DFT calculation
+    name_column: '{{column:surface}}'
+    origin: '{{origin}}'
+    recorded_at: '{{recorded_at}}'
+    properties:
+      computation_kind:
+        literal: electronic_structure
+      charge_treatment:
+        literal: constant_charge
+      level_of_theory:
+        when: functional
+        column: '{{column:functional}}'
+        representation: text_value
+      experiment_status:
+        when: status
+        column: '{{column:status}}'
+      status_reason:
+        when: status_reason
+        column: '{{column:status_reason}}'
+        missing:
+          ? ''
+          : omit
+    results:
+    - id: adsorption_energy
+      column: '{{column:energy}}'
+      variable: '@energy'
+      unit: '{{unit:energy}}'
+      unresolved_target_column: '{{column:adsorbate}}'
+      produced_by: self
+      missing:
+        ? ''
+        : status: not_measured
+          note: no energy was obtained

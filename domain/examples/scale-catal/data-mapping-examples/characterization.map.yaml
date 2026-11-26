@@ -1,0 +1,147 @@
+# scale data match: built-in mapping characterization-summary (Characterization summary per sample, BET area, pore volume, XRD crystallite size and XPS atomic ratios), score 1.0
+# file characterization.csv, cells A1:F4
+# uncertain: Ni/Al (XPS): the header writes no unit; assumed '1'
+# uncertain: O/Ni (XPS): the header writes no unit; assumed '1'
+# confirm: a sample the document does not hold is a new CatalystSample of sample_kind other; set its form
+# confirm: the BET area and pore volume are one N2 physisorption characterization, the crystallite size one X-ray diffraction (Scherrer, as the laboratory computes it) and the ratios one XPS characterization of each sample
+# confirm: a blank cell is recorded as not_measured
+mapping_version: 2
+input:
+  format: csv
+  header_row: 1
+  delimiter: ','
+  encoding: utf-8
+dataset:
+  id_prefix: ex-dm:data/
+  primary_key:
+  - Sample
+references:
+  ssa:
+    id: ex-dm:variable/specific-surface-area
+    label: Variable
+    props:
+      name: BET specific surface area
+      scale: quantitative
+      quantity_kind: specific_surface_area
+      unit: m2/g
+    reuse:
+    - quantity_kind
+  pore_volume:
+    id: ex-dm:variable/pore-volume
+    label: Variable
+    props:
+      name: specific pore volume
+      scale: quantitative
+      quantity_kind: specific_pore_volume
+      unit: cm3/g
+    reuse:
+    - quantity_kind
+  crystallite:
+    id: ex-dm:variable/crystallite-size
+    label: Variable
+    props:
+      name: XRD crystallite size
+      scale: quantitative
+      quantity_kind: crystallite_size
+      unit: nm
+    reuse:
+    - quantity_kind
+  ratio:
+    id: ex-dm:variable/xps-atomic-ratio
+    label: Variable
+    props:
+      name: XPS surface atomic ratio
+      scale: quantitative
+      quantity_kind: ratio
+      unit: '1'
+    reuse:
+    - quantity_kind
+records:
+- as: sample
+  label: CatalystSample
+  key:
+  - Sample
+  name_column: Sample
+  origin: synthetic
+  properties:
+    sample_kind:
+      literal: other
+- as: physisorption
+  label: Characterization
+  key:
+  - Sample
+  name: N2 physisorption
+  origin: synthetic
+  properties:
+    technique:
+      literal: N2 physisorption (BET)
+    experiment_kind:
+      literal: physical
+  results:
+  - id: specific_surface_area
+    column: S_BET (m2/g)
+    variable: '@ssa'
+    unit_from_header: true
+    missing:
+      '':
+        status: not_measured
+  - id: pore_volume
+    column: V_pore (cm3/g)
+    variable: '@pore_volume'
+    unit_from_header: true
+    missing:
+      '':
+        status: not_measured
+  links:
+  - type: EXAMINES
+    target_record: sample
+- as: xrd
+  label: Characterization
+  key:
+  - Sample
+  name: X-ray diffraction
+  origin: synthetic
+  properties:
+    technique:
+      literal: X-ray diffraction
+    experiment_kind:
+      literal: physical
+  results:
+  - id: crystallite_size
+    column: d_XRD (nm)
+    variable: '@crystallite'
+    unit_from_header: true
+    missing:
+      '':
+        status: not_measured
+  links:
+  - type: EXAMINES
+    target_record: sample
+- as: xps
+  label: Characterization
+  key:
+  - Sample
+  name: X-ray photoelectron spectroscopy
+  origin: synthetic
+  properties:
+    technique:
+      literal: X-ray photoelectron spectroscopy
+    experiment_kind:
+      literal: physical
+  results:
+  - variable: '@ratio'
+    melt:
+    - column: Ni/Al (XPS)
+      id: xps_ni_al
+      definition: Ni/Al surface atomic ratio (XPS)
+      unit: '1'
+    - column: O/Ni (XPS)
+      id: xps_o_ni
+      definition: O/Ni surface atomic ratio (XPS)
+      unit: '1'
+    missing:
+      '':
+        status: not_measured
+  links:
+  - type: EXAMINES
+    target_record: sample

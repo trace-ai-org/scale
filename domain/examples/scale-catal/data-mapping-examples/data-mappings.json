@@ -1,0 +1,3953 @@
+{
+  "nodes": [
+    {
+      "id": "ex-dm:species/co2",
+      "label": "ChemicalSpecies",
+      "props": {
+        "name": "CO2",
+        "charge": 0,
+        "elemental_composition": {
+          "C": 1,
+          "O": 2
+        },
+        "formula": "CO2",
+        "origin": "synthetic"
+      }
+    },
+    {
+      "id": "ex-dm:variable/fe",
+      "label": "Variable",
+      "props": {
+        "name": "Faradaic efficiency",
+        "origin": "synthetic",
+        "quantity_kind": "faradaic_efficiency",
+        "scale": "quantitative",
+        "unit": "%"
+      }
+    },
+    {
+      "id": "ex-dm:data/co2rr-fe-wide-ffb13edb33ec/file",
+      "label": "Dataset",
+      "props": {
+        "name": "co2rr-fe-wide.xlsx",
+        "availability": "available",
+        "data_kind": "table",
+        "media_type": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        "origin": "synthetic",
+        "sha256": "ffb13edb33ec506ed23b2fd14f4ec55f5042a626686a150e59ee243b533d1331",
+        "uri": "co2rr-fe-wide.xlsx"
+      }
+    },
+    {
+      "id": "ex-dm:data/co2rr-fe-wide-ffb13edb33ec",
+      "label": "Dataset",
+      "props": {
+        "name": "co2rr-fe-wide.xlsx (sheet 'FE', cells A4:I7, as scale_csv_v1)",
+        "availability": "available",
+        "data_kind": "table",
+        "description": "The table of sheet 'FE', cells A4:I7 of co2rr-fe-wide.xlsx (sha256 ffb13edb33ec506ed23b2fd14f4ec55f5042a626686a150e59ee243b533d1331), header row 4, written as scale_csv_v1 by scale data add; the recipe is in table.ingest (input_*), so scale data verify extracts these bytes again from the file.",
+        "media_type": "text/csv",
+        "origin": "synthetic",
+        "sha256": "9fab80d248608f37ffb3ccfe12afcb0661d30c333b9b0e6770337495006ff693",
+        "table": {
+          "columns": [
+            {
+              "name": "Run",
+              "datatype": "string"
+            },
+            {
+              "name": "Electrode",
+              "datatype": "string"
+            },
+            {
+              "name": "E (V vs RHE)",
+              "datatype": "number",
+              "unit": "V vs RHE"
+            },
+            {
+              "name": "j total (mA/cm2)",
+              "datatype": "number",
+              "unit": "mA/cm2"
+            },
+            {
+              "name": "FE CO (%)",
+              "datatype": "number",
+              "unit": "%",
+              "variable": "ex-dm:variable/fe"
+            },
+            {
+              "name": "FE H2 (%)",
+              "datatype": "number",
+              "unit": "%",
+              "variable": "ex-dm:variable/fe"
+            },
+            {
+              "name": "FE HCOO- (%)",
+              "datatype": "number",
+              "unit": "%",
+              "variable": "ex-dm:variable/fe"
+            },
+            {
+              "name": "j CO (mA/cm2)",
+              "datatype": "number",
+              "unit": "mA/cm2",
+              "variable": "ex-dm:variable/partial-current-density"
+            },
+            {
+              "name": "FE total (%)",
+              "datatype": "string"
+            }
+          ],
+          "ingest": {
+            "extracted_from": "ex-dm:data/co2rr-fe-wide-ffb13edb33ec/file",
+            "input_format": "xlsx",
+            "input_header_row": "4",
+            "input_rows": "A4:I7",
+            "input_sheet": "FE",
+            "lookup_0000": "[\"Electrode\", \"Ag-foil-1\", \"ex-dm:sample/Ag-foil-1\"]",
+            "mapping_sha256": "0491269e51ba2e552f84ce7f181afbe077110ab7a776fe3bd7735a901cfcd980",
+            "schema_sha256": "7e479bc0027e13117e520695aa9cef4b5d141c8f6e3c4e8f787e4fd115dec026",
+            "schema_version": "0.8.4",
+            "tool": "scale-catal 0.4.0"
+          },
+          "primary_key": [
+            "Run"
+          ],
+          "profile": "scale_csv_v1",
+          "rows": 3
+        },
+        "version": "1"
+      }
+    },
+    {
+      "id": "ex-dm:sample/Ag-foil-1",
+      "label": "CatalystSample",
+      "props": {
+        "name": "Ag-foil-1",
+        "origin": "synthetic",
+        "sample_kind": "other"
+      }
+    },
+    {
+      "id": "ex-dm:species/CO",
+      "label": "ChemicalSpecies",
+      "props": {
+        "name": "CO",
+        "charge": 0,
+        "elemental_composition": {
+          "C": 1,
+          "O": 1
+        },
+        "formula": "CO",
+        "origin": "synthetic"
+      }
+    },
+    {
+      "id": "ex-dm:species/H2",
+      "label": "ChemicalSpecies",
+      "props": {
+        "name": "H2",
+        "charge": 0,
+        "elemental_composition": {
+          "H": 2
+        },
+        "formula": "H2",
+        "origin": "synthetic"
+      }
+    },
+    {
+      "id": "ex-dm:species/HCOO-",
+      "label": "ChemicalSpecies",
+      "props": {
+        "name": "HCOO-",
+        "charge": -1,
+        "elemental_composition": {
+          "C": 1,
+          "H": 1,
+          "O": 2
+        },
+        "formula": "HCOO-",
+        "origin": "synthetic"
+      }
+    },
+    {
+      "id": "ex-dm:variable/partial-current-density",
+      "label": "Variable",
+      "props": {
+        "name": "partial current density",
+        "origin": "synthetic",
+        "quantity_kind": "partial_current_density",
+        "scale": "quantitative",
+        "unit": "mA/cm2"
+      }
+    },
+    {
+      "id": "ex-dm:data/co2rr-fe-wide-ffb13edb33ec/test/R1",
+      "label": "CatalyticTest",
+      "props": {
+        "name": "CO2 electroreduction, Run=R1",
+        "control_mode": "potentiostatic",
+        "current_density": {
+          "status": "present",
+          "evidence_ids": [
+            "j%20total%20%28mA%2Fcm2%29.R1"
+          ],
+          "unit": "mA/cm2",
+          "value": 2.1
+        },
+        "current_normalization": "geometric_area",
+        "driving_forces": [
+          "electro"
+        ],
+        "electrode_potential": {
+          "status": "present",
+          "evidence_ids": [
+            "E%20%28V%20vs%20RHE%29.R1"
+          ],
+          "unit": "V vs RHE",
+          "value": -0.8
+        },
+        "evidence": [
+          {
+            "id": "E%20%28V%20vs%20RHE%29.R1",
+            "kind": "dataset_row",
+            "dataset_cell": {
+              "column": "E (V vs RHE)",
+              "row_key": [
+                {
+                  "column": "Run",
+                  "value": "R1"
+                }
+              ]
+            },
+            "locator": "row Run=R1; column E (V vs RHE)",
+            "quote": "-0.8",
+            "source": "ex-dm:data/co2rr-fe-wide-ffb13edb33ec"
+          },
+          {
+            "id": "FE%20CO%20%28%25%29.R1",
+            "kind": "dataset_row",
+            "dataset_cell": {
+              "column": "FE CO (%)",
+              "row_key": [
+                {
+                  "column": "Run",
+                  "value": "R1"
+                }
+              ]
+            },
+            "locator": "row Run=R1; column FE CO (%)",
+            "quote": "62.5",
+            "source": "ex-dm:data/co2rr-fe-wide-ffb13edb33ec"
+          },
+          {
+            "id": "FE%20H2%20%28%25%29.R1",
+            "kind": "dataset_row",
+            "dataset_cell": {
+              "column": "FE H2 (%)",
+              "row_key": [
+                {
+                  "column": "Run",
+                  "value": "R1"
+                }
+              ]
+            },
+            "locator": "row Run=R1; column FE H2 (%)",
+            "quote": "30.1",
+            "source": "ex-dm:data/co2rr-fe-wide-ffb13edb33ec"
+          },
+          {
+            "id": "FE%20HCOO-%20%28%25%29.R1",
+            "kind": "dataset_row",
+            "dataset_cell": {
+              "column": "FE HCOO- (%)",
+              "row_key": [
+                {
+                  "column": "Run",
+                  "value": "R1"
+                }
+              ]
+            },
+            "locator": "row Run=R1; column FE HCOO- (%)",
+            "quote": "4.2",
+            "source": "ex-dm:data/co2rr-fe-wide-ffb13edb33ec"
+          },
+          {
+            "id": "j%20CO%20%28mA%2Fcm2%29.R1",
+            "kind": "dataset_row",
+            "dataset_cell": {
+              "column": "j CO (mA/cm2)",
+              "row_key": [
+                {
+                  "column": "Run",
+                  "value": "R1"
+                }
+              ]
+            },
+            "locator": "row Run=R1; column j CO (mA/cm2)",
+            "quote": "1.31",
+            "source": "ex-dm:data/co2rr-fe-wide-ffb13edb33ec"
+          },
+          {
+            "id": "j%20total%20%28mA%2Fcm2%29.R1",
+            "kind": "dataset_row",
+            "dataset_cell": {
+              "column": "j total (mA/cm2)",
+              "row_key": [
+                {
+                  "column": "Run",
+                  "value": "R1"
+                }
+              ]
+            },
+            "locator": "row Run=R1; column j total (mA/cm2)",
+            "quote": "2.1",
+            "source": "ex-dm:data/co2rr-fe-wide-ffb13edb33ec"
+          }
+        ],
+        "experiment_kind": "physical",
+        "origin": "synthetic",
+        "result_values": [
+          {
+            "id": "fe_co",
+            "status": "present",
+            "evidence_ids": [
+              "FE%20CO%20%28%25%29.R1"
+            ],
+            "target": "ex-dm:species/CO",
+            "unit": "%",
+            "value": 62.5,
+            "variable": "ex-dm:variable/fe"
+          },
+          {
+            "id": "fe_h2",
+            "status": "present",
+            "evidence_ids": [
+              "FE%20H2%20%28%25%29.R1"
+            ],
+            "target": "ex-dm:species/H2",
+            "unit": "%",
+            "value": 30.1,
+            "variable": "ex-dm:variable/fe"
+          },
+          {
+            "id": "fe_hcoo",
+            "status": "present",
+            "evidence_ids": [
+              "FE%20HCOO-%20%28%25%29.R1"
+            ],
+            "target": "ex-dm:species/HCOO-",
+            "unit": "%",
+            "value": 4.2,
+            "variable": "ex-dm:variable/fe"
+          },
+          {
+            "id": "j_co",
+            "status": "present",
+            "evidence_ids": [
+              "j%20CO%20%28mA%2Fcm2%29.R1"
+            ],
+            "target": "ex-dm:species/CO",
+            "unit": "mA/cm2",
+            "value": 1.31,
+            "variable": "ex-dm:variable/partial-current-density"
+          }
+        ],
+        "test_kind": "activity"
+      }
+    },
+    {
+      "id": "ex-dm:data/co2rr-fe-wide-ffb13edb33ec/test/R2",
+      "label": "CatalyticTest",
+      "props": {
+        "name": "CO2 electroreduction, Run=R2",
+        "control_mode": "potentiostatic",
+        "current_density": {
+          "status": "present",
+          "evidence_ids": [
+            "j%20total%20%28mA%2Fcm2%29.R2"
+          ],
+          "unit": "mA/cm2",
+          "value": 5.3
+        },
+        "current_normalization": "geometric_area",
+        "driving_forces": [
+          "electro"
+        ],
+        "electrode_potential": {
+          "status": "present",
+          "evidence_ids": [
+            "E%20%28V%20vs%20RHE%29.R2"
+          ],
+          "unit": "V vs RHE",
+          "value": -1
+        },
+        "evidence": [
+          {
+            "id": "E%20%28V%20vs%20RHE%29.R2",
+            "kind": "dataset_row",
+            "dataset_cell": {
+              "column": "E (V vs RHE)",
+              "row_key": [
+                {
+                  "column": "Run",
+                  "value": "R2"
+                }
+              ]
+            },
+            "locator": "row Run=R2; column E (V vs RHE)",
+            "quote": "-1",
+            "source": "ex-dm:data/co2rr-fe-wide-ffb13edb33ec"
+          },
+          {
+            "id": "FE%20CO%20%28%25%29.R2",
+            "kind": "dataset_row",
+            "dataset_cell": {
+              "column": "FE CO (%)",
+              "row_key": [
+                {
+                  "column": "Run",
+                  "value": "R2"
+                }
+              ]
+            },
+            "locator": "row Run=R2; column FE CO (%)",
+            "quote": "48",
+            "source": "ex-dm:data/co2rr-fe-wide-ffb13edb33ec"
+          },
+          {
+            "id": "FE%20H2%20%28%25%29.R2",
+            "kind": "dataset_row",
+            "dataset_cell": {
+              "column": "FE H2 (%)",
+              "row_key": [
+                {
+                  "column": "Run",
+                  "value": "R2"
+                }
+              ]
+            },
+            "locator": "row Run=R2; column FE H2 (%)",
+            "quote": "44.3",
+            "source": "ex-dm:data/co2rr-fe-wide-ffb13edb33ec"
+          },
+          {
+            "id": "FE%20HCOO-%20%28%25%29.R2",
+            "kind": "dataset_row",
+            "dataset_cell": {
+              "column": "FE HCOO- (%)",
+              "row_key": [
+                {
+                  "column": "Run",
+                  "value": "R2"
+                }
+              ]
+            },
+            "locator": "row Run=R2; column FE HCOO- (%)",
+            "quote": "<0.5",
+            "source": "ex-dm:data/co2rr-fe-wide-ffb13edb33ec"
+          },
+          {
+            "id": "j%20CO%20%28mA%2Fcm2%29.R2",
+            "kind": "dataset_row",
+            "dataset_cell": {
+              "column": "j CO (mA/cm2)",
+              "row_key": [
+                {
+                  "column": "Run",
+                  "value": "R2"
+                }
+              ]
+            },
+            "locator": "row Run=R2; column j CO (mA/cm2)",
+            "quote": "2.54",
+            "source": "ex-dm:data/co2rr-fe-wide-ffb13edb33ec"
+          },
+          {
+            "id": "j%20total%20%28mA%2Fcm2%29.R2",
+            "kind": "dataset_row",
+            "dataset_cell": {
+              "column": "j total (mA/cm2)",
+              "row_key": [
+                {
+                  "column": "Run",
+                  "value": "R2"
+                }
+              ]
+            },
+            "locator": "row Run=R2; column j total (mA/cm2)",
+            "quote": "5.3",
+            "source": "ex-dm:data/co2rr-fe-wide-ffb13edb33ec"
+          }
+        ],
+        "experiment_kind": "physical",
+        "origin": "synthetic",
+        "result_values": [
+          {
+            "id": "fe_co",
+            "status": "present",
+            "evidence_ids": [
+              "FE%20CO%20%28%25%29.R2"
+            ],
+            "target": "ex-dm:species/CO",
+            "unit": "%",
+            "value": 48,
+            "variable": "ex-dm:variable/fe"
+          },
+          {
+            "id": "fe_h2",
+            "status": "present",
+            "evidence_ids": [
+              "FE%20H2%20%28%25%29.R2"
+            ],
+            "target": "ex-dm:species/H2",
+            "unit": "%",
+            "value": 44.3,
+            "variable": "ex-dm:variable/fe"
+          },
+          {
+            "id": "fe_hcoo",
+            "status": "below_detection_limit",
+            "as_reported": "<0.5",
+            "evidence_ids": [
+              "FE%20HCOO-%20%28%25%29.R2"
+            ],
+            "target": "ex-dm:species/HCOO-",
+            "unit": "%",
+            "value": 0.5,
+            "variable": "ex-dm:variable/fe"
+          },
+          {
+            "id": "j_co",
+            "status": "present",
+            "evidence_ids": [
+              "j%20CO%20%28mA%2Fcm2%29.R2"
+            ],
+            "target": "ex-dm:species/CO",
+            "unit": "mA/cm2",
+            "value": 2.54,
+            "variable": "ex-dm:variable/partial-current-density"
+          }
+        ],
+        "test_kind": "activity"
+      }
+    },
+    {
+      "id": "ex-dm:data/co2rr-fe-wide-ffb13edb33ec/test/R3",
+      "label": "CatalyticTest",
+      "props": {
+        "name": "CO2 electroreduction, Run=R3",
+        "control_mode": "potentiostatic",
+        "current_density": {
+          "status": "present",
+          "evidence_ids": [
+            "j%20total%20%28mA%2Fcm2%29.R3"
+          ],
+          "unit": "mA/cm2",
+          "value": 11
+        },
+        "current_normalization": "geometric_area",
+        "driving_forces": [
+          "electro"
+        ],
+        "electrode_potential": {
+          "status": "present",
+          "evidence_ids": [
+            "E%20%28V%20vs%20RHE%29.R3"
+          ],
+          "unit": "V vs RHE",
+          "value": -1.2
+        },
+        "evidence": [
+          {
+            "id": "E%20%28V%20vs%20RHE%29.R3",
+            "kind": "dataset_row",
+            "dataset_cell": {
+              "column": "E (V vs RHE)",
+              "row_key": [
+                {
+                  "column": "Run",
+                  "value": "R3"
+                }
+              ]
+            },
+            "locator": "row Run=R3; column E (V vs RHE)",
+            "quote": "-1.2",
+            "source": "ex-dm:data/co2rr-fe-wide-ffb13edb33ec"
+          },
+          {
+            "id": "FE%20CO%20%28%25%29.R3",
+            "kind": "dataset_row",
+            "dataset_cell": {
+              "column": "FE CO (%)",
+              "row_key": [
+                {
+                  "column": "Run",
+                  "value": "R3"
+                }
+              ]
+            },
+            "locator": "row Run=R3; column FE CO (%)",
+            "quote": "21.7",
+            "source": "ex-dm:data/co2rr-fe-wide-ffb13edb33ec"
+          },
+          {
+            "id": "FE%20H2%20%28%25%29.R3",
+            "kind": "dataset_row",
+            "dataset_cell": {
+              "column": "FE H2 (%)",
+              "row_key": [
+                {
+                  "column": "Run",
+                  "value": "R3"
+                }
+              ]
+            },
+            "locator": "row Run=R3; column FE H2 (%)",
+            "quote": "71.9",
+            "source": "ex-dm:data/co2rr-fe-wide-ffb13edb33ec"
+          },
+          {
+            "id": "FE%20HCOO-%20%28%25%29.R3",
+            "kind": "dataset_row",
+            "dataset_cell": {
+              "column": "FE HCOO- (%)",
+              "row_key": [
+                {
+                  "column": "Run",
+                  "value": "R3"
+                }
+              ]
+            },
+            "locator": "row Run=R3; column FE HCOO- (%)",
+            "source": "ex-dm:data/co2rr-fe-wide-ffb13edb33ec"
+          },
+          {
+            "id": "j%20CO%20%28mA%2Fcm2%29.R3",
+            "kind": "dataset_row",
+            "dataset_cell": {
+              "column": "j CO (mA/cm2)",
+              "row_key": [
+                {
+                  "column": "Run",
+                  "value": "R3"
+                }
+              ]
+            },
+            "locator": "row Run=R3; column j CO (mA/cm2)",
+            "quote": "2.39",
+            "source": "ex-dm:data/co2rr-fe-wide-ffb13edb33ec"
+          },
+          {
+            "id": "j%20total%20%28mA%2Fcm2%29.R3",
+            "kind": "dataset_row",
+            "dataset_cell": {
+              "column": "j total (mA/cm2)",
+              "row_key": [
+                {
+                  "column": "Run",
+                  "value": "R3"
+                }
+              ]
+            },
+            "locator": "row Run=R3; column j total (mA/cm2)",
+            "quote": "11",
+            "source": "ex-dm:data/co2rr-fe-wide-ffb13edb33ec"
+          }
+        ],
+        "experiment_kind": "physical",
+        "origin": "synthetic",
+        "result_values": [
+          {
+            "id": "fe_co",
+            "status": "present",
+            "evidence_ids": [
+              "FE%20CO%20%28%25%29.R3"
+            ],
+            "target": "ex-dm:species/CO",
+            "unit": "%",
+            "value": 21.7,
+            "variable": "ex-dm:variable/fe"
+          },
+          {
+            "id": "fe_h2",
+            "status": "present",
+            "evidence_ids": [
+              "FE%20H2%20%28%25%29.R3"
+            ],
+            "target": "ex-dm:species/H2",
+            "unit": "%",
+            "value": 71.9,
+            "variable": "ex-dm:variable/fe"
+          },
+          {
+            "id": "fe_hcoo",
+            "status": "not_measured",
+            "evidence_ids": [
+              "FE%20HCOO-%20%28%25%29.R3"
+            ],
+            "target": "ex-dm:species/HCOO-",
+            "variable": "ex-dm:variable/fe"
+          },
+          {
+            "id": "j_co",
+            "status": "present",
+            "evidence_ids": [
+              "j%20CO%20%28mA%2Fcm2%29.R3"
+            ],
+            "target": "ex-dm:species/CO",
+            "unit": "mA/cm2",
+            "value": 2.39,
+            "variable": "ex-dm:variable/partial-current-density"
+          }
+        ],
+        "test_kind": "activity"
+      }
+    },
+    {
+      "id": "ex-dm:data/thermal-tests-cdcca30b88be/file",
+      "label": "Dataset",
+      "props": {
+        "name": "thermal-tests.csv",
+        "availability": "available",
+        "data_kind": "table",
+        "media_type": "text/csv",
+        "origin": "synthetic",
+        "sha256": "cdcca30b88be6ed4ef1b7eae69bba0bf6512cc4e30c2bc3cdd0f432a5b60dcfe",
+        "uri": "thermal-tests.csv"
+      }
+    },
+    {
+      "id": "ex-dm:data/thermal-tests-cdcca30b88be",
+      "label": "Dataset",
+      "props": {
+        "name": "thermal-tests.csv (cells A4:H8, as scale_csv_v1)",
+        "availability": "available",
+        "data_kind": "table",
+        "description": "The table of cells A4:H8 of thermal-tests.csv (sha256 cdcca30b88be6ed4ef1b7eae69bba0bf6512cc4e30c2bc3cdd0f432a5b60dcfe), header row 4, written as scale_csv_v1 by scale data add; the recipe is in table.ingest (input_*), so scale data verify extracts these bytes again from the file.",
+        "media_type": "text/csv",
+        "origin": "synthetic",
+        "sha256": "917b749f606c51d4796a568bd9a66b399e7fc1d9f87abde83d8c8ada664feaf7",
+        "table": {
+          "columns": [
+            {
+              "name": "Run",
+              "datatype": "string"
+            },
+            {
+              "name": "Catalyst",
+              "datatype": "string"
+            },
+            {
+              "name": "T (°C)",
+              "datatype": "number",
+              "unit": "°C"
+            },
+            {
+              "name": "P (bar)",
+              "datatype": "number",
+              "unit": "bar"
+            },
+            {
+              "name": "GHSV (h-1)",
+              "datatype": "number",
+              "unit": "h-1"
+            },
+            {
+              "name": "X CO2 (%)",
+              "datatype": "number",
+              "unit": "%",
+              "variable": "ex-dm:variable/conversion"
+            },
+            {
+              "name": "S CH4 (%)",
+              "datatype": "number",
+              "unit": "%",
+              "variable": "ex-dm:variable/selectivity"
+            },
+            {
+              "name": "S CO (%)",
+              "datatype": "number",
+              "unit": "%",
+              "variable": "ex-dm:variable/selectivity"
+            }
+          ],
+          "ingest": {
+            "extracted_from": "ex-dm:data/thermal-tests-cdcca30b88be/file",
+            "input_decimal": ",",
+            "input_delimiter": ";",
+            "input_encoding": "cp1252",
+            "input_format": "csv",
+            "input_header_row": "4",
+            "input_rows": "A4:H8",
+            "lookup_0000": "[\"Catalyst\", \"Ni-Al2O3-1\", \"ex-dm:sample/Ni-Al2O3-1\"]",
+            "mapping_sha256": "b84571b56da1ff5f1ddb3cb58ee73c4ac571b69193babab06a88bba3f3f39f8c",
+            "schema_sha256": "7e479bc0027e13117e520695aa9cef4b5d141c8f6e3c4e8f787e4fd115dec026",
+            "schema_version": "0.8.4",
+            "tool": "scale-catal 0.4.0"
+          },
+          "primary_key": [
+            "Run"
+          ],
+          "profile": "scale_csv_v1",
+          "rows": 4
+        },
+        "version": "1"
+      }
+    },
+    {
+      "id": "ex-dm:sample/Ni-Al2O3-1",
+      "label": "CatalystSample",
+      "props": {
+        "name": "Ni-Al2O3-1",
+        "origin": "synthetic",
+        "sample_kind": "other"
+      }
+    },
+    {
+      "id": "ex-dm:species/CH4",
+      "label": "ChemicalSpecies",
+      "props": {
+        "name": "CH4",
+        "charge": 0,
+        "elemental_composition": {
+          "C": 1,
+          "H": 4
+        },
+        "formula": "CH4",
+        "origin": "synthetic"
+      }
+    },
+    {
+      "id": "ex-dm:variable/conversion",
+      "label": "Variable",
+      "props": {
+        "name": "conversion",
+        "origin": "synthetic",
+        "quantity_kind": "conversion",
+        "scale": "quantitative",
+        "unit": "%"
+      }
+    },
+    {
+      "id": "ex-dm:variable/selectivity",
+      "label": "Variable",
+      "props": {
+        "name": "selectivity",
+        "origin": "synthetic",
+        "quantity_kind": "selectivity",
+        "scale": "quantitative",
+        "unit": "%"
+      }
+    },
+    {
+      "id": "ex-dm:data/thermal-tests-cdcca30b88be/test/T1",
+      "label": "CatalyticTest",
+      "props": {
+        "name": "Thermal catalytic test, Run=T1",
+        "driving_forces": [
+          "thermo"
+        ],
+        "evidence": [
+          {
+            "id": "GHSV%20%28h-1%29.T1",
+            "kind": "dataset_row",
+            "dataset_cell": {
+              "column": "GHSV (h-1)",
+              "row_key": [
+                {
+                  "column": "Run",
+                  "value": "T1"
+                }
+              ]
+            },
+            "locator": "row Run=T1; column GHSV (h-1)",
+            "quote": "12000",
+            "source": "ex-dm:data/thermal-tests-cdcca30b88be"
+          },
+          {
+            "id": "P%20%28bar%29.T1",
+            "kind": "dataset_row",
+            "dataset_cell": {
+              "column": "P (bar)",
+              "row_key": [
+                {
+                  "column": "Run",
+                  "value": "T1"
+                }
+              ]
+            },
+            "locator": "row Run=T1; column P (bar)",
+            "quote": "10",
+            "source": "ex-dm:data/thermal-tests-cdcca30b88be"
+          },
+          {
+            "id": "S%20CH4%20%28%25%29.T1",
+            "kind": "dataset_row",
+            "dataset_cell": {
+              "column": "S CH4 (%)",
+              "row_key": [
+                {
+                  "column": "Run",
+                  "value": "T1"
+                }
+              ]
+            },
+            "locator": "row Run=T1; column S CH4 (%)",
+            "quote": "97.1",
+            "source": "ex-dm:data/thermal-tests-cdcca30b88be"
+          },
+          {
+            "id": "S%20CO%20%28%25%29.T1",
+            "kind": "dataset_row",
+            "dataset_cell": {
+              "column": "S CO (%)",
+              "row_key": [
+                {
+                  "column": "Run",
+                  "value": "T1"
+                }
+              ]
+            },
+            "locator": "row Run=T1; column S CO (%)",
+            "quote": "2.9",
+            "source": "ex-dm:data/thermal-tests-cdcca30b88be"
+          },
+          {
+            "id": "T%20%28%C2%B0C%29.T1",
+            "kind": "dataset_row",
+            "dataset_cell": {
+              "column": "T (°C)",
+              "row_key": [
+                {
+                  "column": "Run",
+                  "value": "T1"
+                }
+              ]
+            },
+            "locator": "row Run=T1; column T (°C)",
+            "quote": "250",
+            "source": "ex-dm:data/thermal-tests-cdcca30b88be"
+          },
+          {
+            "id": "X%20CO2%20%28%25%29.T1",
+            "kind": "dataset_row",
+            "dataset_cell": {
+              "column": "X CO2 (%)",
+              "row_key": [
+                {
+                  "column": "Run",
+                  "value": "T1"
+                }
+              ]
+            },
+            "locator": "row Run=T1; column X CO2 (%)",
+            "quote": "18.4",
+            "source": "ex-dm:data/thermal-tests-cdcca30b88be"
+          }
+        ],
+        "experiment_kind": "physical",
+        "origin": "synthetic",
+        "pressure": {
+          "status": "present",
+          "evidence_ids": [
+            "P%20%28bar%29.T1"
+          ],
+          "unit": "bar",
+          "value": 10
+        },
+        "result_values": [
+          {
+            "id": "s_ch4",
+            "status": "present",
+            "evidence_ids": [
+              "S%20CH4%20%28%25%29.T1"
+            ],
+            "target": "ex-dm:species/CH4",
+            "unit": "%",
+            "value": 97.1,
+            "variable": "ex-dm:variable/selectivity"
+          },
+          {
+            "id": "s_co",
+            "status": "present",
+            "evidence_ids": [
+              "S%20CO%20%28%25%29.T1"
+            ],
+            "target": "ex-dm:species/CO",
+            "unit": "%",
+            "value": 2.9,
+            "variable": "ex-dm:variable/selectivity"
+          },
+          {
+            "id": "x_co2",
+            "status": "present",
+            "evidence_ids": [
+              "X%20CO2%20%28%25%29.T1"
+            ],
+            "target": "ex-dm:species/co2",
+            "unit": "%",
+            "value": 18.4,
+            "variable": "ex-dm:variable/conversion"
+          }
+        ],
+        "space_velocity": {
+          "status": "present",
+          "evidence_ids": [
+            "GHSV%20%28h-1%29.T1"
+          ],
+          "unit": "h-1",
+          "value": 12000
+        },
+        "temperature": {
+          "status": "present",
+          "evidence_ids": [
+            "T%20%28%C2%B0C%29.T1"
+          ],
+          "unit": "°C",
+          "value": 250
+        },
+        "test_kind": "activity"
+      }
+    },
+    {
+      "id": "ex-dm:data/thermal-tests-cdcca30b88be/test/T2",
+      "label": "CatalyticTest",
+      "props": {
+        "name": "Thermal catalytic test, Run=T2",
+        "driving_forces": [
+          "thermo"
+        ],
+        "evidence": [
+          {
+            "id": "GHSV%20%28h-1%29.T2",
+            "kind": "dataset_row",
+            "dataset_cell": {
+              "column": "GHSV (h-1)",
+              "row_key": [
+                {
+                  "column": "Run",
+                  "value": "T2"
+                }
+              ]
+            },
+            "locator": "row Run=T2; column GHSV (h-1)",
+            "quote": "12000",
+            "source": "ex-dm:data/thermal-tests-cdcca30b88be"
+          },
+          {
+            "id": "P%20%28bar%29.T2",
+            "kind": "dataset_row",
+            "dataset_cell": {
+              "column": "P (bar)",
+              "row_key": [
+                {
+                  "column": "Run",
+                  "value": "T2"
+                }
+              ]
+            },
+            "locator": "row Run=T2; column P (bar)",
+            "quote": "10",
+            "source": "ex-dm:data/thermal-tests-cdcca30b88be"
+          },
+          {
+            "id": "S%20CH4%20%28%25%29.T2",
+            "kind": "dataset_row",
+            "dataset_cell": {
+              "column": "S CH4 (%)",
+              "row_key": [
+                {
+                  "column": "Run",
+                  "value": "T2"
+                }
+              ]
+            },
+            "locator": "row Run=T2; column S CH4 (%)",
+            "quote": "98.3",
+            "source": "ex-dm:data/thermal-tests-cdcca30b88be"
+          },
+          {
+            "id": "S%20CO%20%28%25%29.T2",
+            "kind": "dataset_row",
+            "dataset_cell": {
+              "column": "S CO (%)",
+              "row_key": [
+                {
+                  "column": "Run",
+                  "value": "T2"
+                }
+              ]
+            },
+            "locator": "row Run=T2; column S CO (%)",
+            "quote": "1.7",
+            "source": "ex-dm:data/thermal-tests-cdcca30b88be"
+          },
+          {
+            "id": "T%20%28%C2%B0C%29.T2",
+            "kind": "dataset_row",
+            "dataset_cell": {
+              "column": "T (°C)",
+              "row_key": [
+                {
+                  "column": "Run",
+                  "value": "T2"
+                }
+              ]
+            },
+            "locator": "row Run=T2; column T (°C)",
+            "quote": "300",
+            "source": "ex-dm:data/thermal-tests-cdcca30b88be"
+          },
+          {
+            "id": "X%20CO2%20%28%25%29.T2",
+            "kind": "dataset_row",
+            "dataset_cell": {
+              "column": "X CO2 (%)",
+              "row_key": [
+                {
+                  "column": "Run",
+                  "value": "T2"
+                }
+              ]
+            },
+            "locator": "row Run=T2; column X CO2 (%)",
+            "quote": "46.2",
+            "source": "ex-dm:data/thermal-tests-cdcca30b88be"
+          }
+        ],
+        "experiment_kind": "physical",
+        "origin": "synthetic",
+        "pressure": {
+          "status": "present",
+          "evidence_ids": [
+            "P%20%28bar%29.T2"
+          ],
+          "unit": "bar",
+          "value": 10
+        },
+        "result_values": [
+          {
+            "id": "s_ch4",
+            "status": "present",
+            "evidence_ids": [
+              "S%20CH4%20%28%25%29.T2"
+            ],
+            "target": "ex-dm:species/CH4",
+            "unit": "%",
+            "value": 98.3,
+            "variable": "ex-dm:variable/selectivity"
+          },
+          {
+            "id": "s_co",
+            "status": "present",
+            "evidence_ids": [
+              "S%20CO%20%28%25%29.T2"
+            ],
+            "target": "ex-dm:species/CO",
+            "unit": "%",
+            "value": 1.7,
+            "variable": "ex-dm:variable/selectivity"
+          },
+          {
+            "id": "x_co2",
+            "status": "present",
+            "evidence_ids": [
+              "X%20CO2%20%28%25%29.T2"
+            ],
+            "target": "ex-dm:species/co2",
+            "unit": "%",
+            "value": 46.2,
+            "variable": "ex-dm:variable/conversion"
+          }
+        ],
+        "space_velocity": {
+          "status": "present",
+          "evidence_ids": [
+            "GHSV%20%28h-1%29.T2"
+          ],
+          "unit": "h-1",
+          "value": 12000
+        },
+        "temperature": {
+          "status": "present",
+          "evidence_ids": [
+            "T%20%28%C2%B0C%29.T2"
+          ],
+          "unit": "°C",
+          "value": 300
+        },
+        "test_kind": "activity"
+      }
+    },
+    {
+      "id": "ex-dm:data/thermal-tests-cdcca30b88be/test/T3",
+      "label": "CatalyticTest",
+      "props": {
+        "name": "Thermal catalytic test, Run=T3",
+        "driving_forces": [
+          "thermo"
+        ],
+        "evidence": [
+          {
+            "id": "GHSV%20%28h-1%29.T3",
+            "kind": "dataset_row",
+            "dataset_cell": {
+              "column": "GHSV (h-1)",
+              "row_key": [
+                {
+                  "column": "Run",
+                  "value": "T3"
+                }
+              ]
+            },
+            "locator": "row Run=T3; column GHSV (h-1)",
+            "quote": "12000",
+            "source": "ex-dm:data/thermal-tests-cdcca30b88be"
+          },
+          {
+            "id": "P%20%28bar%29.T3",
+            "kind": "dataset_row",
+            "dataset_cell": {
+              "column": "P (bar)",
+              "row_key": [
+                {
+                  "column": "Run",
+                  "value": "T3"
+                }
+              ]
+            },
+            "locator": "row Run=T3; column P (bar)",
+            "quote": "10",
+            "source": "ex-dm:data/thermal-tests-cdcca30b88be"
+          },
+          {
+            "id": "S%20CH4%20%28%25%29.T3",
+            "kind": "dataset_row",
+            "dataset_cell": {
+              "column": "S CH4 (%)",
+              "row_key": [
+                {
+                  "column": "Run",
+                  "value": "T3"
+                }
+              ]
+            },
+            "locator": "row Run=T3; column S CH4 (%)",
+            "quote": "98.9",
+            "source": "ex-dm:data/thermal-tests-cdcca30b88be"
+          },
+          {
+            "id": "S%20CO%20%28%25%29.T3",
+            "kind": "dataset_row",
+            "dataset_cell": {
+              "column": "S CO (%)",
+              "row_key": [
+                {
+                  "column": "Run",
+                  "value": "T3"
+                }
+              ]
+            },
+            "locator": "row Run=T3; column S CO (%)",
+            "quote": "1.1",
+            "source": "ex-dm:data/thermal-tests-cdcca30b88be"
+          },
+          {
+            "id": "T%20%28%C2%B0C%29.T3",
+            "kind": "dataset_row",
+            "dataset_cell": {
+              "column": "T (°C)",
+              "row_key": [
+                {
+                  "column": "Run",
+                  "value": "T3"
+                }
+              ]
+            },
+            "locator": "row Run=T3; column T (°C)",
+            "quote": "350",
+            "source": "ex-dm:data/thermal-tests-cdcca30b88be"
+          },
+          {
+            "id": "X%20CO2%20%28%25%29.T3",
+            "kind": "dataset_row",
+            "dataset_cell": {
+              "column": "X CO2 (%)",
+              "row_key": [
+                {
+                  "column": "Run",
+                  "value": "T3"
+                }
+              ]
+            },
+            "locator": "row Run=T3; column X CO2 (%)",
+            "quote": "71.5",
+            "source": "ex-dm:data/thermal-tests-cdcca30b88be"
+          }
+        ],
+        "experiment_kind": "physical",
+        "origin": "synthetic",
+        "pressure": {
+          "status": "present",
+          "evidence_ids": [
+            "P%20%28bar%29.T3"
+          ],
+          "unit": "bar",
+          "value": 10
+        },
+        "result_values": [
+          {
+            "id": "s_ch4",
+            "status": "present",
+            "evidence_ids": [
+              "S%20CH4%20%28%25%29.T3"
+            ],
+            "target": "ex-dm:species/CH4",
+            "unit": "%",
+            "value": 98.9,
+            "variable": "ex-dm:variable/selectivity"
+          },
+          {
+            "id": "s_co",
+            "status": "present",
+            "evidence_ids": [
+              "S%20CO%20%28%25%29.T3"
+            ],
+            "target": "ex-dm:species/CO",
+            "unit": "%",
+            "value": 1.1,
+            "variable": "ex-dm:variable/selectivity"
+          },
+          {
+            "id": "x_co2",
+            "status": "present",
+            "evidence_ids": [
+              "X%20CO2%20%28%25%29.T3"
+            ],
+            "target": "ex-dm:species/co2",
+            "unit": "%",
+            "value": 71.5,
+            "variable": "ex-dm:variable/conversion"
+          }
+        ],
+        "space_velocity": {
+          "status": "present",
+          "evidence_ids": [
+            "GHSV%20%28h-1%29.T3"
+          ],
+          "unit": "h-1",
+          "value": 12000
+        },
+        "temperature": {
+          "status": "present",
+          "evidence_ids": [
+            "T%20%28%C2%B0C%29.T3"
+          ],
+          "unit": "°C",
+          "value": 350
+        },
+        "test_kind": "activity"
+      }
+    },
+    {
+      "id": "ex-dm:data/thermal-tests-cdcca30b88be/test/T4",
+      "label": "CatalyticTest",
+      "props": {
+        "name": "Thermal catalytic test, Run=T4",
+        "driving_forces": [
+          "thermo"
+        ],
+        "evidence": [
+          {
+            "id": "GHSV%20%28h-1%29.T4",
+            "kind": "dataset_row",
+            "dataset_cell": {
+              "column": "GHSV (h-1)",
+              "row_key": [
+                {
+                  "column": "Run",
+                  "value": "T4"
+                }
+              ]
+            },
+            "locator": "row Run=T4; column GHSV (h-1)",
+            "quote": "12000",
+            "source": "ex-dm:data/thermal-tests-cdcca30b88be"
+          },
+          {
+            "id": "P%20%28bar%29.T4",
+            "kind": "dataset_row",
+            "dataset_cell": {
+              "column": "P (bar)",
+              "row_key": [
+                {
+                  "column": "Run",
+                  "value": "T4"
+                }
+              ]
+            },
+            "locator": "row Run=T4; column P (bar)",
+            "quote": "10",
+            "source": "ex-dm:data/thermal-tests-cdcca30b88be"
+          },
+          {
+            "id": "S%20CH4%20%28%25%29.T4",
+            "kind": "dataset_row",
+            "dataset_cell": {
+              "column": "S CH4 (%)",
+              "row_key": [
+                {
+                  "column": "Run",
+                  "value": "T4"
+                }
+              ]
+            },
+            "locator": "row Run=T4; column S CH4 (%)",
+            "quote": "97.6",
+            "source": "ex-dm:data/thermal-tests-cdcca30b88be"
+          },
+          {
+            "id": "S%20CO%20%28%25%29.T4",
+            "kind": "dataset_row",
+            "dataset_cell": {
+              "column": "S CO (%)",
+              "row_key": [
+                {
+                  "column": "Run",
+                  "value": "T4"
+                }
+              ]
+            },
+            "locator": "row Run=T4; column S CO (%)",
+            "quote": "2.4",
+            "source": "ex-dm:data/thermal-tests-cdcca30b88be"
+          },
+          {
+            "id": "T%20%28%C2%B0C%29.T4",
+            "kind": "dataset_row",
+            "dataset_cell": {
+              "column": "T (°C)",
+              "row_key": [
+                {
+                  "column": "Run",
+                  "value": "T4"
+                }
+              ]
+            },
+            "locator": "row Run=T4; column T (°C)",
+            "quote": "400",
+            "source": "ex-dm:data/thermal-tests-cdcca30b88be"
+          },
+          {
+            "id": "X%20CO2%20%28%25%29.T4",
+            "kind": "dataset_row",
+            "dataset_cell": {
+              "column": "X CO2 (%)",
+              "row_key": [
+                {
+                  "column": "Run",
+                  "value": "T4"
+                }
+              ]
+            },
+            "locator": "row Run=T4; column X CO2 (%)",
+            "quote": "79.0",
+            "source": "ex-dm:data/thermal-tests-cdcca30b88be"
+          }
+        ],
+        "experiment_kind": "physical",
+        "origin": "synthetic",
+        "pressure": {
+          "status": "present",
+          "evidence_ids": [
+            "P%20%28bar%29.T4"
+          ],
+          "unit": "bar",
+          "value": 10
+        },
+        "result_values": [
+          {
+            "id": "s_ch4",
+            "status": "present",
+            "evidence_ids": [
+              "S%20CH4%20%28%25%29.T4"
+            ],
+            "target": "ex-dm:species/CH4",
+            "unit": "%",
+            "value": 97.6,
+            "variable": "ex-dm:variable/selectivity"
+          },
+          {
+            "id": "s_co",
+            "status": "present",
+            "evidence_ids": [
+              "S%20CO%20%28%25%29.T4"
+            ],
+            "target": "ex-dm:species/CO",
+            "unit": "%",
+            "value": 2.4,
+            "variable": "ex-dm:variable/selectivity"
+          },
+          {
+            "id": "x_co2",
+            "status": "present",
+            "evidence_ids": [
+              "X%20CO2%20%28%25%29.T4"
+            ],
+            "target": "ex-dm:species/co2",
+            "unit": "%",
+            "value": 79.0,
+            "variable": "ex-dm:variable/conversion"
+          }
+        ],
+        "space_velocity": {
+          "status": "present",
+          "evidence_ids": [
+            "GHSV%20%28h-1%29.T4"
+          ],
+          "unit": "h-1",
+          "value": 12000
+        },
+        "temperature": {
+          "status": "present",
+          "evidence_ids": [
+            "T%20%28%C2%B0C%29.T4"
+          ],
+          "unit": "°C",
+          "value": 400
+        },
+        "test_kind": "activity"
+      }
+    },
+    {
+      "id": "ex-dm:data/kinetics-743856c4eae2",
+      "label": "Dataset",
+      "props": {
+        "name": "kinetics.csv",
+        "availability": "available",
+        "data_kind": "table",
+        "media_type": "text/csv",
+        "origin": "synthetic",
+        "sha256": "743856c4eae2a4df60c8b8f47c039e11a4e1b85b6fadb4b98dcd13dfb864aff0",
+        "table": {
+          "columns": [
+            {
+              "name": "run",
+              "datatype": "string"
+            },
+            {
+              "name": "catalyst",
+              "datatype": "string"
+            },
+            {
+              "name": "species",
+              "datatype": "string"
+            },
+            {
+              "name": "T (K)",
+              "datatype": "number",
+              "unit": "K"
+            },
+            {
+              "name": "P (bar)",
+              "datatype": "number",
+              "unit": "bar"
+            },
+            {
+              "name": "rate (mol g-1 s-1)",
+              "datatype": "number",
+              "unit": "mol g-1 s-1",
+              "variable": "ex-dm:variable/reaction-rate"
+            },
+            {
+              "name": "TOF (s-1)",
+              "datatype": "number",
+              "unit": "s-1",
+              "variable": "ex-dm:variable/turnover-frequency"
+            },
+            {
+              "name": "site basis",
+              "datatype": "string"
+            }
+          ],
+          "ingest": {
+            "input_delimiter": ",",
+            "input_encoding": "utf-8",
+            "input_format": "csv",
+            "input_header_row": "1",
+            "input_rows": "A1:H4",
+            "lookup_0000": "[\"catalyst\", \"Ni-Al2O3-1\", \"ex-dm:sample/Ni-Al2O3-1\"]",
+            "lookup_0001": "[\"species\", \"CH4\", \"ex-dm:species/CH4\"]",
+            "mapping_sha256": "39cb899703243876cabdb6bdf322a5636b5b80c202a0971f7b6d5a41bc284ad2",
+            "schema_sha256": "7e479bc0027e13117e520695aa9cef4b5d141c8f6e3c4e8f787e4fd115dec026",
+            "schema_version": "0.8.4",
+            "tool": "scale-catal 0.4.0"
+          },
+          "primary_key": [
+            "run"
+          ],
+          "profile": "scale_csv_v1",
+          "rows": 3
+        },
+        "uri": "kinetics.csv"
+      }
+    },
+    {
+      "id": "ex-dm:variable/reaction-rate",
+      "label": "Variable",
+      "props": {
+        "name": "reaction rate",
+        "origin": "synthetic",
+        "quantity_kind": "production_rate",
+        "scale": "quantitative",
+        "unit": "mol g-1 s-1"
+      }
+    },
+    {
+      "id": "ex-dm:variable/turnover-frequency",
+      "label": "Variable",
+      "props": {
+        "name": "turnover frequency",
+        "origin": "synthetic",
+        "quantity_kind": "turnover_frequency",
+        "scale": "quantitative",
+        "unit": "s-1"
+      }
+    },
+    {
+      "id": "ex-dm:data/kinetics-743856c4eae2/test/K1",
+      "label": "CatalyticTest",
+      "props": {
+        "name": "Kinetic measurement, run=K1",
+        "driving_forces": [
+          "thermo"
+        ],
+        "evidence": [
+          {
+            "id": "P%20%28bar%29.K1",
+            "kind": "dataset_row",
+            "dataset_cell": {
+              "column": "P (bar)",
+              "row_key": [
+                {
+                  "column": "run",
+                  "value": "K1"
+                }
+              ]
+            },
+            "locator": "row run=K1; column P (bar)",
+            "quote": "1",
+            "source": "ex-dm:data/kinetics-743856c4eae2"
+          },
+          {
+            "id": "T%20%28K%29.K1",
+            "kind": "dataset_row",
+            "dataset_cell": {
+              "column": "T (K)",
+              "row_key": [
+                {
+                  "column": "run",
+                  "value": "K1"
+                }
+              ]
+            },
+            "locator": "row run=K1; column T (K)",
+            "quote": "493",
+            "source": "ex-dm:data/kinetics-743856c4eae2"
+          },
+          {
+            "id": "TOF%20%28s-1%29.K1",
+            "kind": "dataset_row",
+            "dataset_cell": {
+              "column": "TOF (s-1)",
+              "row_key": [
+                {
+                  "column": "run",
+                  "value": "K1"
+                }
+              ]
+            },
+            "locator": "row run=K1; column TOF (s-1)",
+            "quote": "0.011",
+            "source": "ex-dm:data/kinetics-743856c4eae2"
+          },
+          {
+            "id": "rate%20%28mol%20g-1%20s-1%29.K1",
+            "kind": "dataset_row",
+            "dataset_cell": {
+              "column": "rate (mol g-1 s-1)",
+              "row_key": [
+                {
+                  "column": "run",
+                  "value": "K1"
+                }
+              ]
+            },
+            "locator": "row run=K1; column rate (mol g-1 s-1)",
+            "quote": "1.2e-6",
+            "source": "ex-dm:data/kinetics-743856c4eae2"
+          },
+          {
+            "id": "site%20basis.K1",
+            "kind": "dataset_row",
+            "dataset_cell": {
+              "column": "site basis",
+              "row_key": [
+                {
+                  "column": "run",
+                  "value": "K1"
+                }
+              ]
+            },
+            "locator": "row run=K1; column site basis",
+            "quote": "H2 chemisorption",
+            "source": "ex-dm:data/kinetics-743856c4eae2"
+          },
+          {
+            "id": "species.K1",
+            "kind": "dataset_row",
+            "dataset_cell": {
+              "column": "species",
+              "row_key": [
+                {
+                  "column": "run",
+                  "value": "K1"
+                }
+              ]
+            },
+            "locator": "row run=K1; column species",
+            "quote": "CH4",
+            "source": "ex-dm:data/kinetics-743856c4eae2"
+          }
+        ],
+        "experiment_kind": "physical",
+        "origin": "synthetic",
+        "pressure": {
+          "status": "present",
+          "evidence_ids": [
+            "P%20%28bar%29.K1"
+          ],
+          "unit": "bar",
+          "value": 1
+        },
+        "result_values": [
+          {
+            "id": "rate",
+            "status": "present",
+            "evidence_ids": [
+              "rate%20%28mol%20g-1%20s-1%29.K1",
+              "species.K1"
+            ],
+            "target": "ex-dm:species/CH4",
+            "unit": "mol g-1 s-1",
+            "value": 1.2e-06,
+            "variable": "ex-dm:variable/reaction-rate"
+          },
+          {
+            "id": "tof",
+            "status": "present",
+            "basis": "H2 chemisorption",
+            "evidence_ids": [
+              "TOF%20%28s-1%29.K1",
+              "species.K1",
+              "site%20basis.K1"
+            ],
+            "target": "ex-dm:species/CH4",
+            "unit": "s-1",
+            "value": 0.011,
+            "variable": "ex-dm:variable/turnover-frequency"
+          }
+        ],
+        "temperature": {
+          "status": "present",
+          "evidence_ids": [
+            "T%20%28K%29.K1"
+          ],
+          "unit": "K",
+          "value": 493
+        },
+        "test_kind": "kinetics"
+      }
+    },
+    {
+      "id": "ex-dm:data/kinetics-743856c4eae2/test/K2",
+      "label": "CatalyticTest",
+      "props": {
+        "name": "Kinetic measurement, run=K2",
+        "driving_forces": [
+          "thermo"
+        ],
+        "evidence": [
+          {
+            "id": "P%20%28bar%29.K2",
+            "kind": "dataset_row",
+            "dataset_cell": {
+              "column": "P (bar)",
+              "row_key": [
+                {
+                  "column": "run",
+                  "value": "K2"
+                }
+              ]
+            },
+            "locator": "row run=K2; column P (bar)",
+            "quote": "1",
+            "source": "ex-dm:data/kinetics-743856c4eae2"
+          },
+          {
+            "id": "T%20%28K%29.K2",
+            "kind": "dataset_row",
+            "dataset_cell": {
+              "column": "T (K)",
+              "row_key": [
+                {
+                  "column": "run",
+                  "value": "K2"
+                }
+              ]
+            },
+            "locator": "row run=K2; column T (K)",
+            "quote": "503",
+            "source": "ex-dm:data/kinetics-743856c4eae2"
+          },
+          {
+            "id": "TOF%20%28s-1%29.K2",
+            "kind": "dataset_row",
+            "dataset_cell": {
+              "column": "TOF (s-1)",
+              "row_key": [
+                {
+                  "column": "run",
+                  "value": "K2"
+                }
+              ]
+            },
+            "locator": "row run=K2; column TOF (s-1)",
+            "quote": "0.018",
+            "source": "ex-dm:data/kinetics-743856c4eae2"
+          },
+          {
+            "id": "rate%20%28mol%20g-1%20s-1%29.K2",
+            "kind": "dataset_row",
+            "dataset_cell": {
+              "column": "rate (mol g-1 s-1)",
+              "row_key": [
+                {
+                  "column": "run",
+                  "value": "K2"
+                }
+              ]
+            },
+            "locator": "row run=K2; column rate (mol g-1 s-1)",
+            "quote": "2.0e-6",
+            "source": "ex-dm:data/kinetics-743856c4eae2"
+          },
+          {
+            "id": "site%20basis.K2",
+            "kind": "dataset_row",
+            "dataset_cell": {
+              "column": "site basis",
+              "row_key": [
+                {
+                  "column": "run",
+                  "value": "K2"
+                }
+              ]
+            },
+            "locator": "row run=K2; column site basis",
+            "quote": "H2 chemisorption",
+            "source": "ex-dm:data/kinetics-743856c4eae2"
+          },
+          {
+            "id": "species.K2",
+            "kind": "dataset_row",
+            "dataset_cell": {
+              "column": "species",
+              "row_key": [
+                {
+                  "column": "run",
+                  "value": "K2"
+                }
+              ]
+            },
+            "locator": "row run=K2; column species",
+            "quote": "CH4",
+            "source": "ex-dm:data/kinetics-743856c4eae2"
+          }
+        ],
+        "experiment_kind": "physical",
+        "origin": "synthetic",
+        "pressure": {
+          "status": "present",
+          "evidence_ids": [
+            "P%20%28bar%29.K2"
+          ],
+          "unit": "bar",
+          "value": 1
+        },
+        "result_values": [
+          {
+            "id": "rate",
+            "status": "present",
+            "evidence_ids": [
+              "rate%20%28mol%20g-1%20s-1%29.K2",
+              "species.K2"
+            ],
+            "target": "ex-dm:species/CH4",
+            "unit": "mol g-1 s-1",
+            "value": 2e-06,
+            "variable": "ex-dm:variable/reaction-rate"
+          },
+          {
+            "id": "tof",
+            "status": "present",
+            "basis": "H2 chemisorption",
+            "evidence_ids": [
+              "TOF%20%28s-1%29.K2",
+              "species.K2",
+              "site%20basis.K2"
+            ],
+            "target": "ex-dm:species/CH4",
+            "unit": "s-1",
+            "value": 0.018,
+            "variable": "ex-dm:variable/turnover-frequency"
+          }
+        ],
+        "temperature": {
+          "status": "present",
+          "evidence_ids": [
+            "T%20%28K%29.K2"
+          ],
+          "unit": "K",
+          "value": 503
+        },
+        "test_kind": "kinetics"
+      }
+    },
+    {
+      "id": "ex-dm:data/kinetics-743856c4eae2/test/K3",
+      "label": "CatalyticTest",
+      "props": {
+        "name": "Kinetic measurement, run=K3",
+        "driving_forces": [
+          "thermo"
+        ],
+        "evidence": [
+          {
+            "id": "P%20%28bar%29.K3",
+            "kind": "dataset_row",
+            "dataset_cell": {
+              "column": "P (bar)",
+              "row_key": [
+                {
+                  "column": "run",
+                  "value": "K3"
+                }
+              ]
+            },
+            "locator": "row run=K3; column P (bar)",
+            "quote": "1",
+            "source": "ex-dm:data/kinetics-743856c4eae2"
+          },
+          {
+            "id": "T%20%28K%29.K3",
+            "kind": "dataset_row",
+            "dataset_cell": {
+              "column": "T (K)",
+              "row_key": [
+                {
+                  "column": "run",
+                  "value": "K3"
+                }
+              ]
+            },
+            "locator": "row run=K3; column T (K)",
+            "quote": "513",
+            "source": "ex-dm:data/kinetics-743856c4eae2"
+          },
+          {
+            "id": "TOF%20%28s-1%29.K3",
+            "kind": "dataset_row",
+            "dataset_cell": {
+              "column": "TOF (s-1)",
+              "row_key": [
+                {
+                  "column": "run",
+                  "value": "K3"
+                }
+              ]
+            },
+            "locator": "row run=K3; column TOF (s-1)",
+            "quote": "0.030",
+            "source": "ex-dm:data/kinetics-743856c4eae2"
+          },
+          {
+            "id": "rate%20%28mol%20g-1%20s-1%29.K3",
+            "kind": "dataset_row",
+            "dataset_cell": {
+              "column": "rate (mol g-1 s-1)",
+              "row_key": [
+                {
+                  "column": "run",
+                  "value": "K3"
+                }
+              ]
+            },
+            "locator": "row run=K3; column rate (mol g-1 s-1)",
+            "quote": "3.3e-6",
+            "source": "ex-dm:data/kinetics-743856c4eae2"
+          },
+          {
+            "id": "site%20basis.K3",
+            "kind": "dataset_row",
+            "dataset_cell": {
+              "column": "site basis",
+              "row_key": [
+                {
+                  "column": "run",
+                  "value": "K3"
+                }
+              ]
+            },
+            "locator": "row run=K3; column site basis",
+            "quote": "H2 chemisorption",
+            "source": "ex-dm:data/kinetics-743856c4eae2"
+          },
+          {
+            "id": "species.K3",
+            "kind": "dataset_row",
+            "dataset_cell": {
+              "column": "species",
+              "row_key": [
+                {
+                  "column": "run",
+                  "value": "K3"
+                }
+              ]
+            },
+            "locator": "row run=K3; column species",
+            "quote": "CH4",
+            "source": "ex-dm:data/kinetics-743856c4eae2"
+          }
+        ],
+        "experiment_kind": "physical",
+        "origin": "synthetic",
+        "pressure": {
+          "status": "present",
+          "evidence_ids": [
+            "P%20%28bar%29.K3"
+          ],
+          "unit": "bar",
+          "value": 1
+        },
+        "result_values": [
+          {
+            "id": "rate",
+            "status": "present",
+            "evidence_ids": [
+              "rate%20%28mol%20g-1%20s-1%29.K3",
+              "species.K3"
+            ],
+            "target": "ex-dm:species/CH4",
+            "unit": "mol g-1 s-1",
+            "value": 3.3e-06,
+            "variable": "ex-dm:variable/reaction-rate"
+          },
+          {
+            "id": "tof",
+            "status": "present",
+            "basis": "H2 chemisorption",
+            "evidence_ids": [
+              "TOF%20%28s-1%29.K3",
+              "species.K3",
+              "site%20basis.K3"
+            ],
+            "target": "ex-dm:species/CH4",
+            "unit": "s-1",
+            "value": 0.03,
+            "variable": "ex-dm:variable/turnover-frequency"
+          }
+        ],
+        "temperature": {
+          "status": "present",
+          "evidence_ids": [
+            "T%20%28K%29.K3"
+          ],
+          "unit": "K",
+          "value": 513
+        },
+        "test_kind": "kinetics"
+      }
+    },
+    {
+      "id": "ex-dm:data/dft-energies-4593c672a965",
+      "label": "Dataset",
+      "props": {
+        "name": "dft-energies.csv",
+        "availability": "available",
+        "data_kind": "table",
+        "media_type": "text/csv",
+        "origin": "synthetic",
+        "sha256": "4593c672a965f95d17c5f266574b0a08460db560b443e36256619875d524dfdc",
+        "table": {
+          "columns": [
+            {
+              "name": "calc_id",
+              "datatype": "string"
+            },
+            {
+              "name": "surface",
+              "datatype": "string"
+            },
+            {
+              "name": "adsorbate",
+              "datatype": "string"
+            },
+            {
+              "name": "functional",
+              "datatype": "string"
+            },
+            {
+              "name": "status",
+              "datatype": "string"
+            },
+            {
+              "name": "E_ads (eV)",
+              "datatype": "number",
+              "unit": "eV",
+              "variable": "ex-dm:variable/adsorption-energy"
+            }
+          ],
+          "ingest": {
+            "input_delimiter": ",",
+            "input_encoding": "utf-8",
+            "input_format": "csv",
+            "input_header_row": "1",
+            "input_rows": "A1:F5",
+            "mapping_sha256": "3031e214ce43c3538272b79a9ad32b5081c64780db6d453ffabe6dce5a767f91",
+            "schema_sha256": "7e479bc0027e13117e520695aa9cef4b5d141c8f6e3c4e8f787e4fd115dec026",
+            "schema_version": "0.8.4",
+            "tool": "scale-catal 0.4.0"
+          },
+          "primary_key": [
+            "calc_id"
+          ],
+          "profile": "scale_csv_v1",
+          "rows": 4
+        },
+        "uri": "dft-energies.csv"
+      }
+    },
+    {
+      "id": "ex-dm:variable/adsorption-energy",
+      "label": "Variable",
+      "props": {
+        "name": "adsorption energy (electronic)",
+        "origin": "synthetic",
+        "quantity_kind": "reaction_energy",
+        "scale": "quantitative",
+        "unit": "eV"
+      }
+    },
+    {
+      "id": "ex-dm:data/dft-energies-4593c672a965/calc/C1",
+      "label": "Computation",
+      "props": {
+        "name": "DFT calculation, Ni(111)",
+        "charge_treatment": "constant_charge",
+        "computation_kind": "electronic_structure",
+        "evidence": [
+          {
+            "id": "E_ads%20%28eV%29.C1",
+            "kind": "dataset_row",
+            "dataset_cell": {
+              "column": "E_ads (eV)",
+              "row_key": [
+                {
+                  "column": "calc_id",
+                  "value": "C1"
+                }
+              ]
+            },
+            "locator": "row calc_id=C1; column E_ads (eV)",
+            "quote": "-1.62",
+            "source": "ex-dm:data/dft-energies-4593c672a965"
+          },
+          {
+            "id": "adsorbate.C1",
+            "kind": "dataset_row",
+            "dataset_cell": {
+              "column": "adsorbate",
+              "row_key": [
+                {
+                  "column": "calc_id",
+                  "value": "C1"
+                }
+              ]
+            },
+            "locator": "row calc_id=C1; column adsorbate",
+            "quote": "CO",
+            "source": "ex-dm:data/dft-energies-4593c672a965"
+          },
+          {
+            "id": "functional.C1",
+            "kind": "dataset_row",
+            "dataset_cell": {
+              "column": "functional",
+              "row_key": [
+                {
+                  "column": "calc_id",
+                  "value": "C1"
+                }
+              ]
+            },
+            "locator": "row calc_id=C1; column functional",
+            "quote": "RPBE",
+            "source": "ex-dm:data/dft-energies-4593c672a965"
+          },
+          {
+            "id": "status.C1",
+            "kind": "dataset_row",
+            "dataset_cell": {
+              "column": "status",
+              "row_key": [
+                {
+                  "column": "calc_id",
+                  "value": "C1"
+                }
+              ]
+            },
+            "locator": "row calc_id=C1; column status",
+            "quote": "completed",
+            "source": "ex-dm:data/dft-energies-4593c672a965"
+          }
+        ],
+        "experiment_status": "completed",
+        "level_of_theory": {
+          "status": "present",
+          "evidence_ids": [
+            "functional.C1"
+          ],
+          "text_value": "RPBE"
+        },
+        "origin": "synthetic",
+        "result_values": [
+          {
+            "id": "adsorption_energy",
+            "status": "present",
+            "evidence_ids": [
+              "E_ads%20%28eV%29.C1",
+              "adsorbate.C1"
+            ],
+            "unit": "eV",
+            "unresolved_target": "CO",
+            "value": -1.62,
+            "variable": "ex-dm:variable/adsorption-energy"
+          }
+        ]
+      }
+    },
+    {
+      "id": "ex-dm:data/dft-energies-4593c672a965/calc/C2",
+      "label": "Computation",
+      "props": {
+        "name": "DFT calculation, Ni(111)",
+        "charge_treatment": "constant_charge",
+        "computation_kind": "electronic_structure",
+        "evidence": [
+          {
+            "id": "E_ads%20%28eV%29.C2",
+            "kind": "dataset_row",
+            "dataset_cell": {
+              "column": "E_ads (eV)",
+              "row_key": [
+                {
+                  "column": "calc_id",
+                  "value": "C2"
+                }
+              ]
+            },
+            "locator": "row calc_id=C2; column E_ads (eV)",
+            "quote": "-0.47",
+            "source": "ex-dm:data/dft-energies-4593c672a965"
+          },
+          {
+            "id": "adsorbate.C2",
+            "kind": "dataset_row",
+            "dataset_cell": {
+              "column": "adsorbate",
+              "row_key": [
+                {
+                  "column": "calc_id",
+                  "value": "C2"
+                }
+              ]
+            },
+            "locator": "row calc_id=C2; column adsorbate",
+            "quote": "H",
+            "source": "ex-dm:data/dft-energies-4593c672a965"
+          },
+          {
+            "id": "functional.C2",
+            "kind": "dataset_row",
+            "dataset_cell": {
+              "column": "functional",
+              "row_key": [
+                {
+                  "column": "calc_id",
+                  "value": "C2"
+                }
+              ]
+            },
+            "locator": "row calc_id=C2; column functional",
+            "quote": "RPBE",
+            "source": "ex-dm:data/dft-energies-4593c672a965"
+          },
+          {
+            "id": "status.C2",
+            "kind": "dataset_row",
+            "dataset_cell": {
+              "column": "status",
+              "row_key": [
+                {
+                  "column": "calc_id",
+                  "value": "C2"
+                }
+              ]
+            },
+            "locator": "row calc_id=C2; column status",
+            "quote": "completed",
+            "source": "ex-dm:data/dft-energies-4593c672a965"
+          }
+        ],
+        "experiment_status": "completed",
+        "level_of_theory": {
+          "status": "present",
+          "evidence_ids": [
+            "functional.C2"
+          ],
+          "text_value": "RPBE"
+        },
+        "origin": "synthetic",
+        "result_values": [
+          {
+            "id": "adsorption_energy",
+            "status": "present",
+            "evidence_ids": [
+              "E_ads%20%28eV%29.C2",
+              "adsorbate.C2"
+            ],
+            "unit": "eV",
+            "unresolved_target": "H",
+            "value": -0.47,
+            "variable": "ex-dm:variable/adsorption-energy"
+          }
+        ]
+      }
+    },
+    {
+      "id": "ex-dm:data/dft-energies-4593c672a965/calc/C3",
+      "label": "Computation",
+      "props": {
+        "name": "DFT calculation, Ni(211)",
+        "charge_treatment": "constant_charge",
+        "computation_kind": "electronic_structure",
+        "evidence": [
+          {
+            "id": "E_ads%20%28eV%29.C3",
+            "kind": "dataset_row",
+            "dataset_cell": {
+              "column": "E_ads (eV)",
+              "row_key": [
+                {
+                  "column": "calc_id",
+                  "value": "C3"
+                }
+              ]
+            },
+            "locator": "row calc_id=C3; column E_ads (eV)",
+            "quote": "-1.88",
+            "source": "ex-dm:data/dft-energies-4593c672a965"
+          },
+          {
+            "id": "adsorbate.C3",
+            "kind": "dataset_row",
+            "dataset_cell": {
+              "column": "adsorbate",
+              "row_key": [
+                {
+                  "column": "calc_id",
+                  "value": "C3"
+                }
+              ]
+            },
+            "locator": "row calc_id=C3; column adsorbate",
+            "quote": "CO",
+            "source": "ex-dm:data/dft-energies-4593c672a965"
+          },
+          {
+            "id": "functional.C3",
+            "kind": "dataset_row",
+            "dataset_cell": {
+              "column": "functional",
+              "row_key": [
+                {
+                  "column": "calc_id",
+                  "value": "C3"
+                }
+              ]
+            },
+            "locator": "row calc_id=C3; column functional",
+            "quote": "RPBE",
+            "source": "ex-dm:data/dft-energies-4593c672a965"
+          },
+          {
+            "id": "status.C3",
+            "kind": "dataset_row",
+            "dataset_cell": {
+              "column": "status",
+              "row_key": [
+                {
+                  "column": "calc_id",
+                  "value": "C3"
+                }
+              ]
+            },
+            "locator": "row calc_id=C3; column status",
+            "quote": "completed",
+            "source": "ex-dm:data/dft-energies-4593c672a965"
+          }
+        ],
+        "experiment_status": "completed",
+        "level_of_theory": {
+          "status": "present",
+          "evidence_ids": [
+            "functional.C3"
+          ],
+          "text_value": "RPBE"
+        },
+        "origin": "synthetic",
+        "result_values": [
+          {
+            "id": "adsorption_energy",
+            "status": "present",
+            "evidence_ids": [
+              "E_ads%20%28eV%29.C3",
+              "adsorbate.C3"
+            ],
+            "unit": "eV",
+            "unresolved_target": "CO",
+            "value": -1.88,
+            "variable": "ex-dm:variable/adsorption-energy"
+          }
+        ]
+      }
+    },
+    {
+      "id": "ex-dm:data/dft-energies-4593c672a965/calc/C4",
+      "label": "Computation",
+      "props": {
+        "name": "DFT calculation, Ni(211)",
+        "charge_treatment": "constant_charge",
+        "computation_kind": "electronic_structure",
+        "evidence": [
+          {
+            "id": "E_ads%20%28eV%29.C4",
+            "kind": "dataset_row",
+            "dataset_cell": {
+              "column": "E_ads (eV)",
+              "row_key": [
+                {
+                  "column": "calc_id",
+                  "value": "C4"
+                }
+              ]
+            },
+            "locator": "row calc_id=C4; column E_ads (eV)",
+            "source": "ex-dm:data/dft-energies-4593c672a965"
+          },
+          {
+            "id": "adsorbate.C4",
+            "kind": "dataset_row",
+            "dataset_cell": {
+              "column": "adsorbate",
+              "row_key": [
+                {
+                  "column": "calc_id",
+                  "value": "C4"
+                }
+              ]
+            },
+            "locator": "row calc_id=C4; column adsorbate",
+            "quote": "O",
+            "source": "ex-dm:data/dft-energies-4593c672a965"
+          },
+          {
+            "id": "functional.C4",
+            "kind": "dataset_row",
+            "dataset_cell": {
+              "column": "functional",
+              "row_key": [
+                {
+                  "column": "calc_id",
+                  "value": "C4"
+                }
+              ]
+            },
+            "locator": "row calc_id=C4; column functional",
+            "quote": "RPBE",
+            "source": "ex-dm:data/dft-energies-4593c672a965"
+          },
+          {
+            "id": "status.C4",
+            "kind": "dataset_row",
+            "dataset_cell": {
+              "column": "status",
+              "row_key": [
+                {
+                  "column": "calc_id",
+                  "value": "C4"
+                }
+              ]
+            },
+            "locator": "row calc_id=C4; column status",
+            "quote": "failed",
+            "source": "ex-dm:data/dft-energies-4593c672a965"
+          }
+        ],
+        "experiment_status": "failed",
+        "level_of_theory": {
+          "status": "present",
+          "evidence_ids": [
+            "functional.C4"
+          ],
+          "text_value": "RPBE"
+        },
+        "origin": "synthetic",
+        "result_values": [
+          {
+            "id": "adsorption_energy",
+            "status": "not_measured",
+            "evidence_ids": [
+              "E_ads%20%28eV%29.C4",
+              "adsorbate.C4"
+            ],
+            "note": "no energy was obtained",
+            "unresolved_target": "O",
+            "variable": "ex-dm:variable/adsorption-energy"
+          }
+        ]
+      }
+    },
+    {
+      "id": "ex-dm:data/characterization-679da97ecfd7",
+      "label": "Dataset",
+      "props": {
+        "name": "characterization.csv",
+        "availability": "available",
+        "data_kind": "table",
+        "media_type": "text/csv",
+        "origin": "synthetic",
+        "sha256": "679da97ecfd7fa9d8c355c56cca5d8c57adefbfe16dea27da16c2280ddb27058",
+        "table": {
+          "columns": [
+            {
+              "name": "Sample",
+              "datatype": "string"
+            },
+            {
+              "name": "S_BET (m2/g)",
+              "datatype": "number",
+              "unit": "m2/g",
+              "variable": "ex-dm:variable/specific-surface-area"
+            },
+            {
+              "name": "V_pore (cm3/g)",
+              "datatype": "number",
+              "unit": "cm3/g",
+              "variable": "ex-dm:variable/pore-volume"
+            },
+            {
+              "name": "d_XRD (nm)",
+              "datatype": "number",
+              "unit": "nm",
+              "variable": "ex-dm:variable/crystallite-size"
+            },
+            {
+              "name": "Ni/Al (XPS)",
+              "datatype": "number",
+              "unit": "1",
+              "variable": "ex-dm:variable/xps-atomic-ratio"
+            },
+            {
+              "name": "O/Ni (XPS)",
+              "datatype": "number",
+              "unit": "1",
+              "variable": "ex-dm:variable/xps-atomic-ratio"
+            }
+          ],
+          "ingest": {
+            "input_delimiter": ",",
+            "input_encoding": "utf-8",
+            "input_format": "csv",
+            "input_header_row": "1",
+            "input_rows": "A1:F4",
+            "mapping_sha256": "d3ceca76519e8cf0a92252c4da6ace76f017d27f80947241355ffd9933dbffcf",
+            "schema_sha256": "7e479bc0027e13117e520695aa9cef4b5d141c8f6e3c4e8f787e4fd115dec026",
+            "schema_version": "0.8.4",
+            "tool": "scale-catal 0.4.0"
+          },
+          "primary_key": [
+            "Sample"
+          ],
+          "profile": "scale_csv_v1",
+          "rows": 3
+        },
+        "uri": "characterization.csv"
+      }
+    },
+    {
+      "id": "ex-dm:variable/crystallite-size",
+      "label": "Variable",
+      "props": {
+        "name": "XRD crystallite size",
+        "origin": "synthetic",
+        "quantity_kind": "crystallite_size",
+        "scale": "quantitative",
+        "unit": "nm"
+      }
+    },
+    {
+      "id": "ex-dm:variable/pore-volume",
+      "label": "Variable",
+      "props": {
+        "name": "specific pore volume",
+        "origin": "synthetic",
+        "quantity_kind": "specific_pore_volume",
+        "scale": "quantitative",
+        "unit": "cm3/g"
+      }
+    },
+    {
+      "id": "ex-dm:variable/specific-surface-area",
+      "label": "Variable",
+      "props": {
+        "name": "BET specific surface area",
+        "origin": "synthetic",
+        "quantity_kind": "specific_surface_area",
+        "scale": "quantitative",
+        "unit": "m2/g"
+      }
+    },
+    {
+      "id": "ex-dm:variable/xps-atomic-ratio",
+      "label": "Variable",
+      "props": {
+        "name": "XPS surface atomic ratio",
+        "origin": "synthetic",
+        "quantity_kind": "ratio",
+        "scale": "quantitative",
+        "unit": "1"
+      }
+    },
+    {
+      "id": "ex-dm:data/characterization-679da97ecfd7/sample/Ni-Al2O3-1",
+      "label": "CatalystSample",
+      "props": {
+        "name": "Ni-Al2O3-1",
+        "evidence": [
+          {
+            "id": "Sample.Ni-Al2O3-1",
+            "kind": "dataset_row",
+            "dataset_cell": {
+              "column": "Sample",
+              "row_key": [
+                {
+                  "column": "Sample",
+                  "value": "Ni-Al2O3-1"
+                }
+              ]
+            },
+            "locator": "row Sample=Ni-Al2O3-1; column Sample",
+            "quote": "Ni-Al2O3-1",
+            "source": "ex-dm:data/characterization-679da97ecfd7"
+          }
+        ],
+        "origin": "synthetic",
+        "sample_kind": "other"
+      }
+    },
+    {
+      "id": "ex-dm:data/characterization-679da97ecfd7/sample/Ni-Al2O3-2",
+      "label": "CatalystSample",
+      "props": {
+        "name": "Ni-Al2O3-2",
+        "evidence": [
+          {
+            "id": "Sample.Ni-Al2O3-2",
+            "kind": "dataset_row",
+            "dataset_cell": {
+              "column": "Sample",
+              "row_key": [
+                {
+                  "column": "Sample",
+                  "value": "Ni-Al2O3-2"
+                }
+              ]
+            },
+            "locator": "row Sample=Ni-Al2O3-2; column Sample",
+            "quote": "Ni-Al2O3-2",
+            "source": "ex-dm:data/characterization-679da97ecfd7"
+          }
+        ],
+        "origin": "synthetic",
+        "sample_kind": "other"
+      }
+    },
+    {
+      "id": "ex-dm:data/characterization-679da97ecfd7/sample/Ni-Al2O3-3",
+      "label": "CatalystSample",
+      "props": {
+        "name": "Ni-Al2O3-3",
+        "evidence": [
+          {
+            "id": "Sample.Ni-Al2O3-3",
+            "kind": "dataset_row",
+            "dataset_cell": {
+              "column": "Sample",
+              "row_key": [
+                {
+                  "column": "Sample",
+                  "value": "Ni-Al2O3-3"
+                }
+              ]
+            },
+            "locator": "row Sample=Ni-Al2O3-3; column Sample",
+            "quote": "Ni-Al2O3-3",
+            "source": "ex-dm:data/characterization-679da97ecfd7"
+          }
+        ],
+        "origin": "synthetic",
+        "sample_kind": "other"
+      }
+    },
+    {
+      "id": "ex-dm:data/characterization-679da97ecfd7/physisorption/Ni-Al2O3-1",
+      "label": "Characterization",
+      "props": {
+        "name": "N2 physisorption, Sample=Ni-Al2O3-1",
+        "evidence": [
+          {
+            "id": "S_BET%20%28m2%2Fg%29.Ni-Al2O3-1",
+            "kind": "dataset_row",
+            "dataset_cell": {
+              "column": "S_BET (m2/g)",
+              "row_key": [
+                {
+                  "column": "Sample",
+                  "value": "Ni-Al2O3-1"
+                }
+              ]
+            },
+            "locator": "row Sample=Ni-Al2O3-1; column S_BET (m2/g)",
+            "quote": "182",
+            "source": "ex-dm:data/characterization-679da97ecfd7"
+          },
+          {
+            "id": "V_pore%20%28cm3%2Fg%29.Ni-Al2O3-1",
+            "kind": "dataset_row",
+            "dataset_cell": {
+              "column": "V_pore (cm3/g)",
+              "row_key": [
+                {
+                  "column": "Sample",
+                  "value": "Ni-Al2O3-1"
+                }
+              ]
+            },
+            "locator": "row Sample=Ni-Al2O3-1; column V_pore (cm3/g)",
+            "quote": "0.41",
+            "source": "ex-dm:data/characterization-679da97ecfd7"
+          }
+        ],
+        "experiment_kind": "physical",
+        "origin": "synthetic",
+        "result_values": [
+          {
+            "id": "pore_volume",
+            "status": "present",
+            "evidence_ids": [
+              "V_pore%20%28cm3%2Fg%29.Ni-Al2O3-1"
+            ],
+            "unit": "cm3/g",
+            "value": 0.41,
+            "variable": "ex-dm:variable/pore-volume"
+          },
+          {
+            "id": "specific_surface_area",
+            "status": "present",
+            "evidence_ids": [
+              "S_BET%20%28m2%2Fg%29.Ni-Al2O3-1"
+            ],
+            "unit": "m2/g",
+            "value": 182,
+            "variable": "ex-dm:variable/specific-surface-area"
+          }
+        ],
+        "technique": "N2 physisorption (BET)"
+      }
+    },
+    {
+      "id": "ex-dm:data/characterization-679da97ecfd7/physisorption/Ni-Al2O3-2",
+      "label": "Characterization",
+      "props": {
+        "name": "N2 physisorption, Sample=Ni-Al2O3-2",
+        "evidence": [
+          {
+            "id": "S_BET%20%28m2%2Fg%29.Ni-Al2O3-2",
+            "kind": "dataset_row",
+            "dataset_cell": {
+              "column": "S_BET (m2/g)",
+              "row_key": [
+                {
+                  "column": "Sample",
+                  "value": "Ni-Al2O3-2"
+                }
+              ]
+            },
+            "locator": "row Sample=Ni-Al2O3-2; column S_BET (m2/g)",
+            "quote": "165",
+            "source": "ex-dm:data/characterization-679da97ecfd7"
+          },
+          {
+            "id": "V_pore%20%28cm3%2Fg%29.Ni-Al2O3-2",
+            "kind": "dataset_row",
+            "dataset_cell": {
+              "column": "V_pore (cm3/g)",
+              "row_key": [
+                {
+                  "column": "Sample",
+                  "value": "Ni-Al2O3-2"
+                }
+              ]
+            },
+            "locator": "row Sample=Ni-Al2O3-2; column V_pore (cm3/g)",
+            "quote": "0.38",
+            "source": "ex-dm:data/characterization-679da97ecfd7"
+          }
+        ],
+        "experiment_kind": "physical",
+        "origin": "synthetic",
+        "result_values": [
+          {
+            "id": "pore_volume",
+            "status": "present",
+            "evidence_ids": [
+              "V_pore%20%28cm3%2Fg%29.Ni-Al2O3-2"
+            ],
+            "unit": "cm3/g",
+            "value": 0.38,
+            "variable": "ex-dm:variable/pore-volume"
+          },
+          {
+            "id": "specific_surface_area",
+            "status": "present",
+            "evidence_ids": [
+              "S_BET%20%28m2%2Fg%29.Ni-Al2O3-2"
+            ],
+            "unit": "m2/g",
+            "value": 165,
+            "variable": "ex-dm:variable/specific-surface-area"
+          }
+        ],
+        "technique": "N2 physisorption (BET)"
+      }
+    },
+    {
+      "id": "ex-dm:data/characterization-679da97ecfd7/physisorption/Ni-Al2O3-3",
+      "label": "Characterization",
+      "props": {
+        "name": "N2 physisorption, Sample=Ni-Al2O3-3",
+        "evidence": [
+          {
+            "id": "S_BET%20%28m2%2Fg%29.Ni-Al2O3-3",
+            "kind": "dataset_row",
+            "dataset_cell": {
+              "column": "S_BET (m2/g)",
+              "row_key": [
+                {
+                  "column": "Sample",
+                  "value": "Ni-Al2O3-3"
+                }
+              ]
+            },
+            "locator": "row Sample=Ni-Al2O3-3; column S_BET (m2/g)",
+            "quote": "141",
+            "source": "ex-dm:data/characterization-679da97ecfd7"
+          },
+          {
+            "id": "V_pore%20%28cm3%2Fg%29.Ni-Al2O3-3",
+            "kind": "dataset_row",
+            "dataset_cell": {
+              "column": "V_pore (cm3/g)",
+              "row_key": [
+                {
+                  "column": "Sample",
+                  "value": "Ni-Al2O3-3"
+                }
+              ]
+            },
+            "locator": "row Sample=Ni-Al2O3-3; column V_pore (cm3/g)",
+            "quote": "0.35",
+            "source": "ex-dm:data/characterization-679da97ecfd7"
+          }
+        ],
+        "experiment_kind": "physical",
+        "origin": "synthetic",
+        "result_values": [
+          {
+            "id": "pore_volume",
+            "status": "present",
+            "evidence_ids": [
+              "V_pore%20%28cm3%2Fg%29.Ni-Al2O3-3"
+            ],
+            "unit": "cm3/g",
+            "value": 0.35,
+            "variable": "ex-dm:variable/pore-volume"
+          },
+          {
+            "id": "specific_surface_area",
+            "status": "present",
+            "evidence_ids": [
+              "S_BET%20%28m2%2Fg%29.Ni-Al2O3-3"
+            ],
+            "unit": "m2/g",
+            "value": 141,
+            "variable": "ex-dm:variable/specific-surface-area"
+          }
+        ],
+        "technique": "N2 physisorption (BET)"
+      }
+    },
+    {
+      "id": "ex-dm:data/characterization-679da97ecfd7/xrd/Ni-Al2O3-1",
+      "label": "Characterization",
+      "props": {
+        "name": "X-ray diffraction, Sample=Ni-Al2O3-1",
+        "evidence": [
+          {
+            "id": "d_XRD%20%28nm%29.Ni-Al2O3-1",
+            "kind": "dataset_row",
+            "dataset_cell": {
+              "column": "d_XRD (nm)",
+              "row_key": [
+                {
+                  "column": "Sample",
+                  "value": "Ni-Al2O3-1"
+                }
+              ]
+            },
+            "locator": "row Sample=Ni-Al2O3-1; column d_XRD (nm)",
+            "quote": "6.2",
+            "source": "ex-dm:data/characterization-679da97ecfd7"
+          }
+        ],
+        "experiment_kind": "physical",
+        "origin": "synthetic",
+        "result_values": [
+          {
+            "id": "crystallite_size",
+            "status": "present",
+            "evidence_ids": [
+              "d_XRD%20%28nm%29.Ni-Al2O3-1"
+            ],
+            "unit": "nm",
+            "value": 6.2,
+            "variable": "ex-dm:variable/crystallite-size"
+          }
+        ],
+        "technique": "X-ray diffraction"
+      }
+    },
+    {
+      "id": "ex-dm:data/characterization-679da97ecfd7/xrd/Ni-Al2O3-2",
+      "label": "Characterization",
+      "props": {
+        "name": "X-ray diffraction, Sample=Ni-Al2O3-2",
+        "evidence": [
+          {
+            "id": "d_XRD%20%28nm%29.Ni-Al2O3-2",
+            "kind": "dataset_row",
+            "dataset_cell": {
+              "column": "d_XRD (nm)",
+              "row_key": [
+                {
+                  "column": "Sample",
+                  "value": "Ni-Al2O3-2"
+                }
+              ]
+            },
+            "locator": "row Sample=Ni-Al2O3-2; column d_XRD (nm)",
+            "quote": "8.9",
+            "source": "ex-dm:data/characterization-679da97ecfd7"
+          }
+        ],
+        "experiment_kind": "physical",
+        "origin": "synthetic",
+        "result_values": [
+          {
+            "id": "crystallite_size",
+            "status": "present",
+            "evidence_ids": [
+              "d_XRD%20%28nm%29.Ni-Al2O3-2"
+            ],
+            "unit": "nm",
+            "value": 8.9,
+            "variable": "ex-dm:variable/crystallite-size"
+          }
+        ],
+        "technique": "X-ray diffraction"
+      }
+    },
+    {
+      "id": "ex-dm:data/characterization-679da97ecfd7/xrd/Ni-Al2O3-3",
+      "label": "Characterization",
+      "props": {
+        "name": "X-ray diffraction, Sample=Ni-Al2O3-3",
+        "evidence": [
+          {
+            "id": "d_XRD%20%28nm%29.Ni-Al2O3-3",
+            "kind": "dataset_row",
+            "dataset_cell": {
+              "column": "d_XRD (nm)",
+              "row_key": [
+                {
+                  "column": "Sample",
+                  "value": "Ni-Al2O3-3"
+                }
+              ]
+            },
+            "locator": "row Sample=Ni-Al2O3-3; column d_XRD (nm)",
+            "source": "ex-dm:data/characterization-679da97ecfd7"
+          }
+        ],
+        "experiment_kind": "physical",
+        "origin": "synthetic",
+        "result_values": [
+          {
+            "id": "crystallite_size",
+            "status": "not_measured",
+            "evidence_ids": [
+              "d_XRD%20%28nm%29.Ni-Al2O3-3"
+            ],
+            "variable": "ex-dm:variable/crystallite-size"
+          }
+        ],
+        "technique": "X-ray diffraction"
+      }
+    },
+    {
+      "id": "ex-dm:data/characterization-679da97ecfd7/xps/Ni-Al2O3-1",
+      "label": "Characterization",
+      "props": {
+        "name": "X-ray photoelectron spectroscopy, Sample=Ni-Al2O3-1",
+        "evidence": [
+          {
+            "id": "Ni%2FAl%20%28XPS%29.Ni-Al2O3-1",
+            "kind": "dataset_row",
+            "dataset_cell": {
+              "column": "Ni/Al (XPS)",
+              "row_key": [
+                {
+                  "column": "Sample",
+                  "value": "Ni-Al2O3-1"
+                }
+              ]
+            },
+            "locator": "row Sample=Ni-Al2O3-1; column Ni/Al (XPS)",
+            "quote": "0.21",
+            "source": "ex-dm:data/characterization-679da97ecfd7"
+          },
+          {
+            "id": "O%2FNi%20%28XPS%29.Ni-Al2O3-1",
+            "kind": "dataset_row",
+            "dataset_cell": {
+              "column": "O/Ni (XPS)",
+              "row_key": [
+                {
+                  "column": "Sample",
+                  "value": "Ni-Al2O3-1"
+                }
+              ]
+            },
+            "locator": "row Sample=Ni-Al2O3-1; column O/Ni (XPS)",
+            "quote": "1.8",
+            "source": "ex-dm:data/characterization-679da97ecfd7"
+          }
+        ],
+        "experiment_kind": "physical",
+        "origin": "synthetic",
+        "result_values": [
+          {
+            "id": "xps_ni_al",
+            "status": "present",
+            "definition": "Ni/Al surface atomic ratio (XPS)",
+            "evidence_ids": [
+              "Ni%2FAl%20%28XPS%29.Ni-Al2O3-1"
+            ],
+            "unit": "1",
+            "value": 0.21,
+            "variable": "ex-dm:variable/xps-atomic-ratio"
+          },
+          {
+            "id": "xps_o_ni",
+            "status": "present",
+            "definition": "O/Ni surface atomic ratio (XPS)",
+            "evidence_ids": [
+              "O%2FNi%20%28XPS%29.Ni-Al2O3-1"
+            ],
+            "unit": "1",
+            "value": 1.8,
+            "variable": "ex-dm:variable/xps-atomic-ratio"
+          }
+        ],
+        "technique": "X-ray photoelectron spectroscopy"
+      }
+    },
+    {
+      "id": "ex-dm:data/characterization-679da97ecfd7/xps/Ni-Al2O3-2",
+      "label": "Characterization",
+      "props": {
+        "name": "X-ray photoelectron spectroscopy, Sample=Ni-Al2O3-2",
+        "evidence": [
+          {
+            "id": "Ni%2FAl%20%28XPS%29.Ni-Al2O3-2",
+            "kind": "dataset_row",
+            "dataset_cell": {
+              "column": "Ni/Al (XPS)",
+              "row_key": [
+                {
+                  "column": "Sample",
+                  "value": "Ni-Al2O3-2"
+                }
+              ]
+            },
+            "locator": "row Sample=Ni-Al2O3-2; column Ni/Al (XPS)",
+            "quote": "0.27",
+            "source": "ex-dm:data/characterization-679da97ecfd7"
+          },
+          {
+            "id": "O%2FNi%20%28XPS%29.Ni-Al2O3-2",
+            "kind": "dataset_row",
+            "dataset_cell": {
+              "column": "O/Ni (XPS)",
+              "row_key": [
+                {
+                  "column": "Sample",
+                  "value": "Ni-Al2O3-2"
+                }
+              ]
+            },
+            "locator": "row Sample=Ni-Al2O3-2; column O/Ni (XPS)",
+            "quote": "1.6",
+            "source": "ex-dm:data/characterization-679da97ecfd7"
+          }
+        ],
+        "experiment_kind": "physical",
+        "origin": "synthetic",
+        "result_values": [
+          {
+            "id": "xps_ni_al",
+            "status": "present",
+            "definition": "Ni/Al surface atomic ratio (XPS)",
+            "evidence_ids": [
+              "Ni%2FAl%20%28XPS%29.Ni-Al2O3-2"
+            ],
+            "unit": "1",
+            "value": 0.27,
+            "variable": "ex-dm:variable/xps-atomic-ratio"
+          },
+          {
+            "id": "xps_o_ni",
+            "status": "present",
+            "definition": "O/Ni surface atomic ratio (XPS)",
+            "evidence_ids": [
+              "O%2FNi%20%28XPS%29.Ni-Al2O3-2"
+            ],
+            "unit": "1",
+            "value": 1.6,
+            "variable": "ex-dm:variable/xps-atomic-ratio"
+          }
+        ],
+        "technique": "X-ray photoelectron spectroscopy"
+      }
+    },
+    {
+      "id": "ex-dm:data/characterization-679da97ecfd7/xps/Ni-Al2O3-3",
+      "label": "Characterization",
+      "props": {
+        "name": "X-ray photoelectron spectroscopy, Sample=Ni-Al2O3-3",
+        "evidence": [
+          {
+            "id": "Ni%2FAl%20%28XPS%29.Ni-Al2O3-3",
+            "kind": "dataset_row",
+            "dataset_cell": {
+              "column": "Ni/Al (XPS)",
+              "row_key": [
+                {
+                  "column": "Sample",
+                  "value": "Ni-Al2O3-3"
+                }
+              ]
+            },
+            "locator": "row Sample=Ni-Al2O3-3; column Ni/Al (XPS)",
+            "quote": "0.33",
+            "source": "ex-dm:data/characterization-679da97ecfd7"
+          },
+          {
+            "id": "O%2FNi%20%28XPS%29.Ni-Al2O3-3",
+            "kind": "dataset_row",
+            "dataset_cell": {
+              "column": "O/Ni (XPS)",
+              "row_key": [
+                {
+                  "column": "Sample",
+                  "value": "Ni-Al2O3-3"
+                }
+              ]
+            },
+            "locator": "row Sample=Ni-Al2O3-3; column O/Ni (XPS)",
+            "quote": "1.5",
+            "source": "ex-dm:data/characterization-679da97ecfd7"
+          }
+        ],
+        "experiment_kind": "physical",
+        "origin": "synthetic",
+        "result_values": [
+          {
+            "id": "xps_ni_al",
+            "status": "present",
+            "definition": "Ni/Al surface atomic ratio (XPS)",
+            "evidence_ids": [
+              "Ni%2FAl%20%28XPS%29.Ni-Al2O3-3"
+            ],
+            "unit": "1",
+            "value": 0.33,
+            "variable": "ex-dm:variable/xps-atomic-ratio"
+          },
+          {
+            "id": "xps_o_ni",
+            "status": "present",
+            "definition": "O/Ni surface atomic ratio (XPS)",
+            "evidence_ids": [
+              "O%2FNi%20%28XPS%29.Ni-Al2O3-3"
+            ],
+            "unit": "1",
+            "value": 1.5,
+            "variable": "ex-dm:variable/xps-atomic-ratio"
+          }
+        ],
+        "technique": "X-ray photoelectron spectroscopy"
+      }
+    }
+  ],
+  "links": [
+    {
+      "id": "ex-dm:data/co2rr-fe-wide-ffb13edb33ec/test/R1/uses-catalyst/ex-dm%3Asample%2FAg-foil-1",
+      "type": "USES_CATALYST",
+      "props": {
+        "evidence": [
+          {
+            "id": "Electrode.R1",
+            "kind": "dataset_row",
+            "dataset_cell": {
+              "column": "Electrode",
+              "row_key": [
+                {
+                  "column": "Run",
+                  "value": "R1"
+                }
+              ]
+            },
+            "locator": "row Run=R1; column Electrode",
+            "quote": "Ag-foil-1",
+            "source": "ex-dm:data/co2rr-fe-wide-ffb13edb33ec"
+          }
+        ],
+        "origin": "synthetic"
+      },
+      "source": "ex-dm:data/co2rr-fe-wide-ffb13edb33ec/test/R1",
+      "target": "ex-dm:sample/Ag-foil-1"
+    },
+    {
+      "id": "ex-dm:data/co2rr-fe-wide-ffb13edb33ec/test/R1/reported-in/co2rr-fe-wide-ffb13edb33ec",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "row Run=R1"
+        ],
+        "origin": "synthetic"
+      },
+      "source": "ex-dm:data/co2rr-fe-wide-ffb13edb33ec/test/R1",
+      "target": "ex-dm:data/co2rr-fe-wide-ffb13edb33ec"
+    },
+    {
+      "id": "ex-dm:data/co2rr-fe-wide-ffb13edb33ec/test/R2/uses-catalyst/ex-dm%3Asample%2FAg-foil-1",
+      "type": "USES_CATALYST",
+      "props": {
+        "evidence": [
+          {
+            "id": "Electrode.R2",
+            "kind": "dataset_row",
+            "dataset_cell": {
+              "column": "Electrode",
+              "row_key": [
+                {
+                  "column": "Run",
+                  "value": "R2"
+                }
+              ]
+            },
+            "locator": "row Run=R2; column Electrode",
+            "quote": "Ag-foil-1",
+            "source": "ex-dm:data/co2rr-fe-wide-ffb13edb33ec"
+          }
+        ],
+        "origin": "synthetic"
+      },
+      "source": "ex-dm:data/co2rr-fe-wide-ffb13edb33ec/test/R2",
+      "target": "ex-dm:sample/Ag-foil-1"
+    },
+    {
+      "id": "ex-dm:data/co2rr-fe-wide-ffb13edb33ec/test/R2/reported-in/co2rr-fe-wide-ffb13edb33ec",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "row Run=R2"
+        ],
+        "origin": "synthetic"
+      },
+      "source": "ex-dm:data/co2rr-fe-wide-ffb13edb33ec/test/R2",
+      "target": "ex-dm:data/co2rr-fe-wide-ffb13edb33ec"
+    },
+    {
+      "id": "ex-dm:data/co2rr-fe-wide-ffb13edb33ec/test/R3/uses-catalyst/ex-dm%3Asample%2FAg-foil-1",
+      "type": "USES_CATALYST",
+      "props": {
+        "evidence": [
+          {
+            "id": "Electrode.R3",
+            "kind": "dataset_row",
+            "dataset_cell": {
+              "column": "Electrode",
+              "row_key": [
+                {
+                  "column": "Run",
+                  "value": "R3"
+                }
+              ]
+            },
+            "locator": "row Run=R3; column Electrode",
+            "quote": "Ag-foil-1",
+            "source": "ex-dm:data/co2rr-fe-wide-ffb13edb33ec"
+          }
+        ],
+        "origin": "synthetic"
+      },
+      "source": "ex-dm:data/co2rr-fe-wide-ffb13edb33ec/test/R3",
+      "target": "ex-dm:sample/Ag-foil-1"
+    },
+    {
+      "id": "ex-dm:data/co2rr-fe-wide-ffb13edb33ec/test/R3/reported-in/co2rr-fe-wide-ffb13edb33ec",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "row Run=R3"
+        ],
+        "origin": "synthetic"
+      },
+      "source": "ex-dm:data/co2rr-fe-wide-ffb13edb33ec/test/R3",
+      "target": "ex-dm:data/co2rr-fe-wide-ffb13edb33ec"
+    },
+    {
+      "id": "ex-dm:data/co2rr-fe-wide-ffb13edb33ec/file/includes/co2rr-fe-wide-ffb13edb33ec",
+      "type": "INCLUDES",
+      "props": {
+        "origin": "synthetic"
+      },
+      "source": "ex-dm:data/co2rr-fe-wide-ffb13edb33ec/file",
+      "target": "ex-dm:data/co2rr-fe-wide-ffb13edb33ec"
+    },
+    {
+      "id": "ex-dm:data/thermal-tests-cdcca30b88be/test/T1/uses-catalyst/ex-dm%3Asample%2FNi-Al2O3-1",
+      "type": "USES_CATALYST",
+      "props": {
+        "evidence": [
+          {
+            "id": "Catalyst.T1",
+            "kind": "dataset_row",
+            "dataset_cell": {
+              "column": "Catalyst",
+              "row_key": [
+                {
+                  "column": "Run",
+                  "value": "T1"
+                }
+              ]
+            },
+            "locator": "row Run=T1; column Catalyst",
+            "quote": "Ni-Al2O3-1",
+            "source": "ex-dm:data/thermal-tests-cdcca30b88be"
+          }
+        ],
+        "origin": "synthetic"
+      },
+      "source": "ex-dm:data/thermal-tests-cdcca30b88be/test/T1",
+      "target": "ex-dm:sample/Ni-Al2O3-1"
+    },
+    {
+      "id": "ex-dm:data/thermal-tests-cdcca30b88be/test/T1/reported-in/thermal-tests-cdcca30b88be",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "row Run=T1"
+        ],
+        "origin": "synthetic"
+      },
+      "source": "ex-dm:data/thermal-tests-cdcca30b88be/test/T1",
+      "target": "ex-dm:data/thermal-tests-cdcca30b88be"
+    },
+    {
+      "id": "ex-dm:data/thermal-tests-cdcca30b88be/test/T2/uses-catalyst/ex-dm%3Asample%2FNi-Al2O3-1",
+      "type": "USES_CATALYST",
+      "props": {
+        "evidence": [
+          {
+            "id": "Catalyst.T2",
+            "kind": "dataset_row",
+            "dataset_cell": {
+              "column": "Catalyst",
+              "row_key": [
+                {
+                  "column": "Run",
+                  "value": "T2"
+                }
+              ]
+            },
+            "locator": "row Run=T2; column Catalyst",
+            "quote": "Ni-Al2O3-1",
+            "source": "ex-dm:data/thermal-tests-cdcca30b88be"
+          }
+        ],
+        "origin": "synthetic"
+      },
+      "source": "ex-dm:data/thermal-tests-cdcca30b88be/test/T2",
+      "target": "ex-dm:sample/Ni-Al2O3-1"
+    },
+    {
+      "id": "ex-dm:data/thermal-tests-cdcca30b88be/test/T2/reported-in/thermal-tests-cdcca30b88be",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "row Run=T2"
+        ],
+        "origin": "synthetic"
+      },
+      "source": "ex-dm:data/thermal-tests-cdcca30b88be/test/T2",
+      "target": "ex-dm:data/thermal-tests-cdcca30b88be"
+    },
+    {
+      "id": "ex-dm:data/thermal-tests-cdcca30b88be/test/T3/uses-catalyst/ex-dm%3Asample%2FNi-Al2O3-1",
+      "type": "USES_CATALYST",
+      "props": {
+        "evidence": [
+          {
+            "id": "Catalyst.T3",
+            "kind": "dataset_row",
+            "dataset_cell": {
+              "column": "Catalyst",
+              "row_key": [
+                {
+                  "column": "Run",
+                  "value": "T3"
+                }
+              ]
+            },
+            "locator": "row Run=T3; column Catalyst",
+            "quote": "Ni-Al2O3-1",
+            "source": "ex-dm:data/thermal-tests-cdcca30b88be"
+          }
+        ],
+        "origin": "synthetic"
+      },
+      "source": "ex-dm:data/thermal-tests-cdcca30b88be/test/T3",
+      "target": "ex-dm:sample/Ni-Al2O3-1"
+    },
+    {
+      "id": "ex-dm:data/thermal-tests-cdcca30b88be/test/T3/reported-in/thermal-tests-cdcca30b88be",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "row Run=T3"
+        ],
+        "origin": "synthetic"
+      },
+      "source": "ex-dm:data/thermal-tests-cdcca30b88be/test/T3",
+      "target": "ex-dm:data/thermal-tests-cdcca30b88be"
+    },
+    {
+      "id": "ex-dm:data/thermal-tests-cdcca30b88be/test/T4/uses-catalyst/ex-dm%3Asample%2FNi-Al2O3-1",
+      "type": "USES_CATALYST",
+      "props": {
+        "evidence": [
+          {
+            "id": "Catalyst.T4",
+            "kind": "dataset_row",
+            "dataset_cell": {
+              "column": "Catalyst",
+              "row_key": [
+                {
+                  "column": "Run",
+                  "value": "T4"
+                }
+              ]
+            },
+            "locator": "row Run=T4; column Catalyst",
+            "quote": "Ni-Al2O3-1",
+            "source": "ex-dm:data/thermal-tests-cdcca30b88be"
+          }
+        ],
+        "origin": "synthetic"
+      },
+      "source": "ex-dm:data/thermal-tests-cdcca30b88be/test/T4",
+      "target": "ex-dm:sample/Ni-Al2O3-1"
+    },
+    {
+      "id": "ex-dm:data/thermal-tests-cdcca30b88be/test/T4/reported-in/thermal-tests-cdcca30b88be",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "row Run=T4"
+        ],
+        "origin": "synthetic"
+      },
+      "source": "ex-dm:data/thermal-tests-cdcca30b88be/test/T4",
+      "target": "ex-dm:data/thermal-tests-cdcca30b88be"
+    },
+    {
+      "id": "ex-dm:data/thermal-tests-cdcca30b88be/file/includes/thermal-tests-cdcca30b88be",
+      "type": "INCLUDES",
+      "props": {
+        "origin": "synthetic"
+      },
+      "source": "ex-dm:data/thermal-tests-cdcca30b88be/file",
+      "target": "ex-dm:data/thermal-tests-cdcca30b88be"
+    },
+    {
+      "id": "ex-dm:data/kinetics-743856c4eae2/test/K1/uses-catalyst/ex-dm%3Asample%2FNi-Al2O3-1",
+      "type": "USES_CATALYST",
+      "props": {
+        "evidence": [
+          {
+            "id": "catalyst.K1",
+            "kind": "dataset_row",
+            "dataset_cell": {
+              "column": "catalyst",
+              "row_key": [
+                {
+                  "column": "run",
+                  "value": "K1"
+                }
+              ]
+            },
+            "locator": "row run=K1; column catalyst",
+            "quote": "Ni-Al2O3-1",
+            "source": "ex-dm:data/kinetics-743856c4eae2"
+          }
+        ],
+        "origin": "synthetic"
+      },
+      "source": "ex-dm:data/kinetics-743856c4eae2/test/K1",
+      "target": "ex-dm:sample/Ni-Al2O3-1"
+    },
+    {
+      "id": "ex-dm:data/kinetics-743856c4eae2/test/K1/reported-in/kinetics-743856c4eae2",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "row run=K1"
+        ],
+        "origin": "synthetic"
+      },
+      "source": "ex-dm:data/kinetics-743856c4eae2/test/K1",
+      "target": "ex-dm:data/kinetics-743856c4eae2"
+    },
+    {
+      "id": "ex-dm:data/kinetics-743856c4eae2/test/K2/uses-catalyst/ex-dm%3Asample%2FNi-Al2O3-1",
+      "type": "USES_CATALYST",
+      "props": {
+        "evidence": [
+          {
+            "id": "catalyst.K2",
+            "kind": "dataset_row",
+            "dataset_cell": {
+              "column": "catalyst",
+              "row_key": [
+                {
+                  "column": "run",
+                  "value": "K2"
+                }
+              ]
+            },
+            "locator": "row run=K2; column catalyst",
+            "quote": "Ni-Al2O3-1",
+            "source": "ex-dm:data/kinetics-743856c4eae2"
+          }
+        ],
+        "origin": "synthetic"
+      },
+      "source": "ex-dm:data/kinetics-743856c4eae2/test/K2",
+      "target": "ex-dm:sample/Ni-Al2O3-1"
+    },
+    {
+      "id": "ex-dm:data/kinetics-743856c4eae2/test/K2/reported-in/kinetics-743856c4eae2",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "row run=K2"
+        ],
+        "origin": "synthetic"
+      },
+      "source": "ex-dm:data/kinetics-743856c4eae2/test/K2",
+      "target": "ex-dm:data/kinetics-743856c4eae2"
+    },
+    {
+      "id": "ex-dm:data/kinetics-743856c4eae2/test/K3/uses-catalyst/ex-dm%3Asample%2FNi-Al2O3-1",
+      "type": "USES_CATALYST",
+      "props": {
+        "evidence": [
+          {
+            "id": "catalyst.K3",
+            "kind": "dataset_row",
+            "dataset_cell": {
+              "column": "catalyst",
+              "row_key": [
+                {
+                  "column": "run",
+                  "value": "K3"
+                }
+              ]
+            },
+            "locator": "row run=K3; column catalyst",
+            "quote": "Ni-Al2O3-1",
+            "source": "ex-dm:data/kinetics-743856c4eae2"
+          }
+        ],
+        "origin": "synthetic"
+      },
+      "source": "ex-dm:data/kinetics-743856c4eae2/test/K3",
+      "target": "ex-dm:sample/Ni-Al2O3-1"
+    },
+    {
+      "id": "ex-dm:data/kinetics-743856c4eae2/test/K3/reported-in/kinetics-743856c4eae2",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "row run=K3"
+        ],
+        "origin": "synthetic"
+      },
+      "source": "ex-dm:data/kinetics-743856c4eae2/test/K3",
+      "target": "ex-dm:data/kinetics-743856c4eae2"
+    },
+    {
+      "id": "ex-dm:data/dft-energies-4593c672a965/calc/C1/reported-in/dft-energies-4593c672a965",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "row calc_id=C1"
+        ],
+        "origin": "synthetic"
+      },
+      "source": "ex-dm:data/dft-energies-4593c672a965/calc/C1",
+      "target": "ex-dm:data/dft-energies-4593c672a965"
+    },
+    {
+      "id": "ex-dm:data/dft-energies-4593c672a965/calc/C2/reported-in/dft-energies-4593c672a965",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "row calc_id=C2"
+        ],
+        "origin": "synthetic"
+      },
+      "source": "ex-dm:data/dft-energies-4593c672a965/calc/C2",
+      "target": "ex-dm:data/dft-energies-4593c672a965"
+    },
+    {
+      "id": "ex-dm:data/dft-energies-4593c672a965/calc/C3/reported-in/dft-energies-4593c672a965",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "row calc_id=C3"
+        ],
+        "origin": "synthetic"
+      },
+      "source": "ex-dm:data/dft-energies-4593c672a965/calc/C3",
+      "target": "ex-dm:data/dft-energies-4593c672a965"
+    },
+    {
+      "id": "ex-dm:data/dft-energies-4593c672a965/calc/C4/reported-in/dft-energies-4593c672a965",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "row calc_id=C4"
+        ],
+        "origin": "synthetic"
+      },
+      "source": "ex-dm:data/dft-energies-4593c672a965/calc/C4",
+      "target": "ex-dm:data/dft-energies-4593c672a965"
+    },
+    {
+      "id": "ex-dm:data/characterization-679da97ecfd7/sample/Ni-Al2O3-1/reported-in/characterization-679da97ecfd7",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "row Sample=Ni-Al2O3-1"
+        ],
+        "origin": "synthetic"
+      },
+      "source": "ex-dm:data/characterization-679da97ecfd7/sample/Ni-Al2O3-1",
+      "target": "ex-dm:data/characterization-679da97ecfd7"
+    },
+    {
+      "id": "ex-dm:data/characterization-679da97ecfd7/sample/Ni-Al2O3-2/reported-in/characterization-679da97ecfd7",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "row Sample=Ni-Al2O3-2"
+        ],
+        "origin": "synthetic"
+      },
+      "source": "ex-dm:data/characterization-679da97ecfd7/sample/Ni-Al2O3-2",
+      "target": "ex-dm:data/characterization-679da97ecfd7"
+    },
+    {
+      "id": "ex-dm:data/characterization-679da97ecfd7/sample/Ni-Al2O3-3/reported-in/characterization-679da97ecfd7",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "row Sample=Ni-Al2O3-3"
+        ],
+        "origin": "synthetic"
+      },
+      "source": "ex-dm:data/characterization-679da97ecfd7/sample/Ni-Al2O3-3",
+      "target": "ex-dm:data/characterization-679da97ecfd7"
+    },
+    {
+      "id": "ex-dm:data/characterization-679da97ecfd7/physisorption/Ni-Al2O3-1/examines/ex-dm%3Adata%2Fcharacterization-679da97ecfd7%2Fsample%2FNi-Al2O3-1",
+      "type": "EXAMINES",
+      "props": {
+        "origin": "synthetic"
+      },
+      "source": "ex-dm:data/characterization-679da97ecfd7/physisorption/Ni-Al2O3-1",
+      "target": "ex-dm:data/characterization-679da97ecfd7/sample/Ni-Al2O3-1"
+    },
+    {
+      "id": "ex-dm:data/characterization-679da97ecfd7/physisorption/Ni-Al2O3-1/reported-in/characterization-679da97ecfd7",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "row Sample=Ni-Al2O3-1"
+        ],
+        "origin": "synthetic"
+      },
+      "source": "ex-dm:data/characterization-679da97ecfd7/physisorption/Ni-Al2O3-1",
+      "target": "ex-dm:data/characterization-679da97ecfd7"
+    },
+    {
+      "id": "ex-dm:data/characterization-679da97ecfd7/physisorption/Ni-Al2O3-2/examines/ex-dm%3Adata%2Fcharacterization-679da97ecfd7%2Fsample%2FNi-Al2O3-2",
+      "type": "EXAMINES",
+      "props": {
+        "origin": "synthetic"
+      },
+      "source": "ex-dm:data/characterization-679da97ecfd7/physisorption/Ni-Al2O3-2",
+      "target": "ex-dm:data/characterization-679da97ecfd7/sample/Ni-Al2O3-2"
+    },
+    {
+      "id": "ex-dm:data/characterization-679da97ecfd7/physisorption/Ni-Al2O3-2/reported-in/characterization-679da97ecfd7",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "row Sample=Ni-Al2O3-2"
+        ],
+        "origin": "synthetic"
+      },
+      "source": "ex-dm:data/characterization-679da97ecfd7/physisorption/Ni-Al2O3-2",
+      "target": "ex-dm:data/characterization-679da97ecfd7"
+    },
+    {
+      "id": "ex-dm:data/characterization-679da97ecfd7/physisorption/Ni-Al2O3-3/examines/ex-dm%3Adata%2Fcharacterization-679da97ecfd7%2Fsample%2FNi-Al2O3-3",
+      "type": "EXAMINES",
+      "props": {
+        "origin": "synthetic"
+      },
+      "source": "ex-dm:data/characterization-679da97ecfd7/physisorption/Ni-Al2O3-3",
+      "target": "ex-dm:data/characterization-679da97ecfd7/sample/Ni-Al2O3-3"
+    },
+    {
+      "id": "ex-dm:data/characterization-679da97ecfd7/physisorption/Ni-Al2O3-3/reported-in/characterization-679da97ecfd7",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "row Sample=Ni-Al2O3-3"
+        ],
+        "origin": "synthetic"
+      },
+      "source": "ex-dm:data/characterization-679da97ecfd7/physisorption/Ni-Al2O3-3",
+      "target": "ex-dm:data/characterization-679da97ecfd7"
+    },
+    {
+      "id": "ex-dm:data/characterization-679da97ecfd7/xrd/Ni-Al2O3-1/examines/ex-dm%3Adata%2Fcharacterization-679da97ecfd7%2Fsample%2FNi-Al2O3-1",
+      "type": "EXAMINES",
+      "props": {
+        "origin": "synthetic"
+      },
+      "source": "ex-dm:data/characterization-679da97ecfd7/xrd/Ni-Al2O3-1",
+      "target": "ex-dm:data/characterization-679da97ecfd7/sample/Ni-Al2O3-1"
+    },
+    {
+      "id": "ex-dm:data/characterization-679da97ecfd7/xrd/Ni-Al2O3-1/reported-in/characterization-679da97ecfd7",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "row Sample=Ni-Al2O3-1"
+        ],
+        "origin": "synthetic"
+      },
+      "source": "ex-dm:data/characterization-679da97ecfd7/xrd/Ni-Al2O3-1",
+      "target": "ex-dm:data/characterization-679da97ecfd7"
+    },
+    {
+      "id": "ex-dm:data/characterization-679da97ecfd7/xrd/Ni-Al2O3-2/examines/ex-dm%3Adata%2Fcharacterization-679da97ecfd7%2Fsample%2FNi-Al2O3-2",
+      "type": "EXAMINES",
+      "props": {
+        "origin": "synthetic"
+      },
+      "source": "ex-dm:data/characterization-679da97ecfd7/xrd/Ni-Al2O3-2",
+      "target": "ex-dm:data/characterization-679da97ecfd7/sample/Ni-Al2O3-2"
+    },
+    {
+      "id": "ex-dm:data/characterization-679da97ecfd7/xrd/Ni-Al2O3-2/reported-in/characterization-679da97ecfd7",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "row Sample=Ni-Al2O3-2"
+        ],
+        "origin": "synthetic"
+      },
+      "source": "ex-dm:data/characterization-679da97ecfd7/xrd/Ni-Al2O3-2",
+      "target": "ex-dm:data/characterization-679da97ecfd7"
+    },
+    {
+      "id": "ex-dm:data/characterization-679da97ecfd7/xrd/Ni-Al2O3-3/examines/ex-dm%3Adata%2Fcharacterization-679da97ecfd7%2Fsample%2FNi-Al2O3-3",
+      "type": "EXAMINES",
+      "props": {
+        "origin": "synthetic"
+      },
+      "source": "ex-dm:data/characterization-679da97ecfd7/xrd/Ni-Al2O3-3",
+      "target": "ex-dm:data/characterization-679da97ecfd7/sample/Ni-Al2O3-3"
+    },
+    {
+      "id": "ex-dm:data/characterization-679da97ecfd7/xrd/Ni-Al2O3-3/reported-in/characterization-679da97ecfd7",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "row Sample=Ni-Al2O3-3"
+        ],
+        "origin": "synthetic"
+      },
+      "source": "ex-dm:data/characterization-679da97ecfd7/xrd/Ni-Al2O3-3",
+      "target": "ex-dm:data/characterization-679da97ecfd7"
+    },
+    {
+      "id": "ex-dm:data/characterization-679da97ecfd7/xps/Ni-Al2O3-1/examines/ex-dm%3Adata%2Fcharacterization-679da97ecfd7%2Fsample%2FNi-Al2O3-1",
+      "type": "EXAMINES",
+      "props": {
+        "origin": "synthetic"
+      },
+      "source": "ex-dm:data/characterization-679da97ecfd7/xps/Ni-Al2O3-1",
+      "target": "ex-dm:data/characterization-679da97ecfd7/sample/Ni-Al2O3-1"
+    },
+    {
+      "id": "ex-dm:data/characterization-679da97ecfd7/xps/Ni-Al2O3-1/reported-in/characterization-679da97ecfd7",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "row Sample=Ni-Al2O3-1"
+        ],
+        "origin": "synthetic"
+      },
+      "source": "ex-dm:data/characterization-679da97ecfd7/xps/Ni-Al2O3-1",
+      "target": "ex-dm:data/characterization-679da97ecfd7"
+    },
+    {
+      "id": "ex-dm:data/characterization-679da97ecfd7/xps/Ni-Al2O3-2/examines/ex-dm%3Adata%2Fcharacterization-679da97ecfd7%2Fsample%2FNi-Al2O3-2",
+      "type": "EXAMINES",
+      "props": {
+        "origin": "synthetic"
+      },
+      "source": "ex-dm:data/characterization-679da97ecfd7/xps/Ni-Al2O3-2",
+      "target": "ex-dm:data/characterization-679da97ecfd7/sample/Ni-Al2O3-2"
+    },
+    {
+      "id": "ex-dm:data/characterization-679da97ecfd7/xps/Ni-Al2O3-2/reported-in/characterization-679da97ecfd7",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "row Sample=Ni-Al2O3-2"
+        ],
+        "origin": "synthetic"
+      },
+      "source": "ex-dm:data/characterization-679da97ecfd7/xps/Ni-Al2O3-2",
+      "target": "ex-dm:data/characterization-679da97ecfd7"
+    },
+    {
+      "id": "ex-dm:data/characterization-679da97ecfd7/xps/Ni-Al2O3-3/examines/ex-dm%3Adata%2Fcharacterization-679da97ecfd7%2Fsample%2FNi-Al2O3-3",
+      "type": "EXAMINES",
+      "props": {
+        "origin": "synthetic"
+      },
+      "source": "ex-dm:data/characterization-679da97ecfd7/xps/Ni-Al2O3-3",
+      "target": "ex-dm:data/characterization-679da97ecfd7/sample/Ni-Al2O3-3"
+    },
+    {
+      "id": "ex-dm:data/characterization-679da97ecfd7/xps/Ni-Al2O3-3/reported-in/characterization-679da97ecfd7",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "row Sample=Ni-Al2O3-3"
+        ],
+        "origin": "synthetic"
+      },
+      "source": "ex-dm:data/characterization-679da97ecfd7/xps/Ni-Al2O3-3",
+      "target": "ex-dm:data/characterization-679da97ecfd7"
+    }
+  ],
+  "directed": true,
+  "graph": {
+    "data_status": "synthetic_example",
+    "follows_domains": [
+      "catalysis"
+    ],
+    "graph_id": "ex-dm:graph",
+    "schema": "scale-catal",
+    "schema_version": "0.8.4",
+    "stewardship": {
+      "access": "public"
+    },
+    "title": "Five laboratory tables imported by the built-in mappings of scale data match (synthetic)"
+  },
+  "multigraph": true
+}

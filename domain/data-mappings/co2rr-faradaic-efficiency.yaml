@@ -1,0 +1,175 @@
+# A built-in mapping template of `scale data match` (docs/data.md, "Built-in mappings"). Reviewed with the pull request
+# that changes it; provisional. The roles name the columns a table of this kind has; the mapping below is a
+# mapping_version 2 whose {{...}} placeholders the bound columns fill (`when:` keeps a block only when its roles are
+# bound). Nothing here is code.
+template_version: 1
+id: co2rr-faradaic-efficiency
+title: CO2 electroreduction, Faradaic efficiency (and partial current density) vs potential
+description: |
+  One row per electrolysis run: its potential, optionally its total current density, and the Faradaic efficiency of
+  each product in its own column (FE CO (%), FE_H2, Faradaic efficiency HCOO-), optionally a partial current density
+  per product (j CO (mA/cm2)). Each run becomes a CatalyticTest (driving force electro, potentiostatic) with one result
+  entry per product and quantity; the product named in a header is looked up among the document's species by formula or
+  name, and created from its formula when the document has none.
+maturity: provisional
+driving_forces: [electro]
+default_origin: recorded
+example: examples/scale-catal/data-mapping-examples/co2rr-fe-wide.xlsx
+roles:
+  run:
+    kind: text
+    required: true
+    synonyms: [run, run id, run no, run number, experiment, experiment id, exp, exp id, test, test id, electrolysis, measurement,
+      id]
+  sample:
+    kind: text
+    synonyms: [sample, sample id, catalyst, electrode, catalyst sample, material, cathode]
+  recorded_at:
+    kind: datetime
+    synonyms: [recorded at, date, date time, datetime, timestamp, time stamp, start time, started at, measured at]
+  potential:
+    kind: number
+    required: true
+    quantity: electrode_potential
+    default_unit: V vs RHE
+    synonyms: [potential, e, e vs rhe, e rhe, u, applied potential, electrode potential, cathode potential, e we, working
+        electrode potential, potential vs rhe, v vs rhe, e applied]
+  current_density:
+    kind: number
+    quantity: current_density
+    default_unit: mA/cm2
+    synonyms: [j, j total, jtot, j tot, total current density, current density, geometric current density, i total]
+  fe:
+    kind: melt
+    required: true
+    id: fe
+    quantity: faradaic_efficiency
+    default_unit: '%'
+    exclude_targets: [total, sum, balance, all]
+    patterns: ['^(?:fe|f\.e\.|faradaic[ _-]*efficiency|faradaic[ _-]*eff\.?)[\s_:-]*(?:of[\s_]+|for[\s_]+)?(?P<target>[A-Za-z][A-Za-z0-9+\-]*)$']
+  partial_j:
+    kind: melt
+    id: j
+    quantity: partial_current_density
+    default_unit: mA/cm2
+    exclude_targets: [total, tot, sum, all, geo, geometric]
+    patterns: ['^(?:j|jp|j[ _]?partial|partial[ _-]*current[ _-]*density|partial[ _-]*j)[\s_:-]*(?:of[\s_]+|for[\s_]+)?(?P<target>[A-Za-z][A-Za-z0-9+\-]*)$']
+confirm: [control_mode potentiostatic (each run held at its potential); change it for galvanostatic runs, 'a blank efficiency
+    or current is recorded as not_measured, and a cell such as <0.5 as below the detection limit', current densities are
+    per geometric electrode area (current_normalization geometric_area), a sample the document does not hold is created
+    as a CatalystSample of sample_kind other; set its form]
+mapping:
+  mapping_version: 2
+  input: '{{input}}'
+  dataset:
+    id_prefix: '{{ns}}:data/'
+    primary_key: ['{{column:run}}']
+  references:
+    fe:
+      id: '{{ns}}:variable/faradaic-efficiency'
+      label: Variable
+      props:
+        name: Faradaic efficiency
+        scale: quantitative
+        quantity_kind: faradaic_efficiency
+        unit: '%'
+      reuse: [quantity_kind]
+    partial_j:
+      when: partial_j
+      id: '{{ns}}:variable/partial-current-density'
+      label: Variable
+      props:
+        name: partial current density
+        scale: quantitative
+        quantity_kind: partial_current_density
+        unit: mA/cm2
+      reuse: [quantity_kind]
+  lookups:
+    species:
+      label: ChemicalSpecies
+      match: [formula, name]
+      aliases:
+        carbon monoxide: CO
+        hydrogen: H2
+        formate: HCOO-
+        HCOO: HCOO-
+        formic acid: HCOOH
+        methane: CH4
+        ethylene: C2H4
+        ethene: C2H4
+        ethanol: C2H5OH
+        EtOH: C2H5OH
+        methanol: CH3OH
+        MeOH: CH3OH
+        acetate: CH3COO-
+        n-propanol: C3H7OH
+        propanol: C3H7OH
+      create:
+        id_prefix: '{{ns}}:species/'
+        as: formula
+    sample:
+      when: sample
+      label: CatalystSample
+      match: [name]
+      create:
+        id_prefix: '{{ns}}:sample/'
+        as: name
+        props:
+          sample_kind: other
+  records:
+  - as: test
+    label: CatalyticTest
+    key: ['{{column:run}}']
+    name: CO2 electroreduction
+    origin: '{{origin}}'
+    recorded_at_column: '{{column:recorded_at}}'
+    recorded_at: '{{recorded_at}}'
+    properties:
+      test_kind:
+        literal: activity
+      experiment_kind:
+        literal: physical
+      driving_forces:
+        literal: [electro]
+      control_mode:
+        literal: potentiostatic
+      electrode_potential:
+        column: '{{column:potential}}'
+        unit: '{{unit:potential}}'
+      current_density:
+        when: current_density
+        column: '{{column:current_density}}'
+        unit: '{{unit:current_density}}'
+        missing:
+          ? ''
+          : status: not_measured
+      current_normalization:
+        when: current_density|partial_j
+        literal: geometric_area
+    results:
+    - variable: '@fe'
+      target_lookup: species
+      unit: '{{unit:fe}}'
+      melt: '{{melt:fe}}'
+      censor:
+      - prefix: <
+        as: below_detection_limit
+      missing:
+        ? ''
+        : status: not_measured
+    - when: partial_j
+      variable: '@partial_j'
+      target_lookup: species
+      unit: '{{unit:partial_j}}'
+      melt: '{{melt:partial_j}}'
+      censor:
+      - prefix: <
+        as: below_detection_limit
+      missing:
+        ? ''
+        : status: not_measured
+    links:
+    - when: sample
+      type: USES_CATALYST
+      target_column: '{{column:sample}}'
+      target_lookup: sample
