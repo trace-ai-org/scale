@@ -193,20 +193,56 @@ shows it as the graph's name), e.g. the subject and the year; the full reference
 
 def start(out: Path, doi: str | None = None, pdf: Path | None = None, text: Path | None = None,
           domain: str | None = "catalysis", version: str | None = None, email: str | None = None,
-          contributor: str = "scale:org/scale-researchers", project: str | None = None, repo: Path | None = None,
-          get: Fetch = fetch,
-          today: _dt.date | None = None) -> dict:
-    """Write the working folder for one source (see the module docstring) and return what was done."""
+          contributor: str | None = None, project: str | None = None, repo: Path | None = None,
+          get: Fetch = fetch, today: _dt.date | None = None, stewardship: dict | None = None,
+          source_kind: str | None = None, slug: str | None = None) -> dict:
+    """Write the working folder for one source (see the module docstring) and return what was done.
+
+    The graph's stewardship is ``stewardship`` when given (a destination's, by ``scale add-source``), else the
+    ``defaults.stewardship`` of the data repository holding ``out`` (``scale data init``), else ``access: public``;
+    ``contributor`` and ``project`` default to the ones it names (else ``scale:org/scale-researchers`` and a project of
+    the source). ``source_kind`` sets the Source's kind (patent, thesis, report) when no DOI says it."""
     if not doi and not pdf and not text:
         raise ScaleError("give --doi, --pdf or --text (or a DOI with either)")
+    from .datarepo import repository_defaults
+    policy_file, dflt = repository_defaults(out)
+    st = {k: v for k, v in dict(stewardship if stewardship is not None else dflt or {"access": "public"}).items()
+          if v not in (None, "", [])}
+    st.setdefault("access", "public")
+    if contributor and st.get("contributed_by") and contributor not in st["contributed_by"]:
+        if st["access"] == "institution":
+            raise ScaleError(f"{contributor} is not among the institutions {policy_file or 'the stewardship'} admits "
+                             f"({', '.join(st['contributed_by'])}): naming it would widen who reads the graph")
+        st["contributed_by"] = [contributor, *st["contributed_by"]]
+    contributor = contributor or (st.get("contributed_by") or ["scale:org/scale-researchers"])[0]
+    st["contributed_by"] = st.get("contributed_by") or [contributor]
+    project = project or st.get("project")
     today = today or _dt.date.today()
     repo = Path(repo) if repo else find_repo_root()
     spec = pgraph.load_spec(pgraph.spec_for(repo, version, None, None))
     version = spec["version"]
     doi = normalize_doi(doi) if doi else None
     meta = resolve_doi(doi, email or os.environ.get(EMAIL_ENV), get) if doi else {"title": None, "notes": []}
-    slug = slug_of(doi, Path(pdf) if pdf else Path(text) if text else None)
+    slug = slug or slug_of(doi, Path(pdf) if pdf else Path(text) if text else None)
+    if not re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9._-]*", slug):
+        raise ScaleError(f"slug {slug!r}: letters, digits, '.', '_' and '-'")
     out = Path(out)
+    project = project or f"ex:pub/project/{slug}"
+    header_st = {"contributed_by": st["contributed_by"], "project": project, "access": st["access"],
+                 **{k: v for k, v in st.items() if k not in ("contributed_by", "project", "access")}}
+    # a graph not for the public never starts in the framework repository, and one in a data repository admits at
+    # least the repository's readers (a project of its own, an institution of its own, is refused there)
+    if header_st["access"] != "public":
+        from .datarepo import refuse_framework
+        refuse_framework(out, "a curation folder of project data")
+    if policy_file is not None:
+        from .audience import audience_problems, parse_policy
+        from .util import load_yaml
+        probe = {"graph": {"stewardship": header_st}, "nodes": [], "links": []}
+        problems = audience_problems(probe, out.name, parse_policy(load_yaml(policy_file), str(policy_file))["readers"])
+        if problems:
+            raise ScaleError("; ".join(problems) + f" ({policy_file}): the repository's hooks would refuse it; nothing "
+                             "was written")
     if (out / f"{slug}.graph.json").exists():
         raise ScaleError(f"{out}: already holds {slug}.graph.json; curate it there, or give another --out")
     out.mkdir(parents=True, exist_ok=True)
@@ -249,27 +285,28 @@ def start(out: Path, doi: str | None = None, pdf: Path | None = None, text: Path
     meta["rights_class"] = rights_class(licences)
     sid = f"ex:pub/source/{slug}"
     source = {k: v for k, v in {
-        "name": meta.get("title") or slug, "kind": meta.get("kind") or "article", "title": meta.get("title") or slug,
+        "name": meta.get("title") or slug, "kind": meta.get("kind") or source_kind or "article",
+        "title": meta.get("title") or slug,
         "doi": doi, "url": meta.get("url"), "year": meta.get("year"), "venue": meta.get("venue"),
         "licence": "; ".join(licences) or None, "text_version": text_version,
         "text_sha256": read.get("pdf_sha256"), "retrieved_from": retrieved_from,
         "retrieved_on": today.isoformat() if retrieved_from else None, "origin": "curated"}.items() if v is not None}
     title = " ".join((meta.get("title") or slug).split())
     graph_title = title          # whole: a short title is made where one is needed (a kg-bundle, a graph card)
-    steward = _steward(repo, contributor)
-    project = project or f"ex:pub/project/{slug}"
+    stewards = [_steward(repo, c) for c in st["contributed_by"]]
     doc = {"directed": True, "multigraph": True,
            "graph": {"schema": spec["schema"], "schema_version": version, "graph_id": f"ex:pub/graph/{slug}",
                      "title": graph_title,
                      "description": f"Curated from {title}" + (f" ({meta['year']})" if meta.get("year") else "")
                                     + (f", doi:{doi}" if doi else "") + ". One source; what it reports, with verbatim evidence.",
                      "data_status": "research_data", **({"follows_domains": [domain]} if domain else {}),
-                     "stewardship": {"contributed_by": [contributor], "project": project, "access": "public"}},
-           "nodes": [{"id": sid, "label": "Source", "props": source}, steward,
+                     "stewardship": header_st},
+           "nodes": [{"id": sid, "label": "Source", "props": source}, *stewards,
                      {"id": project, "label": "Project", "props": {"name": f"Study of {graph_title}", "origin": "curated",
                                                                    "note": f"Curating one source, {sid}."}}],
-           "links": [{"id": f"{project}/participant/{contributor.rsplit('/', 1)[-1]}", "type": "PARTICIPATES_IN",
-                      "source": contributor, "target": project, "props": {"origin": "curated", "role": "data_provider"}}]}
+           "links": [{"id": f"{project}/participant/{c.rsplit('/', 1)[-1]}", "type": "PARTICIPATES_IN",
+                      "source": c, "target": project, "props": {"origin": "curated", "role": "data_provider"}}
+                     for c in st["contributed_by"]]}
     graph_file = f"{slug}.graph.json"
     write_canonical(out / graph_file, doc)
     (out / "rights.yaml").write_text(dump_yaml({"sources": {sid: {
@@ -282,7 +319,8 @@ def start(out: Path, doi: str | None = None, pdf: Path | None = None, text: Path
     (out / "BRIEF.md").write_text(_brief(slug, graph_file, meta, domain, version, spec, text_rel), encoding="utf-8")
     return {"folder": str(out), "graph": graph_file, "source_id": sid, "rights_class": meta["rights_class"],
             "pdf": str(pdf_path.relative_to(out)) if pdf_path.exists() else None, "page_texts": text_rel,
-            "pages": len(pages), "schema_version": version, "notes": info["notes"],
+            "pages": len(pages), "schema_version": version, "notes": info["notes"], "stewardship": header_st,
+            **({"stewardship_from": str(policy_file)} if policy_file and stewardship is None else {}),
             "next": f"fill {graph_file} following BRIEF.md, then: scale source check {out}; "
                     f"scale review values {out / graph_file}; scale source digest {out}"}
 

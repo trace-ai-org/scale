@@ -258,8 +258,10 @@ def test_the_explorer_runs_scales_own_tools_and_sends_a_readers_key_only_to_thei
     # a key not scoped to a workspace is sent with the workspace the reader gives
     assert '"anthropic-workspace-id": ownWorkspace' in js
     # the graph's type in its card is a link back to the graph on the canvas, as its schema is a link to the schema
-    # "Upload, curate, and explore" opens Curate, a toolbar button like the account's; the Visualization is gone
-    assert 'id="curate-open"' in page and "Upload, curate, and explore" in page and "viz-btn" not in page and "plotly" not in page.lower() and "Plotly" not in js
+    # "Add a source" (one dialog for any source, which hands a publication to Curate) is a toolbar button like the
+    # account's; the Visualization is gone
+    assert 'id="add-open"' in page and ">Add a source<" in page and 'id="curate-open"' not in page
+    assert "viz-btn" not in page and "plotly" not in page.lower() and "Plotly" not in js
     # the Curate dialog is about a source (a paper, patent or report) and says what happens in four short points
     assert "<h2>Curate a source</h2>" in page and "Curate a publication" not in page and "<summary>More details</summary>" in page
     # the one-source page says "source" too
@@ -311,7 +313,7 @@ def test_a_readers_own_key_curates_a_pdf_in_the_browser_with_the_services_tools(
     js = (REPO / "site" / "explorer.js").read_text(encoding="utf-8")
     worker = (REPO / "site" / "worker.js").read_text(encoding="utf-8")
     page = (REPO / "site" / "index.html").read_text(encoding="utf-8")
-    own = js[js.index("async function curateOwnKey("):js.index("// The commons holds the source already")]
+    own = js[js.index("async function curateCore("):js.index("// The commons holds the source already")]
     # with a key set, Curate runs here; the service is used only without one
     assert 'if (curateMode() === "own") return curateOwnKey();' in js and 'ownKey ? "own" : SERVICE ? "service" : ""' in js
     # the PDF is read here by pdf.js, loaded only when needed and checked against its digests
@@ -326,7 +328,7 @@ def test_a_readers_own_key_curates_a_pdf_in_the_browser_with_the_services_tools(
     assert 'id="curate-doi"' not in page and "text mining" not in page and "share the knowledge it reports" in page
     terms = js[js.index("function curateTerms("):js.index("async function curateAccount(")]
     # a curation says where it is (four stages, a bar) and about how long it has left
-    prog = js[js.index("function curateProgress("):js.index("async function curateOwnKey(")]
+    prog = js[js.index("function curateProgress("):js.index("async function curateCore(")]
     assert "min left" in prog and "elapsed" in prog and 'id="cj-bar"' in prog and "st.tool = (tool, args, result)" in prog
     # Curate is grey until a PDF is given and the statement ticked
     sync = js[js.index("function syncCurate("):js.index("const pdfName")]
@@ -342,7 +344,7 @@ def test_a_readers_own_key_curates_a_pdf_in_the_browser_with_the_services_tools(
     # its label (personal, in the site's green); without the service it says it is to come
     rows = js[js.index("function renderGraphs("):js.index("function details(")]
     assert "contribButton()" in rows and 'class="gx-graph-actions"' in rows
-    assert '"own-key": ["personal", "var(--green)"]' in js
+    assert '(level === "personal" ? contribButton() : "")' in rows
     # without the service, Contribute downloads the graph with every quote withheld and opens GitHub's upload page for
     # catal-commons/incoming/, where the reader proposes it under their own login; the repository's intake folds it in
     gh = js[js.index("async function contributeOnGitHub("):js.index("async function contribute(")]
@@ -363,10 +365,10 @@ def test_a_readers_own_key_curates_a_pdf_in_the_browser_with_the_services_tools(
     assert "/compare/main...${encodeURIComponent(me.login)}:${encodeURIComponent(branch)}?expand=1" in tok
     assert "win.location = compare" in tok and 'gh("POST", `/repos/${REPO}/pulls`' not in tok and "watchForPullRequest(" in tok
     assert "e.origin !== from" in js and "e.data.nonce !== nonce" in js
-    assert "curated-download" not in js and "contrib-box" not in js and '["Visibility", mine ? "Private"' in js
+    assert "curated-download" not in js and "contrib-box" not in js and '["Visibility", `<span title="${esc(tip)}">${esc(label)}</span>' in js
     # once a pull request to catal-commons exists, the label reads catal-commons and links it; the by-hand route
     # changes nothing, since only GitHub knows whether the file was uploaded
-    assert ">catal-commons</a>" in rows and "sentToCommons()" in rows
+    assert ">Catal-Commons</a>" in rows and "sentToCommons()" in rows
     gh = js[js.index("async function contributeOnGitHub("):js.index("// With a GitHub sign-in")]
     assert "contributed(" not in gh and "download(file" in gh
     # a curated graph gets a concise title: the model's (done's title), else its source's, else the PDF's name
@@ -374,7 +376,8 @@ def test_a_readers_own_key_curates_a_pdf_in_the_browser_with_the_services_tools(
     # when it is done, the dialog shows what was curated in a few numbers and what to do next
     done = js[js.index("function curateDone("):js.index("function curateReset(")]
     assert all(f'id="done-{k}"' in done for k in ("explore", "contrib", "again")) and "gx-done-stats" in done
-    assert "<b>Private.</b>" in terms and "modelLabel" not in terms and "PROVIDERS" not in terms
+    # the terms say who reads the text: the reader's provider, with their key, and no one else
+    assert "<b>Private.</b>" in terms and "providerName()" in terms and "with your key, and to no one else" in terms
 
 
 def test_the_built_pages_load_scripts_and_the_package_stamped_with_the_builds_digest(built):
@@ -467,7 +470,7 @@ def test_the_analyze_view_draws_scale_plot_data_honestly_and_loads_vega_pinned()
     an = (REPO / "site/analyze.js").read_text()
     worker = (REPO / "site/worker.js").read_text()
     # an Analyze button beside the graph view opens the panel; its data is scale_plot_data, run in the worker
-    assert 'id="analyze-btn"' in page and 'id="analyze"' in page and "analyze.js" in site.PAGES
+    assert 'id="analyze-open"' in page and 'id="analyze"' in page and "analyze.js" in site.PAGES
     assert '"./analyze.js"' in site.STAMPED["explorer.js"] and 'scale("plot_data", { suggest: true })' in js
     assert 'op === "table"' in worker and "plotdata.table_data" in worker
     # vega, vega-lite and vega-embed: pinned versions, checked against their digests, loaded only when a chart is drawn,
@@ -509,3 +512,180 @@ def test_the_analyze_view_draws_scale_plot_data_honestly_and_loads_vega_pinned()
     assert out["count"] == [{"x": "a", "records": 2, "sources": 1, "series": ""}] and out["hist"][0]["records"] == 3
     assert out["header"] == ["a", 'b,"c"'] and out["via"]["x"] == {"via": [{"edge": "E", "to": "T"}], "path": "p"}
     assert out["digest"] == ["verified", "not_recorded", "mismatch"] and out["shown"] == ["5 ± 0.5 %", "≤ 1 %", "2 %"]
+
+
+def test_add_a_source_is_one_dialog_for_any_source_and_keeps_the_work(tmp_path):
+    page = (REPO / "site/index.html").read_text()
+    js = (REPO / "site/explorer.js").read_text()
+    add = (REPO / "site/addsource.js").read_text()
+    worker = (REPO / "site/worker.js").read_text()
+    # one dialog: a file (drop or pick: PDF, text, CSV, Excel, graph, bundle) or a DOI, and one line on privacy
+    assert 'id="add-dialog"' in page and 'id="add-file"' in page and 'id="add-doi"' in page and ".xlsx" in page
+    assert "nothing is uploaded" in page and "never contributed" in page
+    assert "addsource.js" in site.PAGES and '"./addsource.js"' in site.STAMPED["explorer.js"]
+    # what a file is, the Python router says (scale.addsource.detect, through scale.pagelab in the worker)
+    assert 'op === "lab"' in worker and "from scale import pagelab" in worker and 'lab("detect"' in add
+    assert all(f'"{f}"' in worker for f in ("detect", "stage", "table", "graph", "publication", "files", "restore"))
+    # the mapping view: template and score, each role's column (a dropdown) and unit, the wide columns, the questions
+    # (a date-time input, the assumptions ticked one by one, the units, the rights), the sheet and header row, what is
+    # not read; nothing is added before the dry run says Ready; a binding pins the sheet it was read from
+    for x in ('id="map-template"', "data-role=", 'type="datetime-local"', "data-assume=", "data-confirm=", 'id="q-rights"',
+              'id="map-sheet"', 'id="map-header"', "Not read (", 'id="map-source"', "Add to the graph", "wide: one result per column"):
+        assert x in add, x
+    assert 'r.status === "dry_run"' in add and "write: false" in add and "write: true" in add and "o.sheet = r.sheet" in add
+    # a new private graph's access is project unless the reader chooses; public is never the default
+    assert 'v === "institution" ? " selected"' in add and "prefs.access" not in add and "savePrefs({ project, contributor })" in add
+    # do not lose work: a working copy in IndexedDB (every call in try/catch), an Unsaved badge, beforeunload, a
+    # Download prompt after every add, one zip; the page says that browser storage can be cleared
+    assert "indexedDB.open" in add and add.count("} catch { return") >= 3 and '"beforeunload"' in add
+    assert "gx-badge-unsaved" in js and "Download it." in add and "which the browser can clear" in add
+    # the page uploads nothing: no request leaves addsource.js; a model sees a table's columns only through the egress
+    # gate, after the reader asks and approves
+    assert "fetch(" not in add and "XMLHttpRequest" not in add
+    # a publication needs the reader's own key, names the provider its text goes to, and is curated into the private
+    # graph chosen; a download reopens as a private graph; a changed reading asks again what was confirmed
+    assert "env.key()" in add and "with your key, and to no" in add and "curateCore(file, el, bound)" in js
+    assert "privateGraphIn(await readZip(" in add and "function reconfirm()" in add
+    assert "egressGate(levels, provider" in js and "async function modelHelp(" in js and "egressApprove(levels, provider" in js
+    node = shutil.which("node")
+    if not node:
+        pytest.skip("node is not installed")
+    zpath = tmp_path / "t.zip"
+    files = "[{ name: 'g/graph.json', data: enc.encode('{\"a\": 1}') }, { name: 'g/sources/é.csv', data: new Uint8Array([0, 255, 10]) }]"
+    script = (f"import * as A from {json.dumps((REPO / 'site/addsource.js').as_uri())};\n"
+              "import { writeFileSync } from 'node:fs';\n"
+              "const enc = new TextEncoder();\n"
+              f"const z = A.zipStore({files}), again = A.zipStore({files});\n"
+              f"writeFileSync({json.dumps(str(zpath))}, z);\n"
+              "const back = await A.readZip(z), m = (o) => enc.encode(JSON.stringify(o));\n"
+              "const pg = A.privateGraphIn(new Map([['x/manifest.json', m({ manifest_version: 1, reproduce: {} })], ['x/graph.json', m({})], ['x/README.txt', m('r')]]));\n"
+              "const bad = z.slice(); bad[bad.indexOf(0x61, 42)] ^= 1;\n"
+              "const damaged = await A.readZip(bad).then(() => 'read', (e) => e.message);\n"
+              "const notPg = A.privateGraphIn(new Map([['b/bundle.json', m({})], ['b/kg/graph.json', m({})]]));\n"
+              "console.log(JSON.stringify({ damaged, back: [...back].map(([n, b]) => [n, [...b]]), pg: Object.keys(pg.files), notPg, noZip: await A.readZip(enc.encode('plain')),\n"
+              "  same: Buffer.from(z).equals(Buffer.from(again)), crc: A.crc32(enc.encode('123456789')),\n"
+              "  b64: A.b64ToText(A.bytesToB64(enc.encode('héllo'))), iso: A.isoUTC('2026-03-02T10:00'), bad: A.isoUTC('2026-03-02'),\n"
+              "  local: A.localOf('2026-03-02T10:00:00Z'), id: A.labId('CO2RR Lab data!', () => 0.5),\n"
+              "  opts: A.cleanOpts({ a: '', b: [], c: {}, d: ['x', 'x'], e: 0, f: { r: 'C' } }),\n"
+              "  note: [A.pageNote(\"sheet 'FE' of 'A', 'FE'; give --sheet to choose another\"),\n"
+              "         A.pageNote('the header row was found, not given: row 4; give --header-row to settle it')],\n"
+              "  gaps: A.checklistGaps({ checklist: { a: { missing: 2 }, b: { missing: 3 } } }),\n"
+              "  cells: A.cellsChecked({ verify: { datasets: [{ cells: 4 }, { cells: 5 }] } }),\n"
+              "  readme: A.readme({ id: 'g', tool: 'scale-catal 0', schema: { version: '0.8.4' }, graph: { title: 'T', sha256: 'abc',\n"
+              "    nodes: 1, links: 0, access: 'project' }, reproduce: { commands: ['scale data new graph.json'] } }) }));")
+    run = subprocess.run([node, "--input-type=module", "-e", script], capture_output=True, text=True, timeout=60,
+                         env={"TZ": "UTC", "PATH": ""})
+    assert run.returncode == 0, run.stderr
+    out = json.loads(run.stdout)
+    with zipfile.ZipFile(zpath) as z:                 # a zip Python reads, its CRCs right, the same bytes every time
+        assert z.testzip() is None and z.namelist() == ["g/graph.json", "g/sources/é.csv"]
+        assert z.read("g/graph.json") == b'{"a": 1}' and z.read("g/sources/é.csv") == b"\x00\xff\n"
+    assert out["same"] and out["crc"] == 0xCBF43926 and out["b64"] == "héllo"
+    # the page reads its own download back: a private graph's folder (its README left out), never a bundle or another file
+    assert out["back"] == [["g/graph.json", list(b'{"a": 1}')], ["g/sources/é.csv", [0, 255, 10]]]
+    assert "damaged" in out["damaged"]                  # a byte changed after the download: refused by its checksum
+    assert out["pg"] == ["manifest.json", "graph.json"] and out["notPg"] is None and out["noZip"] is None
+    assert (out["iso"], out["bad"], out["local"]) == ("2026-03-02T10:00:00Z", "", "2026-03-02T10:00")
+    assert re.fullmatch(r"co2rr-lab-data-[0-9a-z]{4}", out["id"])
+    assert out["opts"] == {"d": ["x"], "e": 0, "f": {"r": "C"}}
+    assert out["note"] == ["sheet 'FE' of 'A', 'FE': choose another sheet above",
+                           "the header row was found, not given: row 4: set the header row above if it is another"]
+    assert (out["gaps"], out["cells"]) == (5, 9)
+    assert "scale data new graph.json" in out["readme"] and "browser can clear" in out["readme"] and "sha256 abc" in out["readme"]
+
+
+def test_a_batch_takes_up_to_ten_sources_of_any_kind_into_one_private_graph():
+    page = (REPO / "site/index.html").read_text()
+    js = (REPO / "site/explorer.js").read_text()
+    add = (REPO / "site/addsource.js").read_text()
+    # several files at once (the picker and a drop), at most MAX_BATCH, the others named as left out
+    assert '<input type="file" id="add-file" multiple' in page and "export const MAX_BATCH = 10;" in add
+    assert "files.slice(room)" in add and "left out" in add and 'data-remove="' in add
+    # each file's kind (paper, table, graph, bundle, a download, a DOI) and its state, one row each
+    for x in ('paper: "paper"', 'table: "table"', 'graph: "graph"', 'bundle: "bundle"', 'confirm: "needs your confirmation"',
+              '"needs key": "needs your key"', 'skipped: "skipped"', 'failed: "failed"'):
+        assert x in add, x
+    # one private graph made once; graphs merge first, then each table confirmed (or skipped), then papers in turn
+    run = add[add.index("  async function run() {"):add.index("  async function mergeItem(")]
+    assert run.count("await target(c)") == 1
+    assert run.index("mergeItem(l, it)") < run.index("confirmTable(l, it") < run.index("curateItem(l, it")
+    assert "Skip this table" in add and 'finishTable("skipped", "skipped by you")' in add and "Paper ${n} of ${of}" in add
+    # no key: papers wait for one, the rest goes in; with a key, one lawful-access statement for the papers
+    assert 'settle(it, "needs key"' in add and 'id="batch-attest"' in add and "Tick the statement about the papers first" in add
+    # a failure is that file's; a reload mid-batch names the files not added; the tab asks before it closes mid-batch
+    assert 'settle(it, "failed"' in add and 'BATCH_NOTE = "scale-add-batch"' in add and "!unsaved().length && !B.running" in add
+    assert "stopped before it ended" in js
+    # the Curate dialog hands several files, or a data or graph file, to Add a source; the board's button opens it
+    assert "curateOrAdd(fs)" in js and "addUI.take(fs)" in js and '$("board-curate").onclick = () => { $("board-dialog").close(); addUI.open(); };' in js
+    assert '<input type="file" id="curate-pdf" multiple' in page
+
+
+def test_analyze_is_the_toolbar_twin_of_add_a_source():
+    page = (REPO / "site/index.html").read_text()
+    js = (REPO / "site/explorer.js").read_text()
+    css = (REPO / "site/explorer.css").read_text()
+    bar = page[page.index('<header class="gx-toolbar">'):page.index('<form class="gx-search"')]
+    # right after Add a source, the same class, its own chart icon, the panel it controls; the canvas button is gone
+    assert bar.index('id="add-open"') < bar.index('id="analyze-open"') and bar.count('class="gx-curate-open"') == 2
+    assert 'aria-controls="analyze"' in bar and 'aria-pressed="false"' in bar and "<span>Analyze</span>" in bar
+    assert 'id="analyze-btn"' not in page and "analyze-btn" not in js
+    # never a dead click: it says why when there is no graph, the graph is loading or holds no numbers
+    assert "function analyzeWhyNot()" in js and 'b.setAttribute("aria-disabled", String(!!why))' in js
+    assert "if (on && analyzeWhyNot()) { status(analyzeWhyNot()); return; }" in js
+    # closing returns focus to it; at phone width both buttons are icons
+    assert '$("analyze-close").onclick = () => { openAnalyze(false); $("analyze-open").focus(); };' in js
+    assert ".gx-curate-open span" in css and '.gx-curate-open[aria-disabled="true"]' in css
+
+
+def test_each_graph_has_one_level_from_one_table_decided_by_what_its_document_says(tmp_path):
+    js = (REPO / "site/explorer.js").read_text()
+    css = (REPO / "site/explorer.css").read_text()
+    table = js[js.index("const LEVELS = {"):js.index("const levelCache")]
+    # five levels, each with its label, colour and one-line definition; "curated" is no level
+    labels = re.findall(r'label: "([^"]+)"', table)
+    assert labels == ["Catal-Commons", "Example", "Personal", "Team", "Private"] and table.count("tip: ") == 5
+    assert len(set(re.findall(r'colour: "([^"]+)"', table))) == 5 and '"curated"' not in js and "SCOPE" not in js
+    # the shared graph and the shipped examples by where they come from; any other by its document, as the egress gate
+    # reads it (closedLevels): none closed Personal, institution Private, else Team; unknown is the strictest
+    lk = js[js.index("function levelKey("):js.index("const synthetic")]
+    assert 'return "commons"' in lk and 'return "example"' in lk and "closedLevels(doc)" in lk
+    assert '!closed.length ? "personal" : closed.includes("institution") ? "private" : "team"' in lk and 'if (!doc) return "private"' in lk
+    # one casing: as the table writes it, never upper-cased; every badge carries its definition; Unsaved stays apart
+    assert "text-transform: uppercase" not in css[css.index(".gx-graph-scope {"):css.index(".gx-graph-detail")]
+    assert 'title="${esc(tip)}' in js and "${levelBadge(e, !L.saved)}" in js and "levelBadge(e)" in js
+    # Unsaved is a dot on the level's badge (its tooltip and its label kept), so a title keeps its room; graphs of one
+    # title are told apart by their order
+    assert 'class="gx-badge-unsaved" role="img" aria-label="Unsaved, not downloaded"' in js and ".gx-graph-scope.is-unsaved" in css
+    assert "`(${nth.get(e)}) ${e.title}`" in js
+    # Contribute only on a Personal graph; a synthetic example says so in its tooltip; the picker names the level
+    assert '(level === "personal" ? contribButton() : "")' in js and "synthetic: made up to show the format" in js
+    add = (REPO / "site/addsource.js").read_text()
+    assert "env.levelLabel(l.entry)" in add and '["institution", "Private: your lab only (access institution)"]' in add
+    node = shutil.which("node")
+    if not node:
+        pytest.skip("node is not installed")
+    # the rule, run on documents of each access: the explorer's own functions, with the egress module's closedLevels,
+    # each document given as the one a reader opened from a file
+    src = js[js.index("const LEVELS = {"):js.index("const levelBadge")]
+    mod = tmp_path / "levels.mjs"
+    mod.write_text(f"import {{ closedLevels }} from {json.dumps((REPO / 'site/egress.js').as_uri())};\n"
+                   "let own = null; const G = null, labOf = () => null; export function setOwn(o) { own = o; }\n"
+                   + src + "\nexport { levelOf };\n")
+    st = lambda **k: {"graph": {"stewardship": k} if k else {}, "nodes": [], "links": []}   # noqa: E731
+    docs = {"public": st(access="public"), "project": st(access="project"), "consortium": st(access="consortium"),
+            "institution": st(access="institution"), "none": st(),
+            "embargoed": st(access="embargoed", embargo_until="2999-01-01", access_after_embargo="public"),
+            "mixed": {**st(access="public"), "nodes": [{"id": "x", "label": "Sample", "props": {"stewardship": {"access": "project"}}}]}}
+    script = (f"import * as M from {json.dumps(mod.as_uri())};\n"
+              f"const docs = {json.dumps(docs)}, out = {{}};\n"
+              "for (const [k, d] of Object.entries(docs)) { const e = { id: k, from: '' }; M.setOwn({ entry: e, doc: d }); out[k] = M.levelOf(e)[3]; }\n"
+              "out.commons = M.levelOf({ id: 'catal-commons', from: 'graphs/catal-commons' })[3];\n"
+              "out.example = M.levelOf({ id: 'm', from: 'graphs/methanol' })[3];\n"
+              "out.synth = M.levelOf({ id: 's', from: 'domain/x', data_status: 'synthetic_example' })[2];\n"
+              "console.log(JSON.stringify(out));")
+    run = subprocess.run([node, "--input-type=module", "-e", script], capture_output=True, text=True, timeout=60)
+    assert run.returncode == 0, run.stderr
+    out = json.loads(run.stdout)
+    assert {k: out[k] for k in docs} == {"public": "personal", "project": "team", "consortium": "team", "institution": "private",
+                                         "embargoed": "private", "none": "private", "mixed": "team"}
+    assert out["commons"] == "commons" and out["example"] == "example" and "synthetic" in out["synth"]

@@ -111,7 +111,8 @@ identity map's digest and the access: the intersection of the graphs' audiences.
 
 ## The Analyze view
 
-The explorer's **Analyze** button opens a panel over the canvas (the inspector stays beside it):
+The explorer's **Analyze** button, in the toolbar beside **Add a source**, opens a panel over the canvas (the inspector
+stays beside it); with no graph open, a graph still loading or one whose records hold no number, it says why instead:
 
 - **Suggested charts**, from `--suggest`: per label, each outcome (conversion, selectivity, yield, Faradaic efficiency,
   rates) against each condition recorded with it (temperature, pressure, potential, space velocity, time) and the

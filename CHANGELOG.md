@@ -2,6 +2,54 @@
 
 ## Unreleased
 
+- **Add a source in the graph explorer (explorer, tools; no schema change, no migration).** One dialog, **Add a
+  source**, replaces *Upload, curate, and explore*: a file (dropped or chosen) or a DOI, whose kind the Python router
+  says (`scale.addsource.detect`, run in the page by the new `tools/pagelab.py`), so the page and `scale add-source`
+  agree. A table (CSV, .xlsx, read in Pyodide by `scale.datainput`) is matched to the built-in mappings and shown for
+  the reader to confirm: the template and its score, each role's column (a dropdown that re-binds it, pinning the sheet)
+  and unit, the wide columns melted, the sheet and header row, the questions (a date-time input for when the data were
+  recorded, each assumption ticked, a unit the header does not write, a publication table's rights) and what is not
+  read; it is added by `scale add-source` into a private graph made by `scale data new` (access project unless the
+  reader chooses) only after a dry run says Ready, then validated and verified cell by cell, with the records, results,
+  cells verified and checklist gaps and Explore, Analyze and Download. A publication goes to the in-browser curation
+  (its attestation kept) and can then be merged into a private graph, so that a table links to it (`--from-source`); a
+  DOI is answered with the command that fetches it; a graph file opens or merges. A private graph shows **Unsaved**
+  until downloaded, the tab asks before it closes, every addition prompts for Download, and a working copy in
+  IndexedDB comes back on reload (the page says the browser can clear it); the download is one zip (the graph, its
+  rights, sources and mappings, and a manifest of the tool and schema versions, the spec digest, each source's sha256
+  and how it was read, and the commands that rebuild the graph byte for byte). Optional model help for columns not
+  read goes through the egress gate with the reader's key. Nothing is uploaded and a private graph is never
+  contributed. `scale add-source`'s result for a table now carries each role's column and unit, the wide columns, the
+  header and sheets read and the other templates that fit; without processes (Pyodide) the framework repository is
+  found by its `.git` (docs/data.md, "In the graph explorer"). **Add a source takes a batch**: up to 10 sources of any
+  mix into one private graph (graphs merge first, each table confirmed or skipped in turn, each paper curated with the
+  reader's key, one file's failure that file's, one summary, a reload mid-batch naming what was not added); the Curate
+  dialog hands several files, or a data or graph file, to it; `scale add-source` takes up to 10 sources into one
+  document (`addsource.add_many`). **Analyze** moves to the toolbar, the twin of Add a source, and says why when there
+  is nothing to plot. **One level per graph** in the explorer, from one table (Catal-Commons, Example, Personal, Team,
+  Private), each with its colour and definition wherever it shows; a graph made or opened here takes its level from
+  the strictest access its document states, as the egress gate reads it; "curated" is no badge; Unsaved stays a state
+  beside the level; a new private graph is Private (access institution) unless the reader widens it.
+
+- **Any source into a graph of one's own, by one entry point (tools and a skill; no schema change, no migration).**
+  `scale add-source FILE_OR_DOI --into DOC` (and the agent tool `scale_add_source`, gated by the destination's access)
+  reads what the source is and routes it: a table (CSV, .xlsx) is matched to the built-in mappings and, when nothing
+  is uncertain, imported, validated and verified cell by cell, else nothing is written and the uncertain items come
+  back as questions, each with the option that settles it (`--bind`, `--confirm unit:COLUMN`, `--recorded-at`,
+  `--sheet`, `--data-rights`); a publication (a PDF, a DOI, its text) starts a curation folder in the data
+  repository's `work/sources/` with the document's stewardship, and `--finish FOLDER` folds the checked graph in (ids
+  kept, the Source's rights entry added to `rights.yaml`); a graph file is validated and merged with `--merge`,
+  refusing an id conflict, another schema version and records the repository's readers may not read;
+  `--from-source` makes a table's Dataset REPORTED_IN its publication. A table from outside the data repository is
+  copied into its `raw/`, and the rights entries of the Datasets whose cells a document quotes are written, so the
+  guard admits the commit. `scale data new DOC` (`scale_data_new`) writes an empty, valid research_data document;
+  `scale data init` writes one, `graphs/lab.json`, and its policy's `defaults.stewardship` names the project and the
+  contributor (`--contributor`); `scale call template` and `scale source start` now take that stewardship inside a
+  data repository (`scale source start` there puts its folder in `work/sources/`). Nothing of a person's is written
+  into the framework repository. An existing Dataset's evidence added later is no conflict for `scale data add`. The
+  skill `add-source` is the procedure an agent follows when a person says "turn this file into a graph"; docs/data.md
+  ("Your own data, from any source"), docs/private-data.md, README.
+
 - **Plot data and the explorer's Analyze view (tools, explorer; no schema change, no migration).** `tools/plotdata.py`
   turns a plot spec (a label with condition filters or a query plan; x and y a property path, a linked record's value or
   result entries through named links or a path of edges, a result entry or a count; series, by condition too, facet,

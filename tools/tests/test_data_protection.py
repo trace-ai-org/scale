@@ -278,7 +278,8 @@ def test_data_init_scaffolds_a_private_repository_with_hooks_and_no_remote(tmp_p
         assert (d / f).is_file(), f
     pol = audience.load_policy(d / "scale-data.yaml")
     assert pol["readers"] == {"access": "project", "project": PROJECT_A} and pol["remotes"] == [] \
-        and pol["endpoints"] == [] and pol["defaults"]["stewardship"] == {"access": "project", "project": PROJECT_A}
+        and pol["endpoints"] == [] and pol["defaults"]["stewardship"] == {"access": "project", "project": PROJECT_A,
+                                                                       "contributed_by": ["lab:org/my-lab"]}
     ignored = (d / ".gitignore").read_text()
     assert all(f"/{x}/" in ignored for x in ("raw", "index", "exports", "cache", "work"))
     assert git(d, "remote").stdout.strip() == ""

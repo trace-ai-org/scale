@@ -11,6 +11,124 @@ The data stay outside the graph. A Dataset names them by `version` or `uri` and 
 its `table` says how the bytes are read and what each column holds; an evidence item names one cell. New bytes are a
 new Dataset record (a new id and version, linked to the old one by `UPDATES`), never a new checksum on an old record.
 
+## Your own data, from any source
+
+One entry point turns what you have into records of your own graph: a publication, patent, thesis or report (a PDF,
+a DOI or its text), a table (CSV, Excel) or a graph file. An agent does the same by asking, with the add-source skill
+(`skills/add-source/SKILL.md`) and the tool `scale_add_source`.
+
+**1. Install, and make a data repository of your own** (once; outside any other git repository, above all outside the
+SCALE framework repository, whose readers are the public):
+
+```bash
+pip install "scale-catal[pdf]"              # [pdf]: reading PDFs (PyMuPDF; OCR needs tesseract)
+scale data init ~/data/co2 --project lab:project/co2 --contributor lab:org/ni-group
+```
+
+It writes a private git repository with a policy (who reads it: here the project's members), the guard's hooks and
+a starter document, `graphs/lab.json`, that states the policy's stewardship ([private-data.md](private-data.md)).
+`scale data new graphs/<name>.json` makes another.
+
+**2. Add sources:**
+
+```bash
+cd ~/data/co2
+scale add-source ~/Downloads/fe-runs.xlsx --into graphs/lab.json            # a table
+scale add-source ~/Downloads/fe-runs.xlsx --into graphs/lab.json --recorded-at 2026-03-02T10:00:00Z
+scale add-source ~/papers/smith2025.pdf --into graphs/lab.json              # a publication (or a DOI, or its text)
+scale add-source --finish work/sources/smith2025 --into graphs/lab.json     # once its graph is curated and checked
+scale add-source colleague.json --into graphs/lab.json --merge              # a graph file
+```
+
+| the source | what `scale add-source` does |
+|---|---|
+| a table (`.csv` of any common dialect, `.xlsx`, text laid out in columns) | matches the built-in mappings ([below](#built-in-mappings-scale-data-match)); when nothing is uncertain it imports the table (`scale data add`), validates the document and checks every cited cell against the file (`scale data verify`); a file from outside the repository is copied into `raw/`, its mapping saved in `work/mappings/`, and the rights entry of its Datasets (whose cells the document quotes) written to `rights.yaml`: `--data-rights own` by default, the project's own data |
+| uncertain | writes nothing and asks (exit 1): each **question** names what is unsure and the option that settles it, `--bind ROLE=COLUMN` (two columns fit, or one by a similar name), `--confirm unit:COLUMN` (a unit the header does not write), `--recorded-at` or `--origin reported` (when the data were recorded), `--sheet` (several sheets fit), `--template` (two kinds of table fit as well), `--confirm assumptions:TEMPLATE` (what the mapping records for every row: a control mode, a normalization, what a blank means), `--data-rights` (a publication's table, or any table given `--from-source`); cells no rule reads are fixed in the file. The notes (a header row found, decimal commas) are reported, never asked. Nothing is written, copied or saved until every question is answered and the cells are verified against the file |
+| a publication (PDF, DOI, `.txt`) | starts a curation folder in the repository's `work/sources/<slug>/` (kept on the computer) with the document's stewardship (`scale source start`); an agent curates it by the curate-corpus skill and `scale source check` holds it to the schema, the page texts and the copyright cap; `--finish FOLDER` folds the graph into the document (records keep their ids, the Source's rights entry goes to `rights.yaml`, the result must validate). A DOI with no open-access copy under an open licence asks for the PDF (`--doi DOI` with the file) |
+| a graph (`.json`) | validates it; `--merge` adds its records, refusing a record the document holds with other content, a graph of another schema version and records the repository's readers may not read; each record keeps its audience |
+| a table of a publication | `--from-source SOURCE_ID --locator "Table 2"`: the Dataset cites the publication's Source and is REPORTED_IN it |
+
+Each run says what it added, what the catalysis checklist still misses on the added records (a test's reaction, its
+feed or electrolyte: for you to add when you know them, never typical values) and where the document is. **The
+document in the repository is the durable copy**: commit it (`git add`, `git commit`; the hooks check what is
+committed). A copy opened in the explorer, a browser tab or a chat is a working copy.
+
+**3. Explore, ask, plot.**
+
+- *Explore*: open [the graph explorer](https://trace-ai-org.github.io/scale/), **Open a graph or bundle**, and choose
+  `graphs/lab.json`: the page reads the file in your browser (or add the sources there, below). A question to a model from there goes to that provider
+  only when you approve it for the document's access ([private-data.md](private-data.md#egress-what-a-model-may-receive)).
+- *Ask*: `scale graph query graphs/lab.json PLAN` (the query-graph skill writes the plan), and across graphs without
+  merging them: `scale graph query --graph lab=graphs/lab.json --graph pub=catal-commons.json PLAN`
+  ([querying.md](querying.md#querying-across-graphs)).
+- *Plot*: `scale data matrix --graph lab=graphs/lab.json --plan PLAN --contract CONTRACT --out matrix/` writes a
+  typed table (`matrix.csv`, with its manifest) to plot with any tool; nothing is converted, so plot one unit and
+  basis at a time.
+
+### In the graph explorer, with nothing to install: Add a source
+
+[The graph explorer](https://trace-ai-org.github.io/scale/) has the same entry point as a page: **Add a source**
+(the toolbar) takes up to 10 sources at once, of any mix (files dropped or chosen, DOIs), and adds them all to one
+**private graph** in your browser, so that a topic is read together, by the code of `scale add-source` (`tools/pagelab.py`,
+run in Pyodide by `site/worker.js`). What each file is, the Python router says (`addsource.detect`), so the page and
+the command line agree. The batch is a list, each source with its kind (paper, table, graph) and its state (waiting,
+needs your confirmation, curating, added, failed, skipped, needs your key), each removable before it runs; past 10, the
+first 10 are kept and the others named. When it runs, the private graph (a new one or one you choose) is made once;
+graphs and bundles merge first, with no question; each table is then shown for you to confirm, one at a time (or
+skipped); then each paper is curated with your key, one after another ("paper 2 of 4"). One file's failure is that
+file's; without a key the papers wait for one and the rest goes in. The batch ends with one summary: what each source
+added (records, results, cited cells matched), what was skipped or failed and why, Explore and Analyze. A reload in the
+middle of a batch keeps what was added and names the files that were not.
+
+| the source | what the page does |
+|---|---|
+| a table (CSV, `.xlsx`) | matches the built-in mappings and shows how it reads the file for you to confirm: the kind of table (the template) and its score, each role with its column (a dropdown to re-bind it) and unit, the wide columns melted (one result per column), the sheet and header row, the questions (when the data were recorded, with a date-time input, or *from a publication*; each assumption of the mapping, ticked one by one; a unit the header does not write; the rights of a publication's table), and what is not read (columns, other sheets, rows after a blank row). **Add to the graph** stays grey until a dry run says *Ready* with the records and results it will add and the cells it checked against the file; then it adds them (`scale add-source`), validates, verifies every cited cell and shows the records, results, cells verified and checklist gaps, with **Explore**, **Analyze** and **Download** |
+| a publication (PDF, text) | hands it to the in-browser curation (your own API key, the lawful-access statement); the curated graph can then be added to a private graph (*Add to a private graph*), its PDF never kept, so that the tables you add link to it (*Link it to a publication*: `--from-source`) |
+| a DOI | says that a page cannot fetch a paper by its DOI and gives the command that does (`scale add-source DOI --into graph.json`) |
+| a graph (`.json`), a bundle (`.zip`) | opens it, as **Open a graph or bundle** does; a graph can instead be merged into a private graph (`--merge`: refused on a conflict or another schema version) |
+
+A new private graph is made by `scale data new` with the project, your lab and who may read it (access `institution`,
+your lab only, unless you choose: never public by default). Each graph in the explorer's list carries one level, the
+same badge, colour and definition everywhere (the list, its details, the Into picker):
+
+| level | what it is |
+|---|---|
+| Catal-Commons | the shared catal-commons graph (`graphs/catal-commons`) |
+| Example | a public example graph the site ships (the other `graphs/`, `examples/`, the domain's synthetic fixtures, which say so) |
+| Personal | a public-access graph in this browser only: a paper you curated, a public graph you opened; you can contribute it |
+| Team | not public, shared beyond your lab: access `project` or `consortium` |
+| Private | not public, your lab only: access `institution` or `embargoed` |
+
+A private graph's or an opened file's level is read from its document (the strictest access of its header and records,
+as the egress gate reads it), never from where it came from; **Unsaved** is a state shown beside the level, not a level. **Private**: everything runs in the browser and nothing is uploaded; a
+private graph is never contributed (it has no Contribute button); a model reads something only with your own key and
+after the egress gate's approval ([private-data.md](private-data.md#egress-what-a-model-may-receive)). The optional
+model help for a table's columns not read is off until you click it, and sends only those columns' headers and three
+sample values each; its suggestions are only suggestions, which you choose in the table.
+
+**Do not lose the work.** A private graph lives in the tab and in a working copy in the browser's storage
+(IndexedDB), which a reload restores; a browser can clear that storage, so the page shows **Unsaved** on the graph
+and above the list until you download it, asks before the tab closes, and prompts for **Download** after every
+addition. The download is one zip, the durable copy:
+
+```text
+<id>/graph.json            the graph
+<id>/manifest.json         the tool and schema versions (the spec's sha256), each source's sha256 and how it was
+                           read (template, sheet, bindings, answers), and the commands that rebuild graph.json
+<id>/rights.yaml           the rights of the sources it quotes
+<id>/sources/              the files added (a publication: its curated graph and rights, never its PDF)
+<id>/work/mappings/        the mapping each table was read with
+<id>/README.txt
+```
+
+On the command line the same batch is `scale add-source a.pdf b.csv c.xlsx lab.json --into graph.json` (up to 10, each
+on its own; the options apply to every source).
+
+In an empty folder outside the SCALE repository, with `sources/` copied into it, the manifest's
+`reproduce.commands` (`scale data new graph.json …`, then one `scale add-source …` per source, then
+`scale graph validate` and `scale data verify`) write the same `graph.json`, byte for byte, with the same tool and
+schema versions.
+
 ## From a laboratory's file to a graph
 
 Nobody writes a mapping by hand to import a table. The repository carries reviewed mappings for the tables
