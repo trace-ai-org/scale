@@ -822,6 +822,20 @@ class Comparison:
             return f"incompatible_unit ({r.text!r}; the ranking is in {wanted_unit!r})"
         return None
 
+    def compared_as(self, owner: dict, prop: str, x: Any) -> tuple[dict | None, str | None]:
+        """How a value of ``owner``'s ``prop`` (a property, or the property a result entry is an entry of) would be
+        compared in scientific mode: (its tag: unit, kind, contexts, None) when it can be; (None, why) when it cannot
+        (a unit the contracts do not read or of another dimension, a context not stated or stated two ways, a
+        denominator that names nothing); (None, None) when no quantity contract applies to it. The plot data
+        (:mod:`plotdata`) reads values by it, so that a chart keeps apart what a scientific comparison keeps apart."""
+        if self.c is None or not isinstance(x, dict):
+            return None, None
+        got = quantities.read_value(self.c, self.spec, owner, prop, x, self.g.records, self.variables)
+        if got is None:
+            return None, None
+        why = self._context(prop, got, {})
+        return (None, why) if why else (self.tag(got, x), None)
+
     def tag(self, got: quantities.Read | None, x: dict) -> dict:
         """The unit, kind and contexts a value was compared on (and its denominator, with what the named value says of
         its origin; whether it is an evidenced conversion; what its producer states of the properties its kind shows)."""

@@ -210,6 +210,44 @@ TOOLS: list[dict] = [
                            "description": "Properties whose units to keep, e.g. temperature, pressure, conditions."}}},
     },
     {
+        "name": "scale_plot_data",
+        "description": "The data of a chart from a document (or several, graphs): a plot spec {plot: 1, label (the records, "
+                       "e.g. CatalyticTest) with where, or a whole query plan; x and y (a property path such as "
+                       "temperature or electrode_potential, catalyst/sample/source as a category, or {entries: "
+                       "faradaic_efficiency, kind, variable, target} for one result entry per point); series and facet "
+                       "(product, catalyst, sample, source, graph or a property path); mark point, line or bar} gives "
+                       "panels of points, each x and y as reported (a value with its uncertainty, a one-sided bound, or "
+                       "a range; never converted), the record and result entry it comes from and its evidence (source, "
+                       "locator). Values in two units, two comparison contexts (a potential's reference scale, a share's "
+                       "species, a pressure's convention) or two quantity contracts are separate panels, never one axis; "
+                       "a value whose context is not stated is left out, and everything left out is counted by axis and "
+                       "reason. With suggest: true (no spec), charts worth drawing from what the graph holds, each a "
+                       "ready spec. format csv adds the points as CSV with provenance columns; view model returns the "
+                       "points in pages. Writes nothing.",
+        "input_schema": {"type": "object", "properties": {
+            "spec": {"type": "object", "description": "The plot spec (docs/analyze.md)."},
+            **_DOC, **_DOMAIN,
+            "graphs": {"type": "array", "description": "Plot from several documents, never merged (as scale_query's graphs).",
+                       "items": {"type": "object", "required": ["alias"], "properties": {
+                           "alias": {"type": "string"}, "path": _DOC["path"], "document": _DOC["document"],
+                           "spec_sha256": {"type": "string"}}}},
+            "identity_map": {"description": "With graphs: the evidenced identity map of shared reference records.",
+                             "type": ["object", "string"]},
+            "suggest": {"type": "boolean", "description": "Return suggested charts (ready specs) instead of a chart's data."},
+            "field": {"type": "object", "description": "Instead of a chart: what a condition filter on {label, target} can "
+                                                       "keep (target a path, sample.bet_area, or {via, path}): the text "
+                                                       "values present, or the units and ranges of the numbers."},
+            "descriptors": {"type": "object", "description": "Instead of a chart: the descriptors (variables and products) "
+                                                             "of a result list {label, target: {entries (, via)}}, with "
+                                                             "their points and spread, the most informative first."},
+            "format": {"type": "string", "enum": ["json", "csv"], "description": "csv adds the points as CSV text."},
+            **_VIEW,
+            "offset": {"type": "integer", "minimum": 0, "default": 0,
+                       "description": "With view model: the first point of the page (page.next gives the next one's)."},
+            "page_size": {"type": "integer", "minimum": 1, "maximum": 500, "default": 50,
+                          "description": "With view model: at most this many points in a page."}}},
+    },
+    {
         "name": "scale_trace_ai",
         "description": "Read the TRACE-AI publication checklist (agentic catalysis: data, models, workflow, executable "
                        "artifacts; Xin et al., Chem Catal. 2026) on a document's records, or on one source's: for each "
@@ -857,6 +895,54 @@ class ScaleToolkit:
                 raise ScaleError(f"{k} is a list of names, not {v!r}")
         doc = self._load(path)["doc"] if document is None and path else self._doc(document, path)
         return pgraph.stats(doc, labels, properties)
+
+    def _scale_plot_data(self, spec: dict | None = None, document: dict | None = None, path: str | None = None,
+                         domain: str | None = None, graphs: list | None = None, identity_map: Any = None,
+                         suggest: bool = False, format: str = "json", view: str = "full", offset: int = 0,
+                         page_size: int = 50, field: dict | None = None, descriptors: dict | None = None) -> dict:
+        from . import plotdata
+        _check_view(view)
+        if format not in ("json", "csv"):
+            raise ScaleError(f"format is json or csv, not {format!r}")
+        if graphs is not None:
+            if document is not None or path:
+                raise ScaleError("give graphs, or a document or path, not both")
+            members = self._members(graphs, domain)
+        else:
+            if identity_map is not None:
+                raise ScaleError("identity_map identifies records across graphs: give graphs")
+            if document is not None and path:
+                raise ScaleError("give a document or a path, not both")
+            if document is None and not path:
+                raise ScaleError("give a document (inline), a path, or graphs")
+            members = self._members([{"alias": "graph", **({"path": path} if path else {"document": document})}], domain)
+            if members[0].get("status") in ("unavailable", "unsupported_version"):
+                raise ScaleError(members[0].get("error") or "the document cannot be read")
+        if descriptors is not None:
+            if not isinstance(descriptors, dict) or not isinstance(descriptors.get("label"), str) or "target" not in descriptors:
+                raise ScaleError("descriptors is {label, target}: the records and their result list ({entries (, via)})")
+            return plotdata.descriptors(members, descriptors["label"], descriptors["target"])
+        if field is not None:
+            if not isinstance(field, dict) or not isinstance(field.get("label"), str) or "target" not in field:
+                raise ScaleError("field is {label, target}: the records and what a filter would read of them")
+            return plotdata.field_values(members, field["label"], field["target"])
+        if suggest:
+            if spec is not None:
+                raise ScaleError("suggest returns specs: give no spec with it")
+            return plotdata.suggest(members)
+        if isinstance(spec, str):
+            try:
+                spec = json.loads(spec)
+            except ValueError:
+                raise ScaleError("spec is a JSON object (a plot spec), not text that does not parse as one") from None
+        if spec is None:
+            raise ScaleError("give a plot spec (spec), or suggest: true for suggested charts")
+        res = plotdata.plot_data(members, spec, self._identity_map(identity_map))
+        if view == "model":
+            return plotdata.model_view(res, int(offset or 0), int(page_size or 50))
+        if format == "csv":
+            res["csv"] = plotdata.to_csv(res)
+        return res
 
     def _scale_trace_ai(self, document: dict | None = None, path: str | None = None, domain: str | None = None,
                         source: str | None = None, format: str = "json") -> dict:
