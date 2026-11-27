@@ -449,3 +449,63 @@ console.log(JSON.stringify({ok: ok.checks, bad: bad.checks, html: ok.html, line:
     assert out["bad"]["locators"] == ["ex:t/test/1: p. 9"] and not out["ok"]["locators"]     # a page the evidence lacks
     # a model view shortens ids with ~ for its id_prefix: returned and cited ids are read in full
     assert out["seen2"] == ["ex:t/test/1"] and out["tilde"]["cited"] == 1 and not out["tilde"]["unknown"]
+
+
+ANALYZE_PANEL = {"x": {"type": "quantity", "title": "T (°C)", "label": "T"},
+                 "y": {"type": "quantity", "title": "X (%)", "label": "X"}, "series": ["a"], "facets": [], "points": [
+                     {"id": "g::v", "record": "v", "x": {"type": "value", "value": 1, "unit": "°C"},
+                      "y": {"type": "value", "value": 5, "uncertainty": 0.5, "unit": "%"}, "series": "a", "evidence": []},
+                     {"id": "g::b", "record": "b", "x": {"type": "value", "value": 2, "unit": "°C"},
+                      "y": {"type": "bound", "bound": "upper", "value": 1, "unit": "%"}, "series": "a", "evidence": []},
+                     {"id": "g::r", "record": "r", "x": {"type": "range", "lower": 3, "upper": 4, "unit": "°C"},
+                      "y": {"type": "value", "value": 2, "unit": "%"}, "series": "a", "evidence": []}]}
+
+
+def test_the_analyze_view_draws_scale_plot_data_honestly_and_loads_vega_pinned():
+    page = (REPO / "site/index.html").read_text()
+    js = (REPO / "site/explorer.js").read_text()
+    an = (REPO / "site/analyze.js").read_text()
+    worker = (REPO / "site/worker.js").read_text()
+    # an Analyze button beside the graph view opens the panel; its data is scale_plot_data, run in the worker
+    assert 'id="analyze-btn"' in page and 'id="analyze"' in page and "analyze.js" in site.PAGES
+    assert '"./analyze.js"' in site.STAMPED["explorer.js"] and 'scale("plot_data", { suggest: true })' in js
+    assert 'op === "table"' in worker and "plotdata.table_data" in worker
+    # vega, vega-lite and vega-embed: pinned versions, checked against their digests, loaded only when a chart is drawn,
+    # with a loader that fetches nothing (a chart's data is inline)
+    assert all(f"/{v}/" in an for v in ("vega/5.30.0", "vega-lite/5.21.0", "vega-embed/6.26.0")) and an.count('"sha384-') == 3
+    assert "crossOrigin" in an and "NO_LOADER" in an and "actions: false" in an
+    # a linked file is attached in the inspector, read and digested here (crypto.subtle), sent nowhere
+    assert "Attach local file" in js and "sha256Hex(buf)" in js and 'LINKED_FILE_LABELS = ["Dataset", "TimeSeries"]' in js
+    # the reader's model gets a plot tool; the chart is drawn in the answer card, the model reads it in pages
+    assert '{ name: "plot",' in js and 'view: "model"' in js and "r.charts" in js
+    # condition filters read the values present from SCALE; the builder folds after a plot; many panels get a selector;
+    # each chart lists its points in a keyboard-reachable table; the last chart of a graph is remembered in the tab
+    assert "plotCall({ field:" in js and 'id="an-edit"' in js and "an-pick-" in js and "gx-an-table" in js
+    assert "scale-analyze:${G.entry.id}" in js and 'e.key === "Escape"' in js and '"conditions"' in js
+    node = shutil.which("node")
+    if not node:
+        pytest.skip("node is not installed")
+    script = (f"import * as A from {json.dumps((REPO / 'site/analyze.js').as_uri())};\n"
+              f"const p = {json.dumps(ANALYZE_PANEL)};\n"
+              "const rows = A.rowsOf(p), spec = A.vegaSpec(p, { mark: 'line' });\n"
+              "const count = A.vegaSpec({ ...p, y: { type: 'count', title: 'records' }, x: { type: 'category', title: 'k' }, "
+              "buckets: [{ x: 'a', records: 2, sources: 1 }] });\n"
+              "const hist = A.vegaSpec({ ...p, y: { type: 'count' }, histogram: { bins: [{ lo: 0, hi: 10, records: 3 }] } });\n"
+              "console.log(JSON.stringify({ rows, layers: spec.layer.map((l) => [l.mark.type, l.transform ? "
+              "l.transform[0].filter : null]), count: count.layer[0].data.values, hist: hist.layer[0].data.values, "
+              "header: A.csvHeader('a,\"b,\"\"c\"\"\"\\n1,2'), via: A.specFrom({ label: 'L', x: 'v:' + "
+              "JSON.stringify({ via: [{ edge: 'E', to: 'T' }], path: 'p' }), y: 'count' }), "
+              "digest: [A.digestCheck('ABC', 'abc'), A.digestCheck('', 'abc'), A.digestCheck('x', 'abc')], "
+              "shown: p.points.map((q) => A.shown(q.y)) }));")
+    run = subprocess.run([node, "--input-type=module", "-e", script], capture_output=True, text=True, timeout=60)
+    assert run.returncode == 0, run.stderr
+    out = json.loads(run.stdout)
+    v, b, r = out["rows"]
+    assert (v["kind"], v["ylo"], v["yhi"]) == ("value", 4.5, 5.5)                    # an uncertainty is an error bar
+    assert (b["kind"], b["marker"]) == ("bound", "triangle-down")                      # at most: an open triangle down
+    assert (r["kind"], r["x"], r["x2"], r["xr"]) == ("range", 3, 4, True)              # a range: one end to the other
+    assert ["rule", "datum.xr && !datum.yr"] in out["layers"] and ["point", "datum.kind === 'bound'"] in out["layers"]
+    assert ["line", "datum.kind === 'value'"] in out["layers"]                         # a line joins values only
+    assert out["count"] == [{"x": "a", "records": 2, "sources": 1, "series": ""}] and out["hist"][0]["records"] == 3
+    assert out["header"] == ["a", 'b,"c"'] and out["via"]["x"] == {"via": [{"edge": "E", "to": "T"}], "path": "p"}
+    assert out["digest"] == ["verified", "not_recorded", "mismatch"] and out["shown"] == ["5 ± 0.5 %", "≤ 1 %", "2 %"]

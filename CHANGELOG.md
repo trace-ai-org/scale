@@ -21,6 +21,20 @@
   skill `add-source` is the procedure an agent follows when a person says "turn this file into a graph"; docs/data.md
   ("Your own data, from any source"), docs/private-data.md, README.
 
+- **Plot data and the explorer's Analyze view (tools, explorer; no schema change, no migration).** `tools/plotdata.py`
+  turns a plot spec (a label with condition filters or a query plan; x and y a property path, a linked record's value or
+  result entries through named links or a path of edges, a result entry or a count; series, by condition too, facet,
+  mark) into typed chart points over one or several graphs, each with its measurement context (conditions, sample,
+  feed, electrolyte, source, assay, product): each value as reported (a value with its uncertainty, a one-sided bound, a range), read under its
+  graph's quantity contracts as a scientific comparison reads it (`Comparison.compared_as`), values of two units,
+  contexts or contracts in separate panels, never converted or averaged, two result entries paired only through one
+  assay, proposals and predictions left out by default, everything left out counted by reason, counts, histogram bins
+  and box statistics computed once; suggested charts; a linked data file read with its sha256 checked against its
+  Dataset record and the rows records cite marked. `scale graph plot-data`, `scale data plot-table` and the
+  `scale_plot_data` tool (behind the egress gate) give it; the graph explorer's Analyze panel draws it (Vega-Lite,
+  pinned and checked), selects a point's record on click, downloads SVG, PNG, CSV and JSON, reads a local file attached
+  to a Dataset in the browser only, and gives a reader's own model a plot tool. The query-graph skill points agents to
+  it (docs/analyze.md).
 - **Built-in data mappings: a laboratory's file into a document without writing a mapping (tools; no schema change, no
   migration).** `scale data match FILE` (and the agent tool `scale_data_match`) scores the reviewed mapping templates
   of the new library `domain/data-mappings/` (CO2RR Faradaic efficiency and partial current density vs potential,

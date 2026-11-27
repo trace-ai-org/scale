@@ -1,6 +1,6 @@
 ---
 name: query-graph
-version: 0.3.2
+version: 0.3.3
 description: Answer a scientific question from scale-catal documents by writing and running a graph query plan that returns rows as reported, with evidence, the records left out and why, its coverage and the kind of answer — reporting absences instead of filling them. When the question asks what to do (how to make a material, how to run a test), the answer is a proposal built from the graph's closest records, each step citing the record it comes from, checked before it is presented and reviewed once by a second agent. Use whenever the user asks what the sources report about something, or how to make a material or run a test, from scale-catal documents.
 scale_release: ">=v0.3.0"
 inputs:
@@ -12,11 +12,13 @@ allowed-tools:
   - Bash(scale graph query:*)   # patterns, filters, evidence search, dated paths
   - Bash(scale graph search:*)   # evidence by words and meaning (vectors + BM25)
   - Bash(scale graph recipe:*)   # a preparation read whole: its stages and steps in order
+  - Bash(scale graph plot-data:*)   # a chart's points as reported, by panel (docs/analyze.md)
   - Bash(scale graph filter:*)   # the view a reader may see, for an answer that may go to them
   - Bash(scale call describe:*)   # the same through the agent tools
   - Bash(scale call query:*)
   - Bash(scale call search:*)
   - Bash(scale call recipe:*)
+  - Bash(scale call plot_data:*)
   - Bash(python3 -I ${CLAUDE_SKILL_DIR}/scripts/*)   # scripts/precedents.py (a proposal's precedents) and scripts/check_quotes.py (its quotes)
   - Bash(scale gap from-query:*)   # local files; nothing filed
   # write access to the working directory only
@@ -303,6 +305,7 @@ A generated explanation is a presentation of the retrieved evidence, not a repla
 - An answer goes only where the whole queried document may go: the result's `access` is the least open stewardship anywhere in it (its header, every record, the notices, sources and datasets no row shows included), and no part of the answer (a row, a value, a record named as left out, a count) is more open. When it is not public and the answer is for readers the document does not admit, never pass it on: query the view `scale graph filter --public` (or `--as <id>`) makes for them, whose answers have that view's own `access`, and say that the view holds only what they may see. A second-hand note names its sources by id unless the document is all public. Embargoes are read today, the earlier of the local and the UTC date, as every SCALE path reads them (an `as_of` YYYY-MM-DD may read them on an earlier day, never a later one). A `scale graph search` result carries the same `access`.
 - Synthetic examples (`data_status: synthetic_example`) are not evidence about the world; use them only to test a plan, and label them.
 - An absence means absence in the queried graph, never in the literature.
+- To show a trend, a distribution or a comparison, plot it: `scale graph plot-data G SPEC` (`scale_plot_data`; `--suggest` proposes specs) gives each point as reported with its record and evidence, values of two units or contexts in separate panels, bounds as bounds and what was left out by reason (docs/analyze.md). Describe a chart from its panels, points and `left_out`, never from a picture; a count counts records, not sources or results.
 - A record agents extracted and no person checked (its stewardship's `autonomy_level`) is a lead: say so when a
   decision of a proposal rests on one of its values (a size, a shape, a phase, a class).
 - What a proposal aims at is a hypothesis until it is measured: a nominal ratio does not prove the composition
