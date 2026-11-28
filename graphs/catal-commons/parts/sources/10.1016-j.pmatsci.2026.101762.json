@@ -1,0 +1,2504 @@
+{
+  "nodes": [
+    {
+      "id": "scale:commons/10.1016-j.pmatsci.2026.101762/c/agau-dealloying-her",
+      "label": "Claim",
+      "props": {
+        "name": "Dealloying AgAu nanoparticles boosts HER at an optimum cycle number",
+        "claim_kind": "finding",
+        "claim_status": "supported",
+        "evidence": [
+          {
+            "kind": "text",
+            "evidence_type": "ECO:0000033",
+            "locator": "p. 29",
+            "note": "second-hand: restates results of ref [113] as cited by the review",
+            "quote": "at −1.0 V vs. MSE. However, further dealloying beyond a certain point did not increase catalytic activity, indicating that there is an",
+            "source": "scale:commons/source/10.1016-j.pmatsci.2026.101762"
+          },
+          {
+            "kind": "text",
+            "evidence_type": "ECO:0000033",
+            "locator": "p. 29",
+            "note": "second-hand: restates results of ref [113] as cited by the review",
+            "quote": "optimal number of cycles for dealloying. The highest electrocatalytic activity was achieved after 100 cycles (Fig. 19f).",
+            "source": "scale:commons/source/10.1016-j.pmatsci.2026.101762"
+          }
+        ],
+        "inference_type": "meta_analysis",
+        "origin": "reported",
+        "statement": "Cyclic dealloying of AgAu nanoparticles in 1.0 M HClO4 (0 to 1.3 V vs. Ag/AgCl, 1 V/s) enhances HER activity: even 0.5 cycles gives a ten-fold current increase at -1.0 V vs. MSE, activity is maximal after 100 cycles, and further cycling does not improve it; the same treatment does not enhance pure Au nanoparticles."
+      }
+    },
+    {
+      "id": "scale:commons/10.1016-j.pmatsci.2026.101762/c/au-reconstruction",
+      "label": "Claim",
+      "props": {
+        "name": "Au(111) reconstruction depends on potential relative to pzc",
+        "claim_kind": "finding",
+        "claim_status": "supported",
+        "evidence": [
+          {
+            "kind": "text",
+            "evidence_type": "ECO:0000033",
+            "locator": "p. 10",
+            "note": "second-hand: restates results of ref [91] as cited by the review",
+            "quote": "reconstruction, leading to the dominance of an unreconstructed surface [91].",
+            "source": "scale:commons/source/10.1016-j.pmatsci.2026.101762"
+          },
+          {
+            "kind": "text",
+            "evidence_type": "ECO:0000033",
+            "locator": "p. 10",
+            "note": "second-hand: restates results of refs [54, 93] as cited by the review",
+            "quote": "HER compared to the unreconstructed (1x1) surface (Fig. 7g) [54,93].",
+            "source": "scale:commons/source/10.1016-j.pmatsci.2026.101762"
+          }
+        ],
+        "inference_type": "meta_analysis",
+        "origin": "reported",
+        "statement": "Reconstructed metal surfaces tend to be stable at potentials negative of the potential of zero charge, while positive surface charge lifts the reconstruction; the reconstructed Au(111) surface shows lower HER activity than the unreconstructed (1x1) surface, whose lifting-induced islands act as active defect sites."
+      }
+    },
+    {
+      "id": "scale:commons/10.1016-j.pmatsci.2026.101762/c/cc-anisotropic",
+      "label": "Claim",
+      "props": {
+        "name": "Cathodic corrosion is crystallographically anisotropic",
+        "claim_kind": "finding",
+        "claim_status": "supported",
+        "evidence": [
+          {
+            "kind": "text",
+            "evidence_type": "ECO:0000033",
+            "locator": "p. 37",
+            "note": "second-hand: restates results of refs [42, 116] as cited by the review",
+            "quote": "revealing a crucial aspect of cathodic corrosion: it occurs anisotropically [42,116].",
+            "source": "scale:commons/source/10.1016-j.pmatsci.2026.101762"
+          },
+          {
+            "kind": "text",
+            "evidence_type": "ECO:0000033",
+            "locator": "p. 38",
+            "note": "second-hand: restates results of ref [42] as cited by the review",
+            "quote": "from anodic conditions, with Pt(111) exhibiting the highest susceptibility and Pt(110) the greatest stability.",
+            "source": "scale:commons/source/10.1016-j.pmatsci.2026.101762"
+          }
+        ],
+        "inference_type": "meta_analysis",
+        "origin": "reported",
+        "statement": "Cathodic corrosion proceeds anisotropically: on Au the (111), (100) and (110) basal planes evolve differently (all toward (111)-type stepped surfaces), and on spherical Pt single crystals the earliest etch pits are symmetry-specific (square on Pt(100), triangular on Pt(111), rectangular on Pt(110)), with Pt(111) the most susceptible and Pt(110) the most stable - the reverse of the anodic order."
+      }
+    },
+    {
+      "id": "scale:commons/10.1016-j.pmatsci.2026.101762/c/cc-cations-au",
+      "label": "Claim",
+      "props": {
+        "name": "Cation identity orders Au corrosion severity",
+        "claim_kind": "finding",
+        "claim_status": "supported",
+        "evidence": [
+          {
+            "kind": "text",
+            "evidence_type": "ECO:0000033",
+            "locator": "p. 42",
+            "note": "second-hand: restates results of refs [32, 43] as cited by the review",
+            "quote": "enhancement follows the trend LiOH > NaOH > KOH, while CsOH produces little to no measurable restructuring over the same",
+            "source": "scale:commons/source/10.1016-j.pmatsci.2026.101762"
+          },
+          {
+            "kind": "text",
+            "evidence_type": "ECO:0000033",
+            "locator": "p. 42",
+            "note": "second-hand: restates results of refs [196, 197] as cited by the review",
+            "quote": "Fig. 31a and 31b present cyclic voltammograms recorded in H2SO4 before and after cathodic polarization at −1.6 V vs. RHE in 5 M LiOH, NaOH, KOH, and CsOH.",
+            "source": "scale:commons/source/10.1016-j.pmatsci.2026.101762"
+          }
+        ],
+        "inference_type": "meta_analysis",
+        "origin": "reported",
+        "statement": "For Au polarized for 60 s at -1.6 V vs. RHE in 5 M alkali hydroxides (LiOH, NaOH, KOH, CsOH), the (111) enrichment and EASA enhancement follow LiOH > NaOH > KOH, while CsOH produces little to no measurable restructuring over the same potential range."
+      }
+    },
+    {
+      "id": "scale:commons/10.1016-j.pmatsci.2026.101762/c/cc-cations-pt",
+      "label": "Claim",
+      "props": {
+        "name": "Cation identity orders Pt corrosion differently",
+        "claim_kind": "finding",
+        "claim_status": "supported",
+        "evidence": [
+          {
+            "kind": "text",
+            "evidence_type": "ECO:0000033",
+            "locator": "p. 46",
+            "note": "second-hand: restates results of ref [33] as cited by the review",
+            "quote": "RHE, the extent of surface area generation follows the order KOH > NaOH > LiOH, different from the trend observed for Au surfaces.",
+            "source": "scale:commons/source/10.1016-j.pmatsci.2026.101762"
+          }
+        ],
+        "inference_type": "meta_analysis",
+        "origin": "reported",
+        "statement": "For Pt under identical conditions (5 M AOH, A = Li, Na, K, at -1 V vs. RHE), the extent of surface area generation follows KOH > NaOH > LiOH - a different order from Au."
+      }
+    },
+    {
+      "id": "scale:commons/10.1016-j.pmatsci.2026.101762/c/cc-cations-required",
+      "label": "Claim",
+      "props": {
+        "name": "Non-reducible cations are requisite for cathodic corrosion",
+        "claim_kind": "causal",
+        "claim_status": "supported",
+        "evidence": [
+          {
+            "kind": "text",
+            "evidence_type": "ECO:0000033",
+            "locator": "p. 32",
+            "note": "second-hand: restates results of refs [33, 44] as cited by the review",
+            "quote": "no cathodic corrosion features were observed in the absence of cations",
+            "source": "scale:commons/source/10.1016-j.pmatsci.2026.101762"
+          },
+          {
+            "kind": "text",
+            "evidence_type": "ECO:0000033",
+            "locator": "p. 42",
+            "note": "second-hand: restates results of ref [44] as cited by the review; backs the statement's 'even at highly negative potentials'",
+            "quote": "Experiments performed in acidic media without alkali content, or electrolytes containing only reducible species, consistently show no corrosion, even at highly negative potentials",
+            "source": "scale:commons/source/10.1016-j.pmatsci.2026.101762"
+          }
+        ],
+        "inference_type": "meta_analysis",
+        "origin": "reported",
+        "statement": "Cathodic corrosion requires non-reducible cations (e.g. alkali metal cations) in the electrolyte: no corrosion features are observed in their absence, even at highly negative potentials."
+      }
+    },
+    {
+      "id": "scale:commons/10.1016-j.pmatsci.2026.101762/c/cc-dissolution-redeposition",
+      "label": "Claim",
+      "props": {
+        "name": "Au nanocrystal growth by coupled dissolution-redeposition",
+        "claim_kind": "finding",
+        "claim_status": "supported",
+        "evidence": [
+          {
+            "kind": "text",
+            "evidence_type": "ECO:0000033",
+            "locator": "p. 32",
+            "note": "second-hand: restates results of ref [188] as cited by the review",
+            "quote": "octahedral nanocrystal formation, demonstrate that nanocrystal growth proceeds through a coupled dissolution–redeposition process",
+            "source": "scale:commons/source/10.1016-j.pmatsci.2026.101762"
+          },
+          {
+            "kind": "text",
+            "evidence_type": "ECO:0000033",
+            "locator": "p. 33",
+            "note": "second-hand: restates results of ref [188] as cited by the review",
+            "quote": "After approximately 5 min of polarization, the surface morphology changes markedly: the area covered by octahedral nanoparticles decreases, while new fractal nanostructures begin to grow away from the tip region",
+            "source": "scale:commons/source/10.1016-j.pmatsci.2026.101762"
+          },
+          {
+            "kind": "text",
+            "evidence_type": "ECO:0000033",
+            "locator": "p. 33-34",
+            "note": "second-hand: restates results of ref [188] as cited by the review",
+            "quote": "Beyond approximately 30 min, no significant additional morphological changes are detected, suggesting the establishment of a diffusion-",
+            "source": "scale:commons/source/10.1016-j.pmatsci.2026.101762"
+          }
+        ],
+        "inference_type": "meta_analysis",
+        "origin": "reported",
+        "statement": "Time-resolved SEM of Au corroded at -1.5 V vs. RHE in 10 M NaOH shows that nanocrystal growth during cathodic corrosion proceeds through a coupled dissolution-redeposition process: etch pits dominate at the onset (dissolution prevailing), octahedral nanocrystals increase in density and shape definition up to about 60 s, fractal nanostructures begin to grow away from the tip from about 5 min, multi-armed nanostructures cover the surface by 30 min, and beyond approximately 30 min no significant additional morphological changes are detected (diffusion-limited regime)."
+      }
+    },
+    {
+      "id": "scale:commons/10.1016-j.pmatsci.2026.101762/c/cc-dual-role",
+      "label": "Claim",
+      "props": {
+        "name": "Cathodic corrosion is degradation path and tool",
+        "claim_kind": "conclusion",
+        "claim_status": "supported",
+        "evidence": [
+          {
+            "kind": "text",
+            "locator": "p. 3",
+            "quote": "cathodic corrosion can be applied as a powerful top-down strategy to fine-tune surface structure,",
+            "source": "scale:commons/source/10.1016-j.pmatsci.2026.101762"
+          },
+          {
+            "kind": "text",
+            "locator": "p. 3",
+            "quote": "On one hand, it can act as a degradation pathway during electrochemical conversion reactions, influencing catalyst stability and long-term",
+            "source": "scale:commons/source/10.1016-j.pmatsci.2026.101762"
+          }
+        ],
+        "inference_type": "expert_opinion",
+        "origin": "reported",
+        "statement": "Cathodic corrosion has a dual role in electrocatalysis: it can degrade electrocatalysts during conversion reactions, and it can be applied deliberately as a top-down strategy to fine-tune surface structure, generate high densities of active sites and fabricate flexible, binder-free electrodes."
+      }
+    },
+    {
+      "id": "scale:commons/10.1016-j.pmatsci.2026.101762/c/cc-metal-specific",
+      "label": "Claim",
+      "props": {
+        "name": "Corrosion onset potential and sites formed are metal-specific",
+        "claim_kind": "finding",
+        "claim_status": "supported",
+        "evidence": [
+          {
+            "kind": "text",
+            "evidence_type": "ECO:0000033",
+            "locator": "p. 37",
+            "note": "second-hand: restates results of refs [33, 109] as cited by the review",
+            "quote": "favorably leads to (111) sites on Au and (100) sites on Pt and Rh.",
+            "source": "scale:commons/source/10.1016-j.pmatsci.2026.101762"
+          },
+          {
+            "kind": "text",
+            "evidence_type": "ECO:0000033",
+            "locator": "p. 37",
+            "note": "second-hand: restates results of refs [33, 109] as cited by the review",
+            "quote": "same conditions: Pt and Rh initiate corrosion at −0.4 V vs. RHE, while Au begins at −0.7 V vs. RHE.",
+            "source": "scale:commons/source/10.1016-j.pmatsci.2026.101762"
+          },
+          {
+            "kind": "text",
+            "evidence_type": "ECO:0000033",
+            "locator": "p. 37",
+            "note": "second-hand: restates results of refs [33, 109] as cited by the review",
+            "quote": "Of note, Pt and Rh were corroded at −0.8 V vs. RHE, while Au was corroded at −1.5 V vs. RHE.",
+            "source": "scale:commons/source/10.1016-j.pmatsci.2026.101762"
+          }
+        ],
+        "inference_type": "meta_analysis",
+        "origin": "reported",
+        "statement": "Cathodic corrosion in 5 M NaOH (60 s) leads preferentially to (111) sites on Au and (100) sites on Pt and Rh; the onset of corrosion varies by metal, with Pt and Rh initiating at -0.4 V vs. RHE and Au at -0.7 V vs. RHE. In these SEM experiments the metals were corroded at different applied potentials: Pt and Rh at -0.8 V vs. RHE and Au at -1.5 V vs. RHE."
+      }
+    },
+    {
+      "id": "scale:commons/10.1016-j.pmatsci.2026.101762/c/cc-potential-master",
+      "label": "Claim",
+      "props": {
+        "name": "Electrode potential is the master variable of corrosion",
+        "claim_kind": "generalization",
+        "claim_status": "supported",
+        "evidence": [
+          {
+            "kind": "text",
+            "evidence_type": "ECO:0000033",
+            "locator": "p. 40",
+            "note": "second-hand: restates results of ref [110] as cited by the review",
+            "quote": "a material-dependent threshold located below the hydrogen evolution equilibrium potential.",
+            "source": "scale:commons/source/10.1016-j.pmatsci.2026.101762"
+          },
+          {
+            "kind": "text",
+            "evidence_type": "ECO:0000033",
+            "locator": "p. 41",
+            "note": "second-hand: restates results of ref [32] as cited by the review",
+            "quote": "intensifies corrosion, increases surface roughness and EASA, and drives a transition from pit formation to nanoparticle nucleation and",
+            "source": "scale:commons/source/10.1016-j.pmatsci.2026.101762"
+          }
+        ],
+        "inference_type": "meta_analysis",
+        "origin": "reported",
+        "statement": "Corrosion initiates only beyond a material-dependent threshold below the hydrogen evolution equilibrium potential; increasingly negative potentials intensify corrosion, raise roughness and EASA, and drive a transition from etch-pit formation to nanoparticle nucleation and eventually to disordered nanostructures."
+      }
+    },
+    {
+      "id": "scale:commons/10.1016-j.pmatsci.2026.101762/c/cc-water-required",
+      "label": "Claim",
+      "props": {
+        "name": "Water is essential for cathodic corrosion",
+        "claim_kind": "causal",
+        "claim_status": "supported",
+        "evidence": [
+          {
+            "kind": "text",
+            "evidence_type": "ECO:0000033",
+            "locator": "p. 32",
+            "note": "second-hand: restates results of ref [186] as cited by the review",
+            "quote": "Notably, cathodic corrosion does not take place in the absence of water.",
+            "source": "scale:commons/source/10.1016-j.pmatsci.2026.101762"
+          },
+          {
+            "kind": "text",
+            "evidence_type": "ECO:0000033",
+            "locator": "p. 46",
+            "note": "second-hand: restates results of ref [186] as cited by the review",
+            "quote": "dramatically and ultimately disappears under nearly anhydrous conditions, even though the electrolyte still contains high",
+            "source": "scale:commons/source/10.1016-j.pmatsci.2026.101762"
+          },
+          {
+            "kind": "text",
+            "evidence_type": "ECO:0000033",
+            "locator": "p. 47",
+            "note": "second-hand: restates results of ref [186] as cited by the review",
+            "quote": "corrosion in concentrated aqueous NaOH are essentially absent under these conditions. A clear transition occurs at xH2O = 0.899. At",
+            "source": "scale:commons/source/10.1016-j.pmatsci.2026.101762"
+          }
+        ],
+        "inference_type": "meta_analysis",
+        "origin": "reported",
+        "statement": "Cathodic corrosion of Au in alkaline electrolytes does not take place in the absence of water: replacing aqueous KOH or NaOH by methanol suppresses corrosion, which disappears under nearly anhydrous conditions; in 10 M NaOH/methanol mixtures a clear transition to octahedral nanocrystal formation occurs near a water mole fraction of 0.899."
+      }
+    },
+    {
+      "id": "scale:commons/10.1016-j.pmatsci.2026.101762/c/continuum",
+      "label": "Claim",
+      "props": {
+        "name": "Six restructuring strategies form a continuum",
+        "claim_kind": "generalization",
+        "claim_status": "supported",
+        "evidence": [
+          {
+            "kind": "text",
+            "locator": "p. 14",
+            "quote": "Thus, electrochemical restructuring is best understood as a continuum of potential-driven processes, rather than a set of",
+            "source": "scale:commons/source/10.1016-j.pmatsci.2026.101762"
+          },
+          {
+            "kind": "text",
+            "locator": "p. 3",
+            "quote": "programming, (v) electrochemical dealloying, and (vi) negative polarization under certain conditions by the so-called cathodic",
+            "source": "scale:commons/source/10.1016-j.pmatsci.2026.101762"
+          }
+        ],
+        "inference_type": "expert_opinion",
+        "origin": "reported",
+        "statement": "The review frames six electrochemical restructuring strategies - electrodeposition, anodic polarization, repetitive oxidation-reduction cycles, square-wave potential programming, electrochemical dealloying and cathodic corrosion - as strongly interconnected, best understood as a continuum of potential-driven processes rather than a set of discrete methods."
+      }
+    },
+    {
+      "id": "scale:commons/10.1016-j.pmatsci.2026.101762/c/cu-shapes-co2rr",
+      "label": "Claim",
+      "props": {
+        "name": "Cu nanocrystal shape directs CO2RR selectivity",
+        "claim_kind": "finding",
+        "claim_status": "supported",
+        "evidence": [
+          {
+            "kind": "text",
+            "evidence_type": "ECO:0000033",
+            "locator": "p. 9",
+            "note": "second-hand: restates results of ref [84] as cited by the review",
+            "quote": "toward C2H4 (57%), the Cu octahedra show selectivity toward CH4 (51%), and the Cu spheres do not display selectivity toward any",
+            "source": "scale:commons/source/10.1016-j.pmatsci.2026.101762"
+          }
+        ],
+        "inference_type": "meta_analysis",
+        "origin": "reported",
+        "statement": "In a gas-fed flow cell with 1 M KOH, Cu nanocubes ((100) facets) are highly selective to C2H4 (57%), Cu octahedra ((111) facets) to CH4 (51%), and Cu spheres show no product selectivity."
+      }
+    },
+    {
+      "id": "scale:commons/10.1016-j.pmatsci.2026.101762/c/cuni-activation",
+      "label": "Claim",
+      "props": {
+        "name": "Cathodic activation of CuxNi1-x redirects CO2 reduction to C2+ products",
+        "claim_kind": "finding",
+        "claim_status": "supported",
+        "evidence": [
+          {
+            "kind": "text",
+            "evidence_type": "ECO:0000033",
+            "locator": "p. 51",
+            "note": "second-hand: restates results of ref [207] as cited by the review",
+            "quote": "hydrogen evolution reaction (HER), delivering a Faradaic efficiency (FE) for H2 exceeding 90% at −1.0 V vs. RHE, while CO2 reduction",
+            "source": "scale:commons/source/10.1016-j.pmatsci.2026.101762"
+          },
+          {
+            "kind": "text",
+            "evidence_type": "ECO:0000033",
+            "locator": "p. 51",
+            "note": "second-hand: restates results of ref [207] as cited by the review",
+            "quote": "example, after activation at −1.3 V vs. RHE, the H2 FE decreases to 67.4% at −1.0 V vs. RHE, accompanied by a pronounced shift in",
+            "source": "scale:commons/source/10.1016-j.pmatsci.2026.101762"
+          },
+          {
+            "kind": "text",
+            "evidence_type": "ECO:0000033",
+            "locator": "p. 51",
+            "note": "second-hand: restates results of ref [207] as cited by the review",
+            "quote": "product distribution toward CO2RR. The formate FE increases from 5.8% to 29.4% at −1.0 V vs. RHE, while the CO FE rises from 7.9%",
+            "source": "scale:commons/source/10.1016-j.pmatsci.2026.101762"
+          },
+          {
+            "kind": "text",
+            "evidence_type": "ECO:0000033",
+            "locator": "p. 51",
+            "note": "second-hand: restates results of ref [207] as cited by the review",
+            "quote": "to 21.1% at −1.2 V vs. RHE (Fig. 37c). Most notably, the selectivity toward multicarbon (C2+) products is strongly enhanced: a",
+            "source": "scale:commons/source/10.1016-j.pmatsci.2026.101762"
+          },
+          {
+            "kind": "text",
+            "evidence_type": "ECO:0000033",
+            "locator": "p. 51",
+            "note": "second-hand: restates results of ref [207] as cited by the review",
+            "quote": "maximum C2+ FE of 42.5% is achieved at −1.4 V vs. RHE following activation at −1.3 V vs. RHE, identifying this treatment as optimal.",
+            "source": "scale:commons/source/10.1016-j.pmatsci.2026.101762"
+          },
+          {
+            "kind": "text",
+            "evidence_type": "ECO:0000033",
+            "locator": "p. 51",
+            "note": "second-hand: restates results of ref [207] as cited by the review",
+            "quote": "In addition, 1-propanol emerges as a new liquid product with an FE of 12.6% under these conditions (Fig. 36d).",
+            "source": "scale:commons/source/10.1016-j.pmatsci.2026.101762"
+          }
+        ],
+        "inference_type": "meta_analysis",
+        "origin": "reported",
+        "statement": "Cathodic activation of Cu0.71Ni0.29 nanoparticles (preferential Ni dissolution by cathodic corrosion) suppresses HER and promotes CO2RR: before activation the Ni-rich surface gives more than 90% faradaic efficiency for H2 at -1.0 V vs. RHE; after activation at -1.3 V vs. RHE the H2 FE falls to 67.4% at -1.0 V, formate FE rises from 5.8% to 29.4% at -1.0 V, CO FE rises from 7.9% to 21.1% at -1.2 V, a maximum C2+ FE of 42.5% is reached at -1.4 V vs. RHE, and 1-propanol appears as a new liquid product with 12.6% FE."
+      }
+    },
+    {
+      "id": "scale:commons/10.1016-j.pmatsci.2026.101762/c/design-principle",
+      "label": "Claim",
+      "props": {
+        "name": "Targeted function dictates restructuring strategy",
+        "claim_kind": "generalization",
+        "claim_status": "supported",
+        "evidence": [
+          {
+            "kind": "text",
+            "locator": "p. 52",
+            "quote": "A central design principle is that the targeted catalytic function should dictate the restructuring strategy. For reactions governed by",
+            "source": "scale:commons/source/10.1016-j.pmatsci.2026.101762"
+          }
+        ],
+        "inference_type": "expert_opinion",
+        "origin": "reported",
+        "statement": "The review's central design principle is that the targeted catalytic function should dictate the restructuring strategy: facet-selective methods (notably cathodic corrosion) suit structure-sensitive reactions, while dealloyed nanoporous architectures suit high-current-density applications; no single strategy is universally optimal."
+      }
+    },
+    {
+      "id": "scale:commons/10.1016-j.pmatsci.2026.101762/c/dynamic-active-state",
+      "label": "Claim",
+      "props": {
+        "name": "The active catalyst state is dynamic",
+        "claim_kind": "conclusion",
+        "claim_status": "supported",
+        "evidence": [
+          {
+            "kind": "text",
+            "locator": "p. 53",
+            "quote": "The active catalyst state is dynamic, not the initially prepared structure.",
+            "source": "scale:commons/source/10.1016-j.pmatsci.2026.101762"
+          }
+        ],
+        "inference_type": "expert_opinion",
+        "origin": "reported",
+        "statement": "Among the review's take-home messages: electrode surfaces evolve continuously under operating conditions, so the active catalyst state is dynamic and not the initially prepared structure."
+      }
+    },
+    {
+      "id": "scale:commons/10.1016-j.pmatsci.2026.101762/c/egor-epc",
+      "label": "Claim",
+      "props": {
+        "name": "Potential cycling boosts EG oxidation to glycolic acid",
+        "claim_kind": "finding",
+        "claim_status": "supported",
+        "evidence": [
+          {
+            "kind": "text",
+            "evidence_type": "ECO:0000033",
+            "locator": "p. 22",
+            "note": "second-hand: restates results of ref [141] as cited by the review",
+            "quote": "enables a ~ 20-fold increase in EG conversion rate compared to constant-potential EG oxidation (CP-EGOR), while maintaining",
+            "source": "scale:commons/source/10.1016-j.pmatsci.2026.101762"
+          },
+          {
+            "kind": "text",
+            "evidence_type": "ECO:0000033",
+            "locator": "p. 22",
+            "note": "second-hand: restates results of ref [141] as cited by the review",
+            "quote": "exceptionally high GA selectivity exceeding 95%. Remarkably, potential cycling-EGOR achieves the same conversion rate using",
+            "source": "scale:commons/source/10.1016-j.pmatsci.2026.101762"
+          },
+          {
+            "kind": "text",
+            "evidence_type": "ECO:0000033",
+            "locator": "p. 22",
+            "note": "second-hand: restates results of ref [141] as cited by the review",
+            "quote": "operation under potential cycling conditions sustains high catalytic activity for at least 60 h with no detectable deactivation, whereas",
+            "source": "scale:commons/source/10.1016-j.pmatsci.2026.101762"
+          },
+          {
+            "kind": "text",
+            "evidence_type": "ECO:0000033",
+            "locator": "p. 22",
+            "note": "second-hand: restates results of ref [141] as cited by the review",
+            "quote": "1.70 mmol h−1 mg−1, among the highest reported values in the literature.",
+            "source": "scale:commons/source/10.1016-j.pmatsci.2026.101762"
+          }
+        ],
+        "inference_type": "meta_analysis",
+        "origin": "reported",
+        "statement": "For electrochemical oxidation of ethylene glycol to glycolic acid on Pd, Au and Pt, electrochemical potential cycling (EPC) gives about a 20-fold higher conversion rate than constant-potential operation with glycolic acid selectivity exceeding 95%, using about 90% less noble metal; EPC sustains activity for at least 60 h with no detectable deactivation, and a flow-cell implementation reached 1.70 mmol h-1 mg-1."
+      }
+    },
+    {
+      "id": "scale:commons/10.1016-j.pmatsci.2026.101762/c/freestanding-meaning",
+      "label": "Claim",
+      "props": {
+        "name": "Free-standing means binder-free, not support-free",
+        "claim_kind": "conclusion",
+        "claim_status": "supported",
+        "evidence": [
+          {
+            "kind": "text",
+            "locator": "p. 52",
+            "quote": "porting structure, but rather as the elimination of polymeric binders and insulating additives. A more accurate description is that",
+            "source": "scale:commons/source/10.1016-j.pmatsci.2026.101762"
+          }
+        ],
+        "inference_type": "expert_opinion",
+        "origin": "reported",
+        "statement": "The review argues that 'free-standing' electrodes should be understood as the elimination of polymeric binders and insulating additives, not the absence of a supporting structure: electrochemical restructuring forms binder-free, substrate-integrated catalytic architectures whose substrate actively influences restructuring and performance."
+      }
+    },
+    {
+      "id": "scale:commons/10.1016-j.pmatsci.2026.101762/c/hydride-xas-pt",
+      "label": "Claim",
+      "props": {
+        "name": "Pt hydride-like phases under cathodic polarization",
+        "claim_kind": "finding",
+        "claim_status": "supported",
+        "evidence": [
+          {
+            "kind": "text",
+            "evidence_type": "ECO:0000033",
+            "locator": "p. 32",
+            "note": "second-hand: restates results of ref [187] as cited by the review",
+            "quote": "strong cathodic polarization that are characteristic of hydride formation (Fig. 21a and 21b).",
+            "source": "scale:commons/source/10.1016-j.pmatsci.2026.101762"
+          },
+          {
+            "kind": "text",
+            "locator": "p. 34",
+            "quote": "their relevance is less clear for systems such as Au, where stable hydride formation is unlikely.",
+            "source": "scale:commons/source/10.1016-j.pmatsci.2026.101762"
+          }
+        ],
+        "inference_type": "meta_analysis",
+        "origin": "reported",
+        "statement": "Operando HERFD-XANES shows systematic electronic changes for Pt under strong cathodic polarization characteristic of hydride formation (hydrogen-rich PtHx phases); however, the review cautions that hydride formation cannot be a universal requirement, since stable hydride formation is unlikely for Au."
+      }
+    },
+    {
+      "id": "scale:commons/10.1016-j.pmatsci.2026.101762/c/industrial-gap",
+      "label": "Claim",
+      "props": {
+        "name": "Industrial translation of restructured electrodes is unresolved",
+        "claim_kind": "conclusion",
+        "claim_status": "supported",
+        "evidence": [
+          {
+            "kind": "text",
+            "locator": "p. 53",
+            "quote": "The translation of restructured binder-free electrodes to industrially relevant conditions remains a major unresolved",
+            "source": "scale:commons/source/10.1016-j.pmatsci.2026.101762"
+          }
+        ],
+        "inference_type": "expert_opinion",
+        "origin": "reported",
+        "statement": "The review identifies the translation of restructured binder-free electrodes to industrially relevant conditions (high current densities above 100 mA cm-2, lifetimes beyond 1000 h, device-level configurations) as a major unresolved challenge, with systematic studies still scarce."
+      }
+    },
+    {
+      "id": "scale:commons/10.1016-j.pmatsci.2026.101762/c/niru-pte",
+      "label": "Claim",
+      "props": {
+        "name": "Ni-Ru porous transport electrodes for HER and PEMWE",
+        "claim_kind": "finding",
+        "claim_status": "supported",
+        "evidence": [
+          {
+            "kind": "text",
+            "evidence_type": "ECO:0000033",
+            "locator": "p. 19",
+            "note": "second-hand: restates results of ref [137] as cited by the review",
+            "quote": "Ru incorporation (≤1.9 at%) dramatically reduces the HER overpotential from 171 mV for pure Ni to ~ 35 mV",
+            "source": "scale:commons/source/10.1016-j.pmatsci.2026.101762"
+          },
+          {
+            "kind": "text",
+            "evidence_type": "ECO:0000033",
+            "locator": "p. 20",
+            "note": "second-hand: restates results of ref [137] as cited by the review",
+            "quote": "stable operation at −10 mA cm−2 over 24 h with negligible degradation, in contrast to the pure Ru electrocatalyst that exhibits rapid",
+            "source": "scale:commons/source/10.1016-j.pmatsci.2026.101762"
+          },
+          {
+            "kind": "text",
+            "evidence_type": "ECO:0000033",
+            "locator": "p. 20",
+            "note": "second-hand: restates results of ref [137] as cited by the review",
+            "quote": "relevant performance, delivering current densities up to 6.0 A cm−2 at 2.25 V and stable operation at 1 A cm−2 with a low degradation",
+            "source": "scale:commons/source/10.1016-j.pmatsci.2026.101762"
+          },
+          {
+            "kind": "text",
+            "evidence_type": "ECO:0000033",
+            "locator": "p. 20",
+            "note": "second-hand: restates results of ref [137] as cited by the review",
+            "quote": "rate of 0.13 mV h−1 over 100 h (Fig. 12j).",
+            "source": "scale:commons/source/10.1016-j.pmatsci.2026.101762"
+          }
+        ],
+        "inference_type": "meta_analysis",
+        "origin": "reported",
+        "statement": "One-step electrodeposition of Ni-Ru on carbon paper gives binder-free, self-supported catalyst-integrated porous transport electrodes: as little as 1.9 at% Ru lowers the HER overpotential from 171 mV (pure Ni) to about 35 mV at -10 mA cm-2; the Ni98.1Ru1.9 electrode runs stably at -10 mA cm-2 over 24 h, and in a PEMWE delivers up to 6.0 A cm-2 at 2.25 V with a degradation rate of 0.13 mV h-1 over 100 h at 1 A cm-2."
+      }
+    },
+    {
+      "id": "scale:commons/10.1016-j.pmatsci.2026.101762/c/np-aux-oxide",
+      "label": "Claim",
+      "props": {
+        "name": "Oxide-derived nanoporous Au by moderate anodic polarization",
+        "claim_kind": "finding",
+        "claim_status": "supported",
+        "evidence": [
+          {
+            "kind": "text",
+            "evidence_type": "ECO:0000033",
+            "locator": "p. 23",
+            "note": "second-hand: restates results of refs [142, 143] as cited by the review",
+            "quote": "44, and 86, respectively, for bare gold and nanoporous Au electrodes fabricated with holding times of 10, 20, 30, and 60 min,",
+            "source": "scale:commons/source/10.1016-j.pmatsci.2026.101762"
+          },
+          {
+            "kind": "text",
+            "evidence_type": "ECO:0000033",
+            "locator": "p. 23",
+            "note": "second-hand: restates results of refs [142, 143] as cited by the review",
+            "quote": "nanoporous structures with an average pore size of approximately 32 nm (Fig. 15c).",
+            "source": "scale:commons/source/10.1016-j.pmatsci.2026.101762"
+          },
+          {
+            "kind": "text",
+            "evidence_type": "ECO:0000033",
+            "locator": "p. 23",
+            "note": "second-hand: restates results of refs [142, 143] as cited by the review",
+            "quote": "potential values of −0.070 V at 10 mA cm−2 and −0.083 V at 20 mA cm−2 recorded for the nanoporous gold electrode fabricated with",
+            "source": "scale:commons/source/10.1016-j.pmatsci.2026.101762"
+          }
+        ],
+        "inference_type": "meta_analysis",
+        "origin": "reported",
+        "statement": "Polarizing Au at 2.0 V vs. Ag/AgCl in 0.5 M H2SO4 and holding 10-60 min before reduction yields nanoporous Au films: roughness factors rise from 4.68 (bare Au) to 14.5, 21.5, 44 and 86 for 10, 20, 30 and 60 min holds, the 60-min film has about 32 nm mean pore size, and reaches HER overpotentials of -0.070 V at 10 mA cm-2 and -0.083 V at 20 mA cm-2 in 0.5 M H2SO4, approaching Pt."
+      }
+    },
+    {
+      "id": "scale:commons/10.1016-j.pmatsci.2026.101762/c/orc-au",
+      "label": "Claim",
+      "props": {
+        "name": "Repetitive oxidation-reduction cycles restructure polycrystalline Au",
+        "claim_kind": "finding",
+        "claim_status": "supported",
+        "evidence": [
+          {
+            "kind": "text",
+            "evidence_type": "ECO:0000033",
+            "locator": "p. 21",
+            "note": "second-hand: restates results of ref [34] as cited by the review",
+            "quote": "cycles. Additionally, the distribution of facets changes cycling, notably with the development of (111) facets, evident in the oxide",
+            "source": "scale:commons/source/10.1016-j.pmatsci.2026.101762"
+          }
+        ],
+        "inference_type": "meta_analysis",
+        "origin": "reported",
+        "statement": "Potential cycling of polycrystalline Au in 0.1 M H2SO4 (-0.25 to +1.6 V vs. Ag/AgCl, 0.1 V/s) increases the electrochemically active surface area with cycle number and shifts the facet distribution, notably developing (111) facets seen in the oxide regime; pits appear after 150 cycles and nano- and microcrystallites after 10,000 cycles."
+      }
+    },
+    {
+      "id": "scale:commons/10.1016-j.pmatsci.2026.101762/c/pc-npg",
+      "label": "Claim",
+      "props": {
+        "name": "Potential-cycling-derived nanoporous gold outperforms chemically dealloyed NPG for CO2RR",
+        "claim_kind": "finding",
+        "claim_status": "supported",
+        "evidence": [
+          {
+            "kind": "text",
+            "evidence_type": "ECO:0000033",
+            "locator": "p. 29",
+            "note": "second-hand: restates results of ref [118] as cited by the review",
+            "quote": "are estimated as 29.8%, 25.6%, 27.8%, and 16.8%, respectively. In comparison, for the cd-NPG electrode, the fractions of step/kink",
+            "source": "scale:commons/source/10.1016-j.pmatsci.2026.101762"
+          },
+          {
+            "kind": "text",
+            "evidence_type": "ECO:0000033",
+            "locator": "p. 29",
+            "note": "second-hand: restates results of ref [118] as cited by the review",
+            "quote": "chemically fabricated one (Fig. 18d). Notably, the FECO value for the pc-NPG electrode can reach up to 98% at −0.5 V vs. RHE. Besides,",
+            "source": "scale:commons/source/10.1016-j.pmatsci.2026.101762"
+          },
+          {
+            "kind": "text",
+            "evidence_type": "ECO:0000033",
+            "locator": "p. 29",
+            "note": "second-hand: restates results of ref [118] as cited by the review",
+            "quote": "Tafel analysis revealed that electrochemically fabricated NPG had a Tafel slope of 52 mV dec–1, which was lower compared to the 70",
+            "source": "scale:commons/source/10.1016-j.pmatsci.2026.101762"
+          }
+        ],
+        "inference_type": "meta_analysis",
+        "origin": "reported",
+        "statement": "Electrochemical dealloying of Ag-Au in 0.1 M H2SO4 (50 cycles, 0.74-1.74 V vs. RHE) yields pc-NPG with estimated fractions of 29.8% step/kink sites, 25.6% {111}, 27.8% {100} and 16.8% {110}; in CO2-saturated 0.5 M KHCO3 its CO faradaic efficiency is about 20% higher than chemically dealloyed NPG over -0.3 to -0.6 V vs. RHE, reaching 98% at -0.5 V vs. RHE, with a lower Tafel slope (52 vs. 70 mV/dec)."
+      }
+    },
+    {
+      "id": "scale:commons/10.1016-j.pmatsci.2026.101762/c/pd-shapes-no3rr",
+      "label": "Claim",
+      "props": {
+        "name": "Pd nanocrystal facets split nitrate-to-ammonia catalysis",
+        "claim_kind": "finding",
+        "claim_status": "supported",
+        "evidence": [
+          {
+            "kind": "text",
+            "evidence_type": "ECO:0000033",
+            "locator": "p. 9",
+            "note": "second-hand: restates results of ref [83] as cited by the review",
+            "quote": "highlighted the critical role of the (100) facet, suggesting higher NO2RR activity than Pd(111) or Pd(hk0). The NH3 yield rate at 3 h",
+            "source": "scale:commons/source/10.1016-j.pmatsci.2026.101762"
+          },
+          {
+            "kind": "text",
+            "evidence_type": "ECO:0000033",
+            "locator": "p. 9",
+            "note": "second-hand: restates results of ref [83] as cited by the review",
+            "quote": "yield rate and faradaic efficiency compared to other catalysts, showcasing its bifunctional nature with the (111) facet catalyzing the",
+            "source": "scale:commons/source/10.1016-j.pmatsci.2026.101762"
+          }
+        ],
+        "inference_type": "meta_analysis",
+        "origin": "reported",
+        "statement": "Among shape-controlled Pd catalysts, Pd nanocube/C shows the highest nitrite-reduction activity (the (100) facet is more active than Pd(111) or Pd(hk0)), while Pd cuboctahedron/C (with both (111) and (100) facets) gives the highest NH3 yield rate and faradaic efficiency; the review attributes this to a bifunctional surface with (111) converting nitrate to nitrite and (100) converting nitrite to ammonia."
+      }
+    },
+    {
+      "id": "scale:commons/10.1016-j.pmatsci.2026.101762/c/pt-dissolution-oxides",
+      "label": "Claim",
+      "props": {
+        "name": "Pt anodic and cathodic dissolution arise from different oxides",
+        "claim_kind": "mechanism",
+        "claim_status": "supported",
+        "evidence": [
+          {
+            "kind": "text",
+            "evidence_type": "ECO:0000033",
+            "locator": "p. 13",
+            "note": "second-hand: restates results of ref [88] as cited by the review",
+            "quote": "amorphous Pt oxide phase that resembles bulk PtO2 and develops only after saturation of the stripe-like oxide. Importantly, cathodic",
+            "source": "scale:commons/source/10.1016-j.pmatsci.2026.101762"
+          },
+          {
+            "kind": "text",
+            "evidence_type": "ECO:0000033",
+            "locator": "p. 13",
+            "note": "second-hand: restates results of ref [88] as cited by the review",
+            "quote": "dissolution does not occur on pristine metallic Pt but requires prior oxide formation, underscoring the decisive role of electrochemical",
+            "source": "scale:commons/source/10.1016-j.pmatsci.2026.101762"
+          }
+        ],
+        "inference_type": "meta_analysis",
+        "origin": "reported",
+        "statement": "Pt dissolution during cycling is oxide-specific and history-dependent: anodic dissolution is linked to nucleation and growth of an ordered stripe-like oxide, whereas cathodic dissolution accompanies reduction of a second, amorphous Pt oxide resembling bulk PtO2; cathodic dissolution does not occur on pristine metallic Pt but requires prior oxide formation."
+      }
+    },
+    {
+      "id": "scale:commons/10.1016-j.pmatsci.2026.101762/c/pt-pourbaix-cathodic-corrosion",
+      "label": "Claim",
+      "props": {
+        "name": "Tentative Pt Pourbaix diagram with cathodic corrosion regime",
+        "claim_kind": "conclusion",
+        "claim_status": "proposed",
+        "evidence": [
+          {
+            "kind": "text",
+            "locator": "p. 35",
+            "quote": "a tentative version of the Pourbaix diagram that incorporates the cathodic corrosion regime is presented in Fig. 21d. This updated diagram builds upon the standard Pourbaix diagram for Pt [189] but takes into account the determined onset of cathodic Pt corrosion in alkaline solutions [110].",
+            "source": "scale:commons/source/10.1016-j.pmatsci.2026.101762"
+          },
+          {
+            "kind": "text",
+            "locator": "p. 35",
+            "quote": "the inclusion of cathodic corrosion onset potentials, similar to those shown in Fig. 21d, may not stringently align with the principles of equilibrium thermodynamics",
+            "source": "scale:commons/source/10.1016-j.pmatsci.2026.101762"
+          }
+        ],
+        "inference_type": "expert_opinion",
+        "limitations": "Tentative, illustrative diagram; equilibrium potentials for cathodic corrosion and the role of electrolyte cations (e.g. a cation concentration axis) remain to be established.",
+        "origin": "reported",
+        "statement": "The review presents a tentative Pourbaix diagram for Pt that incorporates the cathodic corrosion regime (Fig. 21d), built on the standard Pt Pourbaix diagram and the determined onset of cathodic Pt corrosion in alkaline solutions; the diagram also illustrates the cathodic corrosion onset at lower pH values, assuming a hypothetically high near-electrode pH (constant onset potential vs. NHE). The review cautions that these onset potentials, determined for systems with unknown metastable species and near-electrode pH deviating from bulk pH, are not equilibrium potentials and may not stringently align with equilibrium thermodynamics."
+      }
+    },
+    {
+      "id": "scale:commons/10.1016-j.pmatsci.2026.101762/c/pt-sas-mos2",
+      "label": "Claim",
+      "props": {
+        "name": "Site-specific UPD yields Pt single atoms on MoS2 for HER",
+        "claim_kind": "finding",
+        "claim_status": "supported",
+        "evidence": [
+          {
+            "kind": "text",
+            "evidence_type": "ECO:0000033",
+            "locator": "p. 17",
+            "note": "second-hand: restates results of ref [131] as cited by the review",
+            "quote": "normalized to the loading amount of Pt, the mass activity of Pt-SAs/MoS2 at an overpotential of 0.05 V is 17.14 A mg−1, exceeding",
+            "source": "scale:commons/source/10.1016-j.pmatsci.2026.101762"
+          },
+          {
+            "kind": "text",
+            "evidence_type": "ECO:0000033",
+            "locator": "p. 17",
+            "note": "second-hand: restates results of ref [131] as cited by the review",
+            "quote": "that of commercial Pt/C by a factor of 114 (inset of Fig. 9k). Pt-SAs/MoS2 exhibits a Tafel slope of 31 mV dec−1, whereas ce-MoS2",
+            "source": "scale:commons/source/10.1016-j.pmatsci.2026.101762"
+          }
+        ],
+        "inference_type": "meta_analysis",
+        "origin": "reported",
+        "statement": "Atomically dispersed Pt on chemically exfoliated MoS2, made via Cu UPD followed by galvanic exchange with Pt(II), reaches a Pt mass activity of 17.14 A mg-1 at 0.05 V overpotential - a factor of 114 above commercial Pt/C - with a Tafel slope of 31 mV/dec versus 91 mV/dec for ce-MoS2."
+      }
+    },
+    {
+      "id": "scale:commons/10.1016-j.pmatsci.2026.101762/c/swp-faceting",
+      "label": "Claim",
+      "props": {
+        "name": "Square-wave potential programs select facets on Au and Pt",
+        "claim_kind": "finding",
+        "claim_status": "supported",
+        "evidence": [
+          {
+            "kind": "text",
+            "evidence_type": "ECO:0000033",
+            "locator": "p. 26",
+            "note": "second-hand: restates results of ref [114] as cited by the review",
+            "quote": "resulting in the formation of either (110)- or (100)-facets, depending on the applied parameters.",
+            "source": "scale:commons/source/10.1016-j.pmatsci.2026.101762"
+          },
+          {
+            "kind": "text",
+            "evidence_type": "ECO:0000033",
+            "locator": "p. 26",
+            "note": "second-hand: restates results of ref [162] as cited by the review",
+            "quote": "with {520} facets are formed. The shape transformation process from cube to THH is shown in Fig. 17h.",
+            "source": "scale:commons/source/10.1016-j.pmatsci.2026.101762"
+          },
+          {
+            "kind": "text",
+            "evidence_type": "ECO:0000033",
+            "locator": "p. 26",
+            "note": "second-hand: restates results of ref [162] as cited by the review",
+            "quote": "index facets rapidly (about 2 min), although the surface morphology changes slowly.",
+            "source": "scale:commons/source/10.1016-j.pmatsci.2026.101762"
+          }
+        ],
+        "inference_type": "meta_analysis",
+        "origin": "reported",
+        "statement": "Repetitive square-wave potential signals (2-4 kHz) restructure Au: depending on the potential limits and frequency, (110)- or (100)-facets form, while (111)-facet formation has not been reported under this treatment. For Pt nanocrystals, square-wave treatment converts cubes and octahedra into {520}-faceted tetrahexahedra within about 30 min, with the {100} facets transforming to high-index facets within about 2 min - faster than the morphological change."
+      }
+    },
+    {
+      "id": "scale:commons/10.1016-j.pmatsci.2026.101762/c/table1-comparison",
+      "label": "Claim",
+      "props": {
+        "name": "Qualitative comparison of the strategies (Table 1)",
+        "claim_kind": "comparison",
+        "claim_status": "supported",
+        "evidence": [
+          {
+            "kind": "text",
+            "locator": "p. 51",
+            "quote": "above are qualitatively compared in terms of their strengths, limitations, and the resulting surface architectures (Table 1).",
+            "source": "scale:commons/source/10.1016-j.pmatsci.2026.101762"
+          },
+          {
+            "kind": "text",
+            "locator": "p. 50 (Table 1)",
+            "quote": "Qualitative comparison of electrochemical restructuring strategies for metal electrodes.",
+            "source": "scale:commons/source/10.1016-j.pmatsci.2026.101762"
+          },
+          {
+            "kind": "text",
+            "locator": "p. 50 (Table 1)",
+            "quote": "Facet-selective etching, clean surfaces, nanoparticle formation without surfactants",
+            "source": "scale:commons/source/10.1016-j.pmatsci.2026.101762"
+          }
+        ],
+        "inference_type": "expert_opinion",
+        "origin": "reported",
+        "statement": "The review compares the electrochemical restructuring methods qualitatively in Table 1 (p. 50) by key strengths, main limitations, typical surface features and best use cases. Per-method entries: Electrodeposition (UPD/OPD) - scalable, precise control over thickness/composition, industrial compatibility; metastable structures, sensitive to local pH and mass transport; thin films, dendrites, alloys, hierarchical structures; tailored thin films, device-integrated electrodes, compositional tuning. Oxidation-Reduction Cycles (ORCs) - generates defect-rich surfaces, activates catalysts dynamically; limited structural control, reproducibility challenges; roughened surfaces, defects, grain boundaries, nanoparticles; catalyst activation, defect engineering. Anodic polarization (moderate) - forms oxide-derived structures, enhances roughness and activity; possible material loss, instability under long-term operation; oxide layers, porous/rough metallic surfaces after reduction; oxide-derived catalysts, defect-mediated reactions. High-voltage anodization - produces highly ordered nanostructures (e.g. nanotubes, porous films); requires specific electrolytes (e.g. fluoride), limited material scope; nanotubes, nanopores, self-organized oxide layers; high-surface-area architectures, photo/electrocatalysis. Extreme anodic polarization (plasma-assisted) - rapid restructuring, unique morphologies, high defect density; high energy consumption, specialized power requirements, competing reactions, scalability challenges; high roughness, nanoparticles, amorphous or partially oxidized surfaces; rapid activation, exploratory surface engineering. Square-wave potential (SWP) - drives non-equilibrium states, enables dynamic restructuring; limited reproducibility, complex parameter space; metastable, defect-rich, nanostructured surfaces; dynamic catalyst activation, metastable phase generation. Electrochemical dealloying - high surface area, nanoporous structures, tunable composition; structural coarsening, stability issues over time; nanoporous metals, bicontinuous structures; high-current-density applications, mass transport-limited reactions. Cathodic corrosion - facet-selective etching, clean surfaces, nanoparticle formation without surfactants; harsh conditions, limited mechanistic understanding; faceted nanoparticles, pits, high-index surfaces; structure-sensitive reactions, nanoparticle synthesis, single-atom catalysts.",
+        "unmodeled": [
+          "Table 1's tabular layout (method x criteria grid, p. 50) has no structured home in the schema; the per-method entries are recorded verbatim in the claim statement."
+        ]
+      }
+    },
+    {
+      "id": "scale:commons/10.1016-j.pmatsci.2026.101762/h/cathodic-corrosion-mechanism",
+      "label": "Hypothesis",
+      "props": {
+        "name": "Cathodic corrosion mechanism (Fig. 23)",
+        "evidence": [
+          {
+            "kind": "text",
+            "locator": "p. 34",
+            "quote": "electrical double-layer, and (iv) stress-induced lattice destabilization that facilitates atom detachment and restructuring.",
+            "source": "scale:commons/source/10.1016-j.pmatsci.2026.101762"
+          },
+          {
+            "kind": "text",
+            "locator": "p. 34",
+            "quote": "double-layer. These species may be viewed as hydrogen-stabilized, anionic Au intermediates whose formation becomes energetically",
+            "source": "scale:commons/source/10.1016-j.pmatsci.2026.101762"
+          }
+        ],
+        "hypothesis_kind": "mechanistic",
+        "hypothesis_status": "proposed",
+        "origin": "hypothesized",
+        "scope": "metals under strong cathodic polarization in alkaline electrolytes containing non-reducible (alkali) cations and water",
+        "statement": "The review proposes that cathodic corrosion under strong cathodic polarization in alkaline electrolytes proceeds through four cooperative elements: (i) extreme cathodic polarization generating high excess surface charge, (ii) intense hydrogen adsorption and subsurface incorporation forming hydride-like surface phases, (iii) stabilization of negatively charged, hydrogen-stabilized anionic metal intermediates (e.g. Au) by non-reducible electrolyte cations in the electrical double-layer, and (iv) stress-induced lattice destabilization that detaches metal atoms, which then redeposit on the surface or nucleate nanoparticles in solution. The review states that a unified mechanistic description remains elusive."
+      }
+    },
+    {
+      "id": "scale:commons/10.1016-j.pmatsci.2026.101762/m/au",
+      "label": "Material",
+      "props": {
+        "name": "Gold (Au)",
+        "evidence": [
+          {
+            "kind": "text",
+            "locator": "p. 10",
+            "quote": "of Au electrodes and the relevant structures depending on the applied potentials.",
+            "source": "scale:commons/source/10.1016-j.pmatsci.2026.101762"
+          }
+        ],
+        "origin": "reported"
+      }
+    },
+    {
+      "id": "scale:commons/10.1016-j.pmatsci.2026.101762/m/cu",
+      "label": "Material",
+      "props": {
+        "name": "Copper (Cu)",
+        "evidence": [
+          {
+            "kind": "text",
+            "locator": "p. 32",
+            "quote": "Moreover, the Cu cathode corroded",
+            "source": "scale:commons/source/10.1016-j.pmatsci.2026.101762"
+          }
+        ],
+        "origin": "reported"
+      }
+    },
+    {
+      "id": "scale:commons/10.1016-j.pmatsci.2026.101762/m/ni",
+      "label": "Material",
+      "props": {
+        "name": "Nickel (Ni)",
+        "evidence": [
+          {
+            "kind": "text",
+            "locator": "p. 32",
+            "quote": "formance of Ni electrodes in alkaline solutions have been examined. After Ni was used as an HER electrode, the intensity of the XRD",
+            "source": "scale:commons/source/10.1016-j.pmatsci.2026.101762"
+          }
+        ],
+        "origin": "reported"
+      }
+    },
+    {
+      "id": "scale:commons/10.1016-j.pmatsci.2026.101762/m/pd",
+      "label": "Material",
+      "props": {
+        "name": "Palladium (Pd)",
+        "evidence": [
+          {
+            "kind": "text",
+            "locator": "p. 9",
+            "quote": "The impact of the surface structure of Pd NPs with well-defined shapes on nitrate and nitrite reduction has been thoroughly",
+            "source": "scale:commons/source/10.1016-j.pmatsci.2026.101762"
+          }
+        ],
+        "origin": "reported"
+      }
+    },
+    {
+      "id": "scale:commons/10.1016-j.pmatsci.2026.101762/m/pt",
+      "label": "Material",
+      "props": {
+        "name": "Platinum (Pt)",
+        "evidence": [
+          {
+            "kind": "text",
+            "locator": "p. 13",
+            "quote": "platinum represents a technologically critical electrocatalyst for which surface oxidation and dissolution play a decisive role in",
+            "source": "scale:commons/source/10.1016-j.pmatsci.2026.101762"
+          }
+        ],
+        "origin": "reported"
+      }
+    },
+    {
+      "id": "scale:commons/10.1016-j.pmatsci.2026.101762/m/rh",
+      "label": "Material",
+      "props": {
+        "name": "Rhodium (Rh)",
+        "evidence": [
+          {
+            "kind": "text",
+            "locator": "p. 37",
+            "quote": "SEM images depicting Pt, Rh, and Au electrodes, cathodically corroded in 5 M NaOH for 60 s, are displayed in Fig. 25a [33,109]. Of",
+            "source": "scale:commons/source/10.1016-j.pmatsci.2026.101762"
+          }
+        ],
+        "origin": "reported"
+      }
+    },
+    {
+      "id": "scale:commons/10.1016-j.pmatsci.2026.101762/oos/electrochemical-restructuring",
+      "label": "ObjectOfStudy",
+      "props": {
+        "name": "Electrochemical restructuring of metal electrode surfaces",
+        "evidence": [
+          {
+            "kind": "text",
+            "locator": "p. 2",
+            "quote": "potential-controlled interfacial processes to directly restructure metal surfaces under well-defined conditions",
+            "source": "scale:commons/source/10.1016-j.pmatsci.2026.101762"
+          }
+        ],
+        "generality": "kind",
+        "object_kind": "phenomenon",
+        "origin": "reported",
+        "scope": "potential-driven restructuring of metal electrode surfaces (reconstruction, oxidation-reduction cycling, dealloying, cathodic corrosion) and its use to tailor binder-free, free-standing electrocatalysts"
+      }
+    },
+    {
+      "id": "scale:commons/10.1016-j.pmatsci.2026.101762/p/elnagar",
+      "label": "Person",
+      "props": {
+        "name": "Mohamed M. Elnagar",
+        "evidence": [
+          {
+            "kind": "text",
+            "locator": "p. 1",
+            "quote": "Mohamed M. Elnagar a,b,c,*",
+            "source": "scale:commons/source/10.1016-j.pmatsci.2026.101762"
+          }
+        ],
+        "given_names": "Mohamed M.",
+        "origin": "reported",
+        "surname": "Elnagar"
+      }
+    },
+    {
+      "id": "scale:commons/10.1016-j.pmatsci.2026.101762/p/jacob",
+      "label": "Person",
+      "props": {
+        "name": "Timo Jacob",
+        "evidence": [
+          {
+            "kind": "text",
+            "locator": "p. 1",
+            "quote": "Ludwig A. Kibler a, Timo Jacob a,b,c,*",
+            "source": "scale:commons/source/10.1016-j.pmatsci.2026.101762"
+          }
+        ],
+        "given_names": "Timo",
+        "origin": "reported",
+        "surname": "Jacob"
+      }
+    },
+    {
+      "id": "scale:commons/10.1016-j.pmatsci.2026.101762/p/kibler",
+      "label": "Person",
+      "props": {
+        "name": "Ludwig A. Kibler",
+        "evidence": [
+          {
+            "kind": "text",
+            "locator": "p. 1",
+            "quote": ", Ludwig A. Kibler a, Timo Jacob a,b,c,*",
+            "source": "scale:commons/source/10.1016-j.pmatsci.2026.101762"
+          }
+        ],
+        "given_names": "Ludwig A.",
+        "origin": "reported",
+        "surname": "Kibler"
+      }
+    },
+    {
+      "id": "scale:commons/source/10.1016-j.pmatsci.2026.101762",
+      "label": "Source",
+      "props": {
+        "name": "Electrochemical methods for restructuring of metal surfaces: mechanisms and strategies for tailoring free-standing electrocatalysts",
+        "kind": "article",
+        "doi": "10.1016/j.pmatsci.2026.101762",
+        "evidence": [
+          {
+            "kind": "text",
+            "locator": "p. 1",
+            "quote": "Progress in Materials Science 163 (2027) 101762 \nAvailable online 6 June 2026",
+            "source": "scale:commons/source/10.1016-j.pmatsci.2026.101762"
+          }
+        ],
+        "licence": "https://www.elsevier.com/tdm/userlicense/1.0/; https://www.elsevier.com/legal/tdmrep-license; http://creativecommons.org/licenses/by/4.0/",
+        "origin": "curated",
+        "retrieved_from": "1060326.pdf",
+        "retrieved_on": "2026-11-04",
+        "text_sha256": "b2aaa1bfe543047da626c9c6091b0402ea1576153ec2db622dce138da475eaaf",
+        "text_version": "version_of_record",
+        "title": "Electrochemical methods for restructuring of metal surfaces: mechanisms and strategies for tailoring free-standing electrocatalysts",
+        "url": "https://doi.org/10.1016/j.pmatsci.2026.101762",
+        "venue": "Progress in Materials Science",
+        "year": 2027
+      }
+    }
+  ],
+  "links": [
+    {
+      "id": "scale:commons/10.1016-j.pmatsci.2026.101762/c/agau-dealloying-her/reported-in/10.1016-j.pmatsci.2026.101762",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 29"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.1016-j.pmatsci.2026.101762/c/agau-dealloying-her",
+      "target": "scale:commons/source/10.1016-j.pmatsci.2026.101762"
+    },
+    {
+      "id": "scale:commons/10.1016-j.pmatsci.2026.101762/c/au-reconstruction/reported-in/10.1016-j.pmatsci.2026.101762",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 10"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.1016-j.pmatsci.2026.101762/c/au-reconstruction",
+      "target": "scale:commons/source/10.1016-j.pmatsci.2026.101762"
+    },
+    {
+      "id": "scale:commons/10.1016-j.pmatsci.2026.101762/c/cc-anisotropic/reported-in/10.1016-j.pmatsci.2026.101762",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 37",
+          "p. 38"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.1016-j.pmatsci.2026.101762/c/cc-anisotropic",
+      "target": "scale:commons/source/10.1016-j.pmatsci.2026.101762"
+    },
+    {
+      "id": "scale:commons/10.1016-j.pmatsci.2026.101762/c/cc-cations-au/reported-in/10.1016-j.pmatsci.2026.101762",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 42"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.1016-j.pmatsci.2026.101762/c/cc-cations-au",
+      "target": "scale:commons/source/10.1016-j.pmatsci.2026.101762"
+    },
+    {
+      "id": "scale:commons/10.1016-j.pmatsci.2026.101762/c/cc-cations-pt/reported-in/10.1016-j.pmatsci.2026.101762",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 46"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.1016-j.pmatsci.2026.101762/c/cc-cations-pt",
+      "target": "scale:commons/source/10.1016-j.pmatsci.2026.101762"
+    },
+    {
+      "id": "scale:commons/10.1016-j.pmatsci.2026.101762/c/cc-cations-required/reported-in/10.1016-j.pmatsci.2026.101762",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 32",
+          "p. 42"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.1016-j.pmatsci.2026.101762/c/cc-cations-required",
+      "target": "scale:commons/source/10.1016-j.pmatsci.2026.101762"
+    },
+    {
+      "id": "scale:commons/10.1016-j.pmatsci.2026.101762/c/cc-dissolution-redeposition/reported-in/10.1016-j.pmatsci.2026.101762",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 32",
+          "p. 33",
+          "p. 33-34"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.1016-j.pmatsci.2026.101762/c/cc-dissolution-redeposition",
+      "target": "scale:commons/source/10.1016-j.pmatsci.2026.101762"
+    },
+    {
+      "id": "scale:commons/10.1016-j.pmatsci.2026.101762/c/cc-dual-role/reported-in/10.1016-j.pmatsci.2026.101762",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 3"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.1016-j.pmatsci.2026.101762/c/cc-dual-role",
+      "target": "scale:commons/source/10.1016-j.pmatsci.2026.101762"
+    },
+    {
+      "id": "scale:commons/10.1016-j.pmatsci.2026.101762/c/cc-metal-specific/reported-in/10.1016-j.pmatsci.2026.101762",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 37"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.1016-j.pmatsci.2026.101762/c/cc-metal-specific",
+      "target": "scale:commons/source/10.1016-j.pmatsci.2026.101762"
+    },
+    {
+      "id": "scale:commons/10.1016-j.pmatsci.2026.101762/c/cc-potential-master/reported-in/10.1016-j.pmatsci.2026.101762",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 40",
+          "p. 41"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.1016-j.pmatsci.2026.101762/c/cc-potential-master",
+      "target": "scale:commons/source/10.1016-j.pmatsci.2026.101762"
+    },
+    {
+      "id": "scale:commons/10.1016-j.pmatsci.2026.101762/c/cc-water-required/reported-in/10.1016-j.pmatsci.2026.101762",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 32",
+          "p. 46",
+          "p. 47"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.1016-j.pmatsci.2026.101762/c/cc-water-required",
+      "target": "scale:commons/source/10.1016-j.pmatsci.2026.101762"
+    },
+    {
+      "id": "scale:commons/10.1016-j.pmatsci.2026.101762/c/continuum/reported-in/10.1016-j.pmatsci.2026.101762",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 14",
+          "p. 3"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.1016-j.pmatsci.2026.101762/c/continuum",
+      "target": "scale:commons/source/10.1016-j.pmatsci.2026.101762"
+    },
+    {
+      "id": "scale:commons/10.1016-j.pmatsci.2026.101762/c/cu-shapes-co2rr/reported-in/10.1016-j.pmatsci.2026.101762",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 9"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.1016-j.pmatsci.2026.101762/c/cu-shapes-co2rr",
+      "target": "scale:commons/source/10.1016-j.pmatsci.2026.101762"
+    },
+    {
+      "id": "scale:commons/10.1016-j.pmatsci.2026.101762/c/cuni-activation/reported-in/10.1016-j.pmatsci.2026.101762",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 51"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.1016-j.pmatsci.2026.101762/c/cuni-activation",
+      "target": "scale:commons/source/10.1016-j.pmatsci.2026.101762"
+    },
+    {
+      "id": "scale:commons/10.1016-j.pmatsci.2026.101762/c/design-principle/reported-in/10.1016-j.pmatsci.2026.101762",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 52"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.1016-j.pmatsci.2026.101762/c/design-principle",
+      "target": "scale:commons/source/10.1016-j.pmatsci.2026.101762"
+    },
+    {
+      "id": "scale:commons/10.1016-j.pmatsci.2026.101762/c/dynamic-active-state/reported-in/10.1016-j.pmatsci.2026.101762",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 53"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.1016-j.pmatsci.2026.101762/c/dynamic-active-state",
+      "target": "scale:commons/source/10.1016-j.pmatsci.2026.101762"
+    },
+    {
+      "id": "scale:commons/10.1016-j.pmatsci.2026.101762/c/egor-epc/reported-in/10.1016-j.pmatsci.2026.101762",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 22"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.1016-j.pmatsci.2026.101762/c/egor-epc",
+      "target": "scale:commons/source/10.1016-j.pmatsci.2026.101762"
+    },
+    {
+      "id": "scale:commons/10.1016-j.pmatsci.2026.101762/c/freestanding-meaning/reported-in/10.1016-j.pmatsci.2026.101762",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 52"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.1016-j.pmatsci.2026.101762/c/freestanding-meaning",
+      "target": "scale:commons/source/10.1016-j.pmatsci.2026.101762"
+    },
+    {
+      "id": "scale:commons/10.1016-j.pmatsci.2026.101762/c/hydride-xas-pt/reported-in/10.1016-j.pmatsci.2026.101762",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 32",
+          "p. 34"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.1016-j.pmatsci.2026.101762/c/hydride-xas-pt",
+      "target": "scale:commons/source/10.1016-j.pmatsci.2026.101762"
+    },
+    {
+      "id": "scale:commons/10.1016-j.pmatsci.2026.101762/c/industrial-gap/reported-in/10.1016-j.pmatsci.2026.101762",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 53"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.1016-j.pmatsci.2026.101762/c/industrial-gap",
+      "target": "scale:commons/source/10.1016-j.pmatsci.2026.101762"
+    },
+    {
+      "id": "scale:commons/10.1016-j.pmatsci.2026.101762/c/niru-pte/reported-in/10.1016-j.pmatsci.2026.101762",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 19",
+          "p. 20"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.1016-j.pmatsci.2026.101762/c/niru-pte",
+      "target": "scale:commons/source/10.1016-j.pmatsci.2026.101762"
+    },
+    {
+      "id": "scale:commons/10.1016-j.pmatsci.2026.101762/c/np-aux-oxide/reported-in/10.1016-j.pmatsci.2026.101762",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 23"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.1016-j.pmatsci.2026.101762/c/np-aux-oxide",
+      "target": "scale:commons/source/10.1016-j.pmatsci.2026.101762"
+    },
+    {
+      "id": "scale:commons/10.1016-j.pmatsci.2026.101762/c/orc-au/reported-in/10.1016-j.pmatsci.2026.101762",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 21"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.1016-j.pmatsci.2026.101762/c/orc-au",
+      "target": "scale:commons/source/10.1016-j.pmatsci.2026.101762"
+    },
+    {
+      "id": "scale:commons/10.1016-j.pmatsci.2026.101762/c/pc-npg/reported-in/10.1016-j.pmatsci.2026.101762",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 29"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.1016-j.pmatsci.2026.101762/c/pc-npg",
+      "target": "scale:commons/source/10.1016-j.pmatsci.2026.101762"
+    },
+    {
+      "id": "scale:commons/10.1016-j.pmatsci.2026.101762/c/pd-shapes-no3rr/reported-in/10.1016-j.pmatsci.2026.101762",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 9"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.1016-j.pmatsci.2026.101762/c/pd-shapes-no3rr",
+      "target": "scale:commons/source/10.1016-j.pmatsci.2026.101762"
+    },
+    {
+      "id": "scale:commons/10.1016-j.pmatsci.2026.101762/c/pt-dissolution-oxides/reported-in/10.1016-j.pmatsci.2026.101762",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 13"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.1016-j.pmatsci.2026.101762/c/pt-dissolution-oxides",
+      "target": "scale:commons/source/10.1016-j.pmatsci.2026.101762"
+    },
+    {
+      "id": "scale:commons/10.1016-j.pmatsci.2026.101762/c/pt-pourbaix-cathodic-corrosion/reported-in/10.1016-j.pmatsci.2026.101762",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 35"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.1016-j.pmatsci.2026.101762/c/pt-pourbaix-cathodic-corrosion",
+      "target": "scale:commons/source/10.1016-j.pmatsci.2026.101762"
+    },
+    {
+      "id": "scale:commons/10.1016-j.pmatsci.2026.101762/c/pt-sas-mos2/reported-in/10.1016-j.pmatsci.2026.101762",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 17"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.1016-j.pmatsci.2026.101762/c/pt-sas-mos2",
+      "target": "scale:commons/source/10.1016-j.pmatsci.2026.101762"
+    },
+    {
+      "id": "scale:commons/10.1016-j.pmatsci.2026.101762/c/swp-faceting/reported-in/10.1016-j.pmatsci.2026.101762",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 26"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.1016-j.pmatsci.2026.101762/c/swp-faceting",
+      "target": "scale:commons/source/10.1016-j.pmatsci.2026.101762"
+    },
+    {
+      "id": "scale:commons/10.1016-j.pmatsci.2026.101762/c/table1-comparison/reported-in/10.1016-j.pmatsci.2026.101762",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 50 (Table 1)",
+          "p. 51"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.1016-j.pmatsci.2026.101762/c/table1-comparison",
+      "target": "scale:commons/source/10.1016-j.pmatsci.2026.101762"
+    },
+    {
+      "id": "scale:commons/10.1016-j.pmatsci.2026.101762/h/cathodic-corrosion-mechanism/reported-in/10.1016-j.pmatsci.2026.101762",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 34"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.1016-j.pmatsci.2026.101762/h/cathodic-corrosion-mechanism",
+      "target": "scale:commons/source/10.1016-j.pmatsci.2026.101762"
+    },
+    {
+      "id": "scale:commons/10.1016-j.pmatsci.2026.101762/link/a1",
+      "type": "AUTHORED_BY",
+      "props": {
+        "evidence": [
+          {
+            "kind": "text",
+            "locator": "p. 1",
+            "quote": "Mohamed M. Elnagar a,b,c,*",
+            "source": "scale:commons/source/10.1016-j.pmatsci.2026.101762"
+          }
+        ],
+        "origin": "reported",
+        "role": "author"
+      },
+      "source": "scale:commons/source/10.1016-j.pmatsci.2026.101762",
+      "target": "scale:commons/10.1016-j.pmatsci.2026.101762/p/elnagar"
+    },
+    {
+      "id": "scale:commons/10.1016-j.pmatsci.2026.101762/link/a2",
+      "type": "AUTHORED_BY",
+      "props": {
+        "evidence": [
+          {
+            "kind": "text",
+            "locator": "p. 1",
+            "quote": ", Ludwig A. Kibler a, Timo Jacob a,b,c,*",
+            "source": "scale:commons/source/10.1016-j.pmatsci.2026.101762"
+          }
+        ],
+        "origin": "reported",
+        "role": "author"
+      },
+      "source": "scale:commons/source/10.1016-j.pmatsci.2026.101762",
+      "target": "scale:commons/10.1016-j.pmatsci.2026.101762/p/kibler"
+    },
+    {
+      "id": "scale:commons/10.1016-j.pmatsci.2026.101762/link/a3",
+      "type": "AUTHORED_BY",
+      "props": {
+        "evidence": [
+          {
+            "kind": "text",
+            "locator": "p. 1",
+            "quote": "Timo Jacob a,b,c,*",
+            "source": "scale:commons/source/10.1016-j.pmatsci.2026.101762"
+          }
+        ],
+        "origin": "reported",
+        "role": "author"
+      },
+      "source": "scale:commons/source/10.1016-j.pmatsci.2026.101762",
+      "target": "scale:commons/10.1016-j.pmatsci.2026.101762/p/jacob"
+    },
+    {
+      "id": "scale:commons/10.1016-j.pmatsci.2026.101762/link/c/agau-dealloying-her-about0",
+      "type": "ABOUT",
+      "props": {
+        "evidence": [
+          {
+            "kind": "text",
+            "evidence_type": "ECO:0000033",
+            "locator": "p. 29",
+            "note": "second-hand: restates results of ref [113] as cited by the review",
+            "quote": "at −1.0 V vs. MSE. However, further dealloying beyond a certain point did not increase catalytic activity, indicating that there is an",
+            "source": "scale:commons/source/10.1016-j.pmatsci.2026.101762"
+          }
+        ],
+        "origin": "reported"
+      },
+      "source": "scale:commons/10.1016-j.pmatsci.2026.101762/c/agau-dealloying-her",
+      "target": "scale:commons/10.1016-j.pmatsci.2026.101762/m/au"
+    },
+    {
+      "id": "scale:commons/10.1016-j.pmatsci.2026.101762/link/c/au-reconstruction-about0",
+      "type": "ABOUT",
+      "props": {
+        "evidence": [
+          {
+            "kind": "text",
+            "evidence_type": "ECO:0000033",
+            "locator": "p. 10",
+            "note": "second-hand: restates results of ref [91] as cited by the review",
+            "quote": "reconstruction, leading to the dominance of an unreconstructed surface [91].",
+            "source": "scale:commons/source/10.1016-j.pmatsci.2026.101762"
+          }
+        ],
+        "origin": "reported"
+      },
+      "source": "scale:commons/10.1016-j.pmatsci.2026.101762/c/au-reconstruction",
+      "target": "scale:commons/10.1016-j.pmatsci.2026.101762/m/au"
+    },
+    {
+      "id": "scale:commons/10.1016-j.pmatsci.2026.101762/link/c/cc-anisotropic-about0",
+      "type": "ABOUT",
+      "props": {
+        "evidence": [
+          {
+            "kind": "text",
+            "evidence_type": "ECO:0000033",
+            "locator": "p. 37",
+            "note": "second-hand: restates results of refs [42, 116] as cited by the review",
+            "quote": "revealing a crucial aspect of cathodic corrosion: it occurs anisotropically [42,116].",
+            "source": "scale:commons/source/10.1016-j.pmatsci.2026.101762"
+          }
+        ],
+        "origin": "reported"
+      },
+      "source": "scale:commons/10.1016-j.pmatsci.2026.101762/c/cc-anisotropic",
+      "target": "scale:commons/10.1016-j.pmatsci.2026.101762/m/au"
+    },
+    {
+      "id": "scale:commons/10.1016-j.pmatsci.2026.101762/link/c/cc-anisotropic-about1",
+      "type": "ABOUT",
+      "props": {
+        "evidence": [
+          {
+            "kind": "text",
+            "evidence_type": "ECO:0000033",
+            "locator": "p. 37",
+            "note": "second-hand: restates results of refs [42, 116] as cited by the review",
+            "quote": "revealing a crucial aspect of cathodic corrosion: it occurs anisotropically [42,116].",
+            "source": "scale:commons/source/10.1016-j.pmatsci.2026.101762"
+          }
+        ],
+        "origin": "reported"
+      },
+      "source": "scale:commons/10.1016-j.pmatsci.2026.101762/c/cc-anisotropic",
+      "target": "scale:commons/10.1016-j.pmatsci.2026.101762/m/pt"
+    },
+    {
+      "id": "scale:commons/10.1016-j.pmatsci.2026.101762/link/c/cc-cations-au-about0",
+      "type": "ABOUT",
+      "props": {
+        "evidence": [
+          {
+            "kind": "text",
+            "evidence_type": "ECO:0000033",
+            "locator": "p. 42",
+            "note": "second-hand: restates results of refs [32, 43] as cited by the review",
+            "quote": "enhancement follows the trend LiOH > NaOH > KOH, while CsOH produces little to no measurable restructuring over the same",
+            "source": "scale:commons/source/10.1016-j.pmatsci.2026.101762"
+          }
+        ],
+        "origin": "reported"
+      },
+      "source": "scale:commons/10.1016-j.pmatsci.2026.101762/c/cc-cations-au",
+      "target": "scale:commons/10.1016-j.pmatsci.2026.101762/m/au"
+    },
+    {
+      "id": "scale:commons/10.1016-j.pmatsci.2026.101762/link/c/cc-cations-pt-about0",
+      "type": "ABOUT",
+      "props": {
+        "evidence": [
+          {
+            "kind": "text",
+            "evidence_type": "ECO:0000033",
+            "locator": "p. 46",
+            "note": "second-hand: restates results of ref [33] as cited by the review",
+            "quote": "RHE, the extent of surface area generation follows the order KOH > NaOH > LiOH, different from the trend observed for Au surfaces.",
+            "source": "scale:commons/source/10.1016-j.pmatsci.2026.101762"
+          }
+        ],
+        "origin": "reported"
+      },
+      "source": "scale:commons/10.1016-j.pmatsci.2026.101762/c/cc-cations-pt",
+      "target": "scale:commons/10.1016-j.pmatsci.2026.101762/m/pt"
+    },
+    {
+      "id": "scale:commons/10.1016-j.pmatsci.2026.101762/link/c/cc-cations-required-about0",
+      "type": "ABOUT",
+      "props": {
+        "evidence": [
+          {
+            "kind": "text",
+            "evidence_type": "ECO:0000033",
+            "locator": "p. 32",
+            "note": "second-hand: restates results of refs [33, 44] as cited by the review",
+            "quote": "no cathodic corrosion features were observed in the absence of cations",
+            "source": "scale:commons/source/10.1016-j.pmatsci.2026.101762"
+          }
+        ],
+        "origin": "reported"
+      },
+      "source": "scale:commons/10.1016-j.pmatsci.2026.101762/c/cc-cations-required",
+      "target": "scale:commons/10.1016-j.pmatsci.2026.101762/oos/electrochemical-restructuring"
+    },
+    {
+      "id": "scale:commons/10.1016-j.pmatsci.2026.101762/link/c/cc-dissolution-redeposition-about0",
+      "type": "ABOUT",
+      "props": {
+        "evidence": [
+          {
+            "kind": "text",
+            "evidence_type": "ECO:0000033",
+            "locator": "p. 32",
+            "note": "second-hand: restates results of ref [188] as cited by the review",
+            "quote": "octahedral nanocrystal formation, demonstrate that nanocrystal growth proceeds through a coupled dissolution–redeposition process",
+            "source": "scale:commons/source/10.1016-j.pmatsci.2026.101762"
+          }
+        ],
+        "origin": "reported"
+      },
+      "source": "scale:commons/10.1016-j.pmatsci.2026.101762/c/cc-dissolution-redeposition",
+      "target": "scale:commons/10.1016-j.pmatsci.2026.101762/m/au"
+    },
+    {
+      "id": "scale:commons/10.1016-j.pmatsci.2026.101762/link/c/cc-dissolution-redeposition-supports-h1",
+      "type": "SUPPORTS",
+      "props": {
+        "evidence": [
+          {
+            "kind": "text",
+            "locator": "p. 34",
+            "quote": "archical nanostructures provides compelling evidence that cathodic corrosion–induced nanocrystal growth is governed by a dynamic",
+            "source": "scale:commons/source/10.1016-j.pmatsci.2026.101762"
+          }
+        ],
+        "origin": "reported",
+        "warrant": "the cited observations are the review's stated support for its proposed mechanism"
+      },
+      "source": "scale:commons/10.1016-j.pmatsci.2026.101762/c/cc-dissolution-redeposition",
+      "target": "scale:commons/10.1016-j.pmatsci.2026.101762/h/cathodic-corrosion-mechanism"
+    },
+    {
+      "id": "scale:commons/10.1016-j.pmatsci.2026.101762/link/c/cc-dual-role-about0",
+      "type": "ABOUT",
+      "props": {
+        "evidence": [
+          {
+            "kind": "text",
+            "locator": "p. 3",
+            "quote": "cathodic corrosion can be applied as a powerful top-down strategy to fine-tune surface structure,",
+            "source": "scale:commons/source/10.1016-j.pmatsci.2026.101762"
+          }
+        ],
+        "origin": "reported"
+      },
+      "source": "scale:commons/10.1016-j.pmatsci.2026.101762/c/cc-dual-role",
+      "target": "scale:commons/10.1016-j.pmatsci.2026.101762/oos/electrochemical-restructuring"
+    },
+    {
+      "id": "scale:commons/10.1016-j.pmatsci.2026.101762/link/c/cc-metal-specific-about0",
+      "type": "ABOUT",
+      "props": {
+        "evidence": [
+          {
+            "kind": "text",
+            "evidence_type": "ECO:0000033",
+            "locator": "p. 37",
+            "note": "second-hand: restates results of refs [33, 109] as cited by the review",
+            "quote": "favorably leads to (111) sites on Au and (100) sites on Pt and Rh.",
+            "source": "scale:commons/source/10.1016-j.pmatsci.2026.101762"
+          }
+        ],
+        "origin": "reported"
+      },
+      "source": "scale:commons/10.1016-j.pmatsci.2026.101762/c/cc-metal-specific",
+      "target": "scale:commons/10.1016-j.pmatsci.2026.101762/m/au"
+    },
+    {
+      "id": "scale:commons/10.1016-j.pmatsci.2026.101762/link/c/cc-metal-specific-about1",
+      "type": "ABOUT",
+      "props": {
+        "evidence": [
+          {
+            "kind": "text",
+            "evidence_type": "ECO:0000033",
+            "locator": "p. 37",
+            "note": "second-hand: restates results of refs [33, 109] as cited by the review",
+            "quote": "favorably leads to (111) sites on Au and (100) sites on Pt and Rh.",
+            "source": "scale:commons/source/10.1016-j.pmatsci.2026.101762"
+          }
+        ],
+        "origin": "reported"
+      },
+      "source": "scale:commons/10.1016-j.pmatsci.2026.101762/c/cc-metal-specific",
+      "target": "scale:commons/10.1016-j.pmatsci.2026.101762/m/pt"
+    },
+    {
+      "id": "scale:commons/10.1016-j.pmatsci.2026.101762/link/c/cc-metal-specific-about2",
+      "type": "ABOUT",
+      "props": {
+        "evidence": [
+          {
+            "kind": "text",
+            "evidence_type": "ECO:0000033",
+            "locator": "p. 37",
+            "note": "second-hand: restates results of refs [33, 109] as cited by the review",
+            "quote": "favorably leads to (111) sites on Au and (100) sites on Pt and Rh.",
+            "source": "scale:commons/source/10.1016-j.pmatsci.2026.101762"
+          }
+        ],
+        "origin": "reported"
+      },
+      "source": "scale:commons/10.1016-j.pmatsci.2026.101762/c/cc-metal-specific",
+      "target": "scale:commons/10.1016-j.pmatsci.2026.101762/m/rh"
+    },
+    {
+      "id": "scale:commons/10.1016-j.pmatsci.2026.101762/link/c/cc-potential-master-about0",
+      "type": "ABOUT",
+      "props": {
+        "evidence": [
+          {
+            "kind": "text",
+            "evidence_type": "ECO:0000033",
+            "locator": "p. 40",
+            "note": "second-hand: restates results of ref [110] as cited by the review",
+            "quote": "a material-dependent threshold located below the hydrogen evolution equilibrium potential.",
+            "source": "scale:commons/source/10.1016-j.pmatsci.2026.101762"
+          }
+        ],
+        "origin": "reported"
+      },
+      "source": "scale:commons/10.1016-j.pmatsci.2026.101762/c/cc-potential-master",
+      "target": "scale:commons/10.1016-j.pmatsci.2026.101762/oos/electrochemical-restructuring"
+    },
+    {
+      "id": "scale:commons/10.1016-j.pmatsci.2026.101762/link/c/cc-water-required-about0",
+      "type": "ABOUT",
+      "props": {
+        "evidence": [
+          {
+            "kind": "text",
+            "evidence_type": "ECO:0000033",
+            "locator": "p. 32",
+            "note": "second-hand: restates results of ref [186] as cited by the review",
+            "quote": "Notably, cathodic corrosion does not take place in the absence of water.",
+            "source": "scale:commons/source/10.1016-j.pmatsci.2026.101762"
+          }
+        ],
+        "origin": "reported"
+      },
+      "source": "scale:commons/10.1016-j.pmatsci.2026.101762/c/cc-water-required",
+      "target": "scale:commons/10.1016-j.pmatsci.2026.101762/oos/electrochemical-restructuring"
+    },
+    {
+      "id": "scale:commons/10.1016-j.pmatsci.2026.101762/link/c/continuum-about0",
+      "type": "ABOUT",
+      "props": {
+        "evidence": [
+          {
+            "kind": "text",
+            "locator": "p. 14",
+            "quote": "Thus, electrochemical restructuring is best understood as a continuum of potential-driven processes, rather than a set of",
+            "source": "scale:commons/source/10.1016-j.pmatsci.2026.101762"
+          }
+        ],
+        "origin": "reported"
+      },
+      "source": "scale:commons/10.1016-j.pmatsci.2026.101762/c/continuum",
+      "target": "scale:commons/10.1016-j.pmatsci.2026.101762/oos/electrochemical-restructuring"
+    },
+    {
+      "id": "scale:commons/10.1016-j.pmatsci.2026.101762/link/c/cu-shapes-co2rr-about0",
+      "type": "ABOUT",
+      "props": {
+        "evidence": [
+          {
+            "kind": "text",
+            "evidence_type": "ECO:0000033",
+            "locator": "p. 9",
+            "note": "second-hand: restates results of ref [84] as cited by the review",
+            "quote": "toward C2H4 (57%), the Cu octahedra show selectivity toward CH4 (51%), and the Cu spheres do not display selectivity toward any",
+            "source": "scale:commons/source/10.1016-j.pmatsci.2026.101762"
+          }
+        ],
+        "origin": "reported"
+      },
+      "source": "scale:commons/10.1016-j.pmatsci.2026.101762/c/cu-shapes-co2rr",
+      "target": "scale:commons/10.1016-j.pmatsci.2026.101762/m/cu"
+    },
+    {
+      "id": "scale:commons/10.1016-j.pmatsci.2026.101762/link/c/cuni-activation-about0",
+      "type": "ABOUT",
+      "props": {
+        "evidence": [
+          {
+            "kind": "text",
+            "evidence_type": "ECO:0000033",
+            "locator": "p. 51",
+            "note": "second-hand: restates results of ref [207] as cited by the review",
+            "quote": "hydrogen evolution reaction (HER), delivering a Faradaic efficiency (FE) for H2 exceeding 90% at −1.0 V vs. RHE, while CO2 reduction",
+            "source": "scale:commons/source/10.1016-j.pmatsci.2026.101762"
+          }
+        ],
+        "origin": "reported"
+      },
+      "source": "scale:commons/10.1016-j.pmatsci.2026.101762/c/cuni-activation",
+      "target": "scale:commons/10.1016-j.pmatsci.2026.101762/m/cu"
+    },
+    {
+      "id": "scale:commons/10.1016-j.pmatsci.2026.101762/link/c/cuni-activation-about1",
+      "type": "ABOUT",
+      "props": {
+        "evidence": [
+          {
+            "kind": "text",
+            "evidence_type": "ECO:0000033",
+            "locator": "p. 51",
+            "note": "second-hand: restates results of ref [207] as cited by the review",
+            "quote": "hydrogen evolution reaction (HER), delivering a Faradaic efficiency (FE) for H2 exceeding 90% at −1.0 V vs. RHE, while CO2 reduction",
+            "source": "scale:commons/source/10.1016-j.pmatsci.2026.101762"
+          }
+        ],
+        "origin": "reported"
+      },
+      "source": "scale:commons/10.1016-j.pmatsci.2026.101762/c/cuni-activation",
+      "target": "scale:commons/10.1016-j.pmatsci.2026.101762/m/ni"
+    },
+    {
+      "id": "scale:commons/10.1016-j.pmatsci.2026.101762/link/c/design-principle-about0",
+      "type": "ABOUT",
+      "props": {
+        "evidence": [
+          {
+            "kind": "text",
+            "locator": "p. 52",
+            "quote": "A central design principle is that the targeted catalytic function should dictate the restructuring strategy. For reactions governed by",
+            "source": "scale:commons/source/10.1016-j.pmatsci.2026.101762"
+          }
+        ],
+        "origin": "reported"
+      },
+      "source": "scale:commons/10.1016-j.pmatsci.2026.101762/c/design-principle",
+      "target": "scale:commons/10.1016-j.pmatsci.2026.101762/oos/electrochemical-restructuring"
+    },
+    {
+      "id": "scale:commons/10.1016-j.pmatsci.2026.101762/link/c/dynamic-active-state-about0",
+      "type": "ABOUT",
+      "props": {
+        "evidence": [
+          {
+            "kind": "text",
+            "locator": "p. 53",
+            "quote": "The active catalyst state is dynamic, not the initially prepared structure.",
+            "source": "scale:commons/source/10.1016-j.pmatsci.2026.101762"
+          }
+        ],
+        "origin": "reported"
+      },
+      "source": "scale:commons/10.1016-j.pmatsci.2026.101762/c/dynamic-active-state",
+      "target": "scale:commons/10.1016-j.pmatsci.2026.101762/oos/electrochemical-restructuring"
+    },
+    {
+      "id": "scale:commons/10.1016-j.pmatsci.2026.101762/link/c/egor-epc-about0",
+      "type": "ABOUT",
+      "props": {
+        "evidence": [
+          {
+            "kind": "text",
+            "evidence_type": "ECO:0000033",
+            "locator": "p. 22",
+            "note": "second-hand: restates results of ref [141] as cited by the review",
+            "quote": "enables a ~ 20-fold increase in EG conversion rate compared to constant-potential EG oxidation (CP-EGOR), while maintaining",
+            "source": "scale:commons/source/10.1016-j.pmatsci.2026.101762"
+          }
+        ],
+        "origin": "reported"
+      },
+      "source": "scale:commons/10.1016-j.pmatsci.2026.101762/c/egor-epc",
+      "target": "scale:commons/10.1016-j.pmatsci.2026.101762/m/pd"
+    },
+    {
+      "id": "scale:commons/10.1016-j.pmatsci.2026.101762/link/c/egor-epc-about1",
+      "type": "ABOUT",
+      "props": {
+        "evidence": [
+          {
+            "kind": "text",
+            "evidence_type": "ECO:0000033",
+            "locator": "p. 22",
+            "note": "second-hand: restates results of ref [141] as cited by the review",
+            "quote": "enables a ~ 20-fold increase in EG conversion rate compared to constant-potential EG oxidation (CP-EGOR), while maintaining",
+            "source": "scale:commons/source/10.1016-j.pmatsci.2026.101762"
+          }
+        ],
+        "origin": "reported"
+      },
+      "source": "scale:commons/10.1016-j.pmatsci.2026.101762/c/egor-epc",
+      "target": "scale:commons/10.1016-j.pmatsci.2026.101762/m/au"
+    },
+    {
+      "id": "scale:commons/10.1016-j.pmatsci.2026.101762/link/c/egor-epc-about2",
+      "type": "ABOUT",
+      "props": {
+        "evidence": [
+          {
+            "kind": "text",
+            "evidence_type": "ECO:0000033",
+            "locator": "p. 22",
+            "note": "second-hand: restates results of ref [141] as cited by the review",
+            "quote": "enables a ~ 20-fold increase in EG conversion rate compared to constant-potential EG oxidation (CP-EGOR), while maintaining",
+            "source": "scale:commons/source/10.1016-j.pmatsci.2026.101762"
+          }
+        ],
+        "origin": "reported"
+      },
+      "source": "scale:commons/10.1016-j.pmatsci.2026.101762/c/egor-epc",
+      "target": "scale:commons/10.1016-j.pmatsci.2026.101762/m/pt"
+    },
+    {
+      "id": "scale:commons/10.1016-j.pmatsci.2026.101762/link/c/freestanding-meaning-about0",
+      "type": "ABOUT",
+      "props": {
+        "evidence": [
+          {
+            "kind": "text",
+            "locator": "p. 52",
+            "quote": "porting structure, but rather as the elimination of polymeric binders and insulating additives. A more accurate description is that",
+            "source": "scale:commons/source/10.1016-j.pmatsci.2026.101762"
+          }
+        ],
+        "origin": "reported"
+      },
+      "source": "scale:commons/10.1016-j.pmatsci.2026.101762/c/freestanding-meaning",
+      "target": "scale:commons/10.1016-j.pmatsci.2026.101762/oos/electrochemical-restructuring"
+    },
+    {
+      "id": "scale:commons/10.1016-j.pmatsci.2026.101762/link/c/hydride-xas-pt-about0",
+      "type": "ABOUT",
+      "props": {
+        "evidence": [
+          {
+            "kind": "text",
+            "evidence_type": "ECO:0000033",
+            "locator": "p. 32",
+            "note": "second-hand: restates results of ref [187] as cited by the review",
+            "quote": "strong cathodic polarization that are characteristic of hydride formation (Fig. 21a and 21b).",
+            "source": "scale:commons/source/10.1016-j.pmatsci.2026.101762"
+          }
+        ],
+        "origin": "reported"
+      },
+      "source": "scale:commons/10.1016-j.pmatsci.2026.101762/c/hydride-xas-pt",
+      "target": "scale:commons/10.1016-j.pmatsci.2026.101762/m/pt"
+    },
+    {
+      "id": "scale:commons/10.1016-j.pmatsci.2026.101762/link/c/hydride-xas-pt-about1",
+      "type": "ABOUT",
+      "props": {
+        "evidence": [
+          {
+            "kind": "text",
+            "evidence_type": "ECO:0000033",
+            "locator": "p. 34",
+            "note": "second-hand: the review's caveat on Au, cited when discussing the XAS evidence of ref [187]",
+            "quote": "their relevance is less clear for systems such as Au, where stable hydride formation is unlikely.",
+            "source": "scale:commons/source/10.1016-j.pmatsci.2026.101762"
+          }
+        ],
+        "origin": "reported"
+      },
+      "source": "scale:commons/10.1016-j.pmatsci.2026.101762/c/hydride-xas-pt",
+      "target": "scale:commons/10.1016-j.pmatsci.2026.101762/m/au"
+    },
+    {
+      "id": "scale:commons/10.1016-j.pmatsci.2026.101762/link/c/hydride-xas-pt-supports-h1",
+      "type": "SUPPORTS",
+      "props": {
+        "evidence": [
+          {
+            "kind": "text",
+            "locator": "p. 32",
+            "quote": "sorption near-edge structure experiments (HERFD-XANES) measurements reveal systematic electronic changes for platinum under",
+            "source": "scale:commons/source/10.1016-j.pmatsci.2026.101762"
+          }
+        ],
+        "origin": "reported",
+        "warrant": "the cited observations are the review's stated support for its proposed mechanism"
+      },
+      "source": "scale:commons/10.1016-j.pmatsci.2026.101762/c/hydride-xas-pt",
+      "target": "scale:commons/10.1016-j.pmatsci.2026.101762/h/cathodic-corrosion-mechanism"
+    },
+    {
+      "id": "scale:commons/10.1016-j.pmatsci.2026.101762/link/c/industrial-gap-about0",
+      "type": "ABOUT",
+      "props": {
+        "evidence": [
+          {
+            "kind": "text",
+            "locator": "p. 53",
+            "quote": "The translation of restructured binder-free electrodes to industrially relevant conditions remains a major unresolved",
+            "source": "scale:commons/source/10.1016-j.pmatsci.2026.101762"
+          }
+        ],
+        "origin": "reported"
+      },
+      "source": "scale:commons/10.1016-j.pmatsci.2026.101762/c/industrial-gap",
+      "target": "scale:commons/10.1016-j.pmatsci.2026.101762/oos/electrochemical-restructuring"
+    },
+    {
+      "id": "scale:commons/10.1016-j.pmatsci.2026.101762/link/c/niru-pte-about0",
+      "type": "ABOUT",
+      "props": {
+        "evidence": [
+          {
+            "kind": "text",
+            "evidence_type": "ECO:0000033",
+            "locator": "p. 19",
+            "note": "second-hand: restates results of ref [137] as cited by the review",
+            "quote": "Ru incorporation (≤1.9 at%) dramatically reduces the HER overpotential from 171 mV for pure Ni to ~ 35 mV",
+            "source": "scale:commons/source/10.1016-j.pmatsci.2026.101762"
+          }
+        ],
+        "origin": "reported"
+      },
+      "source": "scale:commons/10.1016-j.pmatsci.2026.101762/c/niru-pte",
+      "target": "scale:commons/10.1016-j.pmatsci.2026.101762/m/ni"
+    },
+    {
+      "id": "scale:commons/10.1016-j.pmatsci.2026.101762/link/c/np-aux-oxide-about0",
+      "type": "ABOUT",
+      "props": {
+        "evidence": [
+          {
+            "kind": "text",
+            "evidence_type": "ECO:0000033",
+            "locator": "p. 23",
+            "note": "second-hand: restates results of refs [142, 143] as cited by the review",
+            "quote": "44, and 86, respectively, for bare gold and nanoporous Au electrodes fabricated with holding times of 10, 20, 30, and 60 min,",
+            "source": "scale:commons/source/10.1016-j.pmatsci.2026.101762"
+          }
+        ],
+        "origin": "reported"
+      },
+      "source": "scale:commons/10.1016-j.pmatsci.2026.101762/c/np-aux-oxide",
+      "target": "scale:commons/10.1016-j.pmatsci.2026.101762/m/au"
+    },
+    {
+      "id": "scale:commons/10.1016-j.pmatsci.2026.101762/link/c/orc-au-about0",
+      "type": "ABOUT",
+      "props": {
+        "evidence": [
+          {
+            "kind": "text",
+            "evidence_type": "ECO:0000033",
+            "locator": "p. 21",
+            "note": "second-hand: restates results of ref [34] as cited by the review",
+            "quote": "cycles. Additionally, the distribution of facets changes cycling, notably with the development of (111) facets, evident in the oxide",
+            "source": "scale:commons/source/10.1016-j.pmatsci.2026.101762"
+          }
+        ],
+        "origin": "reported"
+      },
+      "source": "scale:commons/10.1016-j.pmatsci.2026.101762/c/orc-au",
+      "target": "scale:commons/10.1016-j.pmatsci.2026.101762/m/au"
+    },
+    {
+      "id": "scale:commons/10.1016-j.pmatsci.2026.101762/link/c/pc-npg-about0",
+      "type": "ABOUT",
+      "props": {
+        "evidence": [
+          {
+            "kind": "text",
+            "evidence_type": "ECO:0000033",
+            "locator": "p. 29",
+            "note": "second-hand: restates results of ref [118] as cited by the review",
+            "quote": "are estimated as 29.8%, 25.6%, 27.8%, and 16.8%, respectively. In comparison, for the cd-NPG electrode, the fractions of step/kink",
+            "source": "scale:commons/source/10.1016-j.pmatsci.2026.101762"
+          }
+        ],
+        "origin": "reported"
+      },
+      "source": "scale:commons/10.1016-j.pmatsci.2026.101762/c/pc-npg",
+      "target": "scale:commons/10.1016-j.pmatsci.2026.101762/m/au"
+    },
+    {
+      "id": "scale:commons/10.1016-j.pmatsci.2026.101762/link/c/pd-shapes-no3rr-about0",
+      "type": "ABOUT",
+      "props": {
+        "evidence": [
+          {
+            "kind": "text",
+            "evidence_type": "ECO:0000033",
+            "locator": "p. 9",
+            "note": "second-hand: restates results of ref [83] as cited by the review",
+            "quote": "highlighted the critical role of the (100) facet, suggesting higher NO2RR activity than Pd(111) or Pd(hk0). The NH3 yield rate at 3 h",
+            "source": "scale:commons/source/10.1016-j.pmatsci.2026.101762"
+          }
+        ],
+        "origin": "reported"
+      },
+      "source": "scale:commons/10.1016-j.pmatsci.2026.101762/c/pd-shapes-no3rr",
+      "target": "scale:commons/10.1016-j.pmatsci.2026.101762/m/pd"
+    },
+    {
+      "id": "scale:commons/10.1016-j.pmatsci.2026.101762/link/c/pt-dissolution-oxides-about0",
+      "type": "ABOUT",
+      "props": {
+        "evidence": [
+          {
+            "kind": "text",
+            "evidence_type": "ECO:0000033",
+            "locator": "p. 13",
+            "note": "second-hand: restates results of ref [88] as cited by the review",
+            "quote": "amorphous Pt oxide phase that resembles bulk PtO2 and develops only after saturation of the stripe-like oxide. Importantly, cathodic",
+            "source": "scale:commons/source/10.1016-j.pmatsci.2026.101762"
+          }
+        ],
+        "origin": "reported"
+      },
+      "source": "scale:commons/10.1016-j.pmatsci.2026.101762/c/pt-dissolution-oxides",
+      "target": "scale:commons/10.1016-j.pmatsci.2026.101762/m/pt"
+    },
+    {
+      "id": "scale:commons/10.1016-j.pmatsci.2026.101762/link/c/pt-sas-mos2-about0",
+      "type": "ABOUT",
+      "props": {
+        "evidence": [
+          {
+            "kind": "text",
+            "evidence_type": "ECO:0000033",
+            "locator": "p. 17",
+            "note": "second-hand: restates results of ref [131] as cited by the review",
+            "quote": "normalized to the loading amount of Pt, the mass activity of Pt-SAs/MoS2 at an overpotential of 0.05 V is 17.14 A mg−1, exceeding",
+            "source": "scale:commons/source/10.1016-j.pmatsci.2026.101762"
+          }
+        ],
+        "origin": "reported"
+      },
+      "source": "scale:commons/10.1016-j.pmatsci.2026.101762/c/pt-sas-mos2",
+      "target": "scale:commons/10.1016-j.pmatsci.2026.101762/m/pt"
+    },
+    {
+      "id": "scale:commons/10.1016-j.pmatsci.2026.101762/link/c/swp-faceting-about0",
+      "type": "ABOUT",
+      "props": {
+        "evidence": [
+          {
+            "kind": "text",
+            "evidence_type": "ECO:0000033",
+            "locator": "p. 26",
+            "note": "second-hand: restates results of ref [114] as cited by the review",
+            "quote": "resulting in the formation of either (110)- or (100)-facets, depending on the applied parameters.",
+            "source": "scale:commons/source/10.1016-j.pmatsci.2026.101762"
+          }
+        ],
+        "origin": "reported"
+      },
+      "source": "scale:commons/10.1016-j.pmatsci.2026.101762/c/swp-faceting",
+      "target": "scale:commons/10.1016-j.pmatsci.2026.101762/m/au"
+    },
+    {
+      "id": "scale:commons/10.1016-j.pmatsci.2026.101762/link/c/swp-faceting-about1",
+      "type": "ABOUT",
+      "props": {
+        "evidence": [
+          {
+            "kind": "text",
+            "evidence_type": "ECO:0000033",
+            "locator": "p. 26",
+            "note": "second-hand: restates results of ref [162] as cited by the review",
+            "quote": "After 30 min of SWP treatment, well-defined THH nanocrystals with {520} facets are formed.",
+            "source": "scale:commons/source/10.1016-j.pmatsci.2026.101762"
+          }
+        ],
+        "origin": "reported"
+      },
+      "source": "scale:commons/10.1016-j.pmatsci.2026.101762/c/swp-faceting",
+      "target": "scale:commons/10.1016-j.pmatsci.2026.101762/m/pt"
+    },
+    {
+      "id": "scale:commons/10.1016-j.pmatsci.2026.101762/link/c/table1-comparison-about0",
+      "type": "ABOUT",
+      "props": {
+        "evidence": [
+          {
+            "kind": "text",
+            "locator": "p. 51",
+            "quote": "above are qualitatively compared in terms of their strengths, limitations, and the resulting surface architectures (Table 1).",
+            "source": "scale:commons/source/10.1016-j.pmatsci.2026.101762"
+          }
+        ],
+        "origin": "reported"
+      },
+      "source": "scale:commons/10.1016-j.pmatsci.2026.101762/c/table1-comparison",
+      "target": "scale:commons/10.1016-j.pmatsci.2026.101762/oos/electrochemical-restructuring"
+    },
+    {
+      "id": "scale:commons/10.1016-j.pmatsci.2026.101762/link/h-ab1",
+      "type": "ABOUT",
+      "props": {
+        "evidence": [
+          {
+            "kind": "text",
+            "locator": "p. 34",
+            "quote": "Taken together, the emerging mechanistic picture of cathodic corrosion is schematically illustrated in Fig. 23.",
+            "source": "scale:commons/source/10.1016-j.pmatsci.2026.101762"
+          }
+        ],
+        "origin": "reported"
+      },
+      "source": "scale:commons/10.1016-j.pmatsci.2026.101762/h/cathodic-corrosion-mechanism",
+      "target": "scale:commons/10.1016-j.pmatsci.2026.101762/oos/electrochemical-restructuring"
+    },
+    {
+      "id": "scale:commons/10.1016-j.pmatsci.2026.101762/link/h-ab2",
+      "type": "ABOUT",
+      "props": {
+        "evidence": [
+          {
+            "kind": "text",
+            "locator": "p. 34",
+            "quote": "Schematic illustration of the proposed mechanism of cathodic corrosion of Au under cathodic polarization in alkali metal hydroxide",
+            "source": "scale:commons/source/10.1016-j.pmatsci.2026.101762"
+          }
+        ],
+        "origin": "reported"
+      },
+      "source": "scale:commons/10.1016-j.pmatsci.2026.101762/h/cathodic-corrosion-mechanism",
+      "target": "scale:commons/10.1016-j.pmatsci.2026.101762/m/au"
+    },
+    {
+      "id": "scale:commons/10.1016-j.pmatsci.2026.101762/link/h-pb1",
+      "type": "PROPOSED_BY",
+      "props": {
+        "evidence": [
+          {
+            "kind": "text",
+            "locator": "p. 34",
+            "quote": "Taken together, this scheme reflects a unified mechanistic framework in which four elements act cooperatively: (i) extreme",
+            "source": "scale:commons/source/10.1016-j.pmatsci.2026.101762"
+          }
+        ],
+        "origin": "reported",
+        "rationale": "proposed by the review's authors, drawing on refs [32,33,186-188]"
+      },
+      "source": "scale:commons/10.1016-j.pmatsci.2026.101762/h/cathodic-corrosion-mechanism",
+      "target": "scale:commons/10.1016-j.pmatsci.2026.101762/p/elnagar"
+    },
+    {
+      "id": "scale:commons/10.1016-j.pmatsci.2026.101762/m/au/reported-in/10.1016-j.pmatsci.2026.101762",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 10"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.1016-j.pmatsci.2026.101762/m/au",
+      "target": "scale:commons/source/10.1016-j.pmatsci.2026.101762"
+    },
+    {
+      "id": "scale:commons/10.1016-j.pmatsci.2026.101762/m/cu/reported-in/10.1016-j.pmatsci.2026.101762",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 32"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.1016-j.pmatsci.2026.101762/m/cu",
+      "target": "scale:commons/source/10.1016-j.pmatsci.2026.101762"
+    },
+    {
+      "id": "scale:commons/10.1016-j.pmatsci.2026.101762/m/ni/reported-in/10.1016-j.pmatsci.2026.101762",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 32"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.1016-j.pmatsci.2026.101762/m/ni",
+      "target": "scale:commons/source/10.1016-j.pmatsci.2026.101762"
+    },
+    {
+      "id": "scale:commons/10.1016-j.pmatsci.2026.101762/m/pd/reported-in/10.1016-j.pmatsci.2026.101762",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 9"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.1016-j.pmatsci.2026.101762/m/pd",
+      "target": "scale:commons/source/10.1016-j.pmatsci.2026.101762"
+    },
+    {
+      "id": "scale:commons/10.1016-j.pmatsci.2026.101762/m/pt/reported-in/10.1016-j.pmatsci.2026.101762",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 13"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.1016-j.pmatsci.2026.101762/m/pt",
+      "target": "scale:commons/source/10.1016-j.pmatsci.2026.101762"
+    },
+    {
+      "id": "scale:commons/10.1016-j.pmatsci.2026.101762/m/rh/reported-in/10.1016-j.pmatsci.2026.101762",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 37"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.1016-j.pmatsci.2026.101762/m/rh",
+      "target": "scale:commons/source/10.1016-j.pmatsci.2026.101762"
+    },
+    {
+      "id": "scale:commons/10.1016-j.pmatsci.2026.101762/oos/electrochemical-restructuring/reported-in/10.1016-j.pmatsci.2026.101762",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 2"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.1016-j.pmatsci.2026.101762/oos/electrochemical-restructuring",
+      "target": "scale:commons/source/10.1016-j.pmatsci.2026.101762"
+    },
+    {
+      "id": "scale:commons/10.1016-j.pmatsci.2026.101762/p/elnagar/reported-in/10.1016-j.pmatsci.2026.101762",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 1"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.1016-j.pmatsci.2026.101762/p/elnagar",
+      "target": "scale:commons/source/10.1016-j.pmatsci.2026.101762"
+    },
+    {
+      "id": "scale:commons/10.1016-j.pmatsci.2026.101762/p/jacob/reported-in/10.1016-j.pmatsci.2026.101762",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 1"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.1016-j.pmatsci.2026.101762/p/jacob",
+      "target": "scale:commons/source/10.1016-j.pmatsci.2026.101762"
+    },
+    {
+      "id": "scale:commons/10.1016-j.pmatsci.2026.101762/p/kibler/reported-in/10.1016-j.pmatsci.2026.101762",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 1"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.1016-j.pmatsci.2026.101762/p/kibler",
+      "target": "scale:commons/source/10.1016-j.pmatsci.2026.101762"
+    }
+  ],
+  "schema_version": "0.8.2",
+  "source": "scale:commons/source/10.1016-j.pmatsci.2026.101762"
+}

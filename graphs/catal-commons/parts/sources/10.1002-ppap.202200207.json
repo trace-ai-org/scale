@@ -1,0 +1,2734 @@
+{
+  "nodes": [
+    {
+      "id": "scale:commons/10.1002-ppap.202200207/analysis/rwgs-arrhenius",
+      "label": "Analysis",
+      "props": {
+        "name": "Arrhenius analysis of RWGS kinetics in the FB-DBD",
+        "analysis_kind": "kinetic_fit",
+        "evidence": [
+          {
+            "id": "ev-rwgs-ea",
+            "kind": "text",
+            "evidence_type": "ECO:0000006",
+            "locator": "p. 21, Section 4.3",
+            "quote": "all the Arrhenius plots exhibited good linearity, without break temperature typically found in PB‐DBD (Figure 20), in which we experimentally confirmed the key for the plasma promotion effect: a dramatic decrease in activation energy from 75 of thermal catalysis to 43 kJ/mol",
+            "source": "scale:commons/source/10.1002-ppap.202200207"
+          }
+        ],
+        "experiment_kind": "computational",
+        "goal": "explain",
+        "note": "activation energies read from the source's Arrhenius plots (Figure 21b): from 75 kJ/mol under thermal catalysis to 43 kJ/mol under DBD catalysis",
+        "origin": "reported",
+        "result_values": [
+          {
+            "id": "apparent_ea_thermal",
+            "status": "present",
+            "basis": "thermal catalysis",
+            "evidence_ids": [
+              "ev-rwgs-ea"
+            ],
+            "unit": "kJ/mol",
+            "unresolved_target": "the forward RWGS reaction rate (CO2 + H2 = CO + H2O)",
+            "value": 75,
+            "variable": "scale:commons/10.1002-ppap.202200207/variable/apparent-activation-energy"
+          },
+          {
+            "id": "apparent_ea_plasma",
+            "status": "present",
+            "basis": "plasma catalysis (DBD)",
+            "evidence_ids": [
+              "ev-rwgs-ea"
+            ],
+            "unit": "kJ/mol",
+            "unresolved_target": "the forward RWGS reaction rate (CO2 + H2 = CO + H2O)",
+            "value": 43,
+            "variable": "scale:commons/10.1002-ppap.202200207/variable/apparent-activation-energy"
+          }
+        ],
+        "verdict": "all the Arrhenius plots exhibited good linearity, without the break temperature typically found in PB-DBD; the plasma promotion effect shows as a dramatic decrease in activation energy"
+      }
+    },
+    {
+      "id": "scale:commons/10.1002-ppap.202200207/catalyst/la-ni-al2o3",
+      "label": "Catalyst",
+      "props": {
+        "name": "La-Ni/Al2O3",
+        "evidence": [
+          {
+            "kind": "text",
+            "evidence_type": "ECO:0000006",
+            "locator": "p. 19, Section 4.2",
+            "quote": "An DMR with >4 g of crushed particles (180–300 μm) of La‐Ni/Al2O3 (La—3 wt%, Ni—11 wt%) was applied as a model reaction.",
+            "source": "scale:commons/source/10.1002-ppap.202200207"
+          }
+        ],
+        "nominal_formula": "La-Ni/Al2O3",
+        "origin": "reported",
+        "properties": {
+          "la_loading": {
+            "status": "present",
+            "as_reported": "La—3 wt%",
+            "unit": "wt%",
+            "value": 3
+          },
+          "ni_loading": {
+            "status": "present",
+            "as_reported": "Ni—11 wt%",
+            "unit": "wt%",
+            "value": 11
+          }
+        }
+      }
+    },
+    {
+      "id": "scale:commons/10.1002-ppap.202200207/catalyst/pd2ga-sio2",
+      "label": "Catalyst",
+      "props": {
+        "name": "Pd2Ga/SiO2",
+        "evidence": [
+          {
+            "kind": "text",
+            "evidence_type": "ECO:0000006",
+            "locator": "p. 21, Section 4.3",
+            "quote": "The CO2 conversion and Arrhenius plot under thermal and DBD (12 and 100 kHz) conditions with catalyst loadings of 3 or 10 wt % are shown in Figure 21.",
+            "source": "scale:commons/source/10.1002-ppap.202200207"
+          }
+        ],
+        "nominal_formula": "Pd2Ga/SiO2",
+        "origin": "reported",
+        "properties": {
+          "loading_10wt": {
+            "status": "present",
+            "note": "one of the two catalyst loadings studied, '3 or 10 wt %'",
+            "unit": "wt%",
+            "value": 10
+          },
+          "loading_3wt": {
+            "status": "present",
+            "note": "one of the two catalyst loadings studied, '3 or 10 wt %'",
+            "unit": "wt%",
+            "value": 3
+          }
+        }
+      }
+    },
+    {
+      "id": "scale:commons/10.1002-ppap.202200207/claim/ea-100khz-dmr",
+      "label": "Claim",
+      "props": {
+        "name": "Ea 100khz dmr",
+        "claim_kind": "finding",
+        "claim_status": "supported",
+        "evidence": [
+          {
+            "id": "ev-ea100",
+            "kind": "text",
+            "evidence_type": "ECO:0000006",
+            "locator": "p. 21, Section 4.2",
+            "quote": "we confirmed that the 100 kHz DBD clearly decreased the activation energy, which enabled low‐temperature CH4 or CO2 conversion (Figure 20)",
+            "source": "scale:commons/source/10.1002-ppap.202200207"
+          },
+          {
+            "id": "ev-ea100-rt",
+            "kind": "text",
+            "evidence_type": "ECO:0000006",
+            "locator": "p. 21, Section 4.2",
+            "quote": "However, room‐temperature operation with sufficient gas conversion was difficult to achieve.",
+            "source": "scale:commons/source/10.1002-ppap.202200207"
+          }
+        ],
+        "inference_type": "observational",
+        "note": "Figure 20 is reproduced with permission from ref [105] (Copyright 2020, Elsevier)",
+        "origin": "reported",
+        "statement": "The 100 kHz DBD clearly decreased the activation energy, which enabled low-temperature CH4 or CO2 conversion (Figure 20); room-temperature operation with sufficient gas conversion remained difficult to achieve."
+      }
+    },
+    {
+      "id": "scale:commons/10.1002-ppap.202200207/claim/fb100-exceeds-eq",
+      "label": "Claim",
+      "props": {
+        "name": "FB100 exceeds eq",
+        "claim_kind": "finding",
+        "claim_status": "supported",
+        "evidence": [
+          {
+            "id": "ev-sf100",
+            "kind": "text",
+            "evidence_type": "ECO:0000006",
+            "locator": "p. 21, Section 4.2",
+            "quote": "For the 100 kHz FB‐DBD, CH4 conversion exceeded thermal equilibrium in the low‐temperature range (<510°C); SF increased to a maximum of 2.3 at 350°C.",
+            "source": "scale:commons/source/10.1002-ppap.202200207"
+          }
+        ],
+        "inference_type": "observational",
+        "origin": "reported",
+        "statement": "For the 100 kHz FB-DBD, CH4 conversion exceeded thermal equilibrium in the low-temperature range (<510 °C); the synergetic factor increased to a maximum of 2.3 at 350 °C."
+      }
+    },
+    {
+      "id": "scale:commons/10.1002-ppap.202200207/claim/fb12-highT",
+      "label": "Claim",
+      "props": {
+        "name": "FB12 highT",
+        "claim_kind": "finding",
+        "claim_status": "supported",
+        "evidence": [
+          {
+            "id": "ev-high12",
+            "kind": "text",
+            "evidence_type": "ECO:0000006",
+            "locator": "p. 21, Section 4.2",
+            "quote": "As the temperature increased (>510°C), the CH4 conversion of the 12 kHz FB‐DBD almost coincided with the thermal equilibrium, while that of the 12 kHz PB‐DBD was gradually far below the thermal equilibrium",
+            "source": "scale:commons/source/10.1002-ppap.202200207"
+          }
+        ],
+        "inference_type": "observational",
+        "origin": "reported",
+        "statement": "As the temperature increased (>510 °C), the CH4 conversion of the 12 kHz FB-DBD almost coincided with the thermal equilibrium, while that of the 12 kHz PB-DBD was gradually far below the thermal equilibrium."
+      }
+    },
+    {
+      "id": "scale:commons/10.1002-ppap.202200207/claim/fb12-vs-thermal",
+      "label": "Claim",
+      "props": {
+        "name": "FB12 vs thermal",
+        "claim_kind": "finding",
+        "claim_status": "supported",
+        "evidence": [
+          {
+            "id": "ev-sf12ctx",
+            "kind": "text",
+            "evidence_type": "ECO:0000006",
+            "locator": "p. 20",
+            "quote": "In the low‐temperature range (<510°C), 12 kHz FB‐DBD yielded increased CH4 conversion compared to thermal catalysis until the gas composition reached thermal equilibrium, which was much more pronounced than that of 12 kHz PB‐DBD.",
+            "source": "scale:commons/source/10.1002-ppap.202200207"
+          }
+        ],
+        "inference_type": "observational",
+        "origin": "reported",
+        "statement": "In the low-temperature range (<510 °C), the 12 kHz FB-DBD yielded increased CH4 conversion compared to thermal catalysis until the gas composition reached thermal equilibrium, much more pronounced than that of the 12 kHz PB-DBD."
+      }
+    },
+    {
+      "id": "scale:commons/10.1002-ppap.202200207/claim/mechanism-fb-dbd",
+      "label": "Claim",
+      "props": {
+        "name": "mechanism FB dbd",
+        "claim_kind": "mechanism",
+        "claim_status": "supported",
+        "evidence": [
+          {
+            "id": "ev-micropores",
+            "kind": "text",
+            "evidence_type": "ECO:0000006",
+            "locator": "p. 20",
+            "quote": "We experimentally verified that DBD plasma was neither generated nor diffused in the micropores of the catalyst pellets[6,19]",
+            "source": "scale:commons/source/10.1002-ppap.202200207"
+          },
+          {
+            "id": "ev-key-role",
+            "kind": "text",
+            "evidence_type": "ECO:0000006",
+            "locator": "p. 21, Section 4.2",
+            "quote": "played a key role in the enhancement of the FB‐DBD reaction",
+            "source": "scale:commons/source/10.1002-ppap.202200207"
+          }
+        ],
+        "inference_type": "observational",
+        "origin": "reported",
+        "statement": "The enlarged interaction area of fluidized powder-type catalysts and plasma-induced reactive species (vibrationally excited CH4 and CO2) played a key role in the enhancement of the FB-DBD reaction."
+      }
+    },
+    {
+      "id": "scale:commons/10.1002-ppap.202200207/claim/rwgs-doubled",
+      "label": "Claim",
+      "props": {
+        "name": "RWGS doubled",
+        "claim_kind": "finding",
+        "claim_status": "supported",
+        "evidence": [
+          {
+            "id": "ev-rwgs-doubled",
+            "kind": "text",
+            "evidence_type": "ECO:0000006",
+            "locator": "p. 21, Section 4.3",
+            "quote": "Plasma catalysis yielded more than doubled CO2 conversion compared with thermal catalysis.",
+            "source": "scale:commons/source/10.1002-ppap.202200207"
+          }
+        ],
+        "inference_type": "interventional",
+        "origin": "reported",
+        "statement": "In the FB-DBD RWGS study, plasma catalysis yielded more than doubled CO2 conversion compared with thermal catalysis."
+      }
+    },
+    {
+      "id": "scale:commons/10.1002-ppap.202200207/claim/rwgs-exceeds-eq",
+      "label": "Claim",
+      "props": {
+        "name": "RWGS exceeds eq",
+        "claim_kind": "finding",
+        "claim_status": "supported",
+        "evidence": [
+          {
+            "id": "ev-rwgs-eq2",
+            "kind": "text",
+            "evidence_type": "ECO:0000006",
+            "locator": "p. 21, Section 4.3",
+            "quote": "The 100 kHz DBD catalysis with >10 wt % Pd2Ga/SiO2 clearly exceeded the thermodynamic equilibrium limitation.",
+            "source": "scale:commons/source/10.1002-ppap.202200207"
+          }
+        ],
+        "inference_type": "interventional",
+        "origin": "reported",
+        "statement": "The 100 kHz DBD catalysis with more than 10 wt % Pd2Ga/SiO2 clearly exceeded the thermodynamic equilibrium limitation."
+      }
+    },
+    {
+      "id": "scale:commons/10.1002-ppap.202200207/claim/sf12-comparison",
+      "label": "Claim",
+      "props": {
+        "name": "sf12 comparison",
+        "claim_kind": "comparison",
+        "claim_status": "supported",
+        "evidence": [
+          {
+            "id": "ev-sf12",
+            "kind": "text",
+            "evidence_type": "ECO:0000006",
+            "locator": "p. 20",
+            "quote": "The calculated SF (Equation 3) of 12 kHz FB‐DBD reached a maximum of 1.8 at 480°C, which was larger than that of PB‐DBD (1.0).",
+            "source": "scale:commons/source/10.1002-ppap.202200207"
+          }
+        ],
+        "inference_type": "observational",
+        "note": "the PB-DBD value is from the authors' previous study (refs [105,121])",
+        "origin": "reported",
+        "statement": "The synergetic factor (Equation 3) of the 12 kHz FB-DBD in DMR reached a maximum of 1.8 at 480 °C, larger than that of the PB-DBD (1.0)."
+      }
+    },
+    {
+      "id": "scale:commons/10.1002-ppap.202200207/claim/thermal-transfer",
+      "label": "Claim",
+      "props": {
+        "name": "thermal transfer",
+        "claim_kind": "conclusion",
+        "claim_status": "supported",
+        "evidence": [
+          {
+            "id": "ev-superiority",
+            "kind": "text",
+            "evidence_type": "ECO:0000006",
+            "locator": "p. 20",
+            "quote": "the superiority of the FB reactor over the PB reactor in terms of heat and mass transfer was confirmed, but only at temperatures higher than 510°C",
+            "source": "scale:commons/source/10.1002-ppap.202200207"
+          }
+        ],
+        "inference_type": "observational",
+        "origin": "reported",
+        "statement": "The superiority of the FB reactor over the PB reactor in terms of heat and mass transfer was confirmed, but only at temperatures higher than 510 °C."
+      }
+    },
+    {
+      "id": "scale:commons/10.1002-ppap.202200207/exp/fb-dbd-dmr-only",
+      "label": "Experiment",
+      "props": {
+        "name": "DMR in the FB-DBD without catalyst (only-DBD)",
+        "conditions": {
+          "pressure": {
+            "status": "present",
+            "unit": "kPa",
+            "value": 10
+          },
+          "temperature": {
+            "status": "present",
+            "as_reported": "350–500",
+            "lower": 350,
+            "note": "conditions as in Table 4",
+            "unit": "°C",
+            "upper": 500
+          }
+        },
+        "discharge_power": {
+          "status": "present",
+          "unit": "W",
+          "value": 30
+        },
+        "evidence": [
+          {
+            "id": "ev-only",
+            "kind": "text",
+            "evidence_type": "ECO:0000006",
+            "locator": "p. 19, Section 4.2",
+            "quote": "In all cases, CH4 conversions in only‐DBD reaction (without catalyst) were <4%, which was relatively smaller than that in the plasma–catalysis hybrid reaction.",
+            "source": "scale:commons/source/10.1002-ppap.202200207"
+          },
+          {
+            "id": "ev-p",
+            "kind": "table",
+            "evidence_type": "ECO:0000006",
+            "locator": "p. 20, Table 4",
+            "note": "FB-DBD column",
+            "quote": "Pressure (kPa) 10 5",
+            "source": "scale:commons/source/10.1002-ppap.202200207"
+          },
+          {
+            "id": "ev-T",
+            "kind": "table",
+            "evidence_type": "ECO:0000006",
+            "locator": "p. 20, Table 4",
+            "note": "FB-DBD column",
+            "quote": "Temperature (°C) 350–500 400–550",
+            "source": "scale:commons/source/10.1002-ppap.202200207"
+          },
+          {
+            "id": "ev-f",
+            "kind": "table",
+            "evidence_type": "ECO:0000006",
+            "locator": "p. 20, Table 4",
+            "note": "FB-DBD: 12 and 100 kHz",
+            "quote": "Frequency (kHz) 12 and 100",
+            "source": "scale:commons/source/10.1002-ppap.202200207"
+          },
+          {
+            "id": "ev-pw",
+            "kind": "table",
+            "evidence_type": "ECO:0000006",
+            "locator": "p. 20, Table 4",
+            "note": "FB-DBD column",
+            "quote": "Power (W) 30 90",
+            "source": "scale:commons/source/10.1002-ppap.202200207"
+          }
+        ],
+        "excitation_frequency": {
+          "status": "present",
+          "as_reported": "12 and 100",
+          "lower": 12,
+          "note": "both the 12 kHz and the 100 kHz cases; two discrete frequencies, not a range",
+          "unit": "kHz",
+          "upper": 100
+        },
+        "experiment_kind": "physical",
+        "goal": "investigate",
+        "manipulation": "interventional",
+        "note": "plasma-only control (no catalyst); conditions as in Table 4",
+        "origin": "reported",
+        "results": {
+          "conversion_ch4": {
+            "status": "present",
+            "as_reported": "<4%",
+            "bound": "upper",
+            "evidence_ids": [
+              "ev-only"
+            ],
+            "target": "scale:commons/10.1002-ppap.202200207/species/ch4",
+            "unit": "%",
+            "value": 4
+          }
+        },
+        "specific_energy_input": {
+          "status": "present",
+          "unit": "eV/molecule",
+          "value": 1.52
+        }
+      }
+    },
+    {
+      "id": "scale:commons/10.1002-ppap.202200207/feed/ch4-co2",
+      "label": "Feed",
+      "props": {
+        "name": "CH4/CO2 = 0.8, 300 cm3/min at STP",
+        "evidence": [
+          {
+            "id": "ev-gas",
+            "kind": "table",
+            "evidence_type": "ECO:0000006",
+            "locator": "p. 20, Table 4",
+            "quote": "Initial gas condition CH4/CO₂ = 0.8",
+            "source": "scale:commons/source/10.1002-ppap.202200207"
+          },
+          {
+            "id": "ev-flow",
+            "kind": "table",
+            "evidence_type": "ECO:0000006",
+            "locator": "p. 20, Table 4",
+            "note": "FB-DBD column",
+            "quote": "Total (cm3/min) at STP 300 1000",
+            "source": "scale:commons/source/10.1002-ppap.202200207"
+          }
+        ],
+        "origin": "reported",
+        "ratios": {
+          "ch4_co2": {
+            "status": "present",
+            "as_reported": "CH4/CO₂ = 0.8",
+            "note": "basis of the ratio not stated by the source",
+            "unit": "1",
+            "value": 0.8
+          }
+        }
+      }
+    },
+    {
+      "id": "scale:commons/10.1002-ppap.202200207/feed/co2-h2",
+      "label": "Feed",
+      "props": {
+        "name": "CO2 + H2 (RWGS feed)",
+        "evidence": [
+          {
+            "kind": "text",
+            "evidence_type": "ECO:0000006",
+            "locator": "p. 21, Section 4.3",
+            "quote": "We further applied the FB‐DBD reactor to the experimental kinetic studies of plasma catalysis[122]. The simplest CO2 hydrogenation–RWGS reaction (CO2 + H2 = CO + H2O; ΔH = + 41.2 kJ/mol) over Pd2Ga/SiO2 was used as the model.",
+            "source": "scale:commons/source/10.1002-ppap.202200207"
+          }
+        ],
+        "note": "the feed composition and flow rate are not stated for the RWGS study",
+        "origin": "reported"
+      }
+    },
+    {
+      "id": "scale:commons/10.1002-ppap.202200207/plasma/fb-dbd",
+      "label": "PlasmaSource",
+      "props": {
+        "name": "FB-DBD discharge (coaxial dielectric barrier discharge)",
+        "configuration": "in_plasma",
+        "discharge_kind": "dielectric_barrier",
+        "evidence": [
+          {
+            "kind": "text",
+            "evidence_type": "ECO:0000006",
+            "locator": "p. 19, Section 4.2",
+            "quote": "The DBD is generated via coaxial electrodes and interacts with the fluidized catalyst.",
+            "source": "scale:commons/source/10.1002-ppap.202200207"
+          },
+          {
+            "kind": "text",
+            "evidence_type": "ECO:0000006",
+            "locator": "p. 19, Section 4.2",
+            "quote": "A similar FB‐DBD was successfully achieved at 5–20 kPa and 20–650°C with no dilution gas required.",
+            "source": "scale:commons/source/10.1002-ppap.202200207"
+          }
+        ],
+        "instrument_kind": "plasma_source",
+        "note": "a similar FB-DBD was successfully achieved at 5–20 kPa and 20–650 °C with no dilution gas required (p. 19)",
+        "origin": "reported"
+      }
+    },
+    {
+      "id": "scale:commons/10.1002-ppap.202200207/reaction/dmr",
+      "label": "Reaction",
+      "props": {
+        "name": "Dry methane reforming (DMR)",
+        "balance_status": "balanced",
+        "equation": "CH4 + CO2 = 2H2 + 2CO",
+        "evidence": [
+          {
+            "kind": "text",
+            "evidence_type": "ECO:0000006",
+            "locator": "p. 9, Section 3.1",
+            "quote": "Dry CH4 reforming (DMR: CH4 + CO2 = 2H2 + 2CO, ΔH = +247.3 kJ/mol) integrates the dual benefits of greenhouse gas utilization and key industrial feedstock production.",
+            "source": "scale:commons/source/10.1002-ppap.202200207"
+          },
+          {
+            "kind": "text",
+            "evidence_type": "ECO:0000006",
+            "locator": "p. 19, Section 4.2",
+            "quote": "An DMR with >4 g of crushed particles (180–300 μm) of La‐Ni/Al2O3 (La—3 wt%, Ni—11 wt%) was applied as a model reaction.",
+            "source": "scale:commons/source/10.1002-ppap.202200207"
+          }
+        ],
+        "note": "the source prints the DMR equation with its enthalpy on p. 9, Section 3.1: 'DMR: CH4 + CO2 = 2H2 + 2CO, ΔH = +247.3 kJ/mol'; reaction enthalpy as printed: ΔH = +247.3 kJ/mol; on p. 19, Section 4.2 DMR is named as the model reaction of the FB-DBD study",
+        "origin": "reported"
+      }
+    },
+    {
+      "id": "scale:commons/10.1002-ppap.202200207/reaction/rwgs",
+      "label": "Reaction",
+      "props": {
+        "name": "Reverse water gas shift (RWGS) reaction",
+        "balance_status": "balanced",
+        "direction": "forward",
+        "equation": "CO2 + H2 = CO + H2O",
+        "evidence": [
+          {
+            "kind": "text",
+            "evidence_type": "ECO:0000006",
+            "locator": "p. 21, Section 4.3",
+            "quote": "We further applied the FB‐DBD reactor to the experimental kinetic studies of plasma catalysis[122]. The simplest CO2 hydrogenation–RWGS reaction (CO2 + H2 = CO + H2O; ΔH = + 41.2 kJ/mol) over Pd2Ga/SiO2 was used as the model.",
+            "source": "scale:commons/source/10.1002-ppap.202200207"
+          }
+        ],
+        "note": "reaction enthalpy as printed: ΔH = + 41.2 kJ/mol",
+        "origin": "reported"
+      }
+    },
+    {
+      "id": "scale:commons/10.1002-ppap.202200207/reactor/fb-dbd",
+      "label": "Reactor",
+      "props": {
+        "name": "FB-DBD reactor (fluidized-bed dielectric barrier discharge)",
+        "evidence": [
+          {
+            "kind": "text",
+            "evidence_type": "ECO:0000006",
+            "locator": "p. 19, Section 4.2",
+            "quote": "The feed gas flows inside the hollow high‐voltage electrode, forming a gas jet via the tip and blowing off the catalyst powder to initiate self‐sustained fluidization.",
+            "source": "scale:commons/source/10.1002-ppap.202200207"
+          },
+          {
+            "kind": "text",
+            "evidence_type": "ECO:0000006",
+            "locator": "p. 19, Section 4.2",
+            "quote": "we developed an FB‐DBD without noble gas dilution, and high gas conversion was achieved",
+            "source": "scale:commons/source/10.1002-ppap.202200207"
+          }
+        ],
+        "note": "the feed gas flows inside the hollow high-voltage electrode and blows off the catalyst powder to initiate self-sustained fluidization",
+        "origin": "reported",
+        "reactor_kind": "fluidized_bed"
+      }
+    },
+    {
+      "id": "scale:commons/10.1002-ppap.202200207/sample/la-ni-al2o3-powder",
+      "label": "CatalystSample",
+      "props": {
+        "name": "Crushed La-Ni/Al2O3 particles, 180–300 μm",
+        "evidence": [
+          {
+            "kind": "text",
+            "evidence_type": "ECO:0000006",
+            "locator": "p. 19, Section 4.2",
+            "quote": "An DMR with >4 g of crushed particles (180–300 μm) of La‐Ni/Al2O3 (La—3 wt%, Ni—11 wt%) was applied as a model reaction.",
+            "source": "scale:commons/source/10.1002-ppap.202200207"
+          },
+          {
+            "id": "ev-w",
+            "kind": "table",
+            "evidence_type": "ECO:0000006",
+            "locator": "p. 20, Table 4",
+            "note": "FB-DBD column",
+            "quote": "Catalyst weight (g) 4 11",
+            "source": "scale:commons/source/10.1002-ppap.202200207"
+          }
+        ],
+        "note": "more than 4 g of crushed particles (180–300 μm) applied; Table 4 gives the catalyst weight as 4 g",
+        "origin": "reported",
+        "sample_kind": "powder"
+      }
+    },
+    {
+      "id": "scale:commons/10.1002-ppap.202200207/sample/pd2ga-sio2-powder",
+      "label": "CatalystSample",
+      "props": {
+        "name": "Pd2Ga/SiO2 catalyst for RWGS in the FB-DBD",
+        "evidence": [
+          {
+            "kind": "text",
+            "evidence_type": "ECO:0000006",
+            "locator": "p. 21, Section 4.3",
+            "quote": "The CO2 conversion and Arrhenius plot under thermal and DBD (12 and 100 kHz) conditions with catalyst loadings of 3 or 10 wt % are shown in Figure 21.",
+            "source": "scale:commons/source/10.1002-ppap.202200207"
+          }
+        ],
+        "note": "catalyst loadings of 3 or 10 wt % as stated; powder-type catalyst as used in the fluidized bed (Section 4.2)",
+        "origin": "reported",
+        "sample_kind": "powder"
+      }
+    },
+    {
+      "id": "scale:commons/10.1002-ppap.202200207/species/ch4",
+      "label": "ChemicalSpecies",
+      "props": {
+        "name": "CH4",
+        "charge": 0,
+        "elemental_composition": {
+          "C": 1,
+          "H": 4
+        },
+        "evidence": [
+          {
+            "kind": "table",
+            "evidence_type": "ECO:0000006",
+            "locator": "p. 20, Table 4",
+            "quote": "Initial gas condition CH4/CO₂ = 0.8",
+            "source": "scale:commons/source/10.1002-ppap.202200207"
+          }
+        ],
+        "formula": "CH4",
+        "origin": "reported",
+        "species_kind": "molecule"
+      }
+    },
+    {
+      "id": "scale:commons/10.1002-ppap.202200207/species/co",
+      "label": "ChemicalSpecies",
+      "props": {
+        "name": "CO",
+        "charge": 0,
+        "elemental_composition": {
+          "C": 1,
+          "O": 1
+        },
+        "evidence": [
+          {
+            "kind": "text",
+            "evidence_type": "ECO:0000006",
+            "locator": "p. 21, Section 4.3",
+            "quote": "We further applied the FB‐DBD reactor to the experimental kinetic studies of plasma catalysis[122]. The simplest CO2 hydrogenation–RWGS reaction (CO2 + H2 = CO + H2O; ΔH = + 41.2 kJ/mol) over Pd2Ga/SiO2 was used as the model.",
+            "source": "scale:commons/source/10.1002-ppap.202200207"
+          }
+        ],
+        "formula": "CO",
+        "origin": "reported",
+        "species_kind": "molecule"
+      }
+    },
+    {
+      "id": "scale:commons/10.1002-ppap.202200207/species/co2",
+      "label": "ChemicalSpecies",
+      "props": {
+        "name": "CO2",
+        "charge": 0,
+        "elemental_composition": {
+          "C": 1,
+          "O": 2
+        },
+        "evidence": [
+          {
+            "kind": "table",
+            "evidence_type": "ECO:0000006",
+            "locator": "p. 20, Table 4",
+            "quote": "Initial gas condition CH4/CO₂ = 0.8",
+            "source": "scale:commons/source/10.1002-ppap.202200207"
+          }
+        ],
+        "formula": "CO2",
+        "origin": "reported",
+        "species_kind": "molecule"
+      }
+    },
+    {
+      "id": "scale:commons/10.1002-ppap.202200207/species/h2",
+      "label": "ChemicalSpecies",
+      "props": {
+        "name": "H2",
+        "charge": 0,
+        "elemental_composition": {
+          "H": 2
+        },
+        "evidence": [
+          {
+            "kind": "text",
+            "evidence_type": "ECO:0000006",
+            "locator": "p. 21, Section 4.3",
+            "quote": "We further applied the FB‐DBD reactor to the experimental kinetic studies of plasma catalysis[122]. The simplest CO2 hydrogenation–RWGS reaction (CO2 + H2 = CO + H2O; ΔH = + 41.2 kJ/mol) over Pd2Ga/SiO2 was used as the model.",
+            "source": "scale:commons/source/10.1002-ppap.202200207"
+          }
+        ],
+        "formula": "H2",
+        "origin": "reported",
+        "species_kind": "molecule"
+      }
+    },
+    {
+      "id": "scale:commons/10.1002-ppap.202200207/species/h2o",
+      "label": "ChemicalSpecies",
+      "props": {
+        "name": "H2O",
+        "charge": 0,
+        "elemental_composition": {
+          "H": 2,
+          "O": 1
+        },
+        "evidence": [
+          {
+            "kind": "text",
+            "evidence_type": "ECO:0000006",
+            "locator": "p. 21, Section 4.3",
+            "quote": "We further applied the FB‐DBD reactor to the experimental kinetic studies of plasma catalysis[122]. The simplest CO2 hydrogenation–RWGS reaction (CO2 + H2 = CO + H2O; ΔH = + 41.2 kJ/mol) over Pd2Ga/SiO2 was used as the model.",
+            "source": "scale:commons/source/10.1002-ppap.202200207"
+          }
+        ],
+        "formula": "H2O",
+        "origin": "reported",
+        "species_kind": "molecule"
+      }
+    },
+    {
+      "id": "scale:commons/10.1002-ppap.202200207/test/fb-dbd-dmr-100khz",
+      "label": "CatalyticTest",
+      "props": {
+        "name": "DMR in the FB-DBD, 100 kHz",
+        "applied_voltage": {
+          "status": "not_reported",
+          "missing_reason": "not_stated_in_source"
+        },
+        "approach": "exploratory",
+        "catalysis_mode": "heterogeneous",
+        "discharge_power": {
+          "status": "present",
+          "unit": "W",
+          "value": 30
+        },
+        "driving_forces": [
+          "plasma",
+          "thermo"
+        ],
+        "evidence": [
+          {
+            "id": "ev-p",
+            "kind": "table",
+            "evidence_type": "ECO:0000006",
+            "locator": "p. 20, Table 4",
+            "note": "FB-DBD column",
+            "quote": "Pressure (kPa) 10 5",
+            "source": "scale:commons/source/10.1002-ppap.202200207"
+          },
+          {
+            "id": "ev-T",
+            "kind": "table",
+            "evidence_type": "ECO:0000006",
+            "locator": "p. 20, Table 4",
+            "note": "FB-DBD column",
+            "quote": "Temperature (°C) 350–500 400–550",
+            "source": "scale:commons/source/10.1002-ppap.202200207"
+          },
+          {
+            "id": "ev-flow",
+            "kind": "table",
+            "evidence_type": "ECO:0000006",
+            "locator": "p. 20, Table 4",
+            "note": "FB-DBD column",
+            "quote": "Total (cm3/min) at STP 300 1000",
+            "source": "scale:commons/source/10.1002-ppap.202200207"
+          },
+          {
+            "id": "ev-gas",
+            "kind": "table",
+            "evidence_type": "ECO:0000006",
+            "locator": "p. 20, Table 4",
+            "quote": "Initial gas condition CH4/CO₂ = 0.8",
+            "source": "scale:commons/source/10.1002-ppap.202200207"
+          },
+          {
+            "id": "ev-whsv",
+            "kind": "table",
+            "evidence_type": "ECO:0000006",
+            "locator": "p. 20, Table 4",
+            "note": "FB-DBD column",
+            "quote": "WHSV (cm3/g/h) 4500 5455",
+            "source": "scale:commons/source/10.1002-ppap.202200207"
+          },
+          {
+            "id": "ev-w",
+            "kind": "table",
+            "evidence_type": "ECO:0000006",
+            "locator": "p. 20, Table 4",
+            "note": "FB-DBD column",
+            "quote": "Catalyst weight (g) 4 11",
+            "source": "scale:commons/source/10.1002-ppap.202200207"
+          },
+          {
+            "id": "ev-rt",
+            "kind": "table",
+            "evidence_type": "ECO:0000006",
+            "locator": "p. 20, Table 4",
+            "note": "FB-DBD column",
+            "quote": "Residence time at 500°C (ms) 93.3 6.84",
+            "source": "scale:commons/source/10.1002-ppap.202200207"
+          },
+          {
+            "id": "ev-f",
+            "kind": "table",
+            "evidence_type": "ECO:0000006",
+            "locator": "p. 20, Table 4",
+            "note": "FB-DBD: 12 and 100 kHz",
+            "quote": "Frequency (kHz) 12 and 100",
+            "source": "scale:commons/source/10.1002-ppap.202200207"
+          },
+          {
+            "id": "ev-pw",
+            "kind": "table",
+            "evidence_type": "ECO:0000006",
+            "locator": "p. 20, Table 4",
+            "note": "FB-DBD column",
+            "quote": "Power (W) 30 90",
+            "source": "scale:commons/source/10.1002-ppap.202200207"
+          },
+          {
+            "id": "ev-sei",
+            "kind": "table",
+            "evidence_type": "ECO:0000006",
+            "locator": "p. 20, Table 4",
+            "note": "FB-DBD column",
+            "quote": "SEI (eV/molecule) 1.52 1.37",
+            "source": "scale:commons/source/10.1002-ppap.202200207"
+          },
+          {
+            "id": "ev-eval",
+            "kind": "text",
+            "evidence_type": "ECO:0000006",
+            "locator": "p. 19, Section 4.2",
+            "quote": "The reaction performance of FB‐DBD at 250–650°C and 12 and 100 kHz was evaluated and compared with that of PB‐DBD with Rasching ring‐type La‐Ni/Al2O3 pellet",
+            "source": "scale:commons/source/10.1002-ppap.202200207"
+          },
+          {
+            "id": "ev-partial",
+            "kind": "text",
+            "evidence_type": "ECO:0000006",
+            "locator": "p. 19, Section 4.2",
+            "quote": "The data were partially published by Chen et al.[18], where the catalyst temperature in FB‐DBD was increased to 480°C.",
+            "source": "scale:commons/source/10.1002-ppap.202200207"
+          },
+          {
+            "id": "ev-sf100",
+            "kind": "text",
+            "evidence_type": "ECO:0000006",
+            "locator": "p. 21, Section 4.2",
+            "quote": "For the 100 kHz FB‐DBD, CH4 conversion exceeded thermal equilibrium in the low‐temperature range (<510°C); SF increased to a maximum of 2.3 at 350°C.",
+            "source": "scale:commons/source/10.1002-ppap.202200207"
+          }
+        ],
+        "excitation_frequency": {
+          "status": "present",
+          "note": "Table 4 gives '12 and 100' kHz; this record is the 100 kHz case",
+          "unit": "kHz",
+          "value": 100
+        },
+        "experiment_kind": "physical",
+        "flow_rate": {
+          "status": "present",
+          "as_reported": "Total (cm3/min) at STP: 300",
+          "basis": "STP",
+          "unit": "cm3/min",
+          "value": 300
+        },
+        "goal": "investigate",
+        "interpretations": [
+          "plasma_catalyst_synergy"
+        ],
+        "manipulation": "interventional",
+        "note": "the source's own run: conditions from Table 4, which is reproduced with permission from Chen et al. [18], the authors' prior work",
+        "origin": "reported",
+        "pressure": {
+          "status": "present",
+          "unit": "kPa",
+          "value": 10
+        },
+        "results": {
+          "conversion_ch4": {
+            "status": "not_reported",
+            "missing_reason": "not_curated",
+            "note": "CH4 conversion is shown in Figure 19, reproduced with permission from Chen et al. [18] (Copyright 2021, Elsevier); a second-hand reproduction, not digitized here. Similar results were obtained for the CO2 conversion (data not shown).",
+            "target": "scale:commons/10.1002-ppap.202200207/species/ch4"
+          },
+          "synergy_factor_max": {
+            "status": "present",
+            "as_reported": "SF increased to a maximum of 2.3 at 350°C",
+            "definition": "synergetic factor SF (Equation 3), maximum over the temperature range, reached at 350 °C",
+            "evidence_ids": [
+              "ev-sf100"
+            ],
+            "unit": "1",
+            "value": 2.3
+          }
+        },
+        "space_time": {
+          "status": "present",
+          "as_reported": "Residence time at 500°C (ms): 93.3",
+          "note": "residence time at 500 °C",
+          "unit": "ms",
+          "value": 93.3
+        },
+        "space_velocity": {
+          "status": "present",
+          "as_reported": "WHSV (cm3/g/h): 4500",
+          "note": "WHSV, per catalyst mass per volumetric flow counted at STP",
+          "unit": "cm3/g/h",
+          "value": 4500
+        },
+        "specific_energy_input": {
+          "status": "present",
+          "unit": "eV/molecule",
+          "value": 1.52
+        },
+        "temperature": {
+          "status": "present",
+          "as_reported": "350–500",
+          "lower": 350,
+          "note": "Table 4; the reaction performance of FB-DBD was evaluated at 250–650 °C (p. 19)",
+          "unit": "°C",
+          "upper": 500
+        },
+        "temperature_measured_at": "not_reported",
+        "test_kind": "activity"
+      }
+    },
+    {
+      "id": "scale:commons/10.1002-ppap.202200207/test/fb-dbd-dmr-12khz",
+      "label": "CatalyticTest",
+      "props": {
+        "name": "DMR in the FB-DBD, 12 kHz",
+        "applied_voltage": {
+          "status": "not_reported",
+          "missing_reason": "not_stated_in_source"
+        },
+        "approach": "exploratory",
+        "catalysis_mode": "heterogeneous",
+        "discharge_power": {
+          "status": "present",
+          "unit": "W",
+          "value": 30
+        },
+        "driving_forces": [
+          "plasma",
+          "thermo"
+        ],
+        "evidence": [
+          {
+            "id": "ev-p",
+            "kind": "table",
+            "evidence_type": "ECO:0000006",
+            "locator": "p. 20, Table 4",
+            "note": "FB-DBD column",
+            "quote": "Pressure (kPa) 10 5",
+            "source": "scale:commons/source/10.1002-ppap.202200207"
+          },
+          {
+            "id": "ev-T",
+            "kind": "table",
+            "evidence_type": "ECO:0000006",
+            "locator": "p. 20, Table 4",
+            "note": "FB-DBD column",
+            "quote": "Temperature (°C) 350–500 400–550",
+            "source": "scale:commons/source/10.1002-ppap.202200207"
+          },
+          {
+            "id": "ev-flow",
+            "kind": "table",
+            "evidence_type": "ECO:0000006",
+            "locator": "p. 20, Table 4",
+            "note": "FB-DBD column",
+            "quote": "Total (cm3/min) at STP 300 1000",
+            "source": "scale:commons/source/10.1002-ppap.202200207"
+          },
+          {
+            "id": "ev-gas",
+            "kind": "table",
+            "evidence_type": "ECO:0000006",
+            "locator": "p. 20, Table 4",
+            "quote": "Initial gas condition CH4/CO₂ = 0.8",
+            "source": "scale:commons/source/10.1002-ppap.202200207"
+          },
+          {
+            "id": "ev-whsv",
+            "kind": "table",
+            "evidence_type": "ECO:0000006",
+            "locator": "p. 20, Table 4",
+            "note": "FB-DBD column",
+            "quote": "WHSV (cm3/g/h) 4500 5455",
+            "source": "scale:commons/source/10.1002-ppap.202200207"
+          },
+          {
+            "id": "ev-w",
+            "kind": "table",
+            "evidence_type": "ECO:0000006",
+            "locator": "p. 20, Table 4",
+            "note": "FB-DBD column",
+            "quote": "Catalyst weight (g) 4 11",
+            "source": "scale:commons/source/10.1002-ppap.202200207"
+          },
+          {
+            "id": "ev-rt",
+            "kind": "table",
+            "evidence_type": "ECO:0000006",
+            "locator": "p. 20, Table 4",
+            "note": "FB-DBD column",
+            "quote": "Residence time at 500°C (ms) 93.3 6.84",
+            "source": "scale:commons/source/10.1002-ppap.202200207"
+          },
+          {
+            "id": "ev-f",
+            "kind": "table",
+            "evidence_type": "ECO:0000006",
+            "locator": "p. 20, Table 4",
+            "note": "FB-DBD: 12 and 100 kHz",
+            "quote": "Frequency (kHz) 12 and 100",
+            "source": "scale:commons/source/10.1002-ppap.202200207"
+          },
+          {
+            "id": "ev-pw",
+            "kind": "table",
+            "evidence_type": "ECO:0000006",
+            "locator": "p. 20, Table 4",
+            "note": "FB-DBD column",
+            "quote": "Power (W) 30 90",
+            "source": "scale:commons/source/10.1002-ppap.202200207"
+          },
+          {
+            "id": "ev-sei",
+            "kind": "table",
+            "evidence_type": "ECO:0000006",
+            "locator": "p. 20, Table 4",
+            "note": "FB-DBD column",
+            "quote": "SEI (eV/molecule) 1.52 1.37",
+            "source": "scale:commons/source/10.1002-ppap.202200207"
+          },
+          {
+            "id": "ev-eval",
+            "kind": "text",
+            "evidence_type": "ECO:0000006",
+            "locator": "p. 19, Section 4.2",
+            "quote": "The reaction performance of FB‐DBD at 250–650°C and 12 and 100 kHz was evaluated and compared with that of PB‐DBD with Rasching ring‐type La‐Ni/Al2O3 pellet",
+            "source": "scale:commons/source/10.1002-ppap.202200207"
+          },
+          {
+            "id": "ev-partial",
+            "kind": "text",
+            "evidence_type": "ECO:0000006",
+            "locator": "p. 19, Section 4.2",
+            "quote": "The data were partially published by Chen et al.[18], where the catalyst temperature in FB‐DBD was increased to 480°C.",
+            "source": "scale:commons/source/10.1002-ppap.202200207"
+          },
+          {
+            "id": "ev-sf12",
+            "kind": "text",
+            "evidence_type": "ECO:0000006",
+            "locator": "p. 20",
+            "quote": "The calculated SF (Equation 3) of 12 kHz FB‐DBD reached a maximum of 1.8 at 480°C, which was larger than that of PB‐DBD (1.0).",
+            "source": "scale:commons/source/10.1002-ppap.202200207"
+          }
+        ],
+        "excitation_frequency": {
+          "status": "present",
+          "note": "Table 4 gives '12 and 100' kHz; this record is the 12 kHz case",
+          "unit": "kHz",
+          "value": 12
+        },
+        "experiment_kind": "physical",
+        "flow_rate": {
+          "status": "present",
+          "as_reported": "Total (cm3/min) at STP: 300",
+          "basis": "STP",
+          "unit": "cm3/min",
+          "value": 300
+        },
+        "goal": "investigate",
+        "interpretations": [
+          "plasma_catalyst_synergy"
+        ],
+        "manipulation": "interventional",
+        "note": "the source's own run: conditions from Table 4, which is reproduced with permission from Chen et al. [18], the authors' prior work ('The data were partially published by Chen et al.[18]', p. 19)",
+        "origin": "reported",
+        "pressure": {
+          "status": "present",
+          "unit": "kPa",
+          "value": 10
+        },
+        "results": {
+          "conversion_ch4": {
+            "status": "not_reported",
+            "missing_reason": "not_curated",
+            "note": "CH4 conversion is shown in Figure 19, reproduced with permission from Chen et al. [18] (Copyright 2021, Elsevier); a second-hand reproduction, not digitized here. Similar results were obtained for the CO2 conversion (data not shown).",
+            "target": "scale:commons/10.1002-ppap.202200207/species/ch4"
+          },
+          "synergy_factor_max": {
+            "status": "present",
+            "as_reported": "reached a maximum of 1.8 at 480°C",
+            "definition": "synergetic factor SF (Equation 3), maximum over the temperature range, reached at 480 °C",
+            "evidence_ids": [
+              "ev-sf12"
+            ],
+            "unit": "1",
+            "value": 1.8
+          }
+        },
+        "space_time": {
+          "status": "present",
+          "as_reported": "Residence time at 500°C (ms): 93.3",
+          "note": "residence time at 500 °C",
+          "unit": "ms",
+          "value": 93.3
+        },
+        "space_velocity": {
+          "status": "present",
+          "as_reported": "WHSV (cm3/g/h): 4500",
+          "note": "WHSV, per catalyst mass per volumetric flow counted at STP",
+          "unit": "cm3/g/h",
+          "value": 4500
+        },
+        "specific_energy_input": {
+          "status": "present",
+          "unit": "eV/molecule",
+          "value": 1.52
+        },
+        "temperature": {
+          "status": "present",
+          "as_reported": "350–500",
+          "lower": 350,
+          "note": "Table 4; the reaction performance of FB-DBD was evaluated at 250–650 °C (p. 19)",
+          "unit": "°C",
+          "upper": 500
+        },
+        "temperature_measured_at": "not_reported",
+        "test_kind": "activity"
+      }
+    },
+    {
+      "id": "scale:commons/10.1002-ppap.202200207/test/fb-dbd-rwgs",
+      "label": "CatalyticTest",
+      "props": {
+        "name": "RWGS (CO2 hydrogenation) in the FB-DBD over Pd2Ga/SiO2",
+        "applied_voltage": {
+          "status": "not_reported",
+          "missing_reason": "not_stated_in_source"
+        },
+        "catalysis_mode": "heterogeneous",
+        "discharge_power": {
+          "status": "not_reported",
+          "missing_reason": "not_stated_in_source"
+        },
+        "driving_forces": [
+          "plasma",
+          "thermo"
+        ],
+        "evidence": [
+          {
+            "id": "ev-rwgs-model",
+            "kind": "text",
+            "evidence_type": "ECO:0000006",
+            "locator": "p. 21, Section 4.3",
+            "quote": "We further applied the FB‐DBD reactor to the experimental kinetic studies of plasma catalysis[122]. The simplest CO2 hydrogenation–RWGS reaction (CO2 + H2 = CO + H2O; ΔH = + 41.2 kJ/mol) over Pd2Ga/SiO2 was used as the model.",
+            "source": "scale:commons/source/10.1002-ppap.202200207"
+          },
+          {
+            "id": "ev-rwgs-fig",
+            "kind": "text",
+            "evidence_type": "ECO:0000006",
+            "locator": "p. 21, Section 4.3",
+            "quote": "The CO2 conversion and Arrhenius plot under thermal and DBD (12 and 100 kHz) conditions with catalyst loadings of 3 or 10 wt % are shown in Figure 21.",
+            "source": "scale:commons/source/10.1002-ppap.202200207"
+          }
+        ],
+        "excitation_frequency": {
+          "status": "present",
+          "as_reported": "12 and 100 kHz",
+          "lower": 12,
+          "note": "two discrete frequencies studied (12 and 100 kHz), not a continuous range",
+          "unit": "kHz",
+          "upper": 100
+        },
+        "experiment_kind": "physical",
+        "interpretations": [
+          "intrinsic_kinetics"
+        ],
+        "manipulation": "interventional",
+        "note": "the source's own kinetic study: thermal and DBD (12 and 100 kHz) conditions with catalyst loadings of 3 or 10 wt %",
+        "origin": "reported",
+        "pressure": {
+          "status": "not_reported",
+          "missing_reason": "not_stated_in_source"
+        },
+        "results": {
+          "conversion_co2": {
+            "status": "not_reported",
+            "missing_reason": "not_curated",
+            "note": "CO2 conversion is shown in Figure 21a, reproduced with permission from ref [122] (Copyright 2022, ACS Publications); not digitized here. The text states plasma catalysis yielded more than doubled CO2 conversion compared with thermal catalysis (see the claim about this test).",
+            "target": "scale:commons/10.1002-ppap.202200207/species/co2"
+          }
+        },
+        "temperature": {
+          "status": "not_reported",
+          "missing_reason": "not_stated_in_source"
+        },
+        "test_kind": "kinetics"
+      }
+    },
+    {
+      "id": "scale:commons/10.1002-ppap.202200207/test/fb-thermal-dmr",
+      "label": "CatalyticTest",
+      "props": {
+        "name": "Thermal DMR in the FB reactor (no plasma)",
+        "catalysis_mode": "heterogeneous",
+        "driving_forces": [
+          "thermo"
+        ],
+        "evidence": [
+          {
+            "id": "ev-thermal-cmp",
+            "kind": "text",
+            "evidence_type": "ECO:0000006",
+            "locator": "p. 19, Section 4.2",
+            "quote": "The FB reactor yielded CH4 conversion closely similar to that of the PB reactor in the low‐temperature range (<510°C)",
+            "source": "scale:commons/source/10.1002-ppap.202200207"
+          },
+          {
+            "id": "ev-thermal-eq",
+            "kind": "text",
+            "evidence_type": "ECO:0000006",
+            "locator": "p. 19, Section 4.2",
+            "quote": "The thermal equilibrium shown in Figure 19 was calculated at 10 kPa and CH4/CO2 = 0.8.",
+            "source": "scale:commons/source/10.1002-ppap.202200207"
+          }
+        ],
+        "experiment_kind": "physical",
+        "manipulation": "interventional",
+        "note": "thermal catalysis in the FB reactor, the catalyst-alone reference of the FB-DBD runs",
+        "origin": "reported",
+        "pressure": {
+          "status": "not_reported",
+          "missing_reason": "not_stated_in_source",
+          "note": "the thermal equilibrium reference was calculated at 10 kPa and CH4/CO2 = 0.8 (p. 19); the thermal runs' pressure is not stated"
+        },
+        "results": {
+          "conversion_ch4": {
+            "status": "not_reported",
+            "missing_reason": "not_curated",
+            "note": "thermal CH4 conversion is shown in Figure 19a, reproduced with permission from Chen et al. [18]; not digitized here",
+            "target": "scale:commons/10.1002-ppap.202200207/species/ch4"
+          }
+        },
+        "temperature": {
+          "status": "not_reported",
+          "missing_reason": "not_stated_in_source",
+          "note": "the thermal data are shown in Figure 19a; the thermal runs' temperature range is not stated in the text"
+        },
+        "test_kind": "control"
+      }
+    },
+    {
+      "id": "scale:commons/10.1002-ppap.202200207/variable/apparent-activation-energy",
+      "label": "Variable",
+      "props": {
+        "name": "Apparent activation energy",
+        "note": "curator-defined variable typing the activation energies the source reports from its Arrhenius plots",
+        "origin": "curated",
+        "quantity_kind": "apparent_activation_energy",
+        "scale": "quantitative",
+        "unit": "kJ/mol"
+      }
+    },
+    {
+      "id": "scale:commons/10.1002-ppap.202200207/variable/catalyst-present",
+      "label": "Variable",
+      "props": {
+        "name": "Catalyst present",
+        "note": "curator-defined factor naming what a catalyst-alone control and a plasma-catalysis test differ in",
+        "origin": "curated",
+        "scale": "boolean"
+      }
+    },
+    {
+      "id": "scale:commons/10.1002-ppap.202200207/variable/plasma-on",
+      "label": "Variable",
+      "props": {
+        "name": "Plasma on",
+        "note": "curator-defined factor naming what a plasma-alone control and a plasma-driven test differ in",
+        "origin": "curated",
+        "scale": "boolean"
+      }
+    },
+    {
+      "id": "scale:commons/source/10.1002-ppap.202200207",
+      "label": "Source",
+      "props": {
+        "name": "Plasma catalytic technology for CH4 and CO2 conversion: A review highlighting fluidized‐bed plasma reactor",
+        "kind": "review_report",
+        "doi": "10.1002/ppap.202200207",
+        "licence": "http://creativecommons.org/licenses/by/4.0/; http://creativecommons.org/licenses/by/4.0/",
+        "note": "issue year 2024 per the journal's citation line 'Plasma Process. Polym. 2024;21:e2200207' (p. 24, 'How to cite this article'); the first-page line '© 2023' is the copyright year; Crossref metadata gives published_on 2023-02-17",
+        "origin": "curated",
+        "retrieved_from": "1015171.pdf",
+        "retrieved_on": "2026-11-04",
+        "text_sha256": "cd053fb931a80de9aa479d45c60860908fa9170354b0141e0742eae7d687bf50",
+        "text_version": "version_of_record",
+        "title": "Plasma catalytic technology for CH4 and CO2 conversion: A review highlighting fluidized‐bed plasma reactor",
+        "url": "https://doi.org/10.1002/ppap.202200207",
+        "venue": "Plasma Processes and Polymers",
+        "year": 2024
+      }
+    }
+  ],
+  "links": [
+    {
+      "id": "scale:commons/10.1002-ppap.202200207/about-ea-100khz-dmr",
+      "type": "ABOUT",
+      "props": {
+        "evidence": [
+          {
+            "id": "ev-ea100",
+            "kind": "text",
+            "evidence_type": "ECO:0000006",
+            "locator": "p. 21, Section 4.2",
+            "quote": "we confirmed that the 100 kHz DBD clearly decreased the activation energy, which enabled low‐temperature CH4 or CO2 conversion (Figure 20)",
+            "source": "scale:commons/source/10.1002-ppap.202200207"
+          }
+        ],
+        "origin": "reported"
+      },
+      "source": "scale:commons/10.1002-ppap.202200207/claim/ea-100khz-dmr",
+      "target": "scale:commons/10.1002-ppap.202200207/test/fb-dbd-dmr-100khz"
+    },
+    {
+      "id": "scale:commons/10.1002-ppap.202200207/about-fb100-exceeds-eq",
+      "type": "ABOUT",
+      "props": {
+        "evidence": [
+          {
+            "id": "ev-sf100",
+            "kind": "text",
+            "evidence_type": "ECO:0000006",
+            "locator": "p. 21, Section 4.2",
+            "quote": "For the 100 kHz FB‐DBD, CH4 conversion exceeded thermal equilibrium in the low‐temperature range (<510°C); SF increased to a maximum of 2.3 at 350°C.",
+            "source": "scale:commons/source/10.1002-ppap.202200207"
+          }
+        ],
+        "origin": "reported"
+      },
+      "source": "scale:commons/10.1002-ppap.202200207/claim/fb100-exceeds-eq",
+      "target": "scale:commons/10.1002-ppap.202200207/test/fb-dbd-dmr-100khz"
+    },
+    {
+      "id": "scale:commons/10.1002-ppap.202200207/about-fb12-highT",
+      "type": "ABOUT",
+      "props": {
+        "evidence": [
+          {
+            "id": "ev-high12",
+            "kind": "text",
+            "evidence_type": "ECO:0000006",
+            "locator": "p. 21, Section 4.2",
+            "quote": "As the temperature increased (>510°C), the CH4 conversion of the 12 kHz FB‐DBD almost coincided with the thermal equilibrium, while that of the 12 kHz PB‐DBD was gradually far below the thermal equilibrium",
+            "source": "scale:commons/source/10.1002-ppap.202200207"
+          }
+        ],
+        "origin": "reported"
+      },
+      "source": "scale:commons/10.1002-ppap.202200207/claim/fb12-highT",
+      "target": "scale:commons/10.1002-ppap.202200207/test/fb-dbd-dmr-12khz"
+    },
+    {
+      "id": "scale:commons/10.1002-ppap.202200207/about-fb12-vs-thermal",
+      "type": "ABOUT",
+      "props": {
+        "evidence": [
+          {
+            "id": "ev-sf12ctx",
+            "kind": "text",
+            "evidence_type": "ECO:0000006",
+            "locator": "p. 20",
+            "quote": "In the low‐temperature range (<510°C), 12 kHz FB‐DBD yielded increased CH4 conversion compared to thermal catalysis until the gas composition reached thermal equilibrium, which was much more pronounced than that of 12 kHz PB‐DBD.",
+            "source": "scale:commons/source/10.1002-ppap.202200207"
+          }
+        ],
+        "origin": "reported"
+      },
+      "source": "scale:commons/10.1002-ppap.202200207/claim/fb12-vs-thermal",
+      "target": "scale:commons/10.1002-ppap.202200207/test/fb-dbd-dmr-12khz"
+    },
+    {
+      "id": "scale:commons/10.1002-ppap.202200207/about-mechanism-fb-dbd",
+      "type": "ABOUT",
+      "props": {
+        "evidence": [
+          {
+            "id": "ev-micropores",
+            "kind": "text",
+            "evidence_type": "ECO:0000006",
+            "locator": "p. 20",
+            "quote": "We experimentally verified that DBD plasma was neither generated nor diffused in the micropores of the catalyst pellets[6,19]",
+            "source": "scale:commons/source/10.1002-ppap.202200207"
+          },
+          {
+            "id": "ev-key-role",
+            "kind": "text",
+            "evidence_type": "ECO:0000006",
+            "locator": "p. 21, Section 4.2",
+            "quote": "played a key role in the enhancement of the FB‐DBD reaction",
+            "source": "scale:commons/source/10.1002-ppap.202200207"
+          }
+        ],
+        "origin": "reported"
+      },
+      "source": "scale:commons/10.1002-ppap.202200207/claim/mechanism-fb-dbd",
+      "target": "scale:commons/10.1002-ppap.202200207/test/fb-dbd-dmr-12khz"
+    },
+    {
+      "id": "scale:commons/10.1002-ppap.202200207/about-rwgs-doubled",
+      "type": "ABOUT",
+      "props": {
+        "evidence": [
+          {
+            "id": "ev-rwgs-doubled",
+            "kind": "text",
+            "evidence_type": "ECO:0000006",
+            "locator": "p. 21, Section 4.3",
+            "quote": "Plasma catalysis yielded more than doubled CO2 conversion compared with thermal catalysis.",
+            "source": "scale:commons/source/10.1002-ppap.202200207"
+          }
+        ],
+        "origin": "reported"
+      },
+      "source": "scale:commons/10.1002-ppap.202200207/claim/rwgs-doubled",
+      "target": "scale:commons/10.1002-ppap.202200207/test/fb-dbd-rwgs"
+    },
+    {
+      "id": "scale:commons/10.1002-ppap.202200207/about-rwgs-exceeds-eq",
+      "type": "ABOUT",
+      "props": {
+        "evidence": [
+          {
+            "id": "ev-rwgs-eq2",
+            "kind": "text",
+            "evidence_type": "ECO:0000006",
+            "locator": "p. 21, Section 4.3",
+            "quote": "The 100 kHz DBD catalysis with >10 wt % Pd2Ga/SiO2 clearly exceeded the thermodynamic equilibrium limitation.",
+            "source": "scale:commons/source/10.1002-ppap.202200207"
+          }
+        ],
+        "origin": "reported"
+      },
+      "source": "scale:commons/10.1002-ppap.202200207/claim/rwgs-exceeds-eq",
+      "target": "scale:commons/10.1002-ppap.202200207/test/fb-dbd-rwgs"
+    },
+    {
+      "id": "scale:commons/10.1002-ppap.202200207/about-sf12-comparison",
+      "type": "ABOUT",
+      "props": {
+        "evidence": [
+          {
+            "id": "ev-sf12",
+            "kind": "text",
+            "evidence_type": "ECO:0000006",
+            "locator": "p. 20",
+            "quote": "The calculated SF (Equation 3) of 12 kHz FB‐DBD reached a maximum of 1.8 at 480°C, which was larger than that of PB‐DBD (1.0).",
+            "source": "scale:commons/source/10.1002-ppap.202200207"
+          }
+        ],
+        "origin": "reported"
+      },
+      "source": "scale:commons/10.1002-ppap.202200207/claim/sf12-comparison",
+      "target": "scale:commons/10.1002-ppap.202200207/test/fb-dbd-dmr-12khz"
+    },
+    {
+      "id": "scale:commons/10.1002-ppap.202200207/about-thermal-transfer",
+      "type": "ABOUT",
+      "props": {
+        "evidence": [
+          {
+            "id": "ev-superiority",
+            "kind": "text",
+            "evidence_type": "ECO:0000006",
+            "locator": "p. 20",
+            "quote": "the superiority of the FB reactor over the PB reactor in terms of heat and mass transfer was confirmed, but only at temperatures higher than 510°C",
+            "source": "scale:commons/source/10.1002-ppap.202200207"
+          }
+        ],
+        "origin": "reported"
+      },
+      "source": "scale:commons/10.1002-ppap.202200207/claim/thermal-transfer",
+      "target": "scale:commons/10.1002-ppap.202200207/test/fb-thermal-dmr"
+    },
+    {
+      "id": "scale:commons/10.1002-ppap.202200207/analysis-input",
+      "type": "HAS_INPUT",
+      "props": {
+        "evidence": [
+          {
+            "id": "ev-rwgs-ea",
+            "kind": "text",
+            "evidence_type": "ECO:0000006",
+            "locator": "p. 21, Section 4.3",
+            "quote": "all the Arrhenius plots exhibited good linearity, without break temperature typically found in PB‐DBD (Figure 20), in which we experimentally confirmed the key for the plasma promotion effect: a dramatic decrease in activation energy from 75 of thermal catalysis to 43 kJ/mol",
+            "source": "scale:commons/source/10.1002-ppap.202200207"
+          }
+        ],
+        "origin": "reported"
+      },
+      "source": "scale:commons/10.1002-ppap.202200207/analysis/rwgs-arrhenius",
+      "target": "scale:commons/10.1002-ppap.202200207/test/fb-dbd-rwgs"
+    },
+    {
+      "id": "scale:commons/10.1002-ppap.202200207/analysis/rwgs-arrhenius/reported-in/10.1002-ppap.202200207",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 21, Section 4.3"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.1002-ppap.202200207/analysis/rwgs-arrhenius",
+      "target": "scale:commons/source/10.1002-ppap.202200207"
+    },
+    {
+      "id": "scale:commons/10.1002-ppap.202200207/catalyst/la-ni-al2o3/reported-in/10.1002-ppap.202200207",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 19, Section 4.2"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.1002-ppap.202200207/catalyst/la-ni-al2o3",
+      "target": "scale:commons/source/10.1002-ppap.202200207"
+    },
+    {
+      "id": "scale:commons/10.1002-ppap.202200207/catalyst/pd2ga-sio2/reported-in/10.1002-ppap.202200207",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 21, Section 4.3"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.1002-ppap.202200207/catalyst/pd2ga-sio2",
+      "target": "scale:commons/source/10.1002-ppap.202200207"
+    },
+    {
+      "id": "scale:commons/10.1002-ppap.202200207/claim/ea-100khz-dmr/reported-in/10.1002-ppap.202200207",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 21, Section 4.2"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.1002-ppap.202200207/claim/ea-100khz-dmr",
+      "target": "scale:commons/source/10.1002-ppap.202200207"
+    },
+    {
+      "id": "scale:commons/10.1002-ppap.202200207/claim/fb100-exceeds-eq/reported-in/10.1002-ppap.202200207",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 21, Section 4.2"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.1002-ppap.202200207/claim/fb100-exceeds-eq",
+      "target": "scale:commons/source/10.1002-ppap.202200207"
+    },
+    {
+      "id": "scale:commons/10.1002-ppap.202200207/claim/fb12-highT/reported-in/10.1002-ppap.202200207",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 21, Section 4.2"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.1002-ppap.202200207/claim/fb12-highT",
+      "target": "scale:commons/source/10.1002-ppap.202200207"
+    },
+    {
+      "id": "scale:commons/10.1002-ppap.202200207/claim/fb12-vs-thermal/reported-in/10.1002-ppap.202200207",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 20"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.1002-ppap.202200207/claim/fb12-vs-thermal",
+      "target": "scale:commons/source/10.1002-ppap.202200207"
+    },
+    {
+      "id": "scale:commons/10.1002-ppap.202200207/claim/mechanism-fb-dbd/reported-in/10.1002-ppap.202200207",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 20",
+          "p. 21, Section 4.2"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.1002-ppap.202200207/claim/mechanism-fb-dbd",
+      "target": "scale:commons/source/10.1002-ppap.202200207"
+    },
+    {
+      "id": "scale:commons/10.1002-ppap.202200207/claim/rwgs-doubled/reported-in/10.1002-ppap.202200207",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 21, Section 4.3"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.1002-ppap.202200207/claim/rwgs-doubled",
+      "target": "scale:commons/source/10.1002-ppap.202200207"
+    },
+    {
+      "id": "scale:commons/10.1002-ppap.202200207/claim/rwgs-exceeds-eq/reported-in/10.1002-ppap.202200207",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 21, Section 4.3"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.1002-ppap.202200207/claim/rwgs-exceeds-eq",
+      "target": "scale:commons/source/10.1002-ppap.202200207"
+    },
+    {
+      "id": "scale:commons/10.1002-ppap.202200207/claim/sf12-comparison/reported-in/10.1002-ppap.202200207",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 20"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.1002-ppap.202200207/claim/sf12-comparison",
+      "target": "scale:commons/source/10.1002-ppap.202200207"
+    },
+    {
+      "id": "scale:commons/10.1002-ppap.202200207/claim/thermal-transfer/reported-in/10.1002-ppap.202200207",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 20"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.1002-ppap.202200207/claim/thermal-transfer",
+      "target": "scale:commons/source/10.1002-ppap.202200207"
+    },
+    {
+      "id": "scale:commons/10.1002-ppap.202200207/ctl-cat-fb-dbd-dmr-100khz",
+      "type": "CONTROL_FOR",
+      "props": {
+        "control_kind": "negative",
+        "differs_in": [
+          "scale:commons/10.1002-ppap.202200207/variable/catalyst-present"
+        ],
+        "evidence": [
+          {
+            "id": "ev-only",
+            "kind": "text",
+            "evidence_type": "ECO:0000006",
+            "locator": "p. 19, Section 4.2",
+            "quote": "In all cases, CH4 conversions in only‐DBD reaction (without catalyst) were <4%, which was relatively smaller than that in the plasma–catalysis hybrid reaction.",
+            "source": "scale:commons/source/10.1002-ppap.202200207"
+          }
+        ],
+        "origin": "reported"
+      },
+      "source": "scale:commons/10.1002-ppap.202200207/exp/fb-dbd-dmr-only",
+      "target": "scale:commons/10.1002-ppap.202200207/test/fb-dbd-dmr-100khz"
+    },
+    {
+      "id": "scale:commons/10.1002-ppap.202200207/ctl-cat-fb-dbd-dmr-12khz",
+      "type": "CONTROL_FOR",
+      "props": {
+        "control_kind": "negative",
+        "differs_in": [
+          "scale:commons/10.1002-ppap.202200207/variable/catalyst-present"
+        ],
+        "evidence": [
+          {
+            "id": "ev-only",
+            "kind": "text",
+            "evidence_type": "ECO:0000006",
+            "locator": "p. 19, Section 4.2",
+            "quote": "In all cases, CH4 conversions in only‐DBD reaction (without catalyst) were <4%, which was relatively smaller than that in the plasma–catalysis hybrid reaction.",
+            "source": "scale:commons/source/10.1002-ppap.202200207"
+          }
+        ],
+        "origin": "reported"
+      },
+      "source": "scale:commons/10.1002-ppap.202200207/exp/fb-dbd-dmr-only",
+      "target": "scale:commons/10.1002-ppap.202200207/test/fb-dbd-dmr-12khz"
+    },
+    {
+      "id": "scale:commons/10.1002-ppap.202200207/ctl-pl-fb-dbd-dmr-100khz",
+      "type": "CONTROL_FOR",
+      "props": {
+        "control_kind": "negative",
+        "differs_in": [
+          "scale:commons/10.1002-ppap.202200207/variable/plasma-on"
+        ],
+        "evidence": [
+          {
+            "id": "ev-thermal-cmp",
+            "kind": "text",
+            "evidence_type": "ECO:0000006",
+            "locator": "p. 19, Section 4.2",
+            "quote": "The FB reactor yielded CH4 conversion closely similar to that of the PB reactor in the low‐temperature range (<510°C)",
+            "source": "scale:commons/source/10.1002-ppap.202200207"
+          }
+        ],
+        "origin": "reported"
+      },
+      "source": "scale:commons/10.1002-ppap.202200207/test/fb-thermal-dmr",
+      "target": "scale:commons/10.1002-ppap.202200207/test/fb-dbd-dmr-100khz"
+    },
+    {
+      "id": "scale:commons/10.1002-ppap.202200207/ctl-pl-fb-dbd-dmr-12khz",
+      "type": "CONTROL_FOR",
+      "props": {
+        "control_kind": "negative",
+        "differs_in": [
+          "scale:commons/10.1002-ppap.202200207/variable/plasma-on"
+        ],
+        "evidence": [
+          {
+            "id": "ev-thermal-cmp",
+            "kind": "text",
+            "evidence_type": "ECO:0000006",
+            "locator": "p. 19, Section 4.2",
+            "quote": "The FB reactor yielded CH4 conversion closely similar to that of the PB reactor in the low‐temperature range (<510°C)",
+            "source": "scale:commons/source/10.1002-ppap.202200207"
+          }
+        ],
+        "origin": "reported"
+      },
+      "source": "scale:commons/10.1002-ppap.202200207/test/fb-thermal-dmr",
+      "target": "scale:commons/10.1002-ppap.202200207/test/fb-dbd-dmr-12khz"
+    },
+    {
+      "id": "scale:commons/10.1002-ppap.202200207/dmr-part-ch4",
+      "type": "HAS_PARTICIPANT",
+      "props": {
+        "coefficient": 1,
+        "evidence": [
+          {
+            "kind": "text",
+            "evidence_type": "ECO:0000006",
+            "locator": "p. 9, Section 3.1",
+            "quote": "Dry CH4 reforming (DMR: CH4 + CO2 = 2H2 + 2CO, ΔH = +247.3 kJ/mol) integrates the dual benefits of greenhouse gas utilization and key industrial feedstock production.",
+            "source": "scale:commons/source/10.1002-ppap.202200207"
+          }
+        ],
+        "origin": "reported",
+        "role": "reactant"
+      },
+      "source": "scale:commons/10.1002-ppap.202200207/reaction/dmr",
+      "target": "scale:commons/10.1002-ppap.202200207/species/ch4"
+    },
+    {
+      "id": "scale:commons/10.1002-ppap.202200207/dmr-part-co",
+      "type": "HAS_PARTICIPANT",
+      "props": {
+        "coefficient": 2,
+        "evidence": [
+          {
+            "kind": "text",
+            "evidence_type": "ECO:0000006",
+            "locator": "p. 9, Section 3.1",
+            "quote": "Dry CH4 reforming (DMR: CH4 + CO2 = 2H2 + 2CO, ΔH = +247.3 kJ/mol) integrates the dual benefits of greenhouse gas utilization and key industrial feedstock production.",
+            "source": "scale:commons/source/10.1002-ppap.202200207"
+          }
+        ],
+        "origin": "reported",
+        "role": "product"
+      },
+      "source": "scale:commons/10.1002-ppap.202200207/reaction/dmr",
+      "target": "scale:commons/10.1002-ppap.202200207/species/co"
+    },
+    {
+      "id": "scale:commons/10.1002-ppap.202200207/dmr-part-co2",
+      "type": "HAS_PARTICIPANT",
+      "props": {
+        "coefficient": 1,
+        "evidence": [
+          {
+            "kind": "text",
+            "evidence_type": "ECO:0000006",
+            "locator": "p. 9, Section 3.1",
+            "quote": "Dry CH4 reforming (DMR: CH4 + CO2 = 2H2 + 2CO, ΔH = +247.3 kJ/mol) integrates the dual benefits of greenhouse gas utilization and key industrial feedstock production.",
+            "source": "scale:commons/source/10.1002-ppap.202200207"
+          }
+        ],
+        "origin": "reported",
+        "role": "reactant"
+      },
+      "source": "scale:commons/10.1002-ppap.202200207/reaction/dmr",
+      "target": "scale:commons/10.1002-ppap.202200207/species/co2"
+    },
+    {
+      "id": "scale:commons/10.1002-ppap.202200207/dmr-part-h2",
+      "type": "HAS_PARTICIPANT",
+      "props": {
+        "coefficient": 2,
+        "evidence": [
+          {
+            "kind": "text",
+            "evidence_type": "ECO:0000006",
+            "locator": "p. 9, Section 3.1",
+            "quote": "Dry CH4 reforming (DMR: CH4 + CO2 = 2H2 + 2CO, ΔH = +247.3 kJ/mol) integrates the dual benefits of greenhouse gas utilization and key industrial feedstock production.",
+            "source": "scale:commons/source/10.1002-ppap.202200207"
+          }
+        ],
+        "origin": "reported",
+        "role": "product"
+      },
+      "source": "scale:commons/10.1002-ppap.202200207/reaction/dmr",
+      "target": "scale:commons/10.1002-ppap.202200207/species/h2"
+    },
+    {
+      "id": "scale:commons/10.1002-ppap.202200207/examines-only",
+      "type": "EXAMINES",
+      "props": {
+        "evidence": [
+          {
+            "id": "ev-only",
+            "kind": "text",
+            "evidence_type": "ECO:0000006",
+            "locator": "p. 19, Section 4.2",
+            "quote": "In all cases, CH4 conversions in only‐DBD reaction (without catalyst) were <4%, which was relatively smaller than that in the plasma–catalysis hybrid reaction.",
+            "source": "scale:commons/source/10.1002-ppap.202200207"
+          }
+        ],
+        "origin": "reported",
+        "role": "reaction studied"
+      },
+      "source": "scale:commons/10.1002-ppap.202200207/exp/fb-dbd-dmr-only",
+      "target": "scale:commons/10.1002-ppap.202200207/reaction/dmr"
+    },
+    {
+      "id": "scale:commons/10.1002-ppap.202200207/exp/fb-dbd-dmr-only/reported-in/10.1002-ppap.202200207",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 19, Section 4.2",
+          "p. 20, Table 4"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.1002-ppap.202200207/exp/fb-dbd-dmr-only",
+      "target": "scale:commons/source/10.1002-ppap.202200207"
+    },
+    {
+      "id": "scale:commons/10.1002-ppap.202200207/fed-fb-dbd-dmr-100khz",
+      "type": "FED_WITH",
+      "props": {
+        "evidence": [
+          {
+            "id": "ev-gas",
+            "kind": "table",
+            "evidence_type": "ECO:0000006",
+            "locator": "p. 20, Table 4",
+            "quote": "Initial gas condition CH4/CO₂ = 0.8",
+            "source": "scale:commons/source/10.1002-ppap.202200207"
+          }
+        ],
+        "origin": "reported"
+      },
+      "source": "scale:commons/10.1002-ppap.202200207/test/fb-dbd-dmr-100khz",
+      "target": "scale:commons/10.1002-ppap.202200207/feed/ch4-co2"
+    },
+    {
+      "id": "scale:commons/10.1002-ppap.202200207/fed-fb-dbd-dmr-12khz",
+      "type": "FED_WITH",
+      "props": {
+        "evidence": [
+          {
+            "id": "ev-gas",
+            "kind": "table",
+            "evidence_type": "ECO:0000006",
+            "locator": "p. 20, Table 4",
+            "quote": "Initial gas condition CH4/CO₂ = 0.8",
+            "source": "scale:commons/source/10.1002-ppap.202200207"
+          }
+        ],
+        "origin": "reported"
+      },
+      "source": "scale:commons/10.1002-ppap.202200207/test/fb-dbd-dmr-12khz",
+      "target": "scale:commons/10.1002-ppap.202200207/feed/ch4-co2"
+    },
+    {
+      "id": "scale:commons/10.1002-ppap.202200207/fed-fb-thermal-dmr",
+      "type": "FED_WITH",
+      "props": {
+        "evidence": [
+          {
+            "id": "ev-thermal-eq",
+            "kind": "text",
+            "evidence_type": "ECO:0000006",
+            "locator": "p. 19, Section 4.2",
+            "quote": "The thermal equilibrium shown in Figure 19 was calculated at 10 kPa and CH4/CO2 = 0.8.",
+            "source": "scale:commons/source/10.1002-ppap.202200207"
+          }
+        ],
+        "origin": "reported"
+      },
+      "source": "scale:commons/10.1002-ppap.202200207/test/fb-thermal-dmr",
+      "target": "scale:commons/10.1002-ppap.202200207/feed/ch4-co2"
+    },
+    {
+      "id": "scale:commons/10.1002-ppap.202200207/fed-rwgs",
+      "type": "FED_WITH",
+      "props": {
+        "evidence": [
+          {
+            "id": "ev-rwgs-model",
+            "kind": "text",
+            "evidence_type": "ECO:0000006",
+            "locator": "p. 21, Section 4.3",
+            "quote": "We further applied the FB‐DBD reactor to the experimental kinetic studies of plasma catalysis[122]. The simplest CO2 hydrogenation–RWGS reaction (CO2 + H2 = CO + H2O; ΔH = + 41.2 kJ/mol) over Pd2Ga/SiO2 was used as the model.",
+            "source": "scale:commons/source/10.1002-ppap.202200207"
+          }
+        ],
+        "origin": "reported"
+      },
+      "source": "scale:commons/10.1002-ppap.202200207/test/fb-dbd-rwgs",
+      "target": "scale:commons/10.1002-ppap.202200207/feed/co2-h2"
+    },
+    {
+      "id": "scale:commons/10.1002-ppap.202200207/feed/ch4-co2/reported-in/10.1002-ppap.202200207",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 20, Table 4"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.1002-ppap.202200207/feed/ch4-co2",
+      "target": "scale:commons/source/10.1002-ppap.202200207"
+    },
+    {
+      "id": "scale:commons/10.1002-ppap.202200207/feed/co2-h2/reported-in/10.1002-ppap.202200207",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 21, Section 4.3"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.1002-ppap.202200207/feed/co2-h2",
+      "target": "scale:commons/source/10.1002-ppap.202200207"
+    },
+    {
+      "id": "scale:commons/10.1002-ppap.202200207/hascomp-ch4",
+      "type": "HAS_COMPONENT",
+      "props": {
+        "evidence": [
+          {
+            "id": "ev-gas",
+            "kind": "table",
+            "evidence_type": "ECO:0000006",
+            "locator": "p. 20, Table 4",
+            "quote": "Initial gas condition CH4/CO₂ = 0.8",
+            "source": "scale:commons/source/10.1002-ppap.202200207"
+          }
+        ],
+        "origin": "reported",
+        "ratio": [
+          {
+            "status": "present",
+            "as_reported": "CH4/CO₂ = 0.8",
+            "note": "CH4 over CO2 (the target); the source states no basis for the ratio",
+            "target": "scale:commons/10.1002-ppap.202200207/species/co2",
+            "unit": "1",
+            "value": 0.8
+          }
+        ],
+        "role": "reactant"
+      },
+      "source": "scale:commons/10.1002-ppap.202200207/feed/ch4-co2",
+      "target": "scale:commons/10.1002-ppap.202200207/species/ch4"
+    },
+    {
+      "id": "scale:commons/10.1002-ppap.202200207/hascomp-co2",
+      "type": "HAS_COMPONENT",
+      "props": {
+        "evidence": [
+          {
+            "id": "ev-gas",
+            "kind": "table",
+            "evidence_type": "ECO:0000006",
+            "locator": "p. 20, Table 4",
+            "quote": "Initial gas condition CH4/CO₂ = 0.8",
+            "source": "scale:commons/source/10.1002-ppap.202200207"
+          }
+        ],
+        "origin": "reported",
+        "role": "reactant"
+      },
+      "source": "scale:commons/10.1002-ppap.202200207/feed/ch4-co2",
+      "target": "scale:commons/10.1002-ppap.202200207/species/co2"
+    },
+    {
+      "id": "scale:commons/10.1002-ppap.202200207/hascomp-rwgs-co2",
+      "type": "HAS_COMPONENT",
+      "props": {
+        "evidence": [
+          {
+            "kind": "text",
+            "evidence_type": "ECO:0000006",
+            "locator": "p. 21, Section 4.3",
+            "quote": "We further applied the FB‐DBD reactor to the experimental kinetic studies of plasma catalysis[122]. The simplest CO2 hydrogenation–RWGS reaction (CO2 + H2 = CO + H2O; ΔH = + 41.2 kJ/mol) over Pd2Ga/SiO2 was used as the model.",
+            "source": "scale:commons/source/10.1002-ppap.202200207"
+          }
+        ],
+        "fraction": {
+          "status": "not_reported",
+          "missing_reason": "not_stated_in_source"
+        },
+        "origin": "reported",
+        "role": "reactant"
+      },
+      "source": "scale:commons/10.1002-ppap.202200207/feed/co2-h2",
+      "target": "scale:commons/10.1002-ppap.202200207/species/co2"
+    },
+    {
+      "id": "scale:commons/10.1002-ppap.202200207/hascomp-rwgs-h2",
+      "type": "HAS_COMPONENT",
+      "props": {
+        "evidence": [
+          {
+            "kind": "text",
+            "evidence_type": "ECO:0000006",
+            "locator": "p. 21, Section 4.3",
+            "quote": "We further applied the FB‐DBD reactor to the experimental kinetic studies of plasma catalysis[122]. The simplest CO2 hydrogenation–RWGS reaction (CO2 + H2 = CO + H2O; ΔH = + 41.2 kJ/mol) over Pd2Ga/SiO2 was used as the model.",
+            "source": "scale:commons/source/10.1002-ppap.202200207"
+          }
+        ],
+        "fraction": {
+          "status": "not_reported",
+          "missing_reason": "not_stated_in_source"
+        },
+        "origin": "reported",
+        "role": "reactant"
+      },
+      "source": "scale:commons/10.1002-ppap.202200207/feed/co2-h2",
+      "target": "scale:commons/10.1002-ppap.202200207/species/h2"
+    },
+    {
+      "id": "scale:commons/10.1002-ppap.202200207/hasform-la-ni",
+      "type": "HAS_FORMULATION",
+      "props": {
+        "evidence": [
+          {
+            "kind": "text",
+            "evidence_type": "ECO:0000006",
+            "locator": "p. 19, Section 4.2",
+            "quote": "An DMR with >4 g of crushed particles (180–300 μm) of La‐Ni/Al2O3 (La—3 wt%, Ni—11 wt%) was applied as a model reaction.",
+            "source": "scale:commons/source/10.1002-ppap.202200207"
+          }
+        ],
+        "origin": "reported"
+      },
+      "source": "scale:commons/10.1002-ppap.202200207/sample/la-ni-al2o3-powder",
+      "target": "scale:commons/10.1002-ppap.202200207/catalyst/la-ni-al2o3"
+    },
+    {
+      "id": "scale:commons/10.1002-ppap.202200207/hasform-pd2ga",
+      "type": "HAS_FORMULATION",
+      "props": {
+        "evidence": [
+          {
+            "kind": "text",
+            "evidence_type": "ECO:0000006",
+            "locator": "p. 21, Section 4.3",
+            "quote": "The CO2 conversion and Arrhenius plot under thermal and DBD (12 and 100 kHz) conditions with catalyst loadings of 3 or 10 wt % are shown in Figure 21.",
+            "source": "scale:commons/source/10.1002-ppap.202200207"
+          }
+        ],
+        "origin": "reported"
+      },
+      "source": "scale:commons/10.1002-ppap.202200207/sample/pd2ga-sio2-powder",
+      "target": "scale:commons/10.1002-ppap.202200207/catalyst/pd2ga-sio2"
+    },
+    {
+      "id": "scale:commons/10.1002-ppap.202200207/input-only-feed",
+      "type": "HAS_INPUT",
+      "props": {
+        "evidence": [
+          {
+            "id": "ev-gas",
+            "kind": "table",
+            "evidence_type": "ECO:0000006",
+            "locator": "p. 20, Table 4",
+            "quote": "Initial gas condition CH4/CO₂ = 0.8",
+            "source": "scale:commons/source/10.1002-ppap.202200207"
+          }
+        ],
+        "origin": "reported",
+        "role": "reagent"
+      },
+      "source": "scale:commons/10.1002-ppap.202200207/exp/fb-dbd-dmr-only",
+      "target": "scale:commons/10.1002-ppap.202200207/feed/ch4-co2"
+    },
+    {
+      "id": "scale:commons/10.1002-ppap.202200207/inrxn-fb-dbd-dmr-100khz",
+      "type": "IN_REACTOR",
+      "props": {
+        "evidence": [
+          {
+            "kind": "text",
+            "evidence_type": "ECO:0000006",
+            "locator": "p. 19, Section 4.2",
+            "quote": "The feed gas flows inside the hollow high‐voltage electrode, forming a gas jet via the tip and blowing off the catalyst powder to initiate self‐sustained fluidization.",
+            "source": "scale:commons/source/10.1002-ppap.202200207"
+          }
+        ],
+        "origin": "reported"
+      },
+      "source": "scale:commons/10.1002-ppap.202200207/test/fb-dbd-dmr-100khz",
+      "target": "scale:commons/10.1002-ppap.202200207/reactor/fb-dbd"
+    },
+    {
+      "id": "scale:commons/10.1002-ppap.202200207/inrxn-fb-dbd-dmr-12khz",
+      "type": "IN_REACTOR",
+      "props": {
+        "evidence": [
+          {
+            "kind": "text",
+            "evidence_type": "ECO:0000006",
+            "locator": "p. 19, Section 4.2",
+            "quote": "The feed gas flows inside the hollow high‐voltage electrode, forming a gas jet via the tip and blowing off the catalyst powder to initiate self‐sustained fluidization.",
+            "source": "scale:commons/source/10.1002-ppap.202200207"
+          }
+        ],
+        "origin": "reported"
+      },
+      "source": "scale:commons/10.1002-ppap.202200207/test/fb-dbd-dmr-12khz",
+      "target": "scale:commons/10.1002-ppap.202200207/reactor/fb-dbd"
+    },
+    {
+      "id": "scale:commons/10.1002-ppap.202200207/inrxn-fb-dbd-rwgs",
+      "type": "IN_REACTOR",
+      "props": {
+        "evidence": [
+          {
+            "id": "ev-rwgs-model",
+            "kind": "text",
+            "evidence_type": "ECO:0000006",
+            "locator": "p. 21, Section 4.3",
+            "quote": "We further applied the FB‐DBD reactor to the experimental kinetic studies of plasma catalysis[122]. The simplest CO2 hydrogenation–RWGS reaction (CO2 + H2 = CO + H2O; ΔH = + 41.2 kJ/mol) over Pd2Ga/SiO2 was used as the model.",
+            "source": "scale:commons/source/10.1002-ppap.202200207"
+          }
+        ],
+        "origin": "reported"
+      },
+      "source": "scale:commons/10.1002-ppap.202200207/test/fb-dbd-rwgs",
+      "target": "scale:commons/10.1002-ppap.202200207/reactor/fb-dbd"
+    },
+    {
+      "id": "scale:commons/10.1002-ppap.202200207/inrxn-fb-thermal-dmr",
+      "type": "IN_REACTOR",
+      "props": {
+        "evidence": [
+          {
+            "kind": "text",
+            "evidence_type": "ECO:0000006",
+            "locator": "p. 19, Section 4.2",
+            "quote": "The feed gas flows inside the hollow high‐voltage electrode, forming a gas jet via the tip and blowing off the catalyst powder to initiate self‐sustained fluidization.",
+            "source": "scale:commons/source/10.1002-ppap.202200207"
+          }
+        ],
+        "origin": "reported"
+      },
+      "source": "scale:commons/10.1002-ppap.202200207/test/fb-thermal-dmr",
+      "target": "scale:commons/10.1002-ppap.202200207/reactor/fb-dbd"
+    },
+    {
+      "id": "scale:commons/10.1002-ppap.202200207/ofrxn-analysis",
+      "type": "OF_REACTION",
+      "props": {
+        "evidence": [
+          {
+            "id": "ev-rwgs-ea",
+            "kind": "text",
+            "evidence_type": "ECO:0000006",
+            "locator": "p. 21, Section 4.3",
+            "quote": "all the Arrhenius plots exhibited good linearity, without break temperature typically found in PB‐DBD (Figure 20), in which we experimentally confirmed the key for the plasma promotion effect: a dramatic decrease in activation energy from 75 of thermal catalysis to 43 kJ/mol",
+            "source": "scale:commons/source/10.1002-ppap.202200207"
+          }
+        ],
+        "origin": "reported"
+      },
+      "source": "scale:commons/10.1002-ppap.202200207/analysis/rwgs-arrhenius",
+      "target": "scale:commons/10.1002-ppap.202200207/reaction/rwgs"
+    },
+    {
+      "id": "scale:commons/10.1002-ppap.202200207/ofrxn-fb-dbd-dmr-100khz",
+      "type": "OF_REACTION",
+      "props": {
+        "evidence": [
+          {
+            "kind": "text",
+            "evidence_type": "ECO:0000006",
+            "locator": "p. 19, Section 4.2",
+            "quote": "An DMR with >4 g of crushed particles (180–300 μm) of La‐Ni/Al2O3 (La—3 wt%, Ni—11 wt%) was applied as a model reaction.",
+            "source": "scale:commons/source/10.1002-ppap.202200207"
+          }
+        ],
+        "origin": "reported"
+      },
+      "source": "scale:commons/10.1002-ppap.202200207/test/fb-dbd-dmr-100khz",
+      "target": "scale:commons/10.1002-ppap.202200207/reaction/dmr"
+    },
+    {
+      "id": "scale:commons/10.1002-ppap.202200207/ofrxn-fb-dbd-dmr-12khz",
+      "type": "OF_REACTION",
+      "props": {
+        "evidence": [
+          {
+            "kind": "text",
+            "evidence_type": "ECO:0000006",
+            "locator": "p. 19, Section 4.2",
+            "quote": "An DMR with >4 g of crushed particles (180–300 μm) of La‐Ni/Al2O3 (La—3 wt%, Ni—11 wt%) was applied as a model reaction.",
+            "source": "scale:commons/source/10.1002-ppap.202200207"
+          }
+        ],
+        "origin": "reported"
+      },
+      "source": "scale:commons/10.1002-ppap.202200207/test/fb-dbd-dmr-12khz",
+      "target": "scale:commons/10.1002-ppap.202200207/reaction/dmr"
+    },
+    {
+      "id": "scale:commons/10.1002-ppap.202200207/ofrxn-fb-thermal-dmr",
+      "type": "OF_REACTION",
+      "props": {
+        "evidence": [
+          {
+            "kind": "text",
+            "evidence_type": "ECO:0000006",
+            "locator": "p. 19, Section 4.2",
+            "quote": "An DMR with >4 g of crushed particles (180–300 μm) of La‐Ni/Al2O3 (La—3 wt%, Ni—11 wt%) was applied as a model reaction.",
+            "source": "scale:commons/source/10.1002-ppap.202200207"
+          }
+        ],
+        "origin": "reported"
+      },
+      "source": "scale:commons/10.1002-ppap.202200207/test/fb-thermal-dmr",
+      "target": "scale:commons/10.1002-ppap.202200207/reaction/dmr"
+    },
+    {
+      "id": "scale:commons/10.1002-ppap.202200207/ofrxn-rwgs",
+      "type": "OF_REACTION",
+      "props": {
+        "evidence": [
+          {
+            "id": "ev-rwgs-model",
+            "kind": "text",
+            "evidence_type": "ECO:0000006",
+            "locator": "p. 21, Section 4.3",
+            "quote": "We further applied the FB‐DBD reactor to the experimental kinetic studies of plasma catalysis[122]. The simplest CO2 hydrogenation–RWGS reaction (CO2 + H2 = CO + H2O; ΔH = + 41.2 kJ/mol) over Pd2Ga/SiO2 was used as the model.",
+            "source": "scale:commons/source/10.1002-ppap.202200207"
+          }
+        ],
+        "origin": "reported"
+      },
+      "source": "scale:commons/10.1002-ppap.202200207/test/fb-dbd-rwgs",
+      "target": "scale:commons/10.1002-ppap.202200207/reaction/rwgs"
+    },
+    {
+      "id": "scale:commons/10.1002-ppap.202200207/plasma-fb-dbd-dmr-100khz",
+      "type": "USES_PLASMA",
+      "props": {
+        "evidence": [
+          {
+            "kind": "text",
+            "evidence_type": "ECO:0000006",
+            "locator": "p. 19, Section 4.2",
+            "quote": "The DBD is generated via coaxial electrodes and interacts with the fluidized catalyst.",
+            "source": "scale:commons/source/10.1002-ppap.202200207"
+          }
+        ],
+        "origin": "reported"
+      },
+      "source": "scale:commons/10.1002-ppap.202200207/test/fb-dbd-dmr-100khz",
+      "target": "scale:commons/10.1002-ppap.202200207/plasma/fb-dbd"
+    },
+    {
+      "id": "scale:commons/10.1002-ppap.202200207/plasma-fb-dbd-dmr-12khz",
+      "type": "USES_PLASMA",
+      "props": {
+        "evidence": [
+          {
+            "kind": "text",
+            "evidence_type": "ECO:0000006",
+            "locator": "p. 19, Section 4.2",
+            "quote": "The DBD is generated via coaxial electrodes and interacts with the fluidized catalyst.",
+            "source": "scale:commons/source/10.1002-ppap.202200207"
+          }
+        ],
+        "origin": "reported"
+      },
+      "source": "scale:commons/10.1002-ppap.202200207/test/fb-dbd-dmr-12khz",
+      "target": "scale:commons/10.1002-ppap.202200207/plasma/fb-dbd"
+    },
+    {
+      "id": "scale:commons/10.1002-ppap.202200207/plasma-fb-dbd-dmr-only",
+      "type": "USES_PLASMA",
+      "props": {
+        "evidence": [
+          {
+            "kind": "text",
+            "evidence_type": "ECO:0000006",
+            "locator": "p. 19, Section 4.2",
+            "quote": "The DBD is generated via coaxial electrodes and interacts with the fluidized catalyst.",
+            "source": "scale:commons/source/10.1002-ppap.202200207"
+          }
+        ],
+        "origin": "reported"
+      },
+      "source": "scale:commons/10.1002-ppap.202200207/exp/fb-dbd-dmr-only",
+      "target": "scale:commons/10.1002-ppap.202200207/plasma/fb-dbd"
+    },
+    {
+      "id": "scale:commons/10.1002-ppap.202200207/plasma-fb-dbd-rwgs",
+      "type": "USES_PLASMA",
+      "props": {
+        "evidence": [
+          {
+            "kind": "text",
+            "evidence_type": "ECO:0000006",
+            "locator": "p. 19, Section 4.2",
+            "quote": "The DBD is generated via coaxial electrodes and interacts with the fluidized catalyst.",
+            "source": "scale:commons/source/10.1002-ppap.202200207"
+          }
+        ],
+        "origin": "reported"
+      },
+      "source": "scale:commons/10.1002-ppap.202200207/test/fb-dbd-rwgs",
+      "target": "scale:commons/10.1002-ppap.202200207/plasma/fb-dbd"
+    },
+    {
+      "id": "scale:commons/10.1002-ppap.202200207/plasma/fb-dbd/reported-in/10.1002-ppap.202200207",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 19, Section 4.2"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.1002-ppap.202200207/plasma/fb-dbd",
+      "target": "scale:commons/source/10.1002-ppap.202200207"
+    },
+    {
+      "id": "scale:commons/10.1002-ppap.202200207/reaction/dmr/reported-in/10.1002-ppap.202200207",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 19, Section 4.2",
+          "p. 9, Section 3.1"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.1002-ppap.202200207/reaction/dmr",
+      "target": "scale:commons/source/10.1002-ppap.202200207"
+    },
+    {
+      "id": "scale:commons/10.1002-ppap.202200207/reaction/rwgs/reported-in/10.1002-ppap.202200207",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 21, Section 4.3"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.1002-ppap.202200207/reaction/rwgs",
+      "target": "scale:commons/source/10.1002-ppap.202200207"
+    },
+    {
+      "id": "scale:commons/10.1002-ppap.202200207/reactor/fb-dbd/reported-in/10.1002-ppap.202200207",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 19, Section 4.2"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.1002-ppap.202200207/reactor/fb-dbd",
+      "target": "scale:commons/source/10.1002-ppap.202200207"
+    },
+    {
+      "id": "scale:commons/10.1002-ppap.202200207/rwgs-part-co",
+      "type": "HAS_PARTICIPANT",
+      "props": {
+        "coefficient": 1,
+        "evidence": [
+          {
+            "kind": "text",
+            "evidence_type": "ECO:0000006",
+            "locator": "p. 21, Section 4.3",
+            "quote": "We further applied the FB‐DBD reactor to the experimental kinetic studies of plasma catalysis[122]. The simplest CO2 hydrogenation–RWGS reaction (CO2 + H2 = CO + H2O; ΔH = + 41.2 kJ/mol) over Pd2Ga/SiO2 was used as the model.",
+            "source": "scale:commons/source/10.1002-ppap.202200207"
+          }
+        ],
+        "origin": "reported",
+        "role": "product"
+      },
+      "source": "scale:commons/10.1002-ppap.202200207/reaction/rwgs",
+      "target": "scale:commons/10.1002-ppap.202200207/species/co"
+    },
+    {
+      "id": "scale:commons/10.1002-ppap.202200207/rwgs-part-co2",
+      "type": "HAS_PARTICIPANT",
+      "props": {
+        "coefficient": 1,
+        "evidence": [
+          {
+            "kind": "text",
+            "evidence_type": "ECO:0000006",
+            "locator": "p. 21, Section 4.3",
+            "quote": "We further applied the FB‐DBD reactor to the experimental kinetic studies of plasma catalysis[122]. The simplest CO2 hydrogenation–RWGS reaction (CO2 + H2 = CO + H2O; ΔH = + 41.2 kJ/mol) over Pd2Ga/SiO2 was used as the model.",
+            "source": "scale:commons/source/10.1002-ppap.202200207"
+          }
+        ],
+        "origin": "reported",
+        "role": "reactant"
+      },
+      "source": "scale:commons/10.1002-ppap.202200207/reaction/rwgs",
+      "target": "scale:commons/10.1002-ppap.202200207/species/co2"
+    },
+    {
+      "id": "scale:commons/10.1002-ppap.202200207/rwgs-part-h2",
+      "type": "HAS_PARTICIPANT",
+      "props": {
+        "coefficient": 1,
+        "evidence": [
+          {
+            "kind": "text",
+            "evidence_type": "ECO:0000006",
+            "locator": "p. 21, Section 4.3",
+            "quote": "We further applied the FB‐DBD reactor to the experimental kinetic studies of plasma catalysis[122]. The simplest CO2 hydrogenation–RWGS reaction (CO2 + H2 = CO + H2O; ΔH = + 41.2 kJ/mol) over Pd2Ga/SiO2 was used as the model.",
+            "source": "scale:commons/source/10.1002-ppap.202200207"
+          }
+        ],
+        "origin": "reported",
+        "role": "reactant"
+      },
+      "source": "scale:commons/10.1002-ppap.202200207/reaction/rwgs",
+      "target": "scale:commons/10.1002-ppap.202200207/species/h2"
+    },
+    {
+      "id": "scale:commons/10.1002-ppap.202200207/rwgs-part-h2o",
+      "type": "HAS_PARTICIPANT",
+      "props": {
+        "coefficient": 1,
+        "evidence": [
+          {
+            "kind": "text",
+            "evidence_type": "ECO:0000006",
+            "locator": "p. 21, Section 4.3",
+            "quote": "We further applied the FB‐DBD reactor to the experimental kinetic studies of plasma catalysis[122]. The simplest CO2 hydrogenation–RWGS reaction (CO2 + H2 = CO + H2O; ΔH = + 41.2 kJ/mol) over Pd2Ga/SiO2 was used as the model.",
+            "source": "scale:commons/source/10.1002-ppap.202200207"
+          }
+        ],
+        "origin": "reported",
+        "role": "product"
+      },
+      "source": "scale:commons/10.1002-ppap.202200207/reaction/rwgs",
+      "target": "scale:commons/10.1002-ppap.202200207/species/h2o"
+    },
+    {
+      "id": "scale:commons/10.1002-ppap.202200207/sample/la-ni-al2o3-powder/reported-in/10.1002-ppap.202200207",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 19, Section 4.2",
+          "p. 20, Table 4"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.1002-ppap.202200207/sample/la-ni-al2o3-powder",
+      "target": "scale:commons/source/10.1002-ppap.202200207"
+    },
+    {
+      "id": "scale:commons/10.1002-ppap.202200207/sample/pd2ga-sio2-powder/reported-in/10.1002-ppap.202200207",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 21, Section 4.3"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.1002-ppap.202200207/sample/pd2ga-sio2-powder",
+      "target": "scale:commons/source/10.1002-ppap.202200207"
+    },
+    {
+      "id": "scale:commons/10.1002-ppap.202200207/species/ch4/reported-in/10.1002-ppap.202200207",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 20, Table 4"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.1002-ppap.202200207/species/ch4",
+      "target": "scale:commons/source/10.1002-ppap.202200207"
+    },
+    {
+      "id": "scale:commons/10.1002-ppap.202200207/species/co/reported-in/10.1002-ppap.202200207",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 21, Section 4.3"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.1002-ppap.202200207/species/co",
+      "target": "scale:commons/source/10.1002-ppap.202200207"
+    },
+    {
+      "id": "scale:commons/10.1002-ppap.202200207/species/co2/reported-in/10.1002-ppap.202200207",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 20, Table 4"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.1002-ppap.202200207/species/co2",
+      "target": "scale:commons/source/10.1002-ppap.202200207"
+    },
+    {
+      "id": "scale:commons/10.1002-ppap.202200207/species/h2/reported-in/10.1002-ppap.202200207",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 21, Section 4.3"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.1002-ppap.202200207/species/h2",
+      "target": "scale:commons/source/10.1002-ppap.202200207"
+    },
+    {
+      "id": "scale:commons/10.1002-ppap.202200207/species/h2o/reported-in/10.1002-ppap.202200207",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 21, Section 4.3"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.1002-ppap.202200207/species/h2o",
+      "target": "scale:commons/source/10.1002-ppap.202200207"
+    },
+    {
+      "id": "scale:commons/10.1002-ppap.202200207/test/fb-dbd-dmr-100khz/reported-in/10.1002-ppap.202200207",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 19, Section 4.2",
+          "p. 20, Table 4",
+          "p. 21, Section 4.2"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.1002-ppap.202200207/test/fb-dbd-dmr-100khz",
+      "target": "scale:commons/source/10.1002-ppap.202200207"
+    },
+    {
+      "id": "scale:commons/10.1002-ppap.202200207/test/fb-dbd-dmr-12khz/reported-in/10.1002-ppap.202200207",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 19, Section 4.2",
+          "p. 20",
+          "p. 20, Table 4"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.1002-ppap.202200207/test/fb-dbd-dmr-12khz",
+      "target": "scale:commons/source/10.1002-ppap.202200207"
+    },
+    {
+      "id": "scale:commons/10.1002-ppap.202200207/test/fb-dbd-rwgs/reported-in/10.1002-ppap.202200207",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 21, Section 4.3"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.1002-ppap.202200207/test/fb-dbd-rwgs",
+      "target": "scale:commons/source/10.1002-ppap.202200207"
+    },
+    {
+      "id": "scale:commons/10.1002-ppap.202200207/test/fb-thermal-dmr/reported-in/10.1002-ppap.202200207",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 19, Section 4.2"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.1002-ppap.202200207/test/fb-thermal-dmr",
+      "target": "scale:commons/source/10.1002-ppap.202200207"
+    },
+    {
+      "id": "scale:commons/10.1002-ppap.202200207/uses-fb-dbd-dmr-100khz",
+      "type": "USES_CATALYST",
+      "props": {
+        "evidence": [
+          {
+            "kind": "text",
+            "evidence_type": "ECO:0000006",
+            "locator": "p. 19, Section 4.2",
+            "quote": "An DMR with >4 g of crushed particles (180–300 μm) of La‐Ni/Al2O3 (La—3 wt%, Ni—11 wt%) was applied as a model reaction.",
+            "source": "scale:commons/source/10.1002-ppap.202200207"
+          }
+        ],
+        "origin": "reported"
+      },
+      "source": "scale:commons/10.1002-ppap.202200207/test/fb-dbd-dmr-100khz",
+      "target": "scale:commons/10.1002-ppap.202200207/sample/la-ni-al2o3-powder"
+    },
+    {
+      "id": "scale:commons/10.1002-ppap.202200207/uses-fb-dbd-dmr-12khz",
+      "type": "USES_CATALYST",
+      "props": {
+        "evidence": [
+          {
+            "kind": "text",
+            "evidence_type": "ECO:0000006",
+            "locator": "p. 19, Section 4.2",
+            "quote": "An DMR with >4 g of crushed particles (180–300 μm) of La‐Ni/Al2O3 (La—3 wt%, Ni—11 wt%) was applied as a model reaction.",
+            "source": "scale:commons/source/10.1002-ppap.202200207"
+          }
+        ],
+        "origin": "reported"
+      },
+      "source": "scale:commons/10.1002-ppap.202200207/test/fb-dbd-dmr-12khz",
+      "target": "scale:commons/10.1002-ppap.202200207/sample/la-ni-al2o3-powder"
+    },
+    {
+      "id": "scale:commons/10.1002-ppap.202200207/uses-fb-thermal-dmr",
+      "type": "USES_CATALYST",
+      "props": {
+        "evidence": [
+          {
+            "id": "ev-thermal-cmp",
+            "kind": "text",
+            "evidence_type": "ECO:0000006",
+            "locator": "p. 19, Section 4.2",
+            "quote": "The FB reactor yielded CH4 conversion closely similar to that of the PB reactor in the low‐temperature range (<510°C)",
+            "source": "scale:commons/source/10.1002-ppap.202200207"
+          }
+        ],
+        "origin": "reported"
+      },
+      "source": "scale:commons/10.1002-ppap.202200207/test/fb-thermal-dmr",
+      "target": "scale:commons/10.1002-ppap.202200207/sample/la-ni-al2o3-powder"
+    },
+    {
+      "id": "scale:commons/10.1002-ppap.202200207/uses-rwgs",
+      "type": "USES_CATALYST",
+      "props": {
+        "evidence": [
+          {
+            "id": "ev-rwgs-model",
+            "kind": "text",
+            "evidence_type": "ECO:0000006",
+            "locator": "p. 21, Section 4.3",
+            "quote": "We further applied the FB‐DBD reactor to the experimental kinetic studies of plasma catalysis[122]. The simplest CO2 hydrogenation–RWGS reaction (CO2 + H2 = CO + H2O; ΔH = + 41.2 kJ/mol) over Pd2Ga/SiO2 was used as the model.",
+            "source": "scale:commons/source/10.1002-ppap.202200207"
+          }
+        ],
+        "origin": "reported"
+      },
+      "source": "scale:commons/10.1002-ppap.202200207/test/fb-dbd-rwgs",
+      "target": "scale:commons/10.1002-ppap.202200207/sample/pd2ga-sio2-powder"
+    }
+  ],
+  "schema_version": "0.8.2",
+  "source": "scale:commons/source/10.1002-ppap.202200207"
+}

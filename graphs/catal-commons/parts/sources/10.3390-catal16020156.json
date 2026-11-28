@@ -1,0 +1,2389 @@
+{
+  "nodes": [
+    {
+      "id": "scale:commons/10.3390-catal16020156/analysis/et-compilation-dlts",
+      "label": "Analysis",
+      "props": {
+        "name": "Compiled trap-state activation energies from DLTS studies (Table 3)",
+        "analysis_kind": "other",
+        "evidence": [
+          {
+            "id": "cap",
+            "kind": "table",
+            "evidence_type": "ECO:0000033",
+            "locator": "p. 20, Table 3 caption",
+            "quote": "Table 3. Dataset corresponding to Figure 8: trap-state activation energies (Et), temperatures, and publication years extracted from deep-level transient spectroscopy (DLTS) studies on catalyst-relevant materials reported between 2019 and 2025",
+            "source": "scale:commons/source/10.3390-catal16020156"
+          },
+          {
+            "id": "fig8",
+            "kind": "text",
+            "evidence_type": "ECO:0000033",
+            "locator": "p. 20, Section 5.1",
+            "quote": "In addition, Figure 8 summarises the distribution of trap-state activation energies (Et) reported between 2019 and 2025 for catalyst-relevant materials, extracted from DLTS, TSC, and TL studies, with the corresponding numerical data compiled in Tables 3–5",
+            "source": "scale:commons/source/10.3390-catal16020156"
+          },
+          {
+            "id": "t3_r01",
+            "kind": "table",
+            "evidence_type": "ECO:0000033",
+            "locator": "p. 20, Table 3, row 1 (cited work: ref. [154])",
+            "quote": "1 β-Ga2O3 0.209 200 K 2025 [154]",
+            "source": "scale:commons/source/10.3390-catal16020156"
+          },
+          {
+            "id": "t3_r02",
+            "kind": "table",
+            "evidence_type": "ECO:0000033",
+            "locator": "p. 20, Table 3, row 2 (cited work: ref. [154])",
+            "quote": "2 β-Ga2O3 0.196 150 K 2025 [154]",
+            "source": "scale:commons/source/10.3390-catal16020156"
+          },
+          {
+            "id": "t3_r03",
+            "kind": "table",
+            "evidence_type": "ECO:0000033",
+            "locator": "p. 20, Table 3, row 3 (cited work: ref. [155])",
+            "quote": "3 β-Ga2O3 0.68 450 K 2024 [155]",
+            "source": "scale:commons/source/10.3390-catal16020156"
+          },
+          {
+            "id": "t3_r04",
+            "kind": "table",
+            "evidence_type": "ECO:0000033",
+            "locator": "p. 20, Table 3, row 4 (cited work: ref. [156])",
+            "quote": "4 AlGaN/GaN 0.56 325 K 2024 [156]",
+            "source": "scale:commons/source/10.3390-catal16020156"
+          },
+          {
+            "id": "t3_r05",
+            "kind": "table",
+            "evidence_type": "ECO:0000033",
+            "locator": "p. 20, Table 3, row 5 (cited work: ref. [155])",
+            "quote": "5 β-Ga2O3 0.89 580 K 2024 [155]",
+            "source": "scale:commons/source/10.3390-catal16020156"
+          },
+          {
+            "id": "t3_r06",
+            "kind": "table",
+            "evidence_type": "ECO:0000033",
+            "locator": "p. 21, Table 3, row 6 (cited work: ref. [157])",
+            "quote": "6 MoS2 0.632 300 K 2023 [157]",
+            "source": "scale:commons/source/10.3390-catal16020156"
+          },
+          {
+            "id": "t3_r07",
+            "kind": "table",
+            "evidence_type": "ECO:0000033",
+            "locator": "p. 21, Table 3, row 7 (cited work: ref. [158])",
+            "quote": "7 β-Ga2O3 0.8 330 K 2023 [158]",
+            "source": "scale:commons/source/10.3390-catal16020156"
+          },
+          {
+            "id": "t3_r08",
+            "kind": "table",
+            "evidence_type": "ECO:0000033",
+            "locator": "p. 21, Table 3, row 8 (cited work: ref. [159])",
+            "quote": "8 AlGaN/GaN 0.63 446 K 2022 [159]",
+            "source": "scale:commons/source/10.3390-catal16020156"
+          },
+          {
+            "id": "t3_r09",
+            "kind": "table",
+            "evidence_type": "ECO:0000033",
+            "locator": "p. 21, Table 3, row 9 (cited work: ref. [160])",
+            "quote": "9 Sb2S3 0.69 500 K 2021 [160]",
+            "source": "scale:commons/source/10.3390-catal16020156"
+          },
+          {
+            "id": "t3_r10",
+            "kind": "table",
+            "evidence_type": "ECO:0000033",
+            "locator": "p. 21, Table 3, row 10 (cited work: ref. [161])",
+            "quote": "10 n-GaAsBi 0.41 360 K 2021 [161]",
+            "source": "scale:commons/source/10.3390-catal16020156"
+          },
+          {
+            "id": "t3_r11",
+            "kind": "table",
+            "evidence_type": "ECO:0000033",
+            "locator": "p. 21, Table 3, row 11 (cited work: ref. [160])",
+            "quote": "11 Sb2S3 0.64 475 K 2021 [160]",
+            "source": "scale:commons/source/10.3390-catal16020156"
+          },
+          {
+            "id": "t3_r12",
+            "kind": "table",
+            "evidence_type": "ECO:0000033",
+            "locator": "p. 21, Table 3, row 12 (cited work: ref. [162])",
+            "quote": "12 β-Ga2O3 0.68 325 K 2020 [162]",
+            "source": "scale:commons/source/10.3390-catal16020156"
+          },
+          {
+            "id": "t3_r13",
+            "kind": "table",
+            "evidence_type": "ECO:0000033",
+            "locator": "p. 21, Table 3, row 13 (cited work: ref. [163])",
+            "quote": "13 MoS2 0.4 400 K 2020 [163]",
+            "source": "scale:commons/source/10.3390-catal16020156"
+          },
+          {
+            "id": "t3_r14",
+            "kind": "table",
+            "evidence_type": "ECO:0000033",
+            "locator": "p. 21, Table 3, row 14 (cited work: ref. [164])",
+            "quote": "14 4H-SiC 0.68 322 K 2020 [164]",
+            "source": "scale:commons/source/10.3390-catal16020156"
+          },
+          {
+            "id": "t3_r15",
+            "kind": "table",
+            "evidence_type": "ECO:0000033",
+            "locator": "p. 21, Table 3, row 15 (cited work: ref. [163])",
+            "quote": "15 Mo0.3W0.7S2 0.47 400 K 2020 [163]",
+            "source": "scale:commons/source/10.3390-catal16020156"
+          }
+        ],
+        "goal": "investigate",
+        "method": "compilation of trap-state activation energies (Et), temperatures and publication years from deep-level transient spectroscopy (DLTS) studies on catalyst-relevant materials reported 2019–2025, extracted by this review from the cited works (Table 3; plotted in Figure 8)",
+        "note": "This compilation is the review's own research-landscape analysis; the underlying measurements are the cited works', so every entry is second-hand (ECO:0000033) and is not a run of this source. Rows as printed.",
+        "origin": "curated",
+        "result_values": [
+          {
+            "id": "t3_row01_et",
+            "status": "present",
+            "definition": "trap entry No. 1 of Table 3, as printed",
+            "evidence_ids": [
+              "t3_r01"
+            ],
+            "note": "β-Ga2O3, row 1 of Table 3, measured at 200 K; published 2025 (ref. [154]); temperature on entry /result_values/t3_row01_temp",
+            "target": "scale:commons/10.3390-catal16020156/material/beta-ga2o3",
+            "unit": "eV",
+            "value": 0.209,
+            "variable": "scale:commons/10.3390-catal16020156/variable/trap-state-et"
+          },
+          {
+            "id": "t3_row01_temp",
+            "status": "present",
+            "definition": "temperature of trap entry No. 1 of Table 3, as printed",
+            "evidence_ids": [
+              "t3_r01"
+            ],
+            "note": "temperature printed with row 1 (β-Ga2O3, Et 0.209 eV); published 2025 (ref. [154]); energy entry /result_values/t3_row01_et",
+            "target": "scale:commons/10.3390-catal16020156/material/beta-ga2o3",
+            "unit": "K",
+            "value": 200,
+            "variable": "scale:commons/10.3390-catal16020156/variable/et-entry-temperature"
+          },
+          {
+            "id": "t3_row02_et",
+            "status": "present",
+            "definition": "trap entry No. 2 of Table 3, as printed",
+            "evidence_ids": [
+              "t3_r02"
+            ],
+            "note": "β-Ga2O3, row 2 of Table 3, measured at 150 K; published 2025 (ref. [154]); temperature on entry /result_values/t3_row02_temp",
+            "target": "scale:commons/10.3390-catal16020156/material/beta-ga2o3",
+            "unit": "eV",
+            "value": 0.196,
+            "variable": "scale:commons/10.3390-catal16020156/variable/trap-state-et"
+          },
+          {
+            "id": "t3_row02_temp",
+            "status": "present",
+            "definition": "temperature of trap entry No. 2 of Table 3, as printed",
+            "evidence_ids": [
+              "t3_r02"
+            ],
+            "note": "temperature printed with row 2 (β-Ga2O3, Et 0.196 eV); published 2025 (ref. [154]); energy entry /result_values/t3_row02_et",
+            "target": "scale:commons/10.3390-catal16020156/material/beta-ga2o3",
+            "unit": "K",
+            "value": 150,
+            "variable": "scale:commons/10.3390-catal16020156/variable/et-entry-temperature"
+          },
+          {
+            "id": "t3_row03_et",
+            "status": "present",
+            "definition": "trap entry No. 3 of Table 3, as printed",
+            "evidence_ids": [
+              "t3_r03"
+            ],
+            "note": "β-Ga2O3, row 3 of Table 3, measured at 450 K; published 2024 (ref. [155]); temperature on entry /result_values/t3_row03_temp",
+            "target": "scale:commons/10.3390-catal16020156/material/beta-ga2o3",
+            "unit": "eV",
+            "value": 0.68,
+            "variable": "scale:commons/10.3390-catal16020156/variable/trap-state-et"
+          },
+          {
+            "id": "t3_row03_temp",
+            "status": "present",
+            "definition": "temperature of trap entry No. 3 of Table 3, as printed",
+            "evidence_ids": [
+              "t3_r03"
+            ],
+            "note": "temperature printed with row 3 (β-Ga2O3, Et 0.68 eV); published 2024 (ref. [155]); energy entry /result_values/t3_row03_et",
+            "target": "scale:commons/10.3390-catal16020156/material/beta-ga2o3",
+            "unit": "K",
+            "value": 450,
+            "variable": "scale:commons/10.3390-catal16020156/variable/et-entry-temperature"
+          },
+          {
+            "id": "t3_row04_et",
+            "status": "present",
+            "definition": "trap entry No. 4 of Table 3, as printed",
+            "evidence_ids": [
+              "t3_r04"
+            ],
+            "note": "AlGaN/GaN, row 4 of Table 3, measured at 325 K; published 2024 (ref. [156]); temperature on entry /result_values/t3_row04_temp",
+            "target": "scale:commons/10.3390-catal16020156/material/algan-gan",
+            "unit": "eV",
+            "value": 0.56,
+            "variable": "scale:commons/10.3390-catal16020156/variable/trap-state-et"
+          },
+          {
+            "id": "t3_row04_temp",
+            "status": "present",
+            "definition": "temperature of trap entry No. 4 of Table 3, as printed",
+            "evidence_ids": [
+              "t3_r04"
+            ],
+            "note": "temperature printed with row 4 (AlGaN/GaN, Et 0.56 eV); published 2024 (ref. [156]); energy entry /result_values/t3_row04_et",
+            "target": "scale:commons/10.3390-catal16020156/material/algan-gan",
+            "unit": "K",
+            "value": 325,
+            "variable": "scale:commons/10.3390-catal16020156/variable/et-entry-temperature"
+          },
+          {
+            "id": "t3_row05_et",
+            "status": "present",
+            "definition": "trap entry No. 5 of Table 3, as printed",
+            "evidence_ids": [
+              "t3_r05"
+            ],
+            "note": "β-Ga2O3, row 5 of Table 3, measured at 580 K; published 2024 (ref. [155]); temperature on entry /result_values/t3_row05_temp",
+            "target": "scale:commons/10.3390-catal16020156/material/beta-ga2o3",
+            "unit": "eV",
+            "value": 0.89,
+            "variable": "scale:commons/10.3390-catal16020156/variable/trap-state-et"
+          },
+          {
+            "id": "t3_row05_temp",
+            "status": "present",
+            "definition": "temperature of trap entry No. 5 of Table 3, as printed",
+            "evidence_ids": [
+              "t3_r05"
+            ],
+            "note": "temperature printed with row 5 (β-Ga2O3, Et 0.89 eV); published 2024 (ref. [155]); energy entry /result_values/t3_row05_et",
+            "target": "scale:commons/10.3390-catal16020156/material/beta-ga2o3",
+            "unit": "K",
+            "value": 580,
+            "variable": "scale:commons/10.3390-catal16020156/variable/et-entry-temperature"
+          },
+          {
+            "id": "t3_row06_et",
+            "status": "present",
+            "definition": "trap entry No. 6 of Table 3, as printed",
+            "evidence_ids": [
+              "t3_r06"
+            ],
+            "note": "MoS2, row 6 of Table 3, measured at 300 K; published 2023 (ref. [157]); temperature on entry /result_values/t3_row06_temp",
+            "target": "scale:commons/10.3390-catal16020156/material/mos2",
+            "unit": "eV",
+            "value": 0.632,
+            "variable": "scale:commons/10.3390-catal16020156/variable/trap-state-et"
+          },
+          {
+            "id": "t3_row06_temp",
+            "status": "present",
+            "definition": "temperature of trap entry No. 6 of Table 3, as printed",
+            "evidence_ids": [
+              "t3_r06"
+            ],
+            "note": "temperature printed with row 6 (MoS2, Et 0.632 eV); published 2023 (ref. [157]); energy entry /result_values/t3_row06_et",
+            "target": "scale:commons/10.3390-catal16020156/material/mos2",
+            "unit": "K",
+            "value": 300,
+            "variable": "scale:commons/10.3390-catal16020156/variable/et-entry-temperature"
+          },
+          {
+            "id": "t3_row07_et",
+            "status": "present",
+            "definition": "trap entry No. 7 of Table 3, as printed",
+            "evidence_ids": [
+              "t3_r07"
+            ],
+            "note": "β-Ga2O3, row 7 of Table 3, measured at 330 K; published 2023 (ref. [158]); temperature on entry /result_values/t3_row07_temp",
+            "target": "scale:commons/10.3390-catal16020156/material/beta-ga2o3",
+            "unit": "eV",
+            "value": 0.8,
+            "variable": "scale:commons/10.3390-catal16020156/variable/trap-state-et"
+          },
+          {
+            "id": "t3_row07_temp",
+            "status": "present",
+            "definition": "temperature of trap entry No. 7 of Table 3, as printed",
+            "evidence_ids": [
+              "t3_r07"
+            ],
+            "note": "temperature printed with row 7 (β-Ga2O3, Et 0.8 eV); published 2023 (ref. [158]); energy entry /result_values/t3_row07_et",
+            "target": "scale:commons/10.3390-catal16020156/material/beta-ga2o3",
+            "unit": "K",
+            "value": 330,
+            "variable": "scale:commons/10.3390-catal16020156/variable/et-entry-temperature"
+          },
+          {
+            "id": "t3_row08_et",
+            "status": "present",
+            "definition": "trap entry No. 8 of Table 3, as printed",
+            "evidence_ids": [
+              "t3_r08"
+            ],
+            "note": "AlGaN/GaN, row 8 of Table 3, measured at 446 K; published 2022 (ref. [159]); temperature on entry /result_values/t3_row08_temp",
+            "target": "scale:commons/10.3390-catal16020156/material/algan-gan",
+            "unit": "eV",
+            "value": 0.63,
+            "variable": "scale:commons/10.3390-catal16020156/variable/trap-state-et"
+          },
+          {
+            "id": "t3_row08_temp",
+            "status": "present",
+            "definition": "temperature of trap entry No. 8 of Table 3, as printed",
+            "evidence_ids": [
+              "t3_r08"
+            ],
+            "note": "temperature printed with row 8 (AlGaN/GaN, Et 0.63 eV); published 2022 (ref. [159]); energy entry /result_values/t3_row08_et",
+            "target": "scale:commons/10.3390-catal16020156/material/algan-gan",
+            "unit": "K",
+            "value": 446,
+            "variable": "scale:commons/10.3390-catal16020156/variable/et-entry-temperature"
+          },
+          {
+            "id": "t3_row09_et",
+            "status": "present",
+            "definition": "trap entry No. 9 of Table 3, as printed",
+            "evidence_ids": [
+              "t3_r09"
+            ],
+            "note": "Sb2S3, row 9 of Table 3, measured at 500 K; published 2021 (ref. [160]); temperature on entry /result_values/t3_row09_temp",
+            "target": "scale:commons/10.3390-catal16020156/material/sb2s3",
+            "unit": "eV",
+            "value": 0.69,
+            "variable": "scale:commons/10.3390-catal16020156/variable/trap-state-et"
+          },
+          {
+            "id": "t3_row09_temp",
+            "status": "present",
+            "definition": "temperature of trap entry No. 9 of Table 3, as printed",
+            "evidence_ids": [
+              "t3_r09"
+            ],
+            "note": "temperature printed with row 9 (Sb2S3, Et 0.69 eV); published 2021 (ref. [160]); energy entry /result_values/t3_row09_et",
+            "target": "scale:commons/10.3390-catal16020156/material/sb2s3",
+            "unit": "K",
+            "value": 500,
+            "variable": "scale:commons/10.3390-catal16020156/variable/et-entry-temperature"
+          },
+          {
+            "id": "t3_row10_et",
+            "status": "present",
+            "definition": "trap entry No. 10 of Table 3, as printed",
+            "evidence_ids": [
+              "t3_r10"
+            ],
+            "note": "n-GaAsBi, row 10 of Table 3, measured at 360 K; published 2021 (ref. [161]); temperature on entry /result_values/t3_row10_temp",
+            "target": "scale:commons/10.3390-catal16020156/material/n-gaasbi",
+            "unit": "eV",
+            "value": 0.41,
+            "variable": "scale:commons/10.3390-catal16020156/variable/trap-state-et"
+          },
+          {
+            "id": "t3_row10_temp",
+            "status": "present",
+            "definition": "temperature of trap entry No. 10 of Table 3, as printed",
+            "evidence_ids": [
+              "t3_r10"
+            ],
+            "note": "temperature printed with row 10 (n-GaAsBi, Et 0.41 eV); published 2021 (ref. [161]); energy entry /result_values/t3_row10_et",
+            "target": "scale:commons/10.3390-catal16020156/material/n-gaasbi",
+            "unit": "K",
+            "value": 360,
+            "variable": "scale:commons/10.3390-catal16020156/variable/et-entry-temperature"
+          },
+          {
+            "id": "t3_row11_et",
+            "status": "present",
+            "definition": "trap entry No. 11 of Table 3, as printed",
+            "evidence_ids": [
+              "t3_r11"
+            ],
+            "note": "Sb2S3, row 11 of Table 3, measured at 475 K; published 2021 (ref. [160]); temperature on entry /result_values/t3_row11_temp",
+            "target": "scale:commons/10.3390-catal16020156/material/sb2s3",
+            "unit": "eV",
+            "value": 0.64,
+            "variable": "scale:commons/10.3390-catal16020156/variable/trap-state-et"
+          },
+          {
+            "id": "t3_row11_temp",
+            "status": "present",
+            "definition": "temperature of trap entry No. 11 of Table 3, as printed",
+            "evidence_ids": [
+              "t3_r11"
+            ],
+            "note": "temperature printed with row 11 (Sb2S3, Et 0.64 eV); published 2021 (ref. [160]); energy entry /result_values/t3_row11_et",
+            "target": "scale:commons/10.3390-catal16020156/material/sb2s3",
+            "unit": "K",
+            "value": 475,
+            "variable": "scale:commons/10.3390-catal16020156/variable/et-entry-temperature"
+          },
+          {
+            "id": "t3_row12_et",
+            "status": "present",
+            "definition": "trap entry No. 12 of Table 3, as printed",
+            "evidence_ids": [
+              "t3_r12"
+            ],
+            "note": "β-Ga2O3, row 12 of Table 3, measured at 325 K; published 2020 (ref. [162]); temperature on entry /result_values/t3_row12_temp",
+            "target": "scale:commons/10.3390-catal16020156/material/beta-ga2o3",
+            "unit": "eV",
+            "value": 0.68,
+            "variable": "scale:commons/10.3390-catal16020156/variable/trap-state-et"
+          },
+          {
+            "id": "t3_row12_temp",
+            "status": "present",
+            "definition": "temperature of trap entry No. 12 of Table 3, as printed",
+            "evidence_ids": [
+              "t3_r12"
+            ],
+            "note": "temperature printed with row 12 (β-Ga2O3, Et 0.68 eV); published 2020 (ref. [162]); energy entry /result_values/t3_row12_et",
+            "target": "scale:commons/10.3390-catal16020156/material/beta-ga2o3",
+            "unit": "K",
+            "value": 325,
+            "variable": "scale:commons/10.3390-catal16020156/variable/et-entry-temperature"
+          },
+          {
+            "id": "t3_row13_et",
+            "status": "present",
+            "definition": "trap entry No. 13 of Table 3, as printed",
+            "evidence_ids": [
+              "t3_r13"
+            ],
+            "note": "MoS2, row 13 of Table 3, measured at 400 K; published 2020 (ref. [163]); temperature on entry /result_values/t3_row13_temp",
+            "target": "scale:commons/10.3390-catal16020156/material/mos2",
+            "unit": "eV",
+            "value": 0.4,
+            "variable": "scale:commons/10.3390-catal16020156/variable/trap-state-et"
+          },
+          {
+            "id": "t3_row13_temp",
+            "status": "present",
+            "definition": "temperature of trap entry No. 13 of Table 3, as printed",
+            "evidence_ids": [
+              "t3_r13"
+            ],
+            "note": "temperature printed with row 13 (MoS2, Et 0.4 eV); published 2020 (ref. [163]); energy entry /result_values/t3_row13_et",
+            "target": "scale:commons/10.3390-catal16020156/material/mos2",
+            "unit": "K",
+            "value": 400,
+            "variable": "scale:commons/10.3390-catal16020156/variable/et-entry-temperature"
+          },
+          {
+            "id": "t3_row14_et",
+            "status": "present",
+            "definition": "trap entry No. 14 of Table 3, as printed",
+            "evidence_ids": [
+              "t3_r14"
+            ],
+            "note": "4H-SiC, row 14 of Table 3, measured at 322 K; published 2020 (ref. [164]); temperature on entry /result_values/t3_row14_temp",
+            "target": "scale:commons/10.3390-catal16020156/material/4h-sic",
+            "unit": "eV",
+            "value": 0.68,
+            "variable": "scale:commons/10.3390-catal16020156/variable/trap-state-et"
+          },
+          {
+            "id": "t3_row14_temp",
+            "status": "present",
+            "definition": "temperature of trap entry No. 14 of Table 3, as printed",
+            "evidence_ids": [
+              "t3_r14"
+            ],
+            "note": "temperature printed with row 14 (4H-SiC, Et 0.68 eV); published 2020 (ref. [164]); energy entry /result_values/t3_row14_et",
+            "target": "scale:commons/10.3390-catal16020156/material/4h-sic",
+            "unit": "K",
+            "value": 322,
+            "variable": "scale:commons/10.3390-catal16020156/variable/et-entry-temperature"
+          },
+          {
+            "id": "t3_row15_et",
+            "status": "present",
+            "definition": "trap entry No. 15 of Table 3, as printed",
+            "evidence_ids": [
+              "t3_r15"
+            ],
+            "note": "Mo0.3W0.7S2, row 15 of Table 3, measured at 400 K; published 2020 (ref. [163]); temperature on entry /result_values/t3_row15_temp",
+            "target": "scale:commons/10.3390-catal16020156/material/mo03w07s2",
+            "unit": "eV",
+            "value": 0.47,
+            "variable": "scale:commons/10.3390-catal16020156/variable/trap-state-et"
+          },
+          {
+            "id": "t3_row15_temp",
+            "status": "present",
+            "definition": "temperature of trap entry No. 15 of Table 3, as printed",
+            "evidence_ids": [
+              "t3_r15"
+            ],
+            "note": "temperature printed with row 15 (Mo0.3W0.7S2, Et 0.47 eV); published 2020 (ref. [163]); energy entry /result_values/t3_row15_et",
+            "target": "scale:commons/10.3390-catal16020156/material/mo03w07s2",
+            "unit": "K",
+            "value": 400,
+            "variable": "scale:commons/10.3390-catal16020156/variable/et-entry-temperature"
+          }
+        ],
+        "unmodeled": [
+          "the publication year and the reference number of each cited study are kept in each entry's note and evidence quote rather than as value objects"
+        ]
+      }
+    },
+    {
+      "id": "scale:commons/10.3390-catal16020156/analysis/et-compilation-tl",
+      "label": "Analysis",
+      "props": {
+        "name": "Compiled trap-state activation energies from TL studies (Table 5)",
+        "analysis_kind": "other",
+        "evidence": [
+          {
+            "id": "cap",
+            "kind": "table",
+            "evidence_type": "ECO:0000033",
+            "locator": "p. 21, Table 5 caption",
+            "quote": "Table 5. Dataset corresponding to Figure 8: trap-state activation energies (Et), temperatures, and publication years extracted from thermoluminescence (TL) measurements on relevant phosphors and oxides reported between 2019 and 2025",
+            "source": "scale:commons/source/10.3390-catal16020156"
+          },
+          {
+            "id": "fig8",
+            "kind": "text",
+            "evidence_type": "ECO:0000033",
+            "locator": "p. 20, Section 5.1",
+            "quote": "In addition, Figure 8 summarises the distribution of trap-state activation energies (Et) reported between 2019 and 2025 for catalyst-relevant materials, extracted from DLTS, TSC, and TL studies, with the corresponding numerical data compiled in Tables 3–5",
+            "source": "scale:commons/source/10.3390-catal16020156"
+          },
+          {
+            "id": "t5_r01",
+            "kind": "table",
+            "evidence_type": "ECO:0000033",
+            "locator": "p. 21, Table 5, row 1 (cited work: ref. [170])",
+            "quote": "1 K2Y0.9Eu0.1F5 1.32 478 K 2025 [170]",
+            "source": "scale:commons/source/10.3390-catal16020156"
+          },
+          {
+            "id": "t5_r02",
+            "kind": "table",
+            "evidence_type": "ECO:0000033",
+            "locator": "p. 21, Table 5, row 2 (cited work: ref. [171])",
+            "quote": "2 SrAl2O4:Eu2+,Dy3+0.69 345 K 2025 [171]",
+            "source": "scale:commons/source/10.3390-catal16020156"
+          },
+          {
+            "id": "t5_r03",
+            "kind": "table",
+            "evidence_type": "ECO:0000033",
+            "locator": "p. 21, Table 5, row 3 (cited work: ref. [172])",
+            "quote": "3 Ca5(PO4)3OH 1.12 473 K 2025 [172]",
+            "source": "scale:commons/source/10.3390-catal16020156"
+          },
+          {
+            "id": "t5_r04",
+            "kind": "table",
+            "evidence_type": "ECO:0000033",
+            "locator": "p. 21, Table 5, row 4 (cited work: ref. [170])",
+            "quote": "4 K2Y0.9Eu0.1F5 2.07 600 K 2025 [170]",
+            "source": "scale:commons/source/10.3390-catal16020156"
+          },
+          {
+            "id": "t5_r05",
+            "kind": "table",
+            "evidence_type": "ECO:0000033",
+            "locator": "p. 21, Table 5, row 5 (cited work: ref. [173])",
+            "quote": "5 Ca(Sr)ZnOS 0.45 359 K 2024 [173]",
+            "source": "scale:commons/source/10.3390-catal16020156"
+          },
+          {
+            "id": "t5_r06",
+            "kind": "table",
+            "evidence_type": "ECO:0000033",
+            "locator": "p. 21, Table 5, row 6 (cited work: ref. [174])",
+            "quote": "6 GdAl3(BO3)4 1.63 518.08 K 2023 [174]",
+            "source": "scale:commons/source/10.3390-catal16020156"
+          },
+          {
+            "id": "t5_r07",
+            "kind": "table",
+            "evidence_type": "ECO:0000033",
+            "locator": "p. 21, Table 5, row 7 (cited work: ref. [174])",
+            "quote": "7 GdAl3(BO3)4 1.42 559.32 K 2023 [174]",
+            "source": "scale:commons/source/10.3390-catal16020156"
+          },
+          {
+            "id": "t5_r08",
+            "kind": "table",
+            "evidence_type": "ECO:0000033",
+            "locator": "p. 21, Table 5, row 8 (cited work: ref. [175])",
+            "quote": "8 SrMoO4 1.03 560 K 2023 [175]",
+            "source": "scale:commons/source/10.3390-catal16020156"
+          },
+          {
+            "id": "t5_r09",
+            "kind": "table",
+            "evidence_type": "ECO:0000033",
+            "locator": "p. 21, Table 5, row 9 (cited work: ref. [175])",
+            "quote": "9 SrMoO4 1.3 550 K 2023 [175]",
+            "source": "scale:commons/source/10.3390-catal16020156"
+          },
+          {
+            "id": "t5_r10",
+            "kind": "table",
+            "evidence_type": "ECO:0000033",
+            "locator": "p. 22, Table 5, row 10 (cited work: ref. [176])",
+            "quote": "10 BaTi5O11 1.35 502 K 2023 [176]",
+            "source": "scale:commons/source/10.3390-catal16020156"
+          },
+          {
+            "id": "t5_r11",
+            "kind": "table",
+            "evidence_type": "ECO:0000033",
+            "locator": "p. 22, Table 5, row 11 (cited work: ref. [176])",
+            "quote": "11 BaTi5O11 1.4 560 K 2023 [176]",
+            "source": "scale:commons/source/10.3390-catal16020156"
+          },
+          {
+            "id": "t5_r12",
+            "kind": "table",
+            "evidence_type": "ECO:0000033",
+            "locator": "p. 22, Table 5, row 12 (cited work: ref. [177])",
+            "quote": "12 BeO:Na,Yb,Dy 1.39 496 K 2022 [177]",
+            "source": "scale:commons/source/10.3390-catal16020156"
+          },
+          {
+            "id": "t5_r13",
+            "kind": "table",
+            "evidence_type": "ECO:0000033",
+            "locator": "p. 22, Table 5, row 13 (cited work: ref. [178])",
+            "quote": "13 SrGa2O4:Cu2+ 0.98 367 K 2022 [178]",
+            "source": "scale:commons/source/10.3390-catal16020156"
+          },
+          {
+            "id": "t5_r14",
+            "kind": "table",
+            "evidence_type": "ECO:0000033",
+            "locator": "p. 22, Table 5, row 14 (cited work: ref. [179])",
+            "quote": "14 MgO:Tb,Gd,Li 0.62 443 K 2021 [179]",
+            "source": "scale:commons/source/10.3390-catal16020156"
+          }
+        ],
+        "goal": "investigate",
+        "method": "compilation of trap-state activation energies (Et), temperatures and publication years from thermoluminescence (TL) studies on catalyst-relevant materials reported 2019–2025, extracted by this review from the cited works (Table 5; plotted in Figure 8)",
+        "note": "This compilation is the review's own research-landscape analysis; the underlying measurements are the cited works', so every entry is second-hand (ECO:0000033) and is not a run of this source. Rows as printed.",
+        "origin": "curated",
+        "result_values": [
+          {
+            "id": "t5_row01_et",
+            "status": "present",
+            "definition": "trap entry No. 1 of Table 5, as printed",
+            "evidence_ids": [
+              "t5_r01"
+            ],
+            "note": "K2Y0.9Eu0.1F5, row 1 of Table 5, measured at 478 K; published 2025 (ref. [170]); temperature on entry /result_values/t5_row01_temp",
+            "target": "scale:commons/10.3390-catal16020156/material/k2y09eu01f5",
+            "unit": "eV",
+            "value": 1.32,
+            "variable": "scale:commons/10.3390-catal16020156/variable/trap-state-et"
+          },
+          {
+            "id": "t5_row01_temp",
+            "status": "present",
+            "definition": "temperature of trap entry No. 1 of Table 5, as printed",
+            "evidence_ids": [
+              "t5_r01"
+            ],
+            "note": "temperature printed with row 1 (K2Y0.9Eu0.1F5, Et 1.32 eV); published 2025 (ref. [170]); energy entry /result_values/t5_row01_et",
+            "target": "scale:commons/10.3390-catal16020156/material/k2y09eu01f5",
+            "unit": "K",
+            "value": 478,
+            "variable": "scale:commons/10.3390-catal16020156/variable/et-entry-temperature"
+          },
+          {
+            "id": "t5_row02_et",
+            "status": "present",
+            "as_reported": "0.69",
+            "definition": "trap entry No. 2 of Table 5, as printed",
+            "evidence_ids": [
+              "t5_r02"
+            ],
+            "note": "SrAl2O4:Eu2+,Dy3+, row 2 of Table 5, measured at 345 K; published 2025 (ref. [171]); temperature on entry /result_values/t5_row02_temp; the text layer prints the material and Et cells merged as 'SrAl2O4:Eu2+,Dy3+0.69' (separate cells in the printed table)",
+            "target": "scale:commons/10.3390-catal16020156/material/sral2o4-eu2-dy3",
+            "unit": "eV",
+            "value": 0.69,
+            "variable": "scale:commons/10.3390-catal16020156/variable/trap-state-et"
+          },
+          {
+            "id": "t5_row02_temp",
+            "status": "present",
+            "definition": "temperature of trap entry No. 2 of Table 5, as printed",
+            "evidence_ids": [
+              "t5_r02"
+            ],
+            "note": "temperature printed with row 2 (SrAl2O4:Eu2+,Dy3+, Et 0.69 eV); published 2025 (ref. [171]); energy entry /result_values/t5_row02_et",
+            "target": "scale:commons/10.3390-catal16020156/material/sral2o4-eu2-dy3",
+            "unit": "K",
+            "value": 345,
+            "variable": "scale:commons/10.3390-catal16020156/variable/et-entry-temperature"
+          },
+          {
+            "id": "t5_row03_et",
+            "status": "present",
+            "definition": "trap entry No. 3 of Table 5, as printed",
+            "evidence_ids": [
+              "t5_r03"
+            ],
+            "note": "Ca5(PO4)3OH, row 3 of Table 5, measured at 473 K; published 2025 (ref. [172]); temperature on entry /result_values/t5_row03_temp",
+            "target": "scale:commons/10.3390-catal16020156/material/ca5po43oh",
+            "unit": "eV",
+            "value": 1.12,
+            "variable": "scale:commons/10.3390-catal16020156/variable/trap-state-et"
+          },
+          {
+            "id": "t5_row03_temp",
+            "status": "present",
+            "definition": "temperature of trap entry No. 3 of Table 5, as printed",
+            "evidence_ids": [
+              "t5_r03"
+            ],
+            "note": "temperature printed with row 3 (Ca5(PO4)3OH, Et 1.12 eV); published 2025 (ref. [172]); energy entry /result_values/t5_row03_et",
+            "target": "scale:commons/10.3390-catal16020156/material/ca5po43oh",
+            "unit": "K",
+            "value": 473,
+            "variable": "scale:commons/10.3390-catal16020156/variable/et-entry-temperature"
+          },
+          {
+            "id": "t5_row04_et",
+            "status": "present",
+            "definition": "trap entry No. 4 of Table 5, as printed",
+            "evidence_ids": [
+              "t5_r04"
+            ],
+            "note": "K2Y0.9Eu0.1F5, row 4 of Table 5, measured at 600 K; published 2025 (ref. [170]); temperature on entry /result_values/t5_row04_temp",
+            "target": "scale:commons/10.3390-catal16020156/material/k2y09eu01f5",
+            "unit": "eV",
+            "value": 2.07,
+            "variable": "scale:commons/10.3390-catal16020156/variable/trap-state-et"
+          },
+          {
+            "id": "t5_row04_temp",
+            "status": "present",
+            "definition": "temperature of trap entry No. 4 of Table 5, as printed",
+            "evidence_ids": [
+              "t5_r04"
+            ],
+            "note": "temperature printed with row 4 (K2Y0.9Eu0.1F5, Et 2.07 eV); published 2025 (ref. [170]); energy entry /result_values/t5_row04_et",
+            "target": "scale:commons/10.3390-catal16020156/material/k2y09eu01f5",
+            "unit": "K",
+            "value": 600,
+            "variable": "scale:commons/10.3390-catal16020156/variable/et-entry-temperature"
+          },
+          {
+            "id": "t5_row05_et",
+            "status": "present",
+            "definition": "trap entry No. 5 of Table 5, as printed",
+            "evidence_ids": [
+              "t5_r05"
+            ],
+            "note": "Ca(Sr)ZnOS, row 5 of Table 5, measured at 359 K; published 2024 (ref. [173]); temperature on entry /result_values/t5_row05_temp",
+            "target": "scale:commons/10.3390-catal16020156/material/ca-sr-znos",
+            "unit": "eV",
+            "value": 0.45,
+            "variable": "scale:commons/10.3390-catal16020156/variable/trap-state-et"
+          },
+          {
+            "id": "t5_row05_temp",
+            "status": "present",
+            "definition": "temperature of trap entry No. 5 of Table 5, as printed",
+            "evidence_ids": [
+              "t5_r05"
+            ],
+            "note": "temperature printed with row 5 (Ca(Sr)ZnOS, Et 0.45 eV); published 2024 (ref. [173]); energy entry /result_values/t5_row05_et",
+            "target": "scale:commons/10.3390-catal16020156/material/ca-sr-znos",
+            "unit": "K",
+            "value": 359,
+            "variable": "scale:commons/10.3390-catal16020156/variable/et-entry-temperature"
+          },
+          {
+            "id": "t5_row06_et",
+            "status": "present",
+            "definition": "trap entry No. 6 of Table 5, as printed",
+            "evidence_ids": [
+              "t5_r06"
+            ],
+            "note": "GdAl3(BO3)4, row 6 of Table 5, measured at 518.08 K; published 2023 (ref. [174]); temperature on entry /result_values/t5_row06_temp",
+            "target": "scale:commons/10.3390-catal16020156/material/gdal3bo34",
+            "unit": "eV",
+            "value": 1.63,
+            "variable": "scale:commons/10.3390-catal16020156/variable/trap-state-et"
+          },
+          {
+            "id": "t5_row06_temp",
+            "status": "present",
+            "definition": "temperature of trap entry No. 6 of Table 5, as printed",
+            "evidence_ids": [
+              "t5_r06"
+            ],
+            "note": "temperature printed with row 6 (GdAl3(BO3)4, Et 1.63 eV); published 2023 (ref. [174]); energy entry /result_values/t5_row06_et",
+            "target": "scale:commons/10.3390-catal16020156/material/gdal3bo34",
+            "unit": "K",
+            "value": 518.08,
+            "variable": "scale:commons/10.3390-catal16020156/variable/et-entry-temperature"
+          },
+          {
+            "id": "t5_row07_et",
+            "status": "present",
+            "definition": "trap entry No. 7 of Table 5, as printed",
+            "evidence_ids": [
+              "t5_r07"
+            ],
+            "note": "GdAl3(BO3)4, row 7 of Table 5, measured at 559.32 K; published 2023 (ref. [174]); temperature on entry /result_values/t5_row07_temp",
+            "target": "scale:commons/10.3390-catal16020156/material/gdal3bo34",
+            "unit": "eV",
+            "value": 1.42,
+            "variable": "scale:commons/10.3390-catal16020156/variable/trap-state-et"
+          },
+          {
+            "id": "t5_row07_temp",
+            "status": "present",
+            "definition": "temperature of trap entry No. 7 of Table 5, as printed",
+            "evidence_ids": [
+              "t5_r07"
+            ],
+            "note": "temperature printed with row 7 (GdAl3(BO3)4, Et 1.42 eV); published 2023 (ref. [174]); energy entry /result_values/t5_row07_et",
+            "target": "scale:commons/10.3390-catal16020156/material/gdal3bo34",
+            "unit": "K",
+            "value": 559.32,
+            "variable": "scale:commons/10.3390-catal16020156/variable/et-entry-temperature"
+          },
+          {
+            "id": "t5_row08_et",
+            "status": "present",
+            "definition": "trap entry No. 8 of Table 5, as printed",
+            "evidence_ids": [
+              "t5_r08"
+            ],
+            "note": "SrMoO4, row 8 of Table 5, measured at 560 K; published 2023 (ref. [175]); temperature on entry /result_values/t5_row08_temp",
+            "target": "scale:commons/10.3390-catal16020156/material/srmoo4",
+            "unit": "eV",
+            "value": 1.03,
+            "variable": "scale:commons/10.3390-catal16020156/variable/trap-state-et"
+          },
+          {
+            "id": "t5_row08_temp",
+            "status": "present",
+            "definition": "temperature of trap entry No. 8 of Table 5, as printed",
+            "evidence_ids": [
+              "t5_r08"
+            ],
+            "note": "temperature printed with row 8 (SrMoO4, Et 1.03 eV); published 2023 (ref. [175]); energy entry /result_values/t5_row08_et",
+            "target": "scale:commons/10.3390-catal16020156/material/srmoo4",
+            "unit": "K",
+            "value": 560,
+            "variable": "scale:commons/10.3390-catal16020156/variable/et-entry-temperature"
+          },
+          {
+            "id": "t5_row09_et",
+            "status": "present",
+            "definition": "trap entry No. 9 of Table 5, as printed",
+            "evidence_ids": [
+              "t5_r09"
+            ],
+            "note": "SrMoO4, row 9 of Table 5, measured at 550 K; published 2023 (ref. [175]); temperature on entry /result_values/t5_row09_temp",
+            "target": "scale:commons/10.3390-catal16020156/material/srmoo4",
+            "unit": "eV",
+            "value": 1.3,
+            "variable": "scale:commons/10.3390-catal16020156/variable/trap-state-et"
+          },
+          {
+            "id": "t5_row09_temp",
+            "status": "present",
+            "definition": "temperature of trap entry No. 9 of Table 5, as printed",
+            "evidence_ids": [
+              "t5_r09"
+            ],
+            "note": "temperature printed with row 9 (SrMoO4, Et 1.3 eV); published 2023 (ref. [175]); energy entry /result_values/t5_row09_et",
+            "target": "scale:commons/10.3390-catal16020156/material/srmoo4",
+            "unit": "K",
+            "value": 550,
+            "variable": "scale:commons/10.3390-catal16020156/variable/et-entry-temperature"
+          },
+          {
+            "id": "t5_row10_et",
+            "status": "present",
+            "definition": "trap entry No. 10 of Table 5, as printed",
+            "evidence_ids": [
+              "t5_r10"
+            ],
+            "note": "BaTi5O11, row 10 of Table 5, measured at 502 K; published 2023 (ref. [176]); temperature on entry /result_values/t5_row10_temp",
+            "target": "scale:commons/10.3390-catal16020156/material/bati5o11",
+            "unit": "eV",
+            "value": 1.35,
+            "variable": "scale:commons/10.3390-catal16020156/variable/trap-state-et"
+          },
+          {
+            "id": "t5_row10_temp",
+            "status": "present",
+            "definition": "temperature of trap entry No. 10 of Table 5, as printed",
+            "evidence_ids": [
+              "t5_r10"
+            ],
+            "note": "temperature printed with row 10 (BaTi5O11, Et 1.35 eV); published 2023 (ref. [176]); energy entry /result_values/t5_row10_et",
+            "target": "scale:commons/10.3390-catal16020156/material/bati5o11",
+            "unit": "K",
+            "value": 502,
+            "variable": "scale:commons/10.3390-catal16020156/variable/et-entry-temperature"
+          },
+          {
+            "id": "t5_row11_et",
+            "status": "present",
+            "definition": "trap entry No. 11 of Table 5, as printed",
+            "evidence_ids": [
+              "t5_r11"
+            ],
+            "note": "BaTi5O11, row 11 of Table 5, measured at 560 K; published 2023 (ref. [176]); temperature on entry /result_values/t5_row11_temp",
+            "target": "scale:commons/10.3390-catal16020156/material/bati5o11",
+            "unit": "eV",
+            "value": 1.4,
+            "variable": "scale:commons/10.3390-catal16020156/variable/trap-state-et"
+          },
+          {
+            "id": "t5_row11_temp",
+            "status": "present",
+            "definition": "temperature of trap entry No. 11 of Table 5, as printed",
+            "evidence_ids": [
+              "t5_r11"
+            ],
+            "note": "temperature printed with row 11 (BaTi5O11, Et 1.4 eV); published 2023 (ref. [176]); energy entry /result_values/t5_row11_et",
+            "target": "scale:commons/10.3390-catal16020156/material/bati5o11",
+            "unit": "K",
+            "value": 560,
+            "variable": "scale:commons/10.3390-catal16020156/variable/et-entry-temperature"
+          },
+          {
+            "id": "t5_row12_et",
+            "status": "present",
+            "definition": "trap entry No. 12 of Table 5, as printed",
+            "evidence_ids": [
+              "t5_r12"
+            ],
+            "note": "BeO:Na,Yb,Dy, row 12 of Table 5, measured at 496 K; published 2022 (ref. [177]); temperature on entry /result_values/t5_row12_temp",
+            "target": "scale:commons/10.3390-catal16020156/material/beo-na-yb-dy",
+            "unit": "eV",
+            "value": 1.39,
+            "variable": "scale:commons/10.3390-catal16020156/variable/trap-state-et"
+          },
+          {
+            "id": "t5_row12_temp",
+            "status": "present",
+            "definition": "temperature of trap entry No. 12 of Table 5, as printed",
+            "evidence_ids": [
+              "t5_r12"
+            ],
+            "note": "temperature printed with row 12 (BeO:Na,Yb,Dy, Et 1.39 eV); published 2022 (ref. [177]); energy entry /result_values/t5_row12_et",
+            "target": "scale:commons/10.3390-catal16020156/material/beo-na-yb-dy",
+            "unit": "K",
+            "value": 496,
+            "variable": "scale:commons/10.3390-catal16020156/variable/et-entry-temperature"
+          },
+          {
+            "id": "t5_row13_et",
+            "status": "present",
+            "definition": "trap entry No. 13 of Table 5, as printed",
+            "evidence_ids": [
+              "t5_r13"
+            ],
+            "note": "SrGa2O4:Cu2+, row 13 of Table 5, measured at 367 K; published 2022 (ref. [178]); temperature on entry /result_values/t5_row13_temp",
+            "target": "scale:commons/10.3390-catal16020156/material/srga2o4-cu2",
+            "unit": "eV",
+            "value": 0.98,
+            "variable": "scale:commons/10.3390-catal16020156/variable/trap-state-et"
+          },
+          {
+            "id": "t5_row13_temp",
+            "status": "present",
+            "definition": "temperature of trap entry No. 13 of Table 5, as printed",
+            "evidence_ids": [
+              "t5_r13"
+            ],
+            "note": "temperature printed with row 13 (SrGa2O4:Cu2+, Et 0.98 eV); published 2022 (ref. [178]); energy entry /result_values/t5_row13_et",
+            "target": "scale:commons/10.3390-catal16020156/material/srga2o4-cu2",
+            "unit": "K",
+            "value": 367,
+            "variable": "scale:commons/10.3390-catal16020156/variable/et-entry-temperature"
+          },
+          {
+            "id": "t5_row14_et",
+            "status": "present",
+            "definition": "trap entry No. 14 of Table 5, as printed",
+            "evidence_ids": [
+              "t5_r14"
+            ],
+            "note": "MgO:Tb,Gd,Li, row 14 of Table 5, measured at 443 K; published 2021 (ref. [179]); temperature on entry /result_values/t5_row14_temp",
+            "target": "scale:commons/10.3390-catal16020156/material/mgo-tb-gd-li",
+            "unit": "eV",
+            "value": 0.62,
+            "variable": "scale:commons/10.3390-catal16020156/variable/trap-state-et"
+          },
+          {
+            "id": "t5_row14_temp",
+            "status": "present",
+            "definition": "temperature of trap entry No. 14 of Table 5, as printed",
+            "evidence_ids": [
+              "t5_r14"
+            ],
+            "note": "temperature printed with row 14 (MgO:Tb,Gd,Li, Et 0.62 eV); published 2021 (ref. [179]); energy entry /result_values/t5_row14_et",
+            "target": "scale:commons/10.3390-catal16020156/material/mgo-tb-gd-li",
+            "unit": "K",
+            "value": 443,
+            "variable": "scale:commons/10.3390-catal16020156/variable/et-entry-temperature"
+          }
+        ],
+        "unmodeled": [
+          "the publication year and the reference number of each cited study are kept in each entry's note and evidence quote rather than as value objects"
+        ]
+      }
+    },
+    {
+      "id": "scale:commons/10.3390-catal16020156/analysis/et-compilation-tsc",
+      "label": "Analysis",
+      "props": {
+        "name": "Compiled trap-state activation energies from TSC studies (Table 4)",
+        "analysis_kind": "other",
+        "evidence": [
+          {
+            "id": "cap",
+            "kind": "table",
+            "evidence_type": "ECO:0000033",
+            "locator": "p. 21, Table 4 caption",
+            "quote": "Table 4. Dataset corresponding to Figure 8: trap-state activation energies (Et), temperatures, and publication years extracted from thermally stimulated current (TSC) measurements on relevant materials reported between 2019 and 2025",
+            "source": "scale:commons/source/10.3390-catal16020156"
+          },
+          {
+            "id": "fig8",
+            "kind": "text",
+            "evidence_type": "ECO:0000033",
+            "locator": "p. 20, Section 5.1",
+            "quote": "In addition, Figure 8 summarises the distribution of trap-state activation energies (Et) reported between 2019 and 2025 for catalyst-relevant materials, extracted from DLTS, TSC, and TL studies, with the corresponding numerical data compiled in Tables 3–5",
+            "source": "scale:commons/source/10.3390-catal16020156"
+          },
+          {
+            "id": "t4_r01",
+            "kind": "table",
+            "evidence_type": "ECO:0000033",
+            "locator": "p. 21, Table 4, row 1 (cited work: ref. [165])",
+            "quote": "1 NaBi(MoO4)2 0.14 127.5 K 2025 [165]",
+            "source": "scale:commons/source/10.3390-catal16020156"
+          },
+          {
+            "id": "t4_r02",
+            "kind": "table",
+            "evidence_type": "ECO:0000033",
+            "locator": "p. 21, Table 4, row 2 (cited work: ref. [166])",
+            "quote": "2 CsPbBr3 0.48 225 K 2024 [166]",
+            "source": "scale:commons/source/10.3390-catal16020156"
+          },
+          {
+            "id": "t4_r03",
+            "kind": "table",
+            "evidence_type": "ECO:0000033",
+            "locator": "p. 21, Table 4, row 3 (cited work: ref. [39])",
+            "quote": "3 PbWO4 0.35 237.5 K 2024 [39]",
+            "source": "scale:commons/source/10.3390-catal16020156"
+          },
+          {
+            "id": "t4_r04",
+            "kind": "table",
+            "evidence_type": "ECO:0000033",
+            "locator": "p. 21, Table 4, row 4 (cited work: ref. [39])",
+            "quote": "4 PbWO4 0.16 178.1 K 2024 [39]",
+            "source": "scale:commons/source/10.3390-catal16020156"
+          },
+          {
+            "id": "t4_r05",
+            "kind": "table",
+            "evidence_type": "ECO:0000033",
+            "locator": "p. 21, Table 4, row 5 (cited work: ref. [167])",
+            "quote": "5 MAPbI3 0.459 225 K 2022 [167]",
+            "source": "scale:commons/source/10.3390-catal16020156"
+          },
+          {
+            "id": "t4_r06",
+            "kind": "table",
+            "evidence_type": "ECO:0000033",
+            "locator": "p. 21, Table 4, row 6 (cited work: ref. [167])",
+            "quote": "6 MAPbI3 0.414 205 K 2022 [167]",
+            "source": "scale:commons/source/10.3390-catal16020156"
+          },
+          {
+            "id": "t4_r07",
+            "kind": "table",
+            "evidence_type": "ECO:0000033",
+            "locator": "p. 21, Table 4, row 7 (cited work: ref. [78])",
+            "quote": "7 CdZnTe 0.56 450 K 2021 [78]",
+            "source": "scale:commons/source/10.3390-catal16020156"
+          },
+          {
+            "id": "t4_r08",
+            "kind": "table",
+            "evidence_type": "ECO:0000033",
+            "locator": "p. 21, Table 4, row 8 (cited work: ref. [78])",
+            "quote": "8 CdZnTe 0.6 475 K 2021 [78]",
+            "source": "scale:commons/source/10.3390-catal16020156"
+          },
+          {
+            "id": "t4_r09",
+            "kind": "table",
+            "evidence_type": "ECO:0000033",
+            "locator": "p. 21, Table 4, row 9 (cited work: ref. [47])",
+            "quote": "9 β-Ago3 1.03 450 K 2021 [47]",
+            "source": "scale:commons/source/10.3390-catal16020156"
+          },
+          {
+            "id": "t4_r10",
+            "kind": "table",
+            "evidence_type": "ECO:0000033",
+            "locator": "p. 21, Table 4, row 10 (cited work: ref. [168])",
+            "quote": "10 InGaZnO 0.9 400 K 2020 [168]",
+            "source": "scale:commons/source/10.3390-catal16020156"
+          },
+          {
+            "id": "t4_r11",
+            "kind": "table",
+            "evidence_type": "ECO:0000033",
+            "locator": "p. 21, Table 4, row 11 (cited work: ref. [169])",
+            "quote": "11 β-Ga2O3 0.99 441 K 2019 [169]",
+            "source": "scale:commons/source/10.3390-catal16020156"
+          }
+        ],
+        "goal": "investigate",
+        "method": "compilation of trap-state activation energies (Et), temperatures and publication years from thermally stimulated current (TSC) studies on catalyst-relevant materials reported 2019–2025, extracted by this review from the cited works (Table 4; plotted in Figure 8)",
+        "note": "This compilation is the review's own research-landscape analysis; the underlying measurements are the cited works', so every entry is second-hand (ECO:0000033) and is not a run of this source. Rows as printed.",
+        "origin": "curated",
+        "result_values": [
+          {
+            "id": "t4_row01_et",
+            "status": "present",
+            "definition": "trap entry No. 1 of Table 4, as printed",
+            "evidence_ids": [
+              "t4_r01"
+            ],
+            "note": "NaBi(MoO4)2, row 1 of Table 4, measured at 127.5 K; published 2025 (ref. [165]); temperature on entry /result_values/t4_row01_temp",
+            "target": "scale:commons/10.3390-catal16020156/material/nabi-moo42",
+            "unit": "eV",
+            "value": 0.14,
+            "variable": "scale:commons/10.3390-catal16020156/variable/trap-state-et"
+          },
+          {
+            "id": "t4_row01_temp",
+            "status": "present",
+            "definition": "temperature of trap entry No. 1 of Table 4, as printed",
+            "evidence_ids": [
+              "t4_r01"
+            ],
+            "note": "temperature printed with row 1 (NaBi(MoO4)2, Et 0.14 eV); published 2025 (ref. [165]); energy entry /result_values/t4_row01_et",
+            "target": "scale:commons/10.3390-catal16020156/material/nabi-moo42",
+            "unit": "K",
+            "value": 127.5,
+            "variable": "scale:commons/10.3390-catal16020156/variable/et-entry-temperature"
+          },
+          {
+            "id": "t4_row02_et",
+            "status": "present",
+            "definition": "trap entry No. 2 of Table 4, as printed",
+            "evidence_ids": [
+              "t4_r02"
+            ],
+            "note": "CsPbBr3, row 2 of Table 4, measured at 225 K; published 2024 (ref. [166]); temperature on entry /result_values/t4_row02_temp",
+            "target": "scale:commons/10.3390-catal16020156/material/cspbbr3",
+            "unit": "eV",
+            "value": 0.48,
+            "variable": "scale:commons/10.3390-catal16020156/variable/trap-state-et"
+          },
+          {
+            "id": "t4_row02_temp",
+            "status": "present",
+            "definition": "temperature of trap entry No. 2 of Table 4, as printed",
+            "evidence_ids": [
+              "t4_r02"
+            ],
+            "note": "temperature printed with row 2 (CsPbBr3, Et 0.48 eV); published 2024 (ref. [166]); energy entry /result_values/t4_row02_et",
+            "target": "scale:commons/10.3390-catal16020156/material/cspbbr3",
+            "unit": "K",
+            "value": 225,
+            "variable": "scale:commons/10.3390-catal16020156/variable/et-entry-temperature"
+          },
+          {
+            "id": "t4_row03_et",
+            "status": "present",
+            "definition": "trap entry No. 3 of Table 4, as printed",
+            "evidence_ids": [
+              "t4_r03"
+            ],
+            "note": "PbWO4, row 3 of Table 4, measured at 237.5 K; published 2024 (ref. [39]); temperature on entry /result_values/t4_row03_temp",
+            "target": "scale:commons/10.3390-catal16020156/material/pbwo4",
+            "unit": "eV",
+            "value": 0.35,
+            "variable": "scale:commons/10.3390-catal16020156/variable/trap-state-et"
+          },
+          {
+            "id": "t4_row03_temp",
+            "status": "present",
+            "definition": "temperature of trap entry No. 3 of Table 4, as printed",
+            "evidence_ids": [
+              "t4_r03"
+            ],
+            "note": "temperature printed with row 3 (PbWO4, Et 0.35 eV); published 2024 (ref. [39]); energy entry /result_values/t4_row03_et",
+            "target": "scale:commons/10.3390-catal16020156/material/pbwo4",
+            "unit": "K",
+            "value": 237.5,
+            "variable": "scale:commons/10.3390-catal16020156/variable/et-entry-temperature"
+          },
+          {
+            "id": "t4_row04_et",
+            "status": "present",
+            "definition": "trap entry No. 4 of Table 4, as printed",
+            "evidence_ids": [
+              "t4_r04"
+            ],
+            "note": "PbWO4, row 4 of Table 4, measured at 178.1 K; published 2024 (ref. [39]); temperature on entry /result_values/t4_row04_temp",
+            "target": "scale:commons/10.3390-catal16020156/material/pbwo4",
+            "unit": "eV",
+            "value": 0.16,
+            "variable": "scale:commons/10.3390-catal16020156/variable/trap-state-et"
+          },
+          {
+            "id": "t4_row04_temp",
+            "status": "present",
+            "definition": "temperature of trap entry No. 4 of Table 4, as printed",
+            "evidence_ids": [
+              "t4_r04"
+            ],
+            "note": "temperature printed with row 4 (PbWO4, Et 0.16 eV); published 2024 (ref. [39]); energy entry /result_values/t4_row04_et",
+            "target": "scale:commons/10.3390-catal16020156/material/pbwo4",
+            "unit": "K",
+            "value": 178.1,
+            "variable": "scale:commons/10.3390-catal16020156/variable/et-entry-temperature"
+          },
+          {
+            "id": "t4_row05_et",
+            "status": "present",
+            "definition": "trap entry No. 5 of Table 4, as printed",
+            "evidence_ids": [
+              "t4_r05"
+            ],
+            "note": "MAPbI3, row 5 of Table 4, measured at 225 K; published 2022 (ref. [167]); temperature on entry /result_values/t4_row05_temp",
+            "target": "scale:commons/10.3390-catal16020156/material/mapbi3",
+            "unit": "eV",
+            "value": 0.459,
+            "variable": "scale:commons/10.3390-catal16020156/variable/trap-state-et"
+          },
+          {
+            "id": "t4_row05_temp",
+            "status": "present",
+            "definition": "temperature of trap entry No. 5 of Table 4, as printed",
+            "evidence_ids": [
+              "t4_r05"
+            ],
+            "note": "temperature printed with row 5 (MAPbI3, Et 0.459 eV); published 2022 (ref. [167]); energy entry /result_values/t4_row05_et",
+            "target": "scale:commons/10.3390-catal16020156/material/mapbi3",
+            "unit": "K",
+            "value": 225,
+            "variable": "scale:commons/10.3390-catal16020156/variable/et-entry-temperature"
+          },
+          {
+            "id": "t4_row06_et",
+            "status": "present",
+            "definition": "trap entry No. 6 of Table 4, as printed",
+            "evidence_ids": [
+              "t4_r06"
+            ],
+            "note": "MAPbI3, row 6 of Table 4, measured at 205 K; published 2022 (ref. [167]); temperature on entry /result_values/t4_row06_temp",
+            "target": "scale:commons/10.3390-catal16020156/material/mapbi3",
+            "unit": "eV",
+            "value": 0.414,
+            "variable": "scale:commons/10.3390-catal16020156/variable/trap-state-et"
+          },
+          {
+            "id": "t4_row06_temp",
+            "status": "present",
+            "definition": "temperature of trap entry No. 6 of Table 4, as printed",
+            "evidence_ids": [
+              "t4_r06"
+            ],
+            "note": "temperature printed with row 6 (MAPbI3, Et 0.414 eV); published 2022 (ref. [167]); energy entry /result_values/t4_row06_et",
+            "target": "scale:commons/10.3390-catal16020156/material/mapbi3",
+            "unit": "K",
+            "value": 205,
+            "variable": "scale:commons/10.3390-catal16020156/variable/et-entry-temperature"
+          },
+          {
+            "id": "t4_row07_et",
+            "status": "present",
+            "definition": "trap entry No. 7 of Table 4, as printed",
+            "evidence_ids": [
+              "t4_r07"
+            ],
+            "note": "CdZnTe, row 7 of Table 4, measured at 450 K; published 2021 (ref. [78]); temperature on entry /result_values/t4_row07_temp",
+            "target": "scale:commons/10.3390-catal16020156/material/cdznte",
+            "unit": "eV",
+            "value": 0.56,
+            "variable": "scale:commons/10.3390-catal16020156/variable/trap-state-et"
+          },
+          {
+            "id": "t4_row07_temp",
+            "status": "present",
+            "definition": "temperature of trap entry No. 7 of Table 4, as printed",
+            "evidence_ids": [
+              "t4_r07"
+            ],
+            "note": "temperature printed with row 7 (CdZnTe, Et 0.56 eV); published 2021 (ref. [78]); energy entry /result_values/t4_row07_et",
+            "target": "scale:commons/10.3390-catal16020156/material/cdznte",
+            "unit": "K",
+            "value": 450,
+            "variable": "scale:commons/10.3390-catal16020156/variable/et-entry-temperature"
+          },
+          {
+            "id": "t4_row08_et",
+            "status": "present",
+            "definition": "trap entry No. 8 of Table 4, as printed",
+            "evidence_ids": [
+              "t4_r08"
+            ],
+            "note": "CdZnTe, row 8 of Table 4, measured at 475 K; published 2021 (ref. [78]); temperature on entry /result_values/t4_row08_temp",
+            "target": "scale:commons/10.3390-catal16020156/material/cdznte",
+            "unit": "eV",
+            "value": 0.6,
+            "variable": "scale:commons/10.3390-catal16020156/variable/trap-state-et"
+          },
+          {
+            "id": "t4_row08_temp",
+            "status": "present",
+            "definition": "temperature of trap entry No. 8 of Table 4, as printed",
+            "evidence_ids": [
+              "t4_r08"
+            ],
+            "note": "temperature printed with row 8 (CdZnTe, Et 0.6 eV); published 2021 (ref. [78]); energy entry /result_values/t4_row08_et",
+            "target": "scale:commons/10.3390-catal16020156/material/cdznte",
+            "unit": "K",
+            "value": 475,
+            "variable": "scale:commons/10.3390-catal16020156/variable/et-entry-temperature"
+          },
+          {
+            "id": "t4_row09_et",
+            "status": "present",
+            "definition": "trap entry No. 9 of Table 4, as printed",
+            "evidence_ids": [
+              "t4_r09"
+            ],
+            "note": "β-Ago3, row 9 of Table 4, measured at 450 K; published 2021 (ref. [47]); temperature on entry /result_values/t4_row09_temp",
+            "target": "scale:commons/10.3390-catal16020156/material/beta-ago3",
+            "unit": "eV",
+            "value": 1.03,
+            "variable": "scale:commons/10.3390-catal16020156/variable/trap-state-et"
+          },
+          {
+            "id": "t4_row09_temp",
+            "status": "present",
+            "definition": "temperature of trap entry No. 9 of Table 4, as printed",
+            "evidence_ids": [
+              "t4_r09"
+            ],
+            "note": "temperature printed with row 9 (β-Ago3, Et 1.03 eV); published 2021 (ref. [47]); energy entry /result_values/t4_row09_et",
+            "target": "scale:commons/10.3390-catal16020156/material/beta-ago3",
+            "unit": "K",
+            "value": 450,
+            "variable": "scale:commons/10.3390-catal16020156/variable/et-entry-temperature"
+          },
+          {
+            "id": "t4_row10_et",
+            "status": "present",
+            "definition": "trap entry No. 10 of Table 4, as printed",
+            "evidence_ids": [
+              "t4_r10"
+            ],
+            "note": "InGaZnO, row 10 of Table 4, measured at 400 K; published 2020 (ref. [168]); temperature on entry /result_values/t4_row10_temp",
+            "target": "scale:commons/10.3390-catal16020156/material/ingazno",
+            "unit": "eV",
+            "value": 0.9,
+            "variable": "scale:commons/10.3390-catal16020156/variable/trap-state-et"
+          },
+          {
+            "id": "t4_row10_temp",
+            "status": "present",
+            "definition": "temperature of trap entry No. 10 of Table 4, as printed",
+            "evidence_ids": [
+              "t4_r10"
+            ],
+            "note": "temperature printed with row 10 (InGaZnO, Et 0.9 eV); published 2020 (ref. [168]); energy entry /result_values/t4_row10_et",
+            "target": "scale:commons/10.3390-catal16020156/material/ingazno",
+            "unit": "K",
+            "value": 400,
+            "variable": "scale:commons/10.3390-catal16020156/variable/et-entry-temperature"
+          },
+          {
+            "id": "t4_row11_et",
+            "status": "present",
+            "definition": "trap entry No. 11 of Table 4, as printed",
+            "evidence_ids": [
+              "t4_r11"
+            ],
+            "note": "β-Ga2O3, row 11 of Table 4, measured at 441 K; published 2019 (ref. [169]); temperature on entry /result_values/t4_row11_temp",
+            "target": "scale:commons/10.3390-catal16020156/material/beta-ga2o3",
+            "unit": "eV",
+            "value": 0.99,
+            "variable": "scale:commons/10.3390-catal16020156/variable/trap-state-et"
+          },
+          {
+            "id": "t4_row11_temp",
+            "status": "present",
+            "definition": "temperature of trap entry No. 11 of Table 4, as printed",
+            "evidence_ids": [
+              "t4_r11"
+            ],
+            "note": "temperature printed with row 11 (β-Ga2O3, Et 0.99 eV); published 2019 (ref. [169]); energy entry /result_values/t4_row11_et",
+            "target": "scale:commons/10.3390-catal16020156/material/beta-ga2o3",
+            "unit": "K",
+            "value": 441,
+            "variable": "scale:commons/10.3390-catal16020156/variable/et-entry-temperature"
+          }
+        ],
+        "unmodeled": [
+          "the publication year and the reference number of each cited study are kept in each entry's note and evidence quote rather than as value objects"
+        ]
+      }
+    },
+    {
+      "id": "scale:commons/10.3390-catal16020156/material/4h-sic",
+      "label": "Material",
+      "props": {
+        "name": "4H-SiC",
+        "evidence": [
+          {
+            "id": "name_ev",
+            "kind": "table",
+            "evidence_type": "ECO:0000033",
+            "locator": "p. 21, Table 3, row 14 (cited work: ref. [164])",
+            "quote": "14 4H-SiC 0.68 322 K 2020 [164]",
+            "source": "scale:commons/source/10.3390-catal16020156"
+          }
+        ],
+        "generality": "kind",
+        "origin": "reported"
+      }
+    },
+    {
+      "id": "scale:commons/10.3390-catal16020156/material/algan-gan",
+      "label": "Material",
+      "props": {
+        "name": "AlGaN/GaN",
+        "evidence": [
+          {
+            "id": "name_ev",
+            "kind": "table",
+            "evidence_type": "ECO:0000033",
+            "locator": "p. 20, Table 3, row 4 (cited work: ref. [156])",
+            "quote": "4 AlGaN/GaN 0.56 325 K 2024 [156]",
+            "source": "scale:commons/source/10.3390-catal16020156"
+          }
+        ],
+        "generality": "kind",
+        "origin": "reported"
+      }
+    },
+    {
+      "id": "scale:commons/10.3390-catal16020156/material/bati5o11",
+      "label": "Material",
+      "props": {
+        "name": "BaTi5O11",
+        "evidence": [
+          {
+            "id": "name_ev",
+            "kind": "table",
+            "evidence_type": "ECO:0000033",
+            "locator": "p. 22, Table 5, row 10 (cited work: ref. [176])",
+            "quote": "10 BaTi5O11 1.35 502 K 2023 [176]",
+            "source": "scale:commons/source/10.3390-catal16020156"
+          }
+        ],
+        "generality": "kind",
+        "origin": "reported"
+      }
+    },
+    {
+      "id": "scale:commons/10.3390-catal16020156/material/beo-na-yb-dy",
+      "label": "Material",
+      "props": {
+        "name": "BeO:Na,Yb,Dy",
+        "evidence": [
+          {
+            "id": "name_ev",
+            "kind": "table",
+            "evidence_type": "ECO:0000033",
+            "locator": "p. 22, Table 5, row 12 (cited work: ref. [177])",
+            "quote": "12 BeO:Na,Yb,Dy 1.39 496 K 2022 [177]",
+            "source": "scale:commons/source/10.3390-catal16020156"
+          }
+        ],
+        "generality": "kind",
+        "origin": "reported"
+      }
+    },
+    {
+      "id": "scale:commons/10.3390-catal16020156/material/beta-ago3",
+      "label": "Material",
+      "props": {
+        "name": "β-Ago3",
+        "evidence": [
+          {
+            "id": "name_ev",
+            "kind": "table",
+            "evidence_type": "ECO:0000033",
+            "locator": "p. 21, Table 4, row 9 (cited work: ref. [47])",
+            "quote": "9 β-Ago3 1.03 450 K 2021 [47]",
+            "source": "scale:commons/source/10.3390-catal16020156"
+          }
+        ],
+        "generality": "kind",
+        "note": "Material cell as printed, 'β-Ago3' (Table 4 row 9, p. 21); the source's reference [47] (p. 27, reference list) is a study of β-Ga2O3 thin films.",
+        "origin": "reported"
+      }
+    },
+    {
+      "id": "scale:commons/10.3390-catal16020156/material/beta-ga2o3",
+      "label": "Material",
+      "props": {
+        "name": "β-Ga2O3",
+        "evidence": [
+          {
+            "id": "name_ev",
+            "kind": "table",
+            "evidence_type": "ECO:0000033",
+            "locator": "p. 20, Table 3, row 1 (cited work: ref. [154])",
+            "quote": "1 β-Ga2O3 0.209 200 K 2025 [154]",
+            "source": "scale:commons/source/10.3390-catal16020156"
+          }
+        ],
+        "generality": "kind",
+        "origin": "reported"
+      }
+    },
+    {
+      "id": "scale:commons/10.3390-catal16020156/material/ca-sr-znos",
+      "label": "Material",
+      "props": {
+        "name": "Ca(Sr)ZnOS",
+        "evidence": [
+          {
+            "id": "name_ev",
+            "kind": "table",
+            "evidence_type": "ECO:0000033",
+            "locator": "p. 21, Table 5, row 5 (cited work: ref. [173])",
+            "quote": "5 Ca(Sr)ZnOS 0.45 359 K 2024 [173]",
+            "source": "scale:commons/source/10.3390-catal16020156"
+          }
+        ],
+        "generality": "kind",
+        "origin": "reported"
+      }
+    },
+    {
+      "id": "scale:commons/10.3390-catal16020156/material/ca5po43oh",
+      "label": "Material",
+      "props": {
+        "name": "Ca5(PO4)3OH",
+        "evidence": [
+          {
+            "id": "name_ev",
+            "kind": "table",
+            "evidence_type": "ECO:0000033",
+            "locator": "p. 21, Table 5, row 3 (cited work: ref. [172])",
+            "quote": "3 Ca5(PO4)3OH 1.12 473 K 2025 [172]",
+            "source": "scale:commons/source/10.3390-catal16020156"
+          }
+        ],
+        "generality": "kind",
+        "origin": "reported"
+      }
+    },
+    {
+      "id": "scale:commons/10.3390-catal16020156/material/cdznte",
+      "label": "Material",
+      "props": {
+        "name": "CdZnTe",
+        "evidence": [
+          {
+            "id": "name_ev",
+            "kind": "table",
+            "evidence_type": "ECO:0000033",
+            "locator": "p. 21, Table 4, row 7 (cited work: ref. [78])",
+            "quote": "7 CdZnTe 0.56 450 K 2021 [78]",
+            "source": "scale:commons/source/10.3390-catal16020156"
+          }
+        ],
+        "generality": "kind",
+        "origin": "reported"
+      }
+    },
+    {
+      "id": "scale:commons/10.3390-catal16020156/material/cspbbr3",
+      "label": "Material",
+      "props": {
+        "name": "CsPbBr3",
+        "evidence": [
+          {
+            "id": "name_ev",
+            "kind": "table",
+            "evidence_type": "ECO:0000033",
+            "locator": "p. 21, Table 4, row 2 (cited work: ref. [166])",
+            "quote": "2 CsPbBr3 0.48 225 K 2024 [166]",
+            "source": "scale:commons/source/10.3390-catal16020156"
+          }
+        ],
+        "generality": "kind",
+        "origin": "reported"
+      }
+    },
+    {
+      "id": "scale:commons/10.3390-catal16020156/material/gdal3bo34",
+      "label": "Material",
+      "props": {
+        "name": "GdAl3(BO3)4",
+        "evidence": [
+          {
+            "id": "name_ev",
+            "kind": "table",
+            "evidence_type": "ECO:0000033",
+            "locator": "p. 21, Table 5, row 6 (cited work: ref. [174])",
+            "quote": "6 GdAl3(BO3)4 1.63 518.08 K 2023 [174]",
+            "source": "scale:commons/source/10.3390-catal16020156"
+          }
+        ],
+        "generality": "kind",
+        "origin": "reported"
+      }
+    },
+    {
+      "id": "scale:commons/10.3390-catal16020156/material/ingazno",
+      "label": "Material",
+      "props": {
+        "name": "InGaZnO",
+        "evidence": [
+          {
+            "id": "name_ev",
+            "kind": "table",
+            "evidence_type": "ECO:0000033",
+            "locator": "p. 21, Table 4, row 10 (cited work: ref. [168])",
+            "quote": "10 InGaZnO 0.9 400 K 2020 [168]",
+            "source": "scale:commons/source/10.3390-catal16020156"
+          }
+        ],
+        "generality": "kind",
+        "origin": "reported"
+      }
+    },
+    {
+      "id": "scale:commons/10.3390-catal16020156/material/k2y09eu01f5",
+      "label": "Material",
+      "props": {
+        "name": "K2Y0.9Eu0.1F5",
+        "evidence": [
+          {
+            "id": "name_ev",
+            "kind": "table",
+            "evidence_type": "ECO:0000033",
+            "locator": "p. 21, Table 5, row 1 (cited work: ref. [170])",
+            "quote": "1 K2Y0.9Eu0.1F5 1.32 478 K 2025 [170]",
+            "source": "scale:commons/source/10.3390-catal16020156"
+          }
+        ],
+        "generality": "kind",
+        "origin": "reported"
+      }
+    },
+    {
+      "id": "scale:commons/10.3390-catal16020156/material/mapbi3",
+      "label": "Material",
+      "props": {
+        "name": "MAPbI3",
+        "evidence": [
+          {
+            "id": "name_ev",
+            "kind": "table",
+            "evidence_type": "ECO:0000033",
+            "locator": "p. 21, Table 4, row 5 (cited work: ref. [167])",
+            "quote": "5 MAPbI3 0.459 225 K 2022 [167]",
+            "source": "scale:commons/source/10.3390-catal16020156"
+          }
+        ],
+        "generality": "kind",
+        "origin": "reported"
+      }
+    },
+    {
+      "id": "scale:commons/10.3390-catal16020156/material/mgo-tb-gd-li",
+      "label": "Material",
+      "props": {
+        "name": "MgO:Tb,Gd,Li",
+        "evidence": [
+          {
+            "id": "name_ev",
+            "kind": "table",
+            "evidence_type": "ECO:0000033",
+            "locator": "p. 22, Table 5, row 14 (cited work: ref. [179])",
+            "quote": "14 MgO:Tb,Gd,Li 0.62 443 K 2021 [179]",
+            "source": "scale:commons/source/10.3390-catal16020156"
+          }
+        ],
+        "generality": "kind",
+        "origin": "reported"
+      }
+    },
+    {
+      "id": "scale:commons/10.3390-catal16020156/material/mo03w07s2",
+      "label": "Material",
+      "props": {
+        "name": "Mo0.3W0.7S2",
+        "evidence": [
+          {
+            "id": "name_ev",
+            "kind": "table",
+            "evidence_type": "ECO:0000033",
+            "locator": "p. 21, Table 3, row 15 (cited work: ref. [163])",
+            "quote": "15 Mo0.3W0.7S2 0.47 400 K 2020 [163]",
+            "source": "scale:commons/source/10.3390-catal16020156"
+          }
+        ],
+        "generality": "kind",
+        "origin": "reported"
+      }
+    },
+    {
+      "id": "scale:commons/10.3390-catal16020156/material/mos2",
+      "label": "Material",
+      "props": {
+        "name": "MoS2",
+        "evidence": [
+          {
+            "id": "name_ev",
+            "kind": "table",
+            "evidence_type": "ECO:0000033",
+            "locator": "p. 21, Table 3, row 6 (cited work: ref. [157])",
+            "quote": "6 MoS2 0.632 300 K 2023 [157]",
+            "source": "scale:commons/source/10.3390-catal16020156"
+          }
+        ],
+        "generality": "kind",
+        "origin": "reported"
+      }
+    },
+    {
+      "id": "scale:commons/10.3390-catal16020156/material/n-gaasbi",
+      "label": "Material",
+      "props": {
+        "name": "n-GaAsBi",
+        "evidence": [
+          {
+            "id": "name_ev",
+            "kind": "table",
+            "evidence_type": "ECO:0000033",
+            "locator": "p. 21, Table 3, row 10 (cited work: ref. [161])",
+            "quote": "10 n-GaAsBi 0.41 360 K 2021 [161]",
+            "source": "scale:commons/source/10.3390-catal16020156"
+          }
+        ],
+        "generality": "kind",
+        "origin": "reported"
+      }
+    },
+    {
+      "id": "scale:commons/10.3390-catal16020156/material/nabi-moo42",
+      "label": "Material",
+      "props": {
+        "name": "NaBi(MoO4)2",
+        "evidence": [
+          {
+            "id": "name_ev",
+            "kind": "table",
+            "evidence_type": "ECO:0000033",
+            "locator": "p. 21, Table 4, row 1 (cited work: ref. [165])",
+            "quote": "1 NaBi(MoO4)2 0.14 127.5 K 2025 [165]",
+            "source": "scale:commons/source/10.3390-catal16020156"
+          }
+        ],
+        "generality": "kind",
+        "origin": "reported"
+      }
+    },
+    {
+      "id": "scale:commons/10.3390-catal16020156/material/pbwo4",
+      "label": "Material",
+      "props": {
+        "name": "PbWO4",
+        "evidence": [
+          {
+            "id": "name_ev",
+            "kind": "table",
+            "evidence_type": "ECO:0000033",
+            "locator": "p. 21, Table 4, row 3 (cited work: ref. [39])",
+            "quote": "3 PbWO4 0.35 237.5 K 2024 [39]",
+            "source": "scale:commons/source/10.3390-catal16020156"
+          }
+        ],
+        "generality": "kind",
+        "origin": "reported"
+      }
+    },
+    {
+      "id": "scale:commons/10.3390-catal16020156/material/sb2s3",
+      "label": "Material",
+      "props": {
+        "name": "Sb2S3",
+        "evidence": [
+          {
+            "id": "name_ev",
+            "kind": "table",
+            "evidence_type": "ECO:0000033",
+            "locator": "p. 21, Table 3, row 9 (cited work: ref. [160])",
+            "quote": "9 Sb2S3 0.69 500 K 2021 [160]",
+            "source": "scale:commons/source/10.3390-catal16020156"
+          }
+        ],
+        "generality": "kind",
+        "origin": "reported"
+      }
+    },
+    {
+      "id": "scale:commons/10.3390-catal16020156/material/sral2o4-eu2-dy3",
+      "label": "Material",
+      "props": {
+        "name": "SrAl2O4:Eu2+,Dy3+",
+        "evidence": [
+          {
+            "id": "name_ev",
+            "kind": "table",
+            "evidence_type": "ECO:0000033",
+            "locator": "p. 21, Table 5, row 2 (cited work: ref. [171])",
+            "quote": "2 SrAl2O4:Eu2+,Dy3+0.69 345 K 2025 [171]",
+            "source": "scale:commons/source/10.3390-catal16020156"
+          }
+        ],
+        "generality": "kind",
+        "note": "The PDF text layer prints the row's first two cells merged, 'SrAl2O4:Eu2+,Dy3+0.69'; in the printed table (checked against the page image) the material cell is 'SrAl2O4:Eu2+,Dy3+' and the Et cell '0.69'.",
+        "origin": "reported"
+      }
+    },
+    {
+      "id": "scale:commons/10.3390-catal16020156/material/srga2o4-cu2",
+      "label": "Material",
+      "props": {
+        "name": "SrGa2O4:Cu2+",
+        "evidence": [
+          {
+            "id": "name_ev",
+            "kind": "table",
+            "evidence_type": "ECO:0000033",
+            "locator": "p. 22, Table 5, row 13 (cited work: ref. [178])",
+            "quote": "13 SrGa2O4:Cu2+ 0.98 367 K 2022 [178]",
+            "source": "scale:commons/source/10.3390-catal16020156"
+          }
+        ],
+        "generality": "kind",
+        "origin": "reported"
+      }
+    },
+    {
+      "id": "scale:commons/10.3390-catal16020156/material/srmoo4",
+      "label": "Material",
+      "props": {
+        "name": "SrMoO4",
+        "evidence": [
+          {
+            "id": "name_ev",
+            "kind": "table",
+            "evidence_type": "ECO:0000033",
+            "locator": "p. 21, Table 5, row 8 (cited work: ref. [175])",
+            "quote": "8 SrMoO4 1.03 560 K 2023 [175]",
+            "source": "scale:commons/source/10.3390-catal16020156"
+          }
+        ],
+        "generality": "kind",
+        "origin": "reported"
+      }
+    },
+    {
+      "id": "scale:commons/10.3390-catal16020156/variable/et-entry-temperature",
+      "label": "Variable",
+      "props": {
+        "name": "temperature of the reported trap entry",
+        "definition": "The temperature printed with each trap-state activation-energy entry (column 'Temp. (K)') in the review's compiled Tables 3–5, as the cited study reported it.",
+        "evidence": [
+          {
+            "id": "def_cap3",
+            "kind": "table",
+            "evidence_type": "ECO:0000033",
+            "locator": "p. 20, Table 3 caption",
+            "quote": "Table 3. Dataset corresponding to Figure 8: trap-state activation energies (Et), temperatures, and publication years extracted from deep-level transient spectroscopy (DLTS) studies on catalyst-relevant materials reported between 2019 and 2025",
+            "source": "scale:commons/source/10.3390-catal16020156"
+          }
+        ],
+        "origin": "curated",
+        "quantity_kind": "temperature",
+        "scale": "quantitative",
+        "unit": "K"
+      }
+    },
+    {
+      "id": "scale:commons/10.3390-catal16020156/variable/trap-state-et",
+      "label": "Variable",
+      "props": {
+        "name": "trap-state activation energy (Et)",
+        "definition": "The trap-state activation energy (Et) of the material as compiled by this review from DLTS, TSC or TL studies of the cited works (Tables 3–5, plotted in Figure 8): the Arrhenius activation energy of trap carrier emission as each cited study reports it, not a measurement of this review.",
+        "evidence": [
+          {
+            "id": "def_fig8",
+            "kind": "text",
+            "evidence_type": "ECO:0000033",
+            "locator": "p. 20, Section 5.1",
+            "quote": "In addition, Figure 8 summarises the distribution of trap-state activation energies (Et) reported between 2019 and 2025 for catalyst-relevant materials, extracted from DLTS, TSC, and TL studies, with the corresponding numerical data compiled in Tables 3–5",
+            "source": "scale:commons/source/10.3390-catal16020156"
+          }
+        ],
+        "origin": "curated",
+        "quantity_kind": "trap_state_activation_energy",
+        "scale": "quantitative",
+        "unit": "eV"
+      }
+    },
+    {
+      "id": "scale:commons/source/10.3390-catal16020156",
+      "label": "Source",
+      "props": {
+        "name": "Electron Traps in Thermal Heterogeneous Catalysis: Fundamentals, Detection, and Applications of CO2 Hydrogenation",
+        "kind": "review_report",
+        "date_basis": "published",
+        "doi": "10.3390/catal16020156",
+        "licence": "https://creativecommons.org/licenses/by/4.0/",
+        "origin": "curated",
+        "peer_reviewed": true,
+        "published_on": "2026-02-03",
+        "retrieved_from": "100374.pdf",
+        "retrieved_on": "2026-11-04",
+        "text_sha256": "912827dd238ef0c81b0eba6a94ee6b551dc8747e8b3733c0b6b6bc9ac146943f",
+        "text_version": "version_of_record",
+        "title": "Electron Traps in Thermal Heterogeneous Catalysis: Fundamentals, Detection, and Applications of CO2 Hydrogenation",
+        "url": "https://doi.org/10.3390/catal16020156",
+        "venue": "Catalysts",
+        "year": 2026
+      }
+    }
+  ],
+  "links": [
+    {
+      "id": "scale:commons/10.3390-catal16020156/analysis/et-compilation-dlts/reported-in/10.3390-catal16020156",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 20, Section 5.1",
+          "p. 20, Table 3 caption",
+          "p. 20, Table 3, row 1 (cited work: ref. [154])",
+          "p. 20, Table 3, row 2 (cited work: ref. [154])",
+          "p. 20, Table 3, row 3 (cited work: ref. [155])",
+          "p. 20, Table 3, row 4 (cited work: ref. [156])",
+          "p. 20, Table 3, row 5 (cited work: ref. [155])",
+          "p. 21, Table 3, row 10 (cited work: ref. [161])",
+          "p. 21, Table 3, row 11 (cited work: ref. [160])",
+          "p. 21, Table 3, row 12 (cited work: ref. [162])",
+          "p. 21, Table 3, row 13 (cited work: ref. [163])",
+          "p. 21, Table 3, row 14 (cited work: ref. [164])",
+          "p. 21, Table 3, row 15 (cited work: ref. [163])",
+          "p. 21, Table 3, row 6 (cited work: ref. [157])",
+          "p. 21, Table 3, row 7 (cited work: ref. [158])",
+          "p. 21, Table 3, row 8 (cited work: ref. [159])",
+          "p. 21, Table 3, row 9 (cited work: ref. [160])"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.3390-catal16020156/analysis/et-compilation-dlts",
+      "target": "scale:commons/source/10.3390-catal16020156"
+    },
+    {
+      "id": "scale:commons/10.3390-catal16020156/analysis/et-compilation-tl/reported-in/10.3390-catal16020156",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 20, Section 5.1",
+          "p. 21, Table 5 caption",
+          "p. 21, Table 5, row 1 (cited work: ref. [170])",
+          "p. 21, Table 5, row 2 (cited work: ref. [171])",
+          "p. 21, Table 5, row 3 (cited work: ref. [172])",
+          "p. 21, Table 5, row 4 (cited work: ref. [170])",
+          "p. 21, Table 5, row 5 (cited work: ref. [173])",
+          "p. 21, Table 5, row 6 (cited work: ref. [174])",
+          "p. 21, Table 5, row 7 (cited work: ref. [174])",
+          "p. 21, Table 5, row 8 (cited work: ref. [175])",
+          "p. 21, Table 5, row 9 (cited work: ref. [175])",
+          "p. 22, Table 5, row 10 (cited work: ref. [176])",
+          "p. 22, Table 5, row 11 (cited work: ref. [176])",
+          "p. 22, Table 5, row 12 (cited work: ref. [177])",
+          "p. 22, Table 5, row 13 (cited work: ref. [178])",
+          "p. 22, Table 5, row 14 (cited work: ref. [179])"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.3390-catal16020156/analysis/et-compilation-tl",
+      "target": "scale:commons/source/10.3390-catal16020156"
+    },
+    {
+      "id": "scale:commons/10.3390-catal16020156/analysis/et-compilation-tsc/reported-in/10.3390-catal16020156",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 20, Section 5.1",
+          "p. 21, Table 4 caption",
+          "p. 21, Table 4, row 1 (cited work: ref. [165])",
+          "p. 21, Table 4, row 10 (cited work: ref. [168])",
+          "p. 21, Table 4, row 11 (cited work: ref. [169])",
+          "p. 21, Table 4, row 2 (cited work: ref. [166])",
+          "p. 21, Table 4, row 3 (cited work: ref. [39])",
+          "p. 21, Table 4, row 4 (cited work: ref. [39])",
+          "p. 21, Table 4, row 5 (cited work: ref. [167])",
+          "p. 21, Table 4, row 6 (cited work: ref. [167])",
+          "p. 21, Table 4, row 7 (cited work: ref. [78])",
+          "p. 21, Table 4, row 8 (cited work: ref. [78])",
+          "p. 21, Table 4, row 9 (cited work: ref. [47])"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.3390-catal16020156/analysis/et-compilation-tsc",
+      "target": "scale:commons/source/10.3390-catal16020156"
+    },
+    {
+      "id": "scale:commons/10.3390-catal16020156/material/4h-sic/reported-in/10.3390-catal16020156",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 21, Table 3, row 14 (cited work: ref. [164])"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.3390-catal16020156/material/4h-sic",
+      "target": "scale:commons/source/10.3390-catal16020156"
+    },
+    {
+      "id": "scale:commons/10.3390-catal16020156/material/algan-gan/reported-in/10.3390-catal16020156",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 20, Table 3, row 4 (cited work: ref. [156])"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.3390-catal16020156/material/algan-gan",
+      "target": "scale:commons/source/10.3390-catal16020156"
+    },
+    {
+      "id": "scale:commons/10.3390-catal16020156/material/bati5o11/reported-in/10.3390-catal16020156",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 22, Table 5, row 10 (cited work: ref. [176])"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.3390-catal16020156/material/bati5o11",
+      "target": "scale:commons/source/10.3390-catal16020156"
+    },
+    {
+      "id": "scale:commons/10.3390-catal16020156/material/beo-na-yb-dy/reported-in/10.3390-catal16020156",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 22, Table 5, row 12 (cited work: ref. [177])"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.3390-catal16020156/material/beo-na-yb-dy",
+      "target": "scale:commons/source/10.3390-catal16020156"
+    },
+    {
+      "id": "scale:commons/10.3390-catal16020156/material/beta-ago3/reported-in/10.3390-catal16020156",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 21, Table 4, row 9 (cited work: ref. [47])"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.3390-catal16020156/material/beta-ago3",
+      "target": "scale:commons/source/10.3390-catal16020156"
+    },
+    {
+      "id": "scale:commons/10.3390-catal16020156/material/beta-ga2o3/reported-in/10.3390-catal16020156",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 20, Table 3, row 1 (cited work: ref. [154])"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.3390-catal16020156/material/beta-ga2o3",
+      "target": "scale:commons/source/10.3390-catal16020156"
+    },
+    {
+      "id": "scale:commons/10.3390-catal16020156/material/ca-sr-znos/reported-in/10.3390-catal16020156",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 21, Table 5, row 5 (cited work: ref. [173])"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.3390-catal16020156/material/ca-sr-znos",
+      "target": "scale:commons/source/10.3390-catal16020156"
+    },
+    {
+      "id": "scale:commons/10.3390-catal16020156/material/ca5po43oh/reported-in/10.3390-catal16020156",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 21, Table 5, row 3 (cited work: ref. [172])"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.3390-catal16020156/material/ca5po43oh",
+      "target": "scale:commons/source/10.3390-catal16020156"
+    },
+    {
+      "id": "scale:commons/10.3390-catal16020156/material/cdznte/reported-in/10.3390-catal16020156",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 21, Table 4, row 7 (cited work: ref. [78])"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.3390-catal16020156/material/cdznte",
+      "target": "scale:commons/source/10.3390-catal16020156"
+    },
+    {
+      "id": "scale:commons/10.3390-catal16020156/material/cspbbr3/reported-in/10.3390-catal16020156",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 21, Table 4, row 2 (cited work: ref. [166])"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.3390-catal16020156/material/cspbbr3",
+      "target": "scale:commons/source/10.3390-catal16020156"
+    },
+    {
+      "id": "scale:commons/10.3390-catal16020156/material/gdal3bo34/reported-in/10.3390-catal16020156",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 21, Table 5, row 6 (cited work: ref. [174])"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.3390-catal16020156/material/gdal3bo34",
+      "target": "scale:commons/source/10.3390-catal16020156"
+    },
+    {
+      "id": "scale:commons/10.3390-catal16020156/material/ingazno/reported-in/10.3390-catal16020156",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 21, Table 4, row 10 (cited work: ref. [168])"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.3390-catal16020156/material/ingazno",
+      "target": "scale:commons/source/10.3390-catal16020156"
+    },
+    {
+      "id": "scale:commons/10.3390-catal16020156/material/k2y09eu01f5/reported-in/10.3390-catal16020156",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 21, Table 5, row 1 (cited work: ref. [170])"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.3390-catal16020156/material/k2y09eu01f5",
+      "target": "scale:commons/source/10.3390-catal16020156"
+    },
+    {
+      "id": "scale:commons/10.3390-catal16020156/material/mapbi3/reported-in/10.3390-catal16020156",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 21, Table 4, row 5 (cited work: ref. [167])"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.3390-catal16020156/material/mapbi3",
+      "target": "scale:commons/source/10.3390-catal16020156"
+    },
+    {
+      "id": "scale:commons/10.3390-catal16020156/material/mgo-tb-gd-li/reported-in/10.3390-catal16020156",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 22, Table 5, row 14 (cited work: ref. [179])"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.3390-catal16020156/material/mgo-tb-gd-li",
+      "target": "scale:commons/source/10.3390-catal16020156"
+    },
+    {
+      "id": "scale:commons/10.3390-catal16020156/material/mo03w07s2/reported-in/10.3390-catal16020156",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 21, Table 3, row 15 (cited work: ref. [163])"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.3390-catal16020156/material/mo03w07s2",
+      "target": "scale:commons/source/10.3390-catal16020156"
+    },
+    {
+      "id": "scale:commons/10.3390-catal16020156/material/mos2/reported-in/10.3390-catal16020156",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 21, Table 3, row 6 (cited work: ref. [157])"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.3390-catal16020156/material/mos2",
+      "target": "scale:commons/source/10.3390-catal16020156"
+    },
+    {
+      "id": "scale:commons/10.3390-catal16020156/material/n-gaasbi/reported-in/10.3390-catal16020156",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 21, Table 3, row 10 (cited work: ref. [161])"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.3390-catal16020156/material/n-gaasbi",
+      "target": "scale:commons/source/10.3390-catal16020156"
+    },
+    {
+      "id": "scale:commons/10.3390-catal16020156/material/nabi-moo42/reported-in/10.3390-catal16020156",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 21, Table 4, row 1 (cited work: ref. [165])"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.3390-catal16020156/material/nabi-moo42",
+      "target": "scale:commons/source/10.3390-catal16020156"
+    },
+    {
+      "id": "scale:commons/10.3390-catal16020156/material/pbwo4/reported-in/10.3390-catal16020156",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 21, Table 4, row 3 (cited work: ref. [39])"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.3390-catal16020156/material/pbwo4",
+      "target": "scale:commons/source/10.3390-catal16020156"
+    },
+    {
+      "id": "scale:commons/10.3390-catal16020156/material/sb2s3/reported-in/10.3390-catal16020156",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 21, Table 3, row 9 (cited work: ref. [160])"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.3390-catal16020156/material/sb2s3",
+      "target": "scale:commons/source/10.3390-catal16020156"
+    },
+    {
+      "id": "scale:commons/10.3390-catal16020156/material/sral2o4-eu2-dy3/reported-in/10.3390-catal16020156",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 21, Table 5, row 2 (cited work: ref. [171])"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.3390-catal16020156/material/sral2o4-eu2-dy3",
+      "target": "scale:commons/source/10.3390-catal16020156"
+    },
+    {
+      "id": "scale:commons/10.3390-catal16020156/material/srga2o4-cu2/reported-in/10.3390-catal16020156",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 22, Table 5, row 13 (cited work: ref. [178])"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.3390-catal16020156/material/srga2o4-cu2",
+      "target": "scale:commons/source/10.3390-catal16020156"
+    },
+    {
+      "id": "scale:commons/10.3390-catal16020156/material/srmoo4/reported-in/10.3390-catal16020156",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 21, Table 5, row 8 (cited work: ref. [175])"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.3390-catal16020156/material/srmoo4",
+      "target": "scale:commons/source/10.3390-catal16020156"
+    },
+    {
+      "id": "scale:commons/10.3390-catal16020156/variable/et-entry-temperature/reported-in/10.3390-catal16020156",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 20, Table 3 caption"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.3390-catal16020156/variable/et-entry-temperature",
+      "target": "scale:commons/source/10.3390-catal16020156"
+    },
+    {
+      "id": "scale:commons/10.3390-catal16020156/variable/trap-state-et/reported-in/10.3390-catal16020156",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 20, Section 5.1"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.3390-catal16020156/variable/trap-state-et",
+      "target": "scale:commons/source/10.3390-catal16020156"
+    }
+  ],
+  "schema_version": "0.8.2",
+  "source": "scale:commons/source/10.3390-catal16020156"
+}

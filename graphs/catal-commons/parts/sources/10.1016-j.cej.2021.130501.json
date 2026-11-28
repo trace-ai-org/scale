@@ -1,0 +1,2711 @@
+{
+  "nodes": [
+    {
+      "id": "scale:commons/10.1016-j.cej.2021.130501/catalyst/ag-based",
+      "label": "Catalyst",
+      "props": {
+        "name": "Ag-based catalysts",
+        "catalyst_family": "metal",
+        "evidence": [
+          {
+            "kind": "text",
+            "locator": "p. 4, section 3.1",
+            "quote": "Au or Ag-based catalysts for syngas (CO, H2) production",
+            "source": "scale:commons/source/10.1016-j.cej.2021.130501"
+          }
+        ],
+        "generality": "kind",
+        "origin": "curated",
+        "scope": "cathode catalyst for syngas (CO, H2) production in CO2 electrolysis"
+      }
+    },
+    {
+      "id": "scale:commons/10.1016-j.cej.2021.130501/catalyst/au-based",
+      "label": "Catalyst",
+      "props": {
+        "name": "Au-based catalysts",
+        "catalyst_family": "metal",
+        "evidence": [
+          {
+            "kind": "text",
+            "locator": "p. 4, section 3.1",
+            "quote": "Au or Ag-based catalysts for syngas (CO, H2) production",
+            "source": "scale:commons/source/10.1016-j.cej.2021.130501"
+          }
+        ],
+        "generality": "kind",
+        "origin": "curated",
+        "scope": "cathode catalyst for syngas (CO, H2) production in CO2 electrolysis"
+      }
+    },
+    {
+      "id": "scale:commons/10.1016-j.cej.2021.130501/catalyst/bi-based",
+      "label": "Catalyst",
+      "props": {
+        "name": "Bi-based catalysts",
+        "catalyst_family": "metal",
+        "evidence": [
+          {
+            "kind": "text",
+            "locator": "p. 4, section 3.1",
+            "quote": "For formate production, a relatively broad range of materials, such as Sn-, In-, Pb-, Ti-, Hg-, Cd- and Bi-based catalysts, can be used",
+            "source": "scale:commons/source/10.1016-j.cej.2021.130501"
+          }
+        ],
+        "generality": "kind",
+        "origin": "curated",
+        "scope": "cathode catalyst for formate production in CO2 electrolysis"
+      }
+    },
+    {
+      "id": "scale:commons/10.1016-j.cej.2021.130501/catalyst/cd-based",
+      "label": "Catalyst",
+      "props": {
+        "name": "Cd-based catalysts",
+        "catalyst_family": "metal",
+        "evidence": [
+          {
+            "kind": "text",
+            "locator": "p. 4, section 3.1",
+            "quote": "For formate production, a relatively broad range of materials, such as Sn-, In-, Pb-, Ti-, Hg-, Cd- and Bi-based catalysts, can be used",
+            "source": "scale:commons/source/10.1016-j.cej.2021.130501"
+          }
+        ],
+        "generality": "kind",
+        "origin": "curated",
+        "scope": "cathode catalyst for formate production in CO2 electrolysis"
+      }
+    },
+    {
+      "id": "scale:commons/10.1016-j.cej.2021.130501/catalyst/cu-based",
+      "label": "Catalyst",
+      "props": {
+        "name": "Cu-based catalysts",
+        "catalyst_family": "metal",
+        "evidence": [
+          {
+            "kind": "text",
+            "locator": "p. 4, section 3.1",
+            "quote": "Cu-based cata­ lysts for a large class of hydrocarbons, including e.g. methanol or ethene, are used",
+            "source": "scale:commons/source/10.1016-j.cej.2021.130501"
+          }
+        ],
+        "generality": "kind",
+        "origin": "curated",
+        "scope": "cathode catalyst for a large class of hydrocarbons, including methanol and ethene, in CO2 electrolysis"
+      }
+    },
+    {
+      "id": "scale:commons/10.1016-j.cej.2021.130501/catalyst/hg-based",
+      "label": "Catalyst",
+      "props": {
+        "name": "Hg-based catalysts",
+        "catalyst_family": "metal",
+        "evidence": [
+          {
+            "kind": "text",
+            "locator": "p. 4, section 3.1",
+            "quote": "For formate production, a relatively broad range of materials, such as Sn-, In-, Pb-, Ti-, Hg-, Cd- and Bi-based catalysts, can be used",
+            "source": "scale:commons/source/10.1016-j.cej.2021.130501"
+          }
+        ],
+        "generality": "kind",
+        "origin": "curated",
+        "scope": "cathode catalyst for formate production in CO2 electrolysis"
+      }
+    },
+    {
+      "id": "scale:commons/10.1016-j.cej.2021.130501/catalyst/in-based",
+      "label": "Catalyst",
+      "props": {
+        "name": "In-based catalysts",
+        "catalyst_family": "metal",
+        "evidence": [
+          {
+            "kind": "text",
+            "locator": "p. 4, section 3.1",
+            "quote": "For formate production, a relatively broad range of materials, such as Sn-, In-, Pb-, Ti-, Hg-, Cd- and Bi-based catalysts, can be used",
+            "source": "scale:commons/source/10.1016-j.cej.2021.130501"
+          }
+        ],
+        "generality": "kind",
+        "origin": "curated",
+        "scope": "cathode catalyst for formate production in CO2 electrolysis"
+      }
+    },
+    {
+      "id": "scale:commons/10.1016-j.cej.2021.130501/catalyst/ir-based",
+      "label": "Catalyst",
+      "props": {
+        "name": "Ir-based anode catalysts",
+        "catalyst_family": "metal",
+        "evidence": [
+          {
+            "kind": "text",
+            "locator": "p. 4, section 3.1",
+            "quote": "Ir-based anode catalysts for the oxygen evolution reaction",
+            "source": "scale:commons/source/10.1016-j.cej.2021.130501"
+          }
+        ],
+        "generality": "kind",
+        "origin": "curated",
+        "scope": "anode catalyst for the oxygen evolution reaction in acidic PEM water electrolysis"
+      }
+    },
+    {
+      "id": "scale:commons/10.1016-j.cej.2021.130501/catalyst/ni-based",
+      "label": "Catalyst",
+      "props": {
+        "name": "Ni-based catalysts",
+        "catalyst_family": "metal",
+        "evidence": [
+          {
+            "kind": "text",
+            "locator": "p. 4, section 3.1",
+            "quote": "for alkaline water electrolysis with and without a membrane, Ni-based catalysts can be used at both electrodes",
+            "source": "scale:commons/source/10.1016-j.cej.2021.130501"
+          }
+        ],
+        "generality": "kind",
+        "origin": "curated",
+        "scope": "catalyst for both electrodes in alkaline water electrolysis, with and without a membrane"
+      }
+    },
+    {
+      "id": "scale:commons/10.1016-j.cej.2021.130501/catalyst/pb-based",
+      "label": "Catalyst",
+      "props": {
+        "name": "Pb-based catalysts",
+        "catalyst_family": "metal",
+        "evidence": [
+          {
+            "kind": "text",
+            "locator": "p. 4, section 3.1",
+            "quote": "For formate production, a relatively broad range of materials, such as Sn-, In-, Pb-, Ti-, Hg-, Cd- and Bi-based catalysts, can be used",
+            "source": "scale:commons/source/10.1016-j.cej.2021.130501"
+          }
+        ],
+        "generality": "kind",
+        "origin": "curated",
+        "scope": "cathode catalyst for formate production in CO2 electrolysis"
+      }
+    },
+    {
+      "id": "scale:commons/10.1016-j.cej.2021.130501/catalyst/pt-based",
+      "label": "Catalyst",
+      "props": {
+        "name": "Pt-based cathode catalysts",
+        "catalyst_family": "metal",
+        "evidence": [
+          {
+            "kind": "text",
+            "locator": "p. 4, section 3.1",
+            "quote": "Pt-based cath­ ode catalysts for the hydrogen evolution reaction",
+            "source": "scale:commons/source/10.1016-j.cej.2021.130501"
+          }
+        ],
+        "generality": "kind",
+        "origin": "curated",
+        "scope": "cathode catalyst for the hydrogen evolution reaction in acidic PEM water electrolysis"
+      }
+    },
+    {
+      "id": "scale:commons/10.1016-j.cej.2021.130501/catalyst/sn-based",
+      "label": "Catalyst",
+      "props": {
+        "name": "Sn-based catalysts",
+        "catalyst_family": "metal",
+        "evidence": [
+          {
+            "kind": "text",
+            "locator": "p. 4, section 3.1",
+            "quote": "For formate production, a relatively broad range of materials, such as Sn-, In-, Pb-, Ti-, Hg-, Cd- and Bi-based catalysts, can be used",
+            "source": "scale:commons/source/10.1016-j.cej.2021.130501"
+          }
+        ],
+        "generality": "kind",
+        "origin": "curated",
+        "scope": "cathode catalyst for formate production in CO2 electrolysis"
+      }
+    },
+    {
+      "id": "scale:commons/10.1016-j.cej.2021.130501/catalyst/ti-based",
+      "label": "Catalyst",
+      "props": {
+        "name": "Ti-based catalysts",
+        "catalyst_family": "metal",
+        "evidence": [
+          {
+            "kind": "text",
+            "locator": "p. 4, section 3.1",
+            "quote": "For formate production, a relatively broad range of materials, such as Sn-, In-, Pb-, Ti-, Hg-, Cd- and Bi-based catalysts, can be used",
+            "source": "scale:commons/source/10.1016-j.cej.2021.130501"
+          }
+        ],
+        "generality": "kind",
+        "origin": "curated",
+        "scope": "cathode catalyst for formate production in CO2 electrolysis"
+      }
+    },
+    {
+      "id": "scale:commons/10.1016-j.cej.2021.130501/claim/c1",
+      "label": "Claim",
+      "props": {
+        "name": "Half-cell findings rarely transfer to full electrolysers",
+        "claim_kind": "conclusion",
+        "claim_status": "supported",
+        "evidence": [
+          {
+            "kind": "text",
+            "locator": "p. 2, section 1",
+            "quote": "However, these half-cell setups suffer from low reactant mass transport, as reflected by unrealistic current densities and potential ranges, which are significantly different from those of full electrolyser systems. Consequently, findings obtained from catalyst- structure performance relationships in half cells can only rarely be transferred to full electrolysers.",
+            "source": "scale:commons/source/10.1016-j.cej.2021.130501"
+          },
+          {
+            "kind": "text",
+            "locator": "p. 2, section 1",
+            "quote": "Most of this research is performed using half-cell configurations, e.g. rotating disc electrodes, with the catalyst immersed completely in electrolyte without PTE to enhance gas–liquid mass transfer and contact.",
+            "source": "scale:commons/source/10.1016-j.cej.2021.130501"
+          }
+        ],
+        "inference_type": "expert_opinion",
+        "origin": "curated",
+        "scope": "low-temperature water and CO2 electrolysis",
+        "statement": "Findings from catalyst-structure-performance relationships obtained in half-cell setups (e.g. rotating disc electrodes) can only rarely be transferred to full electrolyser systems, because these setups suffer from low reactant mass transport and show unrealistic current densities and potential ranges."
+      }
+    },
+    {
+      "id": "scale:commons/10.1016-j.cej.2021.130501/claim/c10",
+      "label": "Claim",
+      "props": {
+        "name": "More measurements with scalable tailor-made PTEs needed",
+        "claim_kind": "conclusion",
+        "claim_status": "proposed",
+        "evidence": [
+          {
+            "kind": "text",
+            "locator": "p. 11, section 6",
+            "quote": "For experiments additional to investigations with backing electrodes bearing thin catalyst layers and aiming to determine the intrinsic catalyst properties, more and improved measurements with scalable and tailor-made PTEs should be conducted. Only with these PTEs, either in half-cell or full-cell arrangement, will the full complexity of the activity transport nexus be captured.",
+            "source": "scale:commons/source/10.1016-j.cej.2021.130501"
+          }
+        ],
+        "inference_type": "expert_opinion",
+        "origin": "curated",
+        "scope": "experiments on water and CO2 electrolysis",
+        "statement": "Beyond investigations with backing electrodes bearing thin catalyst layers, more and improved measurements with scalable and tailor-made PTEs (in half-cell or full-cell arrangement) should be conducted to capture the full complexity of the activity transport nexus."
+      }
+    },
+    {
+      "id": "scale:commons/10.1016-j.cej.2021.130501/claim/c11",
+      "label": "Claim",
+      "props": {
+        "name": "Ionomer film controls local active-site concentrations with solid electrolytes",
+        "claim_kind": "mechanism",
+        "claim_status": "supported",
+        "evidence": [
+          {
+            "kind": "text",
+            "locator": "p. 6, section 4.2",
+            "quote": "The ionomer film controls the local concentrations at the active site (pH, CO2, products) and can be tuned accordingly",
+            "source": "scale:commons/source/10.1016-j.cej.2021.130501"
+          },
+          {
+            "kind": "text",
+            "locator": "p. 6, section 4.2",
+            "quote": "However, the role of the ionomer gains considerable importance with solid electrolytes, since a continuous ionomer film is necessary to transport the ions towards or away from the membrane to close the electric circuit.",
+            "source": "scale:commons/source/10.1016-j.cej.2021.130501"
+          }
+        ],
+        "inference_type": "expert_opinion",
+        "origin": "curated",
+        "scope": "CO2 and water electrolysis with solid electrolytes",
+        "statement": "With solid electrolytes the role of the ionomer gains considerable importance: a continuous ionomer film is necessary to transport ions towards or away from the membrane to close the electric circuit, and it controls the local concentrations at the active site (pH, CO2, products) and can be tuned accordingly."
+      }
+    },
+    {
+      "id": "scale:commons/10.1016-j.cej.2021.130501/claim/c12",
+      "label": "Claim",
+      "props": {
+        "name": "Activities and selectivities differ between PTE and disk electrodes",
+        "claim_kind": "finding",
+        "claim_status": "supported",
+        "evidence": [
+          {
+            "kind": "text",
+            "locator": "p. 6, section 4.2",
+            "quote": "Mass transport limitations inside PTEs can provoke significant concentration and pH profiles, with mostly unknown conditions at the electrocatalyst. Thus, measured activities and selectivities of the same electrocatalyst can be different inside a PTE and on disk or carbon cloth/paper electrodes. This effect is particularly pronounced in CO2 electrolysis using liquid electrolytes at high current densities",
+            "source": "scale:commons/source/10.1016-j.cej.2021.130501"
+          }
+        ],
+        "inference_type": "observational",
+        "note": "The review cites this effect from [67]; it is not a run of this source.",
+        "origin": "curated",
+        "scope": "CO2 electrolysis with liquid electrolytes at high current densities",
+        "statement": "Mass transport limitations inside PTEs can provoke significant concentration and pH profiles with mostly unknown conditions at the electrocatalyst, so measured activities and selectivities of the same electrocatalyst can differ between a PTE and disk or carbon cloth/paper electrodes, particularly in CO2 electrolysis with liquid electrolytes at high current densities."
+      }
+    },
+    {
+      "id": "scale:commons/10.1016-j.cej.2021.130501/claim/c2",
+      "label": "Claim",
+      "props": {
+        "name": "Cell components and graded PTEs govern activity, selectivity, stability",
+        "claim_kind": "generalization",
+        "claim_status": "supported",
+        "evidence": [
+          {
+            "kind": "text",
+            "locator": "p. 4, section 3.2",
+            "quote": "the structure and composition of these components can strongly influ­ence the activity, selectivity, and stability of the electrolysis system",
+            "source": "scale:commons/source/10.1016-j.cej.2021.130501"
+          },
+          {
+            "kind": "text",
+            "locator": "p. 4, section 3.2",
+            "quote": "PTEs enabling high current densities are graded hierarchical materials systems, containing large pore structures in the micrometer range for fast transport and small pores up to the single digit nanometer range in the catalyst layer.",
+            "source": "scale:commons/source/10.1016-j.cej.2021.130501"
+          }
+        ],
+        "inference_type": "expert_opinion",
+        "origin": "curated",
+        "scope": "porous transport and catalyst layers of water and CO2 electrolysis cells",
+        "statement": "The structure and composition of the cell components strongly influence the activity, selectivity and stability of the electrolysis system; PTEs enabling high current densities are graded hierarchical materials systems with large micrometre pores for fast transport and small pores down to the single-digit nanometre range in the catalyst layer."
+      }
+    },
+    {
+      "id": "scale:commons/10.1016-j.cej.2021.130501/claim/c3",
+      "label": "Claim",
+      "props": {
+        "name": "CO2 depletion shifts CO2RR selectivity towards HER",
+        "claim_kind": "mechanism",
+        "claim_status": "supported",
+        "evidence": [
+          {
+            "kind": "text",
+            "locator": "p. 4, section 3.3",
+            "quote": "Depletion of CO2 leads to lower density of adsorbed CO species and thus fewer C–C coupled products, which consequently increases unwanted HER",
+            "source": "scale:commons/source/10.1016-j.cej.2021.130501"
+          },
+          {
+            "kind": "text",
+            "locator": "p. 4, section 3.3",
+            "quote": "In contrast to water electrolysis, selectivity can be largely influenced by species transport in CO2 reduction.",
+            "source": "scale:commons/source/10.1016-j.cej.2021.130501"
+          }
+        ],
+        "inference_type": "expert_opinion",
+        "origin": "curated",
+        "scope": "CO2 electrolysis",
+        "statement": "In CO2 reduction, depletion of CO2 lowers the density of adsorbed CO species and thus the formation of C-C coupled products, while increasing the unwanted hydrogen evolution reaction; selectivity can therefore be largely influenced by species transport."
+      }
+    },
+    {
+      "id": "scale:commons/10.1016-j.cej.2021.130501/claim/c4",
+      "label": "Claim",
+      "props": {
+        "name": "PTEs central to high-performance CO2 electrolysis; interface poorly understood",
+        "claim_kind": "conclusion",
+        "claim_status": "supported",
+        "evidence": [
+          {
+            "kind": "text",
+            "locator": "p. 4, section 3.3",
+            "quote": "PTEs are clearly central to high performance CO2 electrolysis systems and their optimum transport and optimum interface properties must be better understood",
+            "source": "scale:commons/source/10.1016-j.cej.2021.130501"
+          },
+          {
+            "kind": "text",
+            "locator": "p. 4, section 3.3",
+            "quote": "Despite the importance of activity and selectivity, the precise impact of the form of the interface between gas and electrolyte phase and of the PTE is not yet clearly understood. So far, this interface is defined simply by a manufacturing approach resulting in a stochastic structure.",
+            "source": "scale:commons/source/10.1016-j.cej.2021.130501"
+          }
+        ],
+        "inference_type": "expert_opinion",
+        "origin": "curated",
+        "scope": "CO2 electrolysis",
+        "statement": "PTEs are central to high-performance CO2 electrolysis systems, but the precise impact of the form of the gas/electrolyte interface and of the PTE on activity and selectivity is not yet clearly understood; so far the interface is defined by a manufacturing approach resulting in a stochastic structure."
+      }
+    },
+    {
+      "id": "scale:commons/10.1016-j.cej.2021.130501/claim/c5",
+      "label": "Claim",
+      "props": {
+        "name": "CO2 solubility limits non-PTE electrodes; PTEs reach above 1 A/cm2",
+        "claim_kind": "causal",
+        "claim_status": "supported",
+        "evidence": [
+          {
+            "kind": "text",
+            "locator": "p. 6, section 4.2",
+            "quote": "In CO2 electrolysis, non-PTE electrodes suffer from a limiting current density of a few mA/cm2 because the solubility of CO2 in the aqueous electrolyte is limited to ~ 33 mmol/l (at 298 K and 1 atm) and the thickness of the mass-transfer boundary layer over the electrode is typically of the order of 50 μm, even when vigorously stirring or recirculating the electrolyte",
+            "source": "scale:commons/source/10.1016-j.cej.2021.130501"
+          },
+          {
+            "kind": "text",
+            "locator": "p. 6, section 4.2",
+            "quote": "under 60 atm of CO2 a maximum partial current density towards formate of 560 mA/cm2 was reached",
+            "source": "scale:commons/source/10.1016-j.cej.2021.130501"
+          },
+          {
+            "kind": "text",
+            "locator": "p. 6, section 4.2",
+            "quote": "Partial current densities of CO2RR of more than 1 A/cm2 have been reached with liquid electrolytes",
+            "source": "scale:commons/source/10.1016-j.cej.2021.130501"
+          }
+        ],
+        "inference_type": "observational",
+        "note": "The quantitative values are this review's citations of other works (solubility and boundary layer from [67]; 560 mA/cm2 towards formate under 60 atm CO2 from Todoroki et al. [70]; more than 1 A/cm2 from [42,71]); they are not runs of this source.",
+        "origin": "curated",
+        "scope": "CO2 electrolysis in aqueous electrolytes",
+        "statement": "Non-PTE CO2 electrolysis electrodes suffer from a limiting current density of a few mA/cm2 because the solubility of CO2 in aqueous electrolyte is limited (about 33 mmol/l at 298 K and 1 atm) and the mass-transfer boundary layer is of the order of 50 micrometres even when vigorously stirring or recirculating the electrolyte; pressurizing the electrolyte to 60 atm CO2 raised the maximum partial current density towards formate to 560 mA/cm2, and PTE electrodes reached CO2RR partial current densities of more than 1 A/cm2 with liquid electrolytes."
+      }
+    },
+    {
+      "id": "scale:commons/10.1016-j.cej.2021.130501/claim/c6",
+      "label": "Claim",
+      "props": {
+        "name": "Only full flow cells address technical current density and crossover",
+        "claim_kind": "conclusion",
+        "claim_status": "supported",
+        "evidence": [
+          {
+            "kind": "text",
+            "locator": "p. 6, section 4.2",
+            "quote": "Only in this realistic arrangement can questions such as cell voltage at technically relevant current densities (typically at least 200 mA/cm2) and product crossover between the cathodic and anodic half-cell be properly addressed",
+            "source": "scale:commons/source/10.1016-j.cej.2021.130501"
+          },
+          {
+            "kind": "text",
+            "locator": "p. 6, section 4.2",
+            "quote": "When it comes to application-oriented measurements, full flow-cells with PTE electrodes are imperative because they are scalable in size and number (stacking).",
+            "source": "scale:commons/source/10.1016-j.cej.2021.130501"
+          }
+        ],
+        "inference_type": "expert_opinion",
+        "origin": "curated",
+        "scope": "application-oriented measurements on water and CO2 electrolysers",
+        "statement": "Only in full flow cells with PTE electrodes, which are scalable in size and number, can questions such as cell voltage at technically relevant current densities (typically at least 200 mA/cm2) and product crossover between the cathodic and anodic half-cell be properly addressed."
+      }
+    },
+    {
+      "id": "scale:commons/10.1016-j.cej.2021.130501/claim/c7",
+      "label": "Claim",
+      "props": {
+        "name": "Bubble artefacts can mimic OER catalyst degradation",
+        "claim_kind": "finding",
+        "claim_status": "supported",
+        "evidence": [
+          {
+            "kind": "text",
+            "locator": "p. 6, section 4.2",
+            "quote": "in water electrolysis, nano- and micro-bubbles formed within the pores of the catalyst layer during the OER on disk or carbon cloth/paper electrodes cannot be removed and the corresponding potential increase can be mistakenly interpreted as catalyst degradation",
+            "source": "scale:commons/source/10.1016-j.cej.2021.130501"
+          },
+          {
+            "kind": "text",
+            "locator": "p. 6, section 4.2",
+            "quote": "Backing electrode degradation can occur under OER conditions and has to be either excluded or considered to accurately measure the electrocatalyst’s stability.",
+            "source": "scale:commons/source/10.1016-j.cej.2021.130501"
+          }
+        ],
+        "inference_type": "observational",
+        "note": "The review cites this from [68,69].",
+        "origin": "curated",
+        "scope": "OER stability testing on disk or carbon cloth/paper electrodes",
+        "statement": "In water electrolysis, nano- and micro-bubbles formed within the pores of the catalyst layer during the OER on disk or carbon cloth/paper electrodes cannot be removed, and the corresponding potential increase can be mistakenly interpreted as catalyst degradation; backing-electrode degradation must be excluded or considered to measure the electrocatalyst stability accurately."
+      }
+    },
+    {
+      "id": "scale:commons/10.1016-j.cej.2021.130501/claim/c8",
+      "label": "Claim",
+      "props": {
+        "name": "Flat vs porous electrode conditions differ; test at relevant conditions",
+        "claim_kind": "finding",
+        "claim_status": "supported",
+        "evidence": [
+          {
+            "kind": "text",
+            "locator": "p. 9, section 5.2 and Fig. 7",
+            "quote": "A simplified model comparing an H-cell and a gas-diffusion layer clearly demonstrates that conditions are very different between flat and porous electrodes (Fig. 7), and that catalyst performance must be assessed under more technically relevant conditions, such as that found in porous transport electrodes",
+            "source": "scale:commons/source/10.1016-j.cej.2021.130501"
+          }
+        ],
+        "inference_type": "observational",
+        "note": "The figure and the finding are reprinted from [67]; not a run of this source.",
+        "origin": "curated",
+        "scope": "CO2 reduction on gas-diffusion vs flat electrodes",
+        "statement": "Model-based predictions show that conditions differ strongly between flat and porous electrodes, so catalyst performance must be assessed under more technically relevant conditions such as those found in porous transport electrodes (Fig. 7, reprinted from Burdyny & Smith [67])."
+      }
+    },
+    {
+      "id": "scale:commons/10.1016-j.cej.2021.130501/claim/c9",
+      "label": "Claim",
+      "props": {
+        "name": "Multidisciplinary approach required for the activity transport nexus",
+        "claim_kind": "conclusion",
+        "claim_status": "proposed",
+        "evidence": [
+          {
+            "kind": "text",
+            "locator": "p. 11, section 6",
+            "quote": "Any new research focus on the activity transport nexus should not draw research down to a purely technical scale",
+            "source": "scale:commons/source/10.1016-j.cej.2021.130501"
+          },
+          {
+            "kind": "text",
+            "locator": "p. 11, section 6",
+            "quote": "A multidisciplinary scientific approach is required and the following steps can pave the way towards realization:",
+            "source": "scale:commons/source/10.1016-j.cej.2021.130501"
+          },
+          {
+            "kind": "text",
+            "locator": "p. 11, section 6",
+            "quote": "Research communities need to interact more. During definition of research questions within the fields of natural, materials, and engineering sciences, strong and vivid interaction shall be sought.",
+            "source": "scale:commons/source/10.1016-j.cej.2021.130501"
+          }
+        ],
+        "inference_type": "expert_opinion",
+        "origin": "curated",
+        "scope": "water and CO2 electrolysis research",
+        "statement": "Research on the activity transport nexus should not be reduced to the purely technical scale; a multidisciplinary scientific approach across natural, materials and engineering sciences is required."
+      }
+    },
+    {
+      "id": "scale:commons/10.1016-j.cej.2021.130501/hypothesis/h1",
+      "label": "Hypothesis",
+      "props": {
+        "name": "Tailored structured PTEs could reach the optimum PTE form",
+        "evidence": [
+          {
+            "kind": "text",
+            "locator": "p. 4, section 3.4",
+            "quote": "The optimum form of PTEs for a specific reaction could be reached by structured materials specifically tailored for this purpose, e.g. made of linear pores, well-defined hierarchical structures, or PTEs with predefined liquid and gas pathways.",
+            "source": "scale:commons/source/10.1016-j.cej.2021.130501"
+          }
+        ],
+        "hypothesis_kind": "causal",
+        "hypothesis_status": "proposed",
+        "origin": "curated",
+        "scope": "porous transport electrodes for CO2 and water electrolysers (section 3.4 outlook)",
+        "statement": "The optimum form of porous transport electrode for a specific reaction could be reached by structured materials specifically tailored for that purpose, e.g. made of linear pores, well-defined hierarchical structures, or PTEs with predefined liquid and gas pathways."
+      }
+    },
+    {
+      "id": "scale:commons/10.1016-j.cej.2021.130501/institution/bmbf",
+      "label": "Institution",
+      "props": {
+        "name": "German Federal Ministry of Education and Research (BMBF)",
+        "institution_kind": "funding_agency",
+        "origin": "curated"
+      }
+    },
+    {
+      "id": "scale:commons/10.1016-j.cej.2021.130501/institution/bmwi",
+      "label": "Institution",
+      "props": {
+        "name": "German Federal Ministry for Economic Affairs and Energy (BMWi)",
+        "institution_kind": "funding_agency",
+        "origin": "curated"
+      }
+    },
+    {
+      "id": "scale:commons/10.1016-j.cej.2021.130501/institution/clausthal",
+      "label": "Institution",
+      "props": {
+        "name": "Clausthal University of Technology",
+        "institution_kind": "university",
+        "origin": "curated"
+      }
+    },
+    {
+      "id": "scale:commons/10.1016-j.cej.2021.130501/institution/darmstadt",
+      "label": "Institution",
+      "props": {
+        "name": "Technical University of Darmstadt",
+        "institution_kind": "university",
+        "origin": "curated"
+      }
+    },
+    {
+      "id": "scale:commons/10.1016-j.cej.2021.130501/institution/dfg",
+      "label": "Institution",
+      "props": {
+        "name": "Deutsche Forschungsgemeinschaft (DFG)",
+        "institution_kind": "funding_agency",
+        "origin": "curated"
+      }
+    },
+    {
+      "id": "scale:commons/10.1016-j.cej.2021.130501/institution/erc",
+      "label": "Institution",
+      "props": {
+        "name": "European Research Council (ERC)",
+        "institution_kind": "funding_agency",
+        "origin": "curated"
+      }
+    },
+    {
+      "id": "scale:commons/10.1016-j.cej.2021.130501/institution/eu",
+      "label": "Institution",
+      "props": {
+        "name": "European Union (Horizon 2020)",
+        "institution_kind": "funding_agency",
+        "origin": "curated"
+      }
+    },
+    {
+      "id": "scale:commons/10.1016-j.cej.2021.130501/institution/fau",
+      "label": "Institution",
+      "props": {
+        "name": "Friedrich-Alexander-Universität Erlangen-Nürnberg",
+        "institution_kind": "university",
+        "origin": "curated"
+      }
+    },
+    {
+      "id": "scale:commons/10.1016-j.cej.2021.130501/institution/fzj",
+      "label": "Institution",
+      "props": {
+        "name": "Forschungszentrum Jülich GmbH, Helmholtz Institute Erlangen-Nürnberg for Renewable Energy (IEK-11)",
+        "institution_kind": "research_institute",
+        "origin": "curated"
+      }
+    },
+    {
+      "id": "scale:commons/10.1016-j.cej.2021.130501/institution/hmwk",
+      "label": "Institution",
+      "props": {
+        "name": "Hessian Ministry of Higher Education, Research, Science and the Arts (HMWK)",
+        "institution_kind": "funding_agency",
+        "origin": "curated"
+      }
+    },
+    {
+      "id": "scale:commons/10.1016-j.cej.2021.130501/institution/kit",
+      "label": "Institution",
+      "props": {
+        "name": "Karlsruhe Institute of Technology",
+        "institution_kind": "research_institute",
+        "origin": "curated"
+      }
+    },
+    {
+      "id": "scale:commons/10.1016-j.cej.2021.130501/institution/stuttgart",
+      "label": "Institution",
+      "props": {
+        "name": "University of Stuttgart",
+        "institution_kind": "university",
+        "origin": "curated"
+      }
+    },
+    {
+      "id": "scale:commons/10.1016-j.cej.2021.130501/person/dreizler",
+      "label": "Person",
+      "props": {
+        "name": "Andreas Dreizler",
+        "given_names": "Andreas",
+        "origin": "curated",
+        "surname": "Dreizler"
+      }
+    },
+    {
+      "id": "scale:commons/10.1016-j.cej.2021.130501/person/etzold",
+      "label": "Person",
+      "props": {
+        "name": "Bastian J.M. Etzold",
+        "given_names": "Bastian J.M.",
+        "origin": "curated",
+        "surname": "Etzold"
+      }
+    },
+    {
+      "id": "scale:commons/10.1016-j.cej.2021.130501/person/klemm",
+      "label": "Person",
+      "props": {
+        "name": "Elias Klemm",
+        "given_names": "Elias",
+        "origin": "curated",
+        "surname": "Klemm"
+      }
+    },
+    {
+      "id": "scale:commons/10.1016-j.cej.2021.130501/person/krewer",
+      "label": "Person",
+      "props": {
+        "name": "Ulrike Krewer",
+        "given_names": "Ulrike",
+        "origin": "curated",
+        "surname": "Krewer"
+      }
+    },
+    {
+      "id": "scale:commons/10.1016-j.cej.2021.130501/person/thiele",
+      "label": "Person",
+      "props": {
+        "name": "Simon Thiele",
+        "given_names": "Simon",
+        "origin": "curated",
+        "surname": "Thiele"
+      }
+    },
+    {
+      "id": "scale:commons/10.1016-j.cej.2021.130501/person/turek",
+      "label": "Person",
+      "props": {
+        "name": "Thomas Turek",
+        "given_names": "Thomas",
+        "origin": "curated",
+        "surname": "Turek"
+      }
+    },
+    {
+      "id": "scale:commons/10.1016-j.cej.2021.130501/reaction/co2-to-bicarbonate",
+      "label": "Reaction",
+      "props": {
+        "name": "Reaction of CO2 to bicarbonate ions",
+        "balance_status": "not_reported",
+        "direction": "not_reported",
+        "evidence": [
+          {
+            "kind": "text",
+            "locator": "p. 2, section 2",
+            "quote": "Further non-faradaic chemical reactions may occur in electrolytes, e. g. the reaction of CO2 to bicarbonate and carbonate ions",
+            "source": "scale:commons/source/10.1016-j.cej.2021.130501"
+          }
+        ],
+        "generality": "kind",
+        "object_kind": "phenomenon",
+        "origin": "curated",
+        "scope": "non-faradaic chemical reactions in the electrolyte, given by the source only as an example ('e. g.'); no equation printed and no stoichiometry reported"
+      }
+    },
+    {
+      "id": "scale:commons/10.1016-j.cej.2021.130501/reaction/co2-to-carbonate",
+      "label": "Reaction",
+      "props": {
+        "name": "Reaction of CO2 to carbonate ions",
+        "balance_status": "not_reported",
+        "direction": "not_reported",
+        "evidence": [
+          {
+            "kind": "text",
+            "locator": "p. 2, section 2",
+            "quote": "Further non-faradaic chemical reactions may occur in electrolytes, e. g. the reaction of CO2 to bicarbonate and carbonate ions",
+            "source": "scale:commons/source/10.1016-j.cej.2021.130501"
+          }
+        ],
+        "generality": "kind",
+        "object_kind": "phenomenon",
+        "origin": "curated",
+        "scope": "non-faradaic chemical reactions in the electrolyte, given by the source only as an example ('e. g.'); no equation printed and no stoichiometry reported"
+      }
+    },
+    {
+      "id": "scale:commons/10.1016-j.cej.2021.130501/reaction/co2rr",
+      "label": "Reaction",
+      "props": {
+        "name": "CO2RR (CO-producing branch)",
+        "balance_status": "balanced",
+        "direction": "forward",
+        "equation": "CO2 + 2H+ + 2e−→CO + H2O",
+        "evidence": [
+          {
+            "kind": "text",
+            "locator": "p. 2, Eq. (3)",
+            "quote": "CO2RR : CO2 + 2H+ + 2e−→CO + H2O",
+            "source": "scale:commons/source/10.1016-j.cej.2021.130501"
+          }
+        ],
+        "generality": "kind",
+        "object_kind": "phenomenon",
+        "origin": "curated",
+        "scope": "the review gives only the simplest equation towards CO; CO2RR is a complex network of reactions; as printed for acidic conditions"
+      }
+    },
+    {
+      "id": "scale:commons/10.1016-j.cej.2021.130501/reaction/co2rr-formate",
+      "label": "Reaction",
+      "props": {
+        "name": "CO2 electroreduction to formate",
+        "balance_status": "not_reported",
+        "direction": "not_reported",
+        "evidence": [
+          {
+            "kind": "text",
+            "locator": "p. 4, section 3.1",
+            "quote": "For formate production, a relatively broad range of materials, such as Sn-, In-, Pb-, Ti-, Hg-, Cd- and Bi-based catalysts, can be used",
+            "source": "scale:commons/source/10.1016-j.cej.2021.130501"
+          }
+        ],
+        "generality": "kind",
+        "note": "the source prints no equation for formate production; it states the cathode catalyst depends on the product desired",
+        "object_kind": "phenomenon",
+        "origin": "curated",
+        "scope": "cathode product desired in CO2 electrolysis: formate; no equation printed"
+      }
+    },
+    {
+      "id": "scale:commons/10.1016-j.cej.2021.130501/reaction/co2rr-hydrocarbons",
+      "label": "Reaction",
+      "props": {
+        "name": "CO2 electroreduction to hydrocarbons (e.g. methanol, ethene)",
+        "balance_status": "not_reported",
+        "direction": "not_reported",
+        "evidence": [
+          {
+            "kind": "text",
+            "locator": "p. 4, section 3.1",
+            "quote": "Cu-based cata­ lysts for a large class of hydrocarbons, including e.g. methanol or ethene, are used",
+            "source": "scale:commons/source/10.1016-j.cej.2021.130501"
+          }
+        ],
+        "generality": "kind",
+        "note": "the source prints no equation for hydrocarbon production; it states the cathode catalyst depends on the product desired",
+        "object_kind": "phenomenon",
+        "origin": "curated",
+        "scope": "cathode product desired in CO2 electrolysis: a large class of hydrocarbons, including e.g. methanol or ethene; no equation printed"
+      }
+    },
+    {
+      "id": "scale:commons/10.1016-j.cej.2021.130501/reaction/co2rr-syngas",
+      "label": "Reaction",
+      "props": {
+        "name": "CO2 electrolysis to syngas (CO, H2)",
+        "balance_status": "not_reported",
+        "direction": "not_reported",
+        "evidence": [
+          {
+            "kind": "text",
+            "locator": "p. 4, section 3.1",
+            "quote": "Au or Ag-based catalysts for syngas (CO, H2) production",
+            "source": "scale:commons/source/10.1016-j.cej.2021.130501"
+          }
+        ],
+        "generality": "kind",
+        "note": "the source prints no equation for syngas production; it states the cathode catalyst depends on the product desired",
+        "object_kind": "phenomenon",
+        "origin": "curated",
+        "scope": "cathode product desired in CO2 electrolysis: syngas (CO, H2); no equation printed for the net syngas reaction"
+      }
+    },
+    {
+      "id": "scale:commons/10.1016-j.cej.2021.130501/reaction/her",
+      "label": "Reaction",
+      "props": {
+        "name": "HER",
+        "balance_status": "balanced",
+        "direction": "forward",
+        "equation": "2H+ + 2e−→H2",
+        "evidence": [
+          {
+            "kind": "text",
+            "locator": "p. 2, Eq. (2)",
+            "quote": "HER : 2H+ + 2e−→H2",
+            "source": "scale:commons/source/10.1016-j.cej.2021.130501"
+          }
+        ],
+        "generality": "kind",
+        "object_kind": "phenomenon",
+        "origin": "curated",
+        "scope": "as printed for acidic conditions; the review notes the equations need to be rewritten for alkaline conditions"
+      }
+    },
+    {
+      "id": "scale:commons/10.1016-j.cej.2021.130501/reaction/oer",
+      "label": "Reaction",
+      "props": {
+        "name": "OER",
+        "balance_status": "balanced",
+        "direction": "forward",
+        "equation": "2H2O→O2 + 4e−+ 4H+",
+        "evidence": [
+          {
+            "kind": "text",
+            "locator": "p. 2, Eq. (1)",
+            "quote": "OER : 2H2O→O2 + 4e−+ 4H+",
+            "source": "scale:commons/source/10.1016-j.cej.2021.130501"
+          }
+        ],
+        "generality": "kind",
+        "object_kind": "phenomenon",
+        "origin": "curated",
+        "scope": "as printed for acidic conditions; the review notes the equations need to be rewritten for alkaline conditions"
+      }
+    },
+    {
+      "id": "scale:commons/10.1016-j.cej.2021.130501/species/c2h4",
+      "label": "ChemicalSpecies",
+      "props": {
+        "name": "ethene",
+        "charge": 0,
+        "elemental_composition": {
+          "C": 2,
+          "H": 4
+        },
+        "evidence": [
+          {
+            "kind": "text",
+            "locator": "p. 4, section 3.1",
+            "quote": "Cu-based cata­ lysts for a large class of hydrocarbons, including e.g. methanol or ethene, are used",
+            "source": "scale:commons/source/10.1016-j.cej.2021.130501"
+          }
+        ],
+        "formula": "C2H4",
+        "origin": "curated",
+        "species_kind": "molecule"
+      }
+    },
+    {
+      "id": "scale:commons/10.1016-j.cej.2021.130501/species/ch3oh",
+      "label": "ChemicalSpecies",
+      "props": {
+        "name": "methanol",
+        "charge": 0,
+        "elemental_composition": {
+          "C": 1,
+          "H": 4,
+          "O": 1
+        },
+        "evidence": [
+          {
+            "kind": "text",
+            "locator": "p. 4, section 3.1",
+            "quote": "Cu-based cata­ lysts for a large class of hydrocarbons, including e.g. methanol or ethene, are used",
+            "source": "scale:commons/source/10.1016-j.cej.2021.130501"
+          }
+        ],
+        "formula": "CH3OH",
+        "origin": "curated",
+        "species_kind": "molecule"
+      }
+    },
+    {
+      "id": "scale:commons/10.1016-j.cej.2021.130501/species/co",
+      "label": "ChemicalSpecies",
+      "props": {
+        "name": "CO",
+        "charge": 0,
+        "elemental_composition": {
+          "C": 1,
+          "O": 1
+        },
+        "evidence": [
+          {
+            "kind": "text",
+            "locator": "p. 2, Eq. (3)",
+            "quote": "CO2RR : CO2 + 2H+ + 2e−→CO + H2O",
+            "source": "scale:commons/source/10.1016-j.cej.2021.130501"
+          }
+        ],
+        "formula": "CO",
+        "origin": "curated",
+        "species_kind": "molecule"
+      }
+    },
+    {
+      "id": "scale:commons/10.1016-j.cej.2021.130501/species/co2",
+      "label": "ChemicalSpecies",
+      "props": {
+        "name": "CO2",
+        "charge": 0,
+        "elemental_composition": {
+          "C": 1,
+          "O": 2
+        },
+        "evidence": [
+          {
+            "kind": "text",
+            "locator": "p. 2, Eq. (3)",
+            "quote": "CO2RR : CO2 + 2H+ + 2e−→CO + H2O",
+            "source": "scale:commons/source/10.1016-j.cej.2021.130501"
+          }
+        ],
+        "formula": "CO2",
+        "origin": "curated",
+        "species_kind": "molecule"
+      }
+    },
+    {
+      "id": "scale:commons/10.1016-j.cej.2021.130501/species/co3",
+      "label": "ChemicalSpecies",
+      "props": {
+        "name": "carbonate ion",
+        "charge": -2,
+        "elemental_composition": {
+          "C": 1,
+          "O": 3
+        },
+        "evidence": [
+          {
+            "kind": "text",
+            "locator": "p. 2, section 2",
+            "quote": "Further non-faradaic chemical reactions may occur in electrolytes, e. g. the reaction of CO2 to bicarbonate and carbonate ions",
+            "source": "scale:commons/source/10.1016-j.cej.2021.130501"
+          }
+        ],
+        "formula": "CO3^2-",
+        "origin": "curated",
+        "species_kind": "ion"
+      }
+    },
+    {
+      "id": "scale:commons/10.1016-j.cej.2021.130501/species/h2",
+      "label": "ChemicalSpecies",
+      "props": {
+        "name": "H2",
+        "charge": 0,
+        "elemental_composition": {
+          "H": 2
+        },
+        "evidence": [
+          {
+            "kind": "text",
+            "locator": "p. 2, Eq. (2)",
+            "quote": "HER : 2H+ + 2e−→H2",
+            "source": "scale:commons/source/10.1016-j.cej.2021.130501"
+          }
+        ],
+        "formula": "H2",
+        "origin": "curated",
+        "species_kind": "molecule"
+      }
+    },
+    {
+      "id": "scale:commons/10.1016-j.cej.2021.130501/species/h2o",
+      "label": "ChemicalSpecies",
+      "props": {
+        "name": "H2O",
+        "charge": 0,
+        "elemental_composition": {
+          "H": 2,
+          "O": 1
+        },
+        "evidence": [
+          {
+            "kind": "text",
+            "locator": "p. 2, Eq. (1)",
+            "quote": "OER : 2H2O→O2 + 4e−+ 4H+",
+            "source": "scale:commons/source/10.1016-j.cej.2021.130501"
+          }
+        ],
+        "formula": "H2O",
+        "origin": "curated",
+        "species_kind": "molecule"
+      }
+    },
+    {
+      "id": "scale:commons/10.1016-j.cej.2021.130501/species/hco3",
+      "label": "ChemicalSpecies",
+      "props": {
+        "name": "bicarbonate ion",
+        "charge": -1,
+        "elemental_composition": {
+          "C": 1,
+          "H": 1,
+          "O": 3
+        },
+        "evidence": [
+          {
+            "kind": "text",
+            "locator": "p. 2, section 2",
+            "quote": "Further non-faradaic chemical reactions may occur in electrolytes, e. g. the reaction of CO2 to bicarbonate and carbonate ions",
+            "source": "scale:commons/source/10.1016-j.cej.2021.130501"
+          }
+        ],
+        "formula": "HCO3-",
+        "origin": "curated",
+        "species_kind": "ion"
+      }
+    },
+    {
+      "id": "scale:commons/10.1016-j.cej.2021.130501/species/hcoo",
+      "label": "ChemicalSpecies",
+      "props": {
+        "name": "formate",
+        "charge": -1,
+        "elemental_composition": {
+          "C": 1,
+          "H": 1,
+          "O": 2
+        },
+        "evidence": [
+          {
+            "kind": "text",
+            "locator": "p. 4, section 3.1",
+            "quote": "For formate production, a relatively broad range of materials, such as Sn-, In-, Pb-, Ti-, Hg-, Cd- and Bi-based catalysts, can be used",
+            "source": "scale:commons/source/10.1016-j.cej.2021.130501"
+          }
+        ],
+        "formula": "HCOO-",
+        "origin": "curated",
+        "species_kind": "ion"
+      }
+    },
+    {
+      "id": "scale:commons/10.1016-j.cej.2021.130501/species/hplus",
+      "label": "ChemicalSpecies",
+      "props": {
+        "name": "H+",
+        "charge": 1,
+        "elemental_composition": {
+          "H": 1
+        },
+        "evidence": [
+          {
+            "kind": "text",
+            "locator": "p. 2, Eq. (2)",
+            "quote": "HER : 2H+ + 2e−→H2",
+            "source": "scale:commons/source/10.1016-j.cej.2021.130501"
+          }
+        ],
+        "formula": "H+",
+        "origin": "curated",
+        "species_kind": "ion"
+      }
+    },
+    {
+      "id": "scale:commons/10.1016-j.cej.2021.130501/species/o2",
+      "label": "ChemicalSpecies",
+      "props": {
+        "name": "O2",
+        "charge": 0,
+        "elemental_composition": {
+          "O": 2
+        },
+        "evidence": [
+          {
+            "kind": "text",
+            "locator": "p. 2, Eq. (1)",
+            "quote": "OER : 2H2O→O2 + 4e−+ 4H+",
+            "source": "scale:commons/source/10.1016-j.cej.2021.130501"
+          }
+        ],
+        "formula": "O2",
+        "origin": "curated",
+        "species_kind": "molecule"
+      }
+    },
+    {
+      "id": "scale:commons/source/10.1016-j.cej.2021.130501",
+      "label": "Source",
+      "props": {
+        "name": "Understanding the activity transport nexus in water and CO2 electrolysis: State of the art, challenges and perspectives",
+        "kind": "article",
+        "doi": "10.1016/j.cej.2021.130501",
+        "licence": "https://www.elsevier.com/tdm/userlicense/1.0/; https://www.elsevier.com/legal/tdmrep-license; http://creativecommons.org/licenses/by/4.0/",
+        "origin": "curated",
+        "retrieved_from": "1046602.pdf",
+        "retrieved_on": "2026-11-04",
+        "text_sha256": "013c822c7c47cd2444aafbe58c62a4724ab7a839ee92839aa1655f3e72b4b940",
+        "text_version": "version_of_record",
+        "title": "Understanding the activity transport nexus in water and CO2 electrolysis: State of the art, challenges and perspectives",
+        "url": "https://doi.org/10.1016/j.cej.2021.130501",
+        "venue": "Chemical Engineering Journal",
+        "year": 2021
+      }
+    }
+  ],
+  "links": [
+    {
+      "id": "scale:commons/10.1016-j.cej.2021.130501/catalyst/ag-based/reported-in/10.1016-j.cej.2021.130501",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 4, section 3.1"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.1016-j.cej.2021.130501/catalyst/ag-based",
+      "target": "scale:commons/source/10.1016-j.cej.2021.130501"
+    },
+    {
+      "id": "scale:commons/10.1016-j.cej.2021.130501/catalyst/au-based/reported-in/10.1016-j.cej.2021.130501",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 4, section 3.1"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.1016-j.cej.2021.130501/catalyst/au-based",
+      "target": "scale:commons/source/10.1016-j.cej.2021.130501"
+    },
+    {
+      "id": "scale:commons/10.1016-j.cej.2021.130501/catalyst/bi-based/reported-in/10.1016-j.cej.2021.130501",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 4, section 3.1"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.1016-j.cej.2021.130501/catalyst/bi-based",
+      "target": "scale:commons/source/10.1016-j.cej.2021.130501"
+    },
+    {
+      "id": "scale:commons/10.1016-j.cej.2021.130501/catalyst/cd-based/reported-in/10.1016-j.cej.2021.130501",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 4, section 3.1"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.1016-j.cej.2021.130501/catalyst/cd-based",
+      "target": "scale:commons/source/10.1016-j.cej.2021.130501"
+    },
+    {
+      "id": "scale:commons/10.1016-j.cej.2021.130501/catalyst/cu-based/reported-in/10.1016-j.cej.2021.130501",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 4, section 3.1"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.1016-j.cej.2021.130501/catalyst/cu-based",
+      "target": "scale:commons/source/10.1016-j.cej.2021.130501"
+    },
+    {
+      "id": "scale:commons/10.1016-j.cej.2021.130501/catalyst/hg-based/reported-in/10.1016-j.cej.2021.130501",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 4, section 3.1"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.1016-j.cej.2021.130501/catalyst/hg-based",
+      "target": "scale:commons/source/10.1016-j.cej.2021.130501"
+    },
+    {
+      "id": "scale:commons/10.1016-j.cej.2021.130501/catalyst/in-based/reported-in/10.1016-j.cej.2021.130501",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 4, section 3.1"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.1016-j.cej.2021.130501/catalyst/in-based",
+      "target": "scale:commons/source/10.1016-j.cej.2021.130501"
+    },
+    {
+      "id": "scale:commons/10.1016-j.cej.2021.130501/catalyst/ir-based/reported-in/10.1016-j.cej.2021.130501",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 4, section 3.1"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.1016-j.cej.2021.130501/catalyst/ir-based",
+      "target": "scale:commons/source/10.1016-j.cej.2021.130501"
+    },
+    {
+      "id": "scale:commons/10.1016-j.cej.2021.130501/catalyst/ni-based/reported-in/10.1016-j.cej.2021.130501",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 4, section 3.1"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.1016-j.cej.2021.130501/catalyst/ni-based",
+      "target": "scale:commons/source/10.1016-j.cej.2021.130501"
+    },
+    {
+      "id": "scale:commons/10.1016-j.cej.2021.130501/catalyst/pb-based/reported-in/10.1016-j.cej.2021.130501",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 4, section 3.1"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.1016-j.cej.2021.130501/catalyst/pb-based",
+      "target": "scale:commons/source/10.1016-j.cej.2021.130501"
+    },
+    {
+      "id": "scale:commons/10.1016-j.cej.2021.130501/catalyst/pt-based/reported-in/10.1016-j.cej.2021.130501",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 4, section 3.1"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.1016-j.cej.2021.130501/catalyst/pt-based",
+      "target": "scale:commons/source/10.1016-j.cej.2021.130501"
+    },
+    {
+      "id": "scale:commons/10.1016-j.cej.2021.130501/catalyst/sn-based/reported-in/10.1016-j.cej.2021.130501",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 4, section 3.1"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.1016-j.cej.2021.130501/catalyst/sn-based",
+      "target": "scale:commons/source/10.1016-j.cej.2021.130501"
+    },
+    {
+      "id": "scale:commons/10.1016-j.cej.2021.130501/catalyst/ti-based/reported-in/10.1016-j.cej.2021.130501",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 4, section 3.1"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.1016-j.cej.2021.130501/catalyst/ti-based",
+      "target": "scale:commons/source/10.1016-j.cej.2021.130501"
+    },
+    {
+      "id": "scale:commons/10.1016-j.cej.2021.130501/claim/c1/reported-in/10.1016-j.cej.2021.130501",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 2, section 1"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.1016-j.cej.2021.130501/claim/c1",
+      "target": "scale:commons/source/10.1016-j.cej.2021.130501"
+    },
+    {
+      "id": "scale:commons/10.1016-j.cej.2021.130501/claim/c10/reported-in/10.1016-j.cej.2021.130501",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 11, section 6"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.1016-j.cej.2021.130501/claim/c10",
+      "target": "scale:commons/source/10.1016-j.cej.2021.130501"
+    },
+    {
+      "id": "scale:commons/10.1016-j.cej.2021.130501/claim/c11/reported-in/10.1016-j.cej.2021.130501",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 6, section 4.2"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.1016-j.cej.2021.130501/claim/c11",
+      "target": "scale:commons/source/10.1016-j.cej.2021.130501"
+    },
+    {
+      "id": "scale:commons/10.1016-j.cej.2021.130501/claim/c12/reported-in/10.1016-j.cej.2021.130501",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 6, section 4.2"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.1016-j.cej.2021.130501/claim/c12",
+      "target": "scale:commons/source/10.1016-j.cej.2021.130501"
+    },
+    {
+      "id": "scale:commons/10.1016-j.cej.2021.130501/claim/c2/reported-in/10.1016-j.cej.2021.130501",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 4, section 3.2"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.1016-j.cej.2021.130501/claim/c2",
+      "target": "scale:commons/source/10.1016-j.cej.2021.130501"
+    },
+    {
+      "id": "scale:commons/10.1016-j.cej.2021.130501/claim/c3/reported-in/10.1016-j.cej.2021.130501",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 4, section 3.3"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.1016-j.cej.2021.130501/claim/c3",
+      "target": "scale:commons/source/10.1016-j.cej.2021.130501"
+    },
+    {
+      "id": "scale:commons/10.1016-j.cej.2021.130501/claim/c4/reported-in/10.1016-j.cej.2021.130501",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 4, section 3.3"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.1016-j.cej.2021.130501/claim/c4",
+      "target": "scale:commons/source/10.1016-j.cej.2021.130501"
+    },
+    {
+      "id": "scale:commons/10.1016-j.cej.2021.130501/claim/c5/reported-in/10.1016-j.cej.2021.130501",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 6, section 4.2"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.1016-j.cej.2021.130501/claim/c5",
+      "target": "scale:commons/source/10.1016-j.cej.2021.130501"
+    },
+    {
+      "id": "scale:commons/10.1016-j.cej.2021.130501/claim/c6/reported-in/10.1016-j.cej.2021.130501",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 6, section 4.2"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.1016-j.cej.2021.130501/claim/c6",
+      "target": "scale:commons/source/10.1016-j.cej.2021.130501"
+    },
+    {
+      "id": "scale:commons/10.1016-j.cej.2021.130501/claim/c7/reported-in/10.1016-j.cej.2021.130501",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 6, section 4.2"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.1016-j.cej.2021.130501/claim/c7",
+      "target": "scale:commons/source/10.1016-j.cej.2021.130501"
+    },
+    {
+      "id": "scale:commons/10.1016-j.cej.2021.130501/claim/c8/reported-in/10.1016-j.cej.2021.130501",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 9, section 5.2 and Fig. 7"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.1016-j.cej.2021.130501/claim/c8",
+      "target": "scale:commons/source/10.1016-j.cej.2021.130501"
+    },
+    {
+      "id": "scale:commons/10.1016-j.cej.2021.130501/claim/c9/reported-in/10.1016-j.cej.2021.130501",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 11, section 6"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.1016-j.cej.2021.130501/claim/c9",
+      "target": "scale:commons/source/10.1016-j.cej.2021.130501"
+    },
+    {
+      "id": "scale:commons/10.1016-j.cej.2021.130501/hypothesis/h1/reported-in/10.1016-j.cej.2021.130501",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 4, section 3.4"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.1016-j.cej.2021.130501/hypothesis/h1",
+      "target": "scale:commons/source/10.1016-j.cej.2021.130501"
+    },
+    {
+      "id": "scale:commons/10.1016-j.cej.2021.130501/link/l1",
+      "type": "AUTHORED_BY",
+      "props": {
+        "evidence": [
+          {
+            "kind": "text",
+            "locator": "p. 1, author list",
+            "quote": "Bastian J.M. Etzold a,*, Ulrike Krewer b, Simon Thiele c,d, Andreas Dreizler e, Elias Klemm f, Thomas Turek g,h",
+            "source": "scale:commons/source/10.1016-j.cej.2021.130501"
+          }
+        ],
+        "origin": "curated",
+        "position": 1,
+        "role": "author"
+      },
+      "source": "scale:commons/source/10.1016-j.cej.2021.130501",
+      "target": "scale:commons/10.1016-j.cej.2021.130501/person/etzold"
+    },
+    {
+      "id": "scale:commons/10.1016-j.cej.2021.130501/link/l10",
+      "type": "AUTHORED_BY",
+      "props": {
+        "evidence": [
+          {
+            "kind": "text",
+            "locator": "p. 1, author list",
+            "quote": "Bastian J.M. Etzold a,*, Ulrike Krewer b, Simon Thiele c,d, Andreas Dreizler e, Elias Klemm f, Thomas Turek g,h",
+            "source": "scale:commons/source/10.1016-j.cej.2021.130501"
+          }
+        ],
+        "origin": "curated",
+        "position": 5,
+        "role": "author"
+      },
+      "source": "scale:commons/source/10.1016-j.cej.2021.130501",
+      "target": "scale:commons/10.1016-j.cej.2021.130501/person/klemm"
+    },
+    {
+      "id": "scale:commons/10.1016-j.cej.2021.130501/link/l11",
+      "type": "MEMBER_OF",
+      "props": {
+        "evidence": [
+          {
+            "kind": "text",
+            "locator": "p. 1, affiliations",
+            "quote": "University of Stuttgart, Institute of Technical Chemistry, 70569 Stuttgart, Germany",
+            "source": "scale:commons/source/10.1016-j.cej.2021.130501"
+          }
+        ],
+        "origin": "curated",
+        "role": "affiliation"
+      },
+      "source": "scale:commons/10.1016-j.cej.2021.130501/person/klemm",
+      "target": "scale:commons/10.1016-j.cej.2021.130501/institution/stuttgart"
+    },
+    {
+      "id": "scale:commons/10.1016-j.cej.2021.130501/link/l12",
+      "type": "AUTHORED_BY",
+      "props": {
+        "evidence": [
+          {
+            "kind": "text",
+            "locator": "p. 1, author list",
+            "quote": "Bastian J.M. Etzold a,*, Ulrike Krewer b, Simon Thiele c,d, Andreas Dreizler e, Elias Klemm f, Thomas Turek g,h",
+            "source": "scale:commons/source/10.1016-j.cej.2021.130501"
+          }
+        ],
+        "origin": "curated",
+        "position": 6,
+        "role": "author"
+      },
+      "source": "scale:commons/source/10.1016-j.cej.2021.130501",
+      "target": "scale:commons/10.1016-j.cej.2021.130501/person/turek"
+    },
+    {
+      "id": "scale:commons/10.1016-j.cej.2021.130501/link/l13",
+      "type": "MEMBER_OF",
+      "props": {
+        "evidence": [
+          {
+            "kind": "text",
+            "locator": "p. 1, affiliations",
+            "quote": "Clausthal University of Technology, Institute of Chemical and Electrochemical Process Engineering, 38678 Clausthal-Zellerfeld, Germany",
+            "source": "scale:commons/source/10.1016-j.cej.2021.130501"
+          }
+        ],
+        "origin": "curated",
+        "role": "affiliation"
+      },
+      "source": "scale:commons/10.1016-j.cej.2021.130501/person/turek",
+      "target": "scale:commons/10.1016-j.cej.2021.130501/institution/clausthal"
+    },
+    {
+      "id": "scale:commons/10.1016-j.cej.2021.130501/link/l14",
+      "type": "FUNDED_BY",
+      "props": {
+        "award_id": "681719",
+        "evidence": [
+          {
+            "kind": "text",
+            "locator": "p. 12, Acknowledgements",
+            "quote": "Bastian Etzold acknowledges funding from the European Research Council (ERC) under the European Union’s Horizon 2020 research and innovation program (grant agreement No. 681719",
+            "source": "scale:commons/source/10.1016-j.cej.2021.130501"
+          }
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/source/10.1016-j.cej.2021.130501",
+      "target": "scale:commons/10.1016-j.cej.2021.130501/institution/erc"
+    },
+    {
+      "id": "scale:commons/10.1016-j.cej.2021.130501/link/l15",
+      "type": "FUNDED_BY",
+      "props": {
+        "award_id": "KR3850/8-1 (SPP 2080)",
+        "evidence": [
+          {
+            "kind": "text",
+            "locator": "p. 12, Acknowledgements",
+            "quote": "Deutsche Forschungsgemeinschaft from the priority program (SPP 2080: KR3850/8-1)",
+            "source": "scale:commons/source/10.1016-j.cej.2021.130501"
+          },
+          {
+            "kind": "text",
+            "locator": "p. 12, Acknowledgements",
+            "quote": "Deutsche Forschungsgemeinschaft from the research unit FOR 2397",
+            "source": "scale:commons/source/10.1016-j.cej.2021.130501"
+          },
+          {
+            "kind": "text",
+            "locator": "p. 12, Acknowledgements",
+            "quote": "through the Gottfried Wilhelm Leibniz program",
+            "source": "scale:commons/source/10.1016-j.cej.2021.130501"
+          }
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/source/10.1016-j.cej.2021.130501",
+      "target": "scale:commons/10.1016-j.cej.2021.130501/institution/dfg"
+    },
+    {
+      "id": "scale:commons/10.1016-j.cej.2021.130501/link/l18",
+      "type": "FUNDED_BY",
+      "props": {
+        "award_id": "03ET1379A",
+        "evidence": [
+          {
+            "kind": "text",
+            "locator": "p. 12, Acknowledgements",
+            "quote": "BMWi (Bundesministerium für Wirtschaft und Energie – Federal Min­ istry for Economic Affairs and Energy) for financial support 03ET1379A and 03ET1642D",
+            "source": "scale:commons/source/10.1016-j.cej.2021.130501"
+          }
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/source/10.1016-j.cej.2021.130501",
+      "target": "scale:commons/10.1016-j.cej.2021.130501/institution/bmwi"
+    },
+    {
+      "id": "scale:commons/10.1016-j.cej.2021.130501/link/l2",
+      "type": "MEMBER_OF",
+      "props": {
+        "evidence": [
+          {
+            "kind": "text",
+            "locator": "p. 1, affiliations",
+            "quote": "Department of Chemistry, Technical University of Darmstadt, Ernst-Berl-Institut für Technische und Makromolekulare Chemie, 64287 Darmstadt, Germany",
+            "source": "scale:commons/source/10.1016-j.cej.2021.130501"
+          }
+        ],
+        "origin": "curated",
+        "role": "affiliation"
+      },
+      "source": "scale:commons/10.1016-j.cej.2021.130501/person/etzold",
+      "target": "scale:commons/10.1016-j.cej.2021.130501/institution/darmstadt"
+    },
+    {
+      "id": "scale:commons/10.1016-j.cej.2021.130501/link/l20",
+      "type": "FUNDED_BY",
+      "props": {
+        "award_id": "033RC023E (CO2-WIN program)",
+        "evidence": [
+          {
+            "kind": "text",
+            "locator": "p. 12, Acknowledgements",
+            "quote": "the German BMBF (Federal Administration of Educa­ tion and Research for financial support 033RC023E",
+            "source": "scale:commons/source/10.1016-j.cej.2021.130501"
+          }
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/source/10.1016-j.cej.2021.130501",
+      "target": "scale:commons/10.1016-j.cej.2021.130501/institution/bmbf"
+    },
+    {
+      "id": "scale:commons/10.1016-j.cej.2021.130501/link/l21",
+      "type": "FUNDED_BY",
+      "props": {
+        "award_id": "763911 (eForFuel)",
+        "evidence": [
+          {
+            "kind": "text",
+            "locator": "p. 12, Acknowledgements",
+            "quote": "the European Union for the funding from the Horizon 2020 research and innovation programme under grant agreement No 763911",
+            "source": "scale:commons/source/10.1016-j.cej.2021.130501"
+          }
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/source/10.1016-j.cej.2021.130501",
+      "target": "scale:commons/10.1016-j.cej.2021.130501/institution/eu"
+    },
+    {
+      "id": "scale:commons/10.1016-j.cej.2021.130501/link/l22",
+      "type": "FUNDED_BY",
+      "props": {
+        "award_id": "Clean Circles",
+        "evidence": [
+          {
+            "kind": "text",
+            "locator": "p. 12, Acknowledgements",
+            "quote": "by the Hessian Ministry of Higher Education, Research, Science and the Arts (HMWK) within the project Clean Circles",
+            "source": "scale:commons/source/10.1016-j.cej.2021.130501"
+          }
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/source/10.1016-j.cej.2021.130501",
+      "target": "scale:commons/10.1016-j.cej.2021.130501/institution/hmwk"
+    },
+    {
+      "id": "scale:commons/10.1016-j.cej.2021.130501/link/l23",
+      "type": "HAS_PARTICIPANT",
+      "props": {
+        "coefficient": 2,
+        "evidence": [
+          {
+            "kind": "text",
+            "locator": "p. 2, Eq. (1)",
+            "quote": "OER : 2H2O→O2 + 4e−+ 4H+",
+            "source": "scale:commons/source/10.1016-j.cej.2021.130501"
+          }
+        ],
+        "origin": "curated",
+        "role": "reactant"
+      },
+      "source": "scale:commons/10.1016-j.cej.2021.130501/reaction/oer",
+      "target": "scale:commons/10.1016-j.cej.2021.130501/species/h2o"
+    },
+    {
+      "id": "scale:commons/10.1016-j.cej.2021.130501/link/l24",
+      "type": "HAS_PARTICIPANT",
+      "props": {
+        "coefficient": 1,
+        "evidence": [
+          {
+            "kind": "text",
+            "locator": "p. 2, Eq. (1)",
+            "quote": "OER : 2H2O→O2 + 4e−+ 4H+",
+            "source": "scale:commons/source/10.1016-j.cej.2021.130501"
+          }
+        ],
+        "origin": "curated",
+        "role": "product"
+      },
+      "source": "scale:commons/10.1016-j.cej.2021.130501/reaction/oer",
+      "target": "scale:commons/10.1016-j.cej.2021.130501/species/o2"
+    },
+    {
+      "id": "scale:commons/10.1016-j.cej.2021.130501/link/l25",
+      "type": "HAS_PARTICIPANT",
+      "props": {
+        "coefficient": 4,
+        "evidence": [
+          {
+            "kind": "text",
+            "locator": "p. 2, Eq. (1)",
+            "quote": "OER : 2H2O→O2 + 4e−+ 4H+",
+            "source": "scale:commons/source/10.1016-j.cej.2021.130501"
+          }
+        ],
+        "origin": "curated",
+        "role": "product"
+      },
+      "source": "scale:commons/10.1016-j.cej.2021.130501/reaction/oer",
+      "target": "scale:commons/10.1016-j.cej.2021.130501/species/hplus"
+    },
+    {
+      "id": "scale:commons/10.1016-j.cej.2021.130501/link/l26",
+      "type": "HAS_PARTICIPANT",
+      "props": {
+        "coefficient": 2,
+        "evidence": [
+          {
+            "kind": "text",
+            "locator": "p. 2, Eq. (2)",
+            "quote": "HER : 2H+ + 2e−→H2",
+            "source": "scale:commons/source/10.1016-j.cej.2021.130501"
+          }
+        ],
+        "origin": "curated",
+        "role": "reactant"
+      },
+      "source": "scale:commons/10.1016-j.cej.2021.130501/reaction/her",
+      "target": "scale:commons/10.1016-j.cej.2021.130501/species/hplus"
+    },
+    {
+      "id": "scale:commons/10.1016-j.cej.2021.130501/link/l27",
+      "type": "HAS_PARTICIPANT",
+      "props": {
+        "coefficient": 1,
+        "evidence": [
+          {
+            "kind": "text",
+            "locator": "p. 2, Eq. (2)",
+            "quote": "HER : 2H+ + 2e−→H2",
+            "source": "scale:commons/source/10.1016-j.cej.2021.130501"
+          }
+        ],
+        "origin": "curated",
+        "role": "product"
+      },
+      "source": "scale:commons/10.1016-j.cej.2021.130501/reaction/her",
+      "target": "scale:commons/10.1016-j.cej.2021.130501/species/h2"
+    },
+    {
+      "id": "scale:commons/10.1016-j.cej.2021.130501/link/l28",
+      "type": "HAS_PARTICIPANT",
+      "props": {
+        "coefficient": 1,
+        "evidence": [
+          {
+            "kind": "text",
+            "locator": "p. 2, Eq. (3)",
+            "quote": "CO2RR : CO2 + 2H+ + 2e−→CO + H2O",
+            "source": "scale:commons/source/10.1016-j.cej.2021.130501"
+          }
+        ],
+        "origin": "curated",
+        "role": "reactant"
+      },
+      "source": "scale:commons/10.1016-j.cej.2021.130501/reaction/co2rr",
+      "target": "scale:commons/10.1016-j.cej.2021.130501/species/co2"
+    },
+    {
+      "id": "scale:commons/10.1016-j.cej.2021.130501/link/l29",
+      "type": "HAS_PARTICIPANT",
+      "props": {
+        "coefficient": 2,
+        "evidence": [
+          {
+            "kind": "text",
+            "locator": "p. 2, Eq. (3)",
+            "quote": "CO2RR : CO2 + 2H+ + 2e−→CO + H2O",
+            "source": "scale:commons/source/10.1016-j.cej.2021.130501"
+          }
+        ],
+        "origin": "curated",
+        "role": "reactant"
+      },
+      "source": "scale:commons/10.1016-j.cej.2021.130501/reaction/co2rr",
+      "target": "scale:commons/10.1016-j.cej.2021.130501/species/hplus"
+    },
+    {
+      "id": "scale:commons/10.1016-j.cej.2021.130501/link/l3",
+      "type": "AUTHORED_BY",
+      "props": {
+        "evidence": [
+          {
+            "kind": "text",
+            "locator": "p. 1, author list",
+            "quote": "Bastian J.M. Etzold a,*, Ulrike Krewer b, Simon Thiele c,d, Andreas Dreizler e, Elias Klemm f, Thomas Turek g,h",
+            "source": "scale:commons/source/10.1016-j.cej.2021.130501"
+          }
+        ],
+        "origin": "curated",
+        "position": 2,
+        "role": "author"
+      },
+      "source": "scale:commons/source/10.1016-j.cej.2021.130501",
+      "target": "scale:commons/10.1016-j.cej.2021.130501/person/krewer"
+    },
+    {
+      "id": "scale:commons/10.1016-j.cej.2021.130501/link/l30",
+      "type": "HAS_PARTICIPANT",
+      "props": {
+        "coefficient": 1,
+        "evidence": [
+          {
+            "kind": "text",
+            "locator": "p. 2, Eq. (3)",
+            "quote": "CO2RR : CO2 + 2H+ + 2e−→CO + H2O",
+            "source": "scale:commons/source/10.1016-j.cej.2021.130501"
+          }
+        ],
+        "origin": "curated",
+        "role": "product"
+      },
+      "source": "scale:commons/10.1016-j.cej.2021.130501/reaction/co2rr",
+      "target": "scale:commons/10.1016-j.cej.2021.130501/species/co"
+    },
+    {
+      "id": "scale:commons/10.1016-j.cej.2021.130501/link/l31",
+      "type": "HAS_PARTICIPANT",
+      "props": {
+        "coefficient": 1,
+        "evidence": [
+          {
+            "kind": "text",
+            "locator": "p. 2, Eq. (3)",
+            "quote": "CO2RR : CO2 + 2H+ + 2e−→CO + H2O",
+            "source": "scale:commons/source/10.1016-j.cej.2021.130501"
+          }
+        ],
+        "origin": "curated",
+        "role": "product"
+      },
+      "source": "scale:commons/10.1016-j.cej.2021.130501/reaction/co2rr",
+      "target": "scale:commons/10.1016-j.cej.2021.130501/species/h2o"
+    },
+    {
+      "id": "scale:commons/10.1016-j.cej.2021.130501/link/l32",
+      "type": "HAS_PARTICIPANT",
+      "props": {
+        "evidence": [
+          {
+            "kind": "text",
+            "locator": "p. 2, section 2",
+            "quote": "Further non-faradaic chemical reactions may occur in electrolytes, e. g. the reaction of CO2 to bicarbonate and carbonate ions",
+            "source": "scale:commons/source/10.1016-j.cej.2021.130501"
+          }
+        ],
+        "origin": "curated",
+        "role": "reactant"
+      },
+      "source": "scale:commons/10.1016-j.cej.2021.130501/reaction/co2-to-bicarbonate",
+      "target": "scale:commons/10.1016-j.cej.2021.130501/species/co2"
+    },
+    {
+      "id": "scale:commons/10.1016-j.cej.2021.130501/link/l33",
+      "type": "HAS_PARTICIPANT",
+      "props": {
+        "evidence": [
+          {
+            "kind": "text",
+            "locator": "p. 2, section 2",
+            "quote": "Further non-faradaic chemical reactions may occur in electrolytes, e. g. the reaction of CO2 to bicarbonate and carbonate ions",
+            "source": "scale:commons/source/10.1016-j.cej.2021.130501"
+          }
+        ],
+        "origin": "curated",
+        "role": "product"
+      },
+      "source": "scale:commons/10.1016-j.cej.2021.130501/reaction/co2-to-bicarbonate",
+      "target": "scale:commons/10.1016-j.cej.2021.130501/species/hco3"
+    },
+    {
+      "id": "scale:commons/10.1016-j.cej.2021.130501/link/l34",
+      "type": "HAS_PARTICIPANT",
+      "props": {
+        "evidence": [
+          {
+            "kind": "text",
+            "locator": "p. 2, section 2",
+            "quote": "Further non-faradaic chemical reactions may occur in electrolytes, e. g. the reaction of CO2 to bicarbonate and carbonate ions",
+            "source": "scale:commons/source/10.1016-j.cej.2021.130501"
+          }
+        ],
+        "origin": "curated",
+        "role": "product"
+      },
+      "source": "scale:commons/10.1016-j.cej.2021.130501/reaction/co2-to-carbonate",
+      "target": "scale:commons/10.1016-j.cej.2021.130501/species/co3"
+    },
+    {
+      "id": "scale:commons/10.1016-j.cej.2021.130501/link/l35",
+      "type": "CATALYZES",
+      "props": {
+        "evidence": [
+          {
+            "kind": "text",
+            "locator": "p. 4, section 3.1",
+            "quote": "Ir-based anode catalysts for the oxygen evolution reaction",
+            "source": "scale:commons/source/10.1016-j.cej.2021.130501"
+          }
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.1016-j.cej.2021.130501/catalyst/ir-based",
+      "target": "scale:commons/10.1016-j.cej.2021.130501/reaction/oer"
+    },
+    {
+      "id": "scale:commons/10.1016-j.cej.2021.130501/link/l36",
+      "type": "CATALYZES",
+      "props": {
+        "evidence": [
+          {
+            "kind": "text",
+            "locator": "p. 4, section 3.1",
+            "quote": "Pt-based cath­ ode catalysts for the hydrogen evolution reaction",
+            "source": "scale:commons/source/10.1016-j.cej.2021.130501"
+          }
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.1016-j.cej.2021.130501/catalyst/pt-based",
+      "target": "scale:commons/10.1016-j.cej.2021.130501/reaction/her"
+    },
+    {
+      "id": "scale:commons/10.1016-j.cej.2021.130501/link/l37",
+      "type": "CATALYZES",
+      "props": {
+        "evidence": [
+          {
+            "kind": "text",
+            "locator": "p. 4, section 3.1",
+            "quote": "Au or Ag-based catalysts for syngas (CO, H2) production",
+            "source": "scale:commons/source/10.1016-j.cej.2021.130501"
+          }
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.1016-j.cej.2021.130501/catalyst/au-based",
+      "target": "scale:commons/10.1016-j.cej.2021.130501/reaction/co2rr-syngas"
+    },
+    {
+      "id": "scale:commons/10.1016-j.cej.2021.130501/link/l38",
+      "type": "CATALYZES",
+      "props": {
+        "evidence": [
+          {
+            "kind": "text",
+            "locator": "p. 4, section 3.1",
+            "quote": "Au or Ag-based catalysts for syngas (CO, H2) production",
+            "source": "scale:commons/source/10.1016-j.cej.2021.130501"
+          }
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.1016-j.cej.2021.130501/catalyst/ag-based",
+      "target": "scale:commons/10.1016-j.cej.2021.130501/reaction/co2rr-syngas"
+    },
+    {
+      "id": "scale:commons/10.1016-j.cej.2021.130501/link/l39",
+      "type": "CATALYZES",
+      "props": {
+        "evidence": [
+          {
+            "kind": "text",
+            "locator": "p. 4, section 3.1",
+            "quote": "Cu-based cata­ lysts for a large class of hydrocarbons, including e.g. methanol or ethene, are used",
+            "source": "scale:commons/source/10.1016-j.cej.2021.130501"
+          }
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.1016-j.cej.2021.130501/catalyst/cu-based",
+      "target": "scale:commons/10.1016-j.cej.2021.130501/reaction/co2rr-hydrocarbons"
+    },
+    {
+      "id": "scale:commons/10.1016-j.cej.2021.130501/link/l4",
+      "type": "MEMBER_OF",
+      "props": {
+        "evidence": [
+          {
+            "kind": "text",
+            "locator": "p. 1, affiliations",
+            "quote": "Institute for Applied Materials - Electrochemical Technologies, Karlsruhe Institute of Technology, 76131 Karlsruhe, Germany",
+            "source": "scale:commons/source/10.1016-j.cej.2021.130501"
+          }
+        ],
+        "origin": "curated",
+        "role": "affiliation"
+      },
+      "source": "scale:commons/10.1016-j.cej.2021.130501/person/krewer",
+      "target": "scale:commons/10.1016-j.cej.2021.130501/institution/kit"
+    },
+    {
+      "id": "scale:commons/10.1016-j.cej.2021.130501/link/l40",
+      "type": "CATALYZES",
+      "props": {
+        "evidence": [
+          {
+            "kind": "text",
+            "locator": "p. 4, section 3.1",
+            "quote": "For formate production, a relatively broad range of materials, such as Sn-, In-, Pb-, Ti-, Hg-, Cd- and Bi-based catalysts, can be used",
+            "source": "scale:commons/source/10.1016-j.cej.2021.130501"
+          }
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.1016-j.cej.2021.130501/catalyst/sn-based",
+      "target": "scale:commons/10.1016-j.cej.2021.130501/reaction/co2rr-formate"
+    },
+    {
+      "id": "scale:commons/10.1016-j.cej.2021.130501/link/l41",
+      "type": "CATALYZES",
+      "props": {
+        "evidence": [
+          {
+            "kind": "text",
+            "locator": "p. 4, section 3.1",
+            "quote": "For formate production, a relatively broad range of materials, such as Sn-, In-, Pb-, Ti-, Hg-, Cd- and Bi-based catalysts, can be used",
+            "source": "scale:commons/source/10.1016-j.cej.2021.130501"
+          }
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.1016-j.cej.2021.130501/catalyst/in-based",
+      "target": "scale:commons/10.1016-j.cej.2021.130501/reaction/co2rr-formate"
+    },
+    {
+      "id": "scale:commons/10.1016-j.cej.2021.130501/link/l42",
+      "type": "CATALYZES",
+      "props": {
+        "evidence": [
+          {
+            "kind": "text",
+            "locator": "p. 4, section 3.1",
+            "quote": "For formate production, a relatively broad range of materials, such as Sn-, In-, Pb-, Ti-, Hg-, Cd- and Bi-based catalysts, can be used",
+            "source": "scale:commons/source/10.1016-j.cej.2021.130501"
+          }
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.1016-j.cej.2021.130501/catalyst/pb-based",
+      "target": "scale:commons/10.1016-j.cej.2021.130501/reaction/co2rr-formate"
+    },
+    {
+      "id": "scale:commons/10.1016-j.cej.2021.130501/link/l43",
+      "type": "CATALYZES",
+      "props": {
+        "evidence": [
+          {
+            "kind": "text",
+            "locator": "p. 4, section 3.1",
+            "quote": "For formate production, a relatively broad range of materials, such as Sn-, In-, Pb-, Ti-, Hg-, Cd- and Bi-based catalysts, can be used",
+            "source": "scale:commons/source/10.1016-j.cej.2021.130501"
+          }
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.1016-j.cej.2021.130501/catalyst/ti-based",
+      "target": "scale:commons/10.1016-j.cej.2021.130501/reaction/co2rr-formate"
+    },
+    {
+      "id": "scale:commons/10.1016-j.cej.2021.130501/link/l44",
+      "type": "CATALYZES",
+      "props": {
+        "evidence": [
+          {
+            "kind": "text",
+            "locator": "p. 4, section 3.1",
+            "quote": "For formate production, a relatively broad range of materials, such as Sn-, In-, Pb-, Ti-, Hg-, Cd- and Bi-based catalysts, can be used",
+            "source": "scale:commons/source/10.1016-j.cej.2021.130501"
+          }
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.1016-j.cej.2021.130501/catalyst/hg-based",
+      "target": "scale:commons/10.1016-j.cej.2021.130501/reaction/co2rr-formate"
+    },
+    {
+      "id": "scale:commons/10.1016-j.cej.2021.130501/link/l45",
+      "type": "CATALYZES",
+      "props": {
+        "evidence": [
+          {
+            "kind": "text",
+            "locator": "p. 4, section 3.1",
+            "quote": "For formate production, a relatively broad range of materials, such as Sn-, In-, Pb-, Ti-, Hg-, Cd- and Bi-based catalysts, can be used",
+            "source": "scale:commons/source/10.1016-j.cej.2021.130501"
+          }
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.1016-j.cej.2021.130501/catalyst/cd-based",
+      "target": "scale:commons/10.1016-j.cej.2021.130501/reaction/co2rr-formate"
+    },
+    {
+      "id": "scale:commons/10.1016-j.cej.2021.130501/link/l46",
+      "type": "CATALYZES",
+      "props": {
+        "evidence": [
+          {
+            "kind": "text",
+            "locator": "p. 4, section 3.1",
+            "quote": "For formate production, a relatively broad range of materials, such as Sn-, In-, Pb-, Ti-, Hg-, Cd- and Bi-based catalysts, can be used",
+            "source": "scale:commons/source/10.1016-j.cej.2021.130501"
+          }
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.1016-j.cej.2021.130501/catalyst/bi-based",
+      "target": "scale:commons/10.1016-j.cej.2021.130501/reaction/co2rr-formate"
+    },
+    {
+      "id": "scale:commons/10.1016-j.cej.2021.130501/link/l47",
+      "type": "CATALYZES",
+      "props": {
+        "evidence": [
+          {
+            "kind": "text",
+            "locator": "p. 4, section 3.1",
+            "quote": "for alkaline water electrolysis with and without a membrane, Ni-based catalysts can be used at both electrodes",
+            "source": "scale:commons/source/10.1016-j.cej.2021.130501"
+          }
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.1016-j.cej.2021.130501/catalyst/ni-based",
+      "target": "scale:commons/10.1016-j.cej.2021.130501/reaction/her"
+    },
+    {
+      "id": "scale:commons/10.1016-j.cej.2021.130501/link/l48",
+      "type": "CATALYZES",
+      "props": {
+        "evidence": [
+          {
+            "kind": "text",
+            "locator": "p. 4, section 3.1",
+            "quote": "for alkaline water electrolysis with and without a membrane, Ni-based catalysts can be used at both electrodes",
+            "source": "scale:commons/source/10.1016-j.cej.2021.130501"
+          }
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.1016-j.cej.2021.130501/catalyst/ni-based",
+      "target": "scale:commons/10.1016-j.cej.2021.130501/reaction/oer"
+    },
+    {
+      "id": "scale:commons/10.1016-j.cej.2021.130501/link/l49",
+      "type": "ABOUT",
+      "props": {
+        "evidence": [
+          {
+            "kind": "text",
+            "locator": "p. 2, section 1",
+            "quote": "However, these half-cell setups suffer from low reactant mass transport, as reflected by unrealistic current densities and potential ranges, which are significantly different from those of full",
+            "source": "scale:commons/source/10.1016-j.cej.2021.130501"
+          }
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.1016-j.cej.2021.130501/claim/c1",
+      "target": "scale:commons/10.1016-j.cej.2021.130501/reaction/co2rr"
+    },
+    {
+      "id": "scale:commons/10.1016-j.cej.2021.130501/link/l5",
+      "type": "AUTHORED_BY",
+      "props": {
+        "evidence": [
+          {
+            "kind": "text",
+            "locator": "p. 1, author list",
+            "quote": "Bastian J.M. Etzold a,*, Ulrike Krewer b, Simon Thiele c,d, Andreas Dreizler e, Elias Klemm f, Thomas Turek g,h",
+            "source": "scale:commons/source/10.1016-j.cej.2021.130501"
+          }
+        ],
+        "origin": "curated",
+        "position": 3,
+        "role": "author"
+      },
+      "source": "scale:commons/source/10.1016-j.cej.2021.130501",
+      "target": "scale:commons/10.1016-j.cej.2021.130501/person/thiele"
+    },
+    {
+      "id": "scale:commons/10.1016-j.cej.2021.130501/link/l50",
+      "type": "ABOUT",
+      "props": {
+        "evidence": [
+          {
+            "kind": "text",
+            "locator": "p. 4, section 3.3",
+            "quote": "Depletion of CO2 leads to lower density of adsorbed CO species and thus fewer C–C coupled products, which consequently increases unwanted HER",
+            "source": "scale:commons/source/10.1016-j.cej.2021.130501"
+          }
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.1016-j.cej.2021.130501/claim/c3",
+      "target": "scale:commons/10.1016-j.cej.2021.130501/reaction/co2rr"
+    },
+    {
+      "id": "scale:commons/10.1016-j.cej.2021.130501/link/l51",
+      "type": "ABOUT",
+      "props": {
+        "evidence": [
+          {
+            "kind": "text",
+            "locator": "p. 6, section 4.2",
+            "quote": "because the solubility of CO2 in the aqueous electrolyte is limited to ~ 33 mmol/l (at 298 K and 1 atm",
+            "source": "scale:commons/source/10.1016-j.cej.2021.130501"
+          }
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.1016-j.cej.2021.130501/claim/c5",
+      "target": "scale:commons/10.1016-j.cej.2021.130501/reaction/co2rr"
+    },
+    {
+      "id": "scale:commons/10.1016-j.cej.2021.130501/link/l52",
+      "type": "ABOUT",
+      "props": {
+        "evidence": [
+          {
+            "kind": "text",
+            "locator": "p. 6, section 4.2",
+            "quote": "the corresponding potential increase can be mistakenly interpreted as catalyst degradation",
+            "source": "scale:commons/source/10.1016-j.cej.2021.130501"
+          }
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.1016-j.cej.2021.130501/claim/c7",
+      "target": "scale:commons/10.1016-j.cej.2021.130501/reaction/oer"
+    },
+    {
+      "id": "scale:commons/10.1016-j.cej.2021.130501/link/l53",
+      "type": "ABOUT",
+      "props": {
+        "evidence": [
+          {
+            "kind": "text",
+            "locator": "p. 9, section 5.2 and Fig. 7",
+            "quote": "catalyst performance must be assessed under more technically relevant conditions, such as that found in porous transport electrodes",
+            "source": "scale:commons/source/10.1016-j.cej.2021.130501"
+          }
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.1016-j.cej.2021.130501/claim/c8",
+      "target": "scale:commons/10.1016-j.cej.2021.130501/reaction/co2rr"
+    },
+    {
+      "id": "scale:commons/10.1016-j.cej.2021.130501/link/l54",
+      "type": "ABOUT",
+      "props": {
+        "evidence": [
+          {
+            "kind": "text",
+            "locator": "p. 6, section 4.2",
+            "quote": "The ionomer film controls the local concentrations at the active site (pH, CO2, products) and can be tuned accordingly",
+            "source": "scale:commons/source/10.1016-j.cej.2021.130501"
+          }
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.1016-j.cej.2021.130501/claim/c11",
+      "target": "scale:commons/10.1016-j.cej.2021.130501/reaction/co2rr"
+    },
+    {
+      "id": "scale:commons/10.1016-j.cej.2021.130501/link/l55",
+      "type": "ABOUT",
+      "props": {
+        "evidence": [
+          {
+            "kind": "text",
+            "locator": "p. 6, section 4.2",
+            "quote": "measured activities and selectivities of the same electrocatalyst can be different inside a PTE and on disk or carbon cloth",
+            "source": "scale:commons/source/10.1016-j.cej.2021.130501"
+          }
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.1016-j.cej.2021.130501/claim/c12",
+      "target": "scale:commons/10.1016-j.cej.2021.130501/reaction/co2rr"
+    },
+    {
+      "id": "scale:commons/10.1016-j.cej.2021.130501/link/l56",
+      "type": "HAS_PARTICIPANT",
+      "props": {
+        "evidence": [
+          {
+            "kind": "text",
+            "locator": "p. 2, section 2",
+            "quote": "Further non-faradaic chemical reactions may occur in electrolytes, e. g. the reaction of CO2 to bicarbonate and carbonate ions",
+            "source": "scale:commons/source/10.1016-j.cej.2021.130501"
+          }
+        ],
+        "origin": "curated",
+        "role": "reactant"
+      },
+      "source": "scale:commons/10.1016-j.cej.2021.130501/reaction/co2-to-carbonate",
+      "target": "scale:commons/10.1016-j.cej.2021.130501/species/co2"
+    },
+    {
+      "id": "scale:commons/10.1016-j.cej.2021.130501/link/l6",
+      "type": "MEMBER_OF",
+      "props": {
+        "evidence": [
+          {
+            "kind": "text",
+            "locator": "p. 1, affiliations",
+            "quote": "Forschungszentrum Jülich GmbH, Helmholtz Institute Erlangen-Nürnberg for Renewable Energy (IEK-11), 91058 Erlangen, Germany",
+            "source": "scale:commons/source/10.1016-j.cej.2021.130501"
+          }
+        ],
+        "origin": "curated",
+        "role": "affiliation"
+      },
+      "source": "scale:commons/10.1016-j.cej.2021.130501/person/thiele",
+      "target": "scale:commons/10.1016-j.cej.2021.130501/institution/fzj"
+    },
+    {
+      "id": "scale:commons/10.1016-j.cej.2021.130501/link/l7",
+      "type": "MEMBER_OF",
+      "props": {
+        "evidence": [
+          {
+            "kind": "text",
+            "locator": "p. 1, affiliations",
+            "quote": "Department of Chemical and Biological Engineering, Friedrich-Alexander-Universit¨at Erlangen-Nürnberg, 91058 Erlangen, Germany",
+            "source": "scale:commons/source/10.1016-j.cej.2021.130501"
+          }
+        ],
+        "origin": "curated",
+        "role": "affiliation"
+      },
+      "source": "scale:commons/10.1016-j.cej.2021.130501/person/thiele",
+      "target": "scale:commons/10.1016-j.cej.2021.130501/institution/fau"
+    },
+    {
+      "id": "scale:commons/10.1016-j.cej.2021.130501/link/l8",
+      "type": "AUTHORED_BY",
+      "props": {
+        "evidence": [
+          {
+            "kind": "text",
+            "locator": "p. 1, author list",
+            "quote": "Bastian J.M. Etzold a,*, Ulrike Krewer b, Simon Thiele c,d, Andreas Dreizler e, Elias Klemm f, Thomas Turek g,h",
+            "source": "scale:commons/source/10.1016-j.cej.2021.130501"
+          }
+        ],
+        "origin": "curated",
+        "position": 4,
+        "role": "author"
+      },
+      "source": "scale:commons/source/10.1016-j.cej.2021.130501",
+      "target": "scale:commons/10.1016-j.cej.2021.130501/person/dreizler"
+    },
+    {
+      "id": "scale:commons/10.1016-j.cej.2021.130501/link/l9",
+      "type": "MEMBER_OF",
+      "props": {
+        "evidence": [
+          {
+            "kind": "text",
+            "locator": "p. 1, affiliations",
+            "quote": "Department of Mechanical Engineering, Technical University of Darmstadt, Reactive Flows and Diagnostics, 64287 Darmstadt, Germany",
+            "source": "scale:commons/source/10.1016-j.cej.2021.130501"
+          }
+        ],
+        "origin": "curated",
+        "role": "affiliation"
+      },
+      "source": "scale:commons/10.1016-j.cej.2021.130501/person/dreizler",
+      "target": "scale:commons/10.1016-j.cej.2021.130501/institution/darmstadt"
+    },
+    {
+      "id": "scale:commons/10.1016-j.cej.2021.130501/reaction/co2-to-bicarbonate/reported-in/10.1016-j.cej.2021.130501",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 2, section 2"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.1016-j.cej.2021.130501/reaction/co2-to-bicarbonate",
+      "target": "scale:commons/source/10.1016-j.cej.2021.130501"
+    },
+    {
+      "id": "scale:commons/10.1016-j.cej.2021.130501/reaction/co2-to-carbonate/reported-in/10.1016-j.cej.2021.130501",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 2, section 2"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.1016-j.cej.2021.130501/reaction/co2-to-carbonate",
+      "target": "scale:commons/source/10.1016-j.cej.2021.130501"
+    },
+    {
+      "id": "scale:commons/10.1016-j.cej.2021.130501/reaction/co2rr-formate/reported-in/10.1016-j.cej.2021.130501",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 4, section 3.1"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.1016-j.cej.2021.130501/reaction/co2rr-formate",
+      "target": "scale:commons/source/10.1016-j.cej.2021.130501"
+    },
+    {
+      "id": "scale:commons/10.1016-j.cej.2021.130501/reaction/co2rr-hydrocarbons/reported-in/10.1016-j.cej.2021.130501",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 4, section 3.1"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.1016-j.cej.2021.130501/reaction/co2rr-hydrocarbons",
+      "target": "scale:commons/source/10.1016-j.cej.2021.130501"
+    },
+    {
+      "id": "scale:commons/10.1016-j.cej.2021.130501/reaction/co2rr-syngas/reported-in/10.1016-j.cej.2021.130501",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 4, section 3.1"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.1016-j.cej.2021.130501/reaction/co2rr-syngas",
+      "target": "scale:commons/source/10.1016-j.cej.2021.130501"
+    },
+    {
+      "id": "scale:commons/10.1016-j.cej.2021.130501/reaction/co2rr/reported-in/10.1016-j.cej.2021.130501",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 2, Eq. (3)"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.1016-j.cej.2021.130501/reaction/co2rr",
+      "target": "scale:commons/source/10.1016-j.cej.2021.130501"
+    },
+    {
+      "id": "scale:commons/10.1016-j.cej.2021.130501/reaction/her/reported-in/10.1016-j.cej.2021.130501",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 2, Eq. (2)"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.1016-j.cej.2021.130501/reaction/her",
+      "target": "scale:commons/source/10.1016-j.cej.2021.130501"
+    },
+    {
+      "id": "scale:commons/10.1016-j.cej.2021.130501/reaction/oer/reported-in/10.1016-j.cej.2021.130501",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 2, Eq. (1)"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.1016-j.cej.2021.130501/reaction/oer",
+      "target": "scale:commons/source/10.1016-j.cej.2021.130501"
+    },
+    {
+      "id": "scale:commons/10.1016-j.cej.2021.130501/species/c2h4/reported-in/10.1016-j.cej.2021.130501",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 4, section 3.1"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.1016-j.cej.2021.130501/species/c2h4",
+      "target": "scale:commons/source/10.1016-j.cej.2021.130501"
+    },
+    {
+      "id": "scale:commons/10.1016-j.cej.2021.130501/species/ch3oh/reported-in/10.1016-j.cej.2021.130501",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 4, section 3.1"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.1016-j.cej.2021.130501/species/ch3oh",
+      "target": "scale:commons/source/10.1016-j.cej.2021.130501"
+    },
+    {
+      "id": "scale:commons/10.1016-j.cej.2021.130501/species/co/reported-in/10.1016-j.cej.2021.130501",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 2, Eq. (3)"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.1016-j.cej.2021.130501/species/co",
+      "target": "scale:commons/source/10.1016-j.cej.2021.130501"
+    },
+    {
+      "id": "scale:commons/10.1016-j.cej.2021.130501/species/co2/reported-in/10.1016-j.cej.2021.130501",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 2, Eq. (3)"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.1016-j.cej.2021.130501/species/co2",
+      "target": "scale:commons/source/10.1016-j.cej.2021.130501"
+    },
+    {
+      "id": "scale:commons/10.1016-j.cej.2021.130501/species/co3/reported-in/10.1016-j.cej.2021.130501",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 2, section 2"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.1016-j.cej.2021.130501/species/co3",
+      "target": "scale:commons/source/10.1016-j.cej.2021.130501"
+    },
+    {
+      "id": "scale:commons/10.1016-j.cej.2021.130501/species/h2/reported-in/10.1016-j.cej.2021.130501",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 2, Eq. (2)"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.1016-j.cej.2021.130501/species/h2",
+      "target": "scale:commons/source/10.1016-j.cej.2021.130501"
+    },
+    {
+      "id": "scale:commons/10.1016-j.cej.2021.130501/species/h2o/reported-in/10.1016-j.cej.2021.130501",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 2, Eq. (1)"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.1016-j.cej.2021.130501/species/h2o",
+      "target": "scale:commons/source/10.1016-j.cej.2021.130501"
+    },
+    {
+      "id": "scale:commons/10.1016-j.cej.2021.130501/species/hco3/reported-in/10.1016-j.cej.2021.130501",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 2, section 2"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.1016-j.cej.2021.130501/species/hco3",
+      "target": "scale:commons/source/10.1016-j.cej.2021.130501"
+    },
+    {
+      "id": "scale:commons/10.1016-j.cej.2021.130501/species/hcoo/reported-in/10.1016-j.cej.2021.130501",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 4, section 3.1"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.1016-j.cej.2021.130501/species/hcoo",
+      "target": "scale:commons/source/10.1016-j.cej.2021.130501"
+    },
+    {
+      "id": "scale:commons/10.1016-j.cej.2021.130501/species/hplus/reported-in/10.1016-j.cej.2021.130501",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 2, Eq. (2)"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.1016-j.cej.2021.130501/species/hplus",
+      "target": "scale:commons/source/10.1016-j.cej.2021.130501"
+    },
+    {
+      "id": "scale:commons/10.1016-j.cej.2021.130501/species/o2/reported-in/10.1016-j.cej.2021.130501",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 2, Eq. (1)"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.1016-j.cej.2021.130501/species/o2",
+      "target": "scale:commons/source/10.1016-j.cej.2021.130501"
+    }
+  ],
+  "schema_version": "0.8.2",
+  "source": "scale:commons/source/10.1016-j.cej.2021.130501"
+}

@@ -1,0 +1,3395 @@
+{
+  "nodes": [
+    {
+      "id": "scale:commons/10.3389-fchem.2025.1525245/catalyst/cu-nw",
+      "label": "Catalyst",
+      "props": {
+        "name": "Cu nanowires",
+        "catalyst_family": "metal",
+        "evidence": [
+          {
+            "id": "ev-catcu",
+            "kind": "text",
+            "locator": "p. 5, section 3.1",
+            "quote": "Cu nanowires are ﬁrst used as the model catalysts for CO2RR in CO2-saturated 0.1 M KHCO3 electrolyte",
+            "source": "scale:commons/source/10.3389-fchem.2025.1525245"
+          }
+        ],
+        "nominal_formula": "Cu",
+        "origin": "reported"
+      }
+    },
+    {
+      "id": "scale:commons/10.3389-fchem.2025.1525245/catalyst/cuag-nw",
+      "label": "Catalyst",
+      "props": {
+        "name": "CuAg nanowires (Cu core, Ag shell)",
+        "catalyst_family": "metal",
+        "evidence": [
+          {
+            "id": "ev-catcuag",
+            "kind": "text",
+            "locator": "p. 7",
+            "quote": "The Cu nanowire is covered with an ultrathin Ag layer, forming a core-shell conﬁguration",
+            "source": "scale:commons/source/10.3389-fchem.2025.1525245"
+          }
+        ],
+        "integration_mode": "core_shell",
+        "nominal_formula": "CuAg",
+        "origin": "reported"
+      }
+    },
+    {
+      "id": "scale:commons/10.3389-fchem.2025.1525245/cell/polymer-liquid-cell",
+      "label": "ElectrochemicalCell",
+      "props": {
+        "name": "Polymer electrochemical liquid cell (two-electrode)",
+        "cell_kind": "other",
+        "evidence": [
+          {
+            "id": "ev-cell1",
+            "kind": "text",
+            "locator": "p. 3, section 2.1",
+            "quote": "The polymer electrochemical liquid cells with the two-electrode system allows for measurement of electrocatalytic reactions",
+            "source": "scale:commons/source/10.3389-fchem.2025.1525245"
+          },
+          {
+            "id": "ev-cell2",
+            "kind": "text",
+            "locator": "p. 5, section 2.2",
+            "quote": "The liquid sample is sealed inside the liquid cell by Van der Waals forces between the top and bottom chips",
+            "source": "scale:commons/source/10.3389-fchem.2025.1525245"
+          },
+          {
+            "id": "ev-cell3",
+            "kind": "text",
+            "locator": "p. 5, section 2.2",
+            "quote": "a droplet of electrolyte (e.g., 1 μL of 0.1M KHCO3 solution saturated with CO2 gas) is added on the bottom chip",
+            "source": "scale:commons/source/10.3389-fchem.2025.1525245"
+          }
+        ],
+        "note": "two-electrode system; the liquid sample is sealed inside the liquid cell by Van der Waals forces between the top and bottom chips; allows fast freezing of the sample to cryogenic temperatures without breaking the membrane",
+        "origin": "reported",
+        "settings": {
+          "electrolyte_droplet_volume": {
+            "status": "present",
+            "as_reported": "1 μL",
+            "note": "given as an example ('e.g.') of the protocol's electrolyte droplet",
+            "unit": "μL",
+            "value": 1
+          }
+        }
+      }
+    },
+    {
+      "id": "scale:commons/10.3389-fchem.2025.1525245/ch/cu-cryoem",
+      "label": "Characterization",
+      "props": {
+        "name": "Cryo-EM (HRTEM) of the fast-frozen working Cu catalyst",
+        "evidence": [
+          {
+            "id": "ev-ch3a",
+            "kind": "text",
+            "locator": "p. 5, section 3.1",
+            "quote": "By incorporating cryo-EM techniques, we obtain the native state of Cu during the reaction by fast-freezing the working catalyst",
+            "source": "scale:commons/source/10.3389-fchem.2025.1525245"
+          },
+          {
+            "id": "ev-ch3b",
+            "kind": "text",
+            "locator": "p. 5, section 3.1",
+            "quote": "a thin amorphous layer is present on the Cu surface",
+            "source": "scale:commons/source/10.3389-fchem.2025.1525245"
+          }
+        ],
+        "experiment_kind": "physical",
+        "experiment_status": "completed",
+        "information_depth": "projection",
+        "note": "the frozen specimen holds the working state; the imaging itself is done after freezing",
+        "observation_mode": "ex_situ",
+        "origin": "reported",
+        "sampling": "single_particle",
+        "technique": "cryo-EM (HRTEM of the fast-frozen working catalyst)",
+        "technique_id": "CHMO:0000084",
+        "transfer": "the working catalyst is fast-frozen to cryogenic temperature without breaking the liquid-cell membrane, then imaged"
+      }
+    },
+    {
+      "id": "scale:commons/10.3389-fchem.2025.1525245/ch/cu-eds-post",
+      "label": "Characterization",
+      "props": {
+        "name": "EDS mapping of the Cu nanowire after CO2RR",
+        "evidence": [
+          {
+            "id": "ev-ch2a",
+            "kind": "text",
+            "locator": "p. 6, Figure 3 caption (B)",
+            "quote": "EDS maps display the elemental distribution within the Cu catalyst post-reaction",
+            "source": "scale:commons/source/10.3389-fchem.2025.1525245"
+          },
+          {
+            "id": "ev-ch2b",
+            "kind": "text",
+            "locator": "p. 5, section 3.1",
+            "quote": "the EDS analysis indicates that the nanowires are composed of pure copper, with no detectable oxidized surface layer",
+            "source": "scale:commons/source/10.3389-fchem.2025.1525245"
+          }
+        ],
+        "experiment_kind": "physical",
+        "experiment_status": "completed",
+        "information_depth": "projection",
+        "observation_mode": "ex_situ",
+        "origin": "reported",
+        "sampling": "local_region",
+        "technique": "EDS mapping",
+        "technique_id": "CHMO:0000309"
+      }
+    },
+    {
+      "id": "scale:commons/10.3389-fchem.2025.1525245/ch/cu-eels",
+      "label": "Characterization",
+      "props": {
+        "name": "EELS of the amorphous-crystalline interface (cryo-EM)",
+        "evidence": [
+          {
+            "id": "ev-ch4a",
+            "kind": "text",
+            "locator": "p. 6, section 3.1",
+            "quote": "We conduct EELS measurements to examine the valence state of the amorphous region as well as the crystalline Cu using cryo-EM techniques",
+            "source": "scale:commons/source/10.3389-fchem.2025.1525245"
+          },
+          {
+            "id": "ev-ch4b",
+            "kind": "text",
+            "locator": "p. 6, section 3.1",
+            "quote": "only Cu0 signals are detected within the crystalline Cu region, whereas in the amorphous region, a peak corresponding to Cu⁺ ions emerges and intensiﬁes with distance from the interface",
+            "source": "scale:commons/source/10.3389-fchem.2025.1525245"
+          }
+        ],
+        "experiment_kind": "physical",
+        "experiment_status": "completed",
+        "information_depth": "projection",
+        "note": "EELS spectra over distinct regions at the interface (colored squares in Figure 3G); energy-loss region about 920-980 eV (Figure 3F axis labels); the Figure 3F spectra are not digitized (extraction_error gap GAP-A45A873A)",
+        "observation_mode": "ex_situ",
+        "origin": "reported",
+        "sampling": "local_region",
+        "technique": "EELS (cryo-EM)"
+      }
+    },
+    {
+      "id": "scale:commons/10.3389-fchem.2025.1525245/ch/cu-exsitu-control",
+      "label": "Characterization",
+      "props": {
+        "name": "Ex-situ control experiments on the amorphous structure (beam-damage control)",
+        "evidence": [
+          {
+            "id": "ev-ch7a",
+            "kind": "text",
+            "locator": "p. 5, section 3.1",
+            "quote": "To rule out the inﬂuence of electron beam irradiation, we conduct ex-situ control experiments",
+            "source": "scale:commons/source/10.3389-fchem.2025.1525245"
+          },
+          {
+            "id": "ev-ch7b",
+            "kind": "text",
+            "locator": "p. 5, section 3.1",
+            "quote": "The results conﬁrm the generation of amorphous structures is intrinsic under electrochemical conditions",
+            "source": "scale:commons/source/10.3389-fchem.2025.1525245"
+          }
+        ],
+        "experiment_kind": "physical",
+        "experiment_status": "completed",
+        "note": "controls rule out electron-beam irradiation as the origin of the amorphous structure",
+        "observation_mode": "ex_situ",
+        "origin": "reported",
+        "technique": "ex-situ TEM control experiments",
+        "technique_id": "CHMO:0000080"
+      }
+    },
+    {
+      "id": "scale:commons/10.3389-fchem.2025.1525245/ch/cu-hrtem-atomic",
+      "label": "Characterization",
+      "props": {
+        "name": "In-situ atomic-resolution imaging of the crystalline Cu / amorphous interphase transformation",
+        "evidence": [
+          {
+            "id": "ev-ch6a",
+            "kind": "text",
+            "locator": "p. 6, Figure 3 caption (E)",
+            "quote": "Atomic-resolution imaging provides detailed insights into the transformation of crystalline Cu into the amorphous interphase",
+            "source": "scale:commons/source/10.3389-fchem.2025.1525245"
+          },
+          {
+            "id": "ev-ch6b",
+            "kind": "text",
+            "locator": "p. 6, section 3.1",
+            "quote": "alters the vacancy formation energy of copper atoms at the interface between crystalline Cu and amorphous region, reducing the energy difference between atomic steps and terraces",
+            "source": "scale:commons/source/10.3389-fchem.2025.1525245"
+          },
+          {
+            "id": "ev-ch6c",
+            "kind": "text",
+            "locator": "p. 6, section 3.1",
+            "quote": "Cu atoms readily dissolve at atom steps and on atom terraces, leaving some atomic pits",
+            "source": "scale:commons/source/10.3389-fchem.2025.1525245"
+          }
+        ],
+        "experiment_kind": "physical",
+        "experiment_status": "completed",
+        "information_depth": "projection",
+        "note": "panel time stamps T0+0 s, T0+0.2 s, T0+0.5 s (Figure 3E labels); scale bar 5 Å",
+        "observation_mode": "in_situ",
+        "origin": "reported",
+        "sampling": "single_particle",
+        "technique": "in-situ atomic-resolution TEM imaging",
+        "technique_id": "CHMO:0000084"
+      }
+    },
+    {
+      "id": "scale:commons/10.3389-fchem.2025.1525245/ch/cu-hrtem-dyn",
+      "label": "Characterization",
+      "props": {
+        "name": "In-situ HRTEM image sequence of the amorphous interphase",
+        "evidence": [
+          {
+            "id": "ev-ch5a",
+            "kind": "text",
+            "locator": "p. 6, Figure 3 caption (D)",
+            "quote": "An in-situ HRTEM image sequence captures the formation and ﬂuctuation of an amorphous interphase",
+            "source": "scale:commons/source/10.3389-fchem.2025.1525245"
+          },
+          {
+            "id": "ev-ch5b",
+            "kind": "text",
+            "locator": "p. 5, section 3.1",
+            "quote": "After approximately 1 s, an amorphous layer forms and grows into the crystalline Cu",
+            "source": "scale:commons/source/10.3389-fchem.2025.1525245"
+          }
+        ],
+        "experiment_kind": "physical",
+        "experiment_status": "completed",
+        "information_depth": "projection",
+        "note": "panel time stamps T0+0 s, T0+1.2 s, T0+2.8 s (Figure 3D labels); scale bar 1 nm",
+        "observation_mode": "in_situ",
+        "origin": "reported",
+        "result_values": [
+          {
+            "id": "amorphization_onset",
+            "status": "present",
+            "as_reported": "approximately 1 s",
+            "evidence_ids": [
+              "ev-ch5b"
+            ],
+            "origin": "reported",
+            "qualifier": "approximate",
+            "unit": "s",
+            "value": 1,
+            "variable": "scale:commons/10.3389-fchem.2025.1525245/variable/amorphization-onset-time"
+          }
+        ],
+        "sampling": "single_particle",
+        "technique": "in-situ HRTEM image sequence",
+        "technique_id": "CHMO:0000084"
+      }
+    },
+    {
+      "id": "scale:commons/10.3389-fchem.2025.1525245/ch/cu-insitu-haadf",
+      "label": "Characterization",
+      "props": {
+        "name": "In-situ HAADF-STEM of the Cu nanowire during CO2RR",
+        "evidence": [
+          {
+            "id": "ev-ch1a",
+            "kind": "text",
+            "locator": "p. 6, Figure 3 caption (A)",
+            "quote": "In-situ HAADF images illustrate morphological changes in the Cu catalyst during the CO₂ reduction reaction",
+            "source": "scale:commons/source/10.3389-fchem.2025.1525245"
+          },
+          {
+            "id": "ev-ch1b",
+            "kind": "text",
+            "locator": "p. 5, section 3.1",
+            "quote": "the diameter of the Cu nanowires decreases, and the initially ﬂat surfaces evolve with the appearance of pronounced curvatures",
+            "source": "scale:commons/source/10.3389-fchem.2025.1525245"
+          }
+        ],
+        "experiment_kind": "physical",
+        "experiment_status": "completed",
+        "information_depth": "projection",
+        "note": "HAADF image sequence panel time stamps 0 s, 15.4 s, 24.7 s, 38.9 s (labels in Figure 3A); scale bar 50 nm",
+        "observation_mode": "in_situ",
+        "origin": "reported",
+        "sampling": "single_particle",
+        "technique": "in-situ HAADF-STEM (EC-TEM)",
+        "technique_id": "CHMO:0000730"
+      }
+    },
+    {
+      "id": "scale:commons/10.3389-fchem.2025.1525245/ch/cuag-haadf-pre",
+      "label": "Characterization",
+      "props": {
+        "name": "HAADF-STEM, EDS mapping and HRTEM of CuAg nanowires before CO2RR",
+        "evidence": [
+          {
+            "id": "ev-ch8a",
+            "kind": "text",
+            "locator": "p. 7, Figure 4 caption (B)",
+            "quote": "HAADF-STEM and EDS mapping of CuAg nanowires before CO2RR",
+            "source": "scale:commons/source/10.3389-fchem.2025.1525245"
+          },
+          {
+            "id": "ev-ch8b",
+            "kind": "text",
+            "locator": "p. 7, section 3.2",
+            "quote": "The Cu nanowire is covered with an ultrathin Ag layer, forming a core-shell conﬁguration",
+            "source": "scale:commons/source/10.3389-fchem.2025.1525245"
+          }
+        ],
+        "experiment_kind": "physical",
+        "experiment_status": "completed",
+        "information_depth": "projection",
+        "observation_mode": "ex_situ",
+        "origin": "reported",
+        "sampling": "local_region",
+        "technique": "HAADF-STEM and EDS mapping",
+        "technique_id": "CHMO:0000730"
+      }
+    },
+    {
+      "id": "scale:commons/10.3389-fchem.2025.1525245/ch/cuag-tem-post",
+      "label": "Characterization",
+      "props": {
+        "name": "HAADF-STEM, EDS mapping and HRTEM of CuAg nanowires after CO2RR",
+        "conditions": {
+          "electrode_potential": {
+            "status": "present",
+            "as_reported": "−1.0 V vs. RHE",
+            "note": "potential of the CO2RR the post-reaction TEM follows",
+            "unit": "V",
+            "value": -1.0
+          }
+        },
+        "evidence": [
+          {
+            "id": "ev-ch9a",
+            "kind": "text",
+            "locator": "p. 7, Figure 4 caption (D)",
+            "quote": "HAADF-STEM and EDS mapping of CuAg nanowires during CO2RR at −1.0 V vs. RHE",
+            "source": "scale:commons/source/10.3389-fchem.2025.1525245"
+          },
+          {
+            "id": "ev-ch9b",
+            "kind": "text",
+            "locator": "p. 7, section 3.2",
+            "quote": "HAADF-STEM and EDS mapping show the nanowires display surface roughening, exhibiting granular Cu nanoparticles generated from the as-prepared CuAg nanowire, resulting in the formation of voids and cracks inside the nanowire",
+            "source": "scale:commons/source/10.3389-fchem.2025.1525245"
+          },
+          {
+            "id": "ev-ch9c",
+            "kind": "text",
+            "locator": "p. 7, Figure 4 caption (E)",
+            "quote": "HRTEM image shows the exposure of the Cu (111) facet on CuAg nanowires surface after electrocatalysis",
+            "source": "scale:commons/source/10.3389-fchem.2025.1525245"
+          },
+          {
+            "id": "ev-ch9d",
+            "kind": "figure",
+            "locator": "p. 7, Figure 4E (panel label)",
+            "note": "value labeled on the (111) lattice fringes in the Figure 4E panel image; not in the text layer",
+            "quote": "HRTEM image shows the exposure of the Cu (111) facet on CuAg nanowires surface after electrocatalysis",
+            "reading": "vision",
+            "region": [
+              0.62,
+              0.17,
+              0.82,
+              0.26
+            ],
+            "source": "scale:commons/source/10.3389-fchem.2025.1525245",
+            "transcription": "0.208 nm Cu (111)"
+          },
+          {
+            "id": "ev-ch9e",
+            "kind": "text",
+            "locator": "p. 7, section 3.2",
+            "quote": "compared with Cu, Ag is relatively stable without obvious change of distribution",
+            "source": "scale:commons/source/10.3389-fchem.2025.1525245"
+          }
+        ],
+        "experiment_kind": "physical",
+        "experiment_status": "completed",
+        "information_depth": "projection",
+        "observation_mode": "ex_situ",
+        "origin": "reported",
+        "result_values": [
+          {
+            "id": "cu111_fringe_spacing",
+            "status": "present",
+            "as_reported": "0.208 nm Cu (111)",
+            "evidence_ids": [
+              "ev-ch9c",
+              "ev-ch9d"
+            ],
+            "note": "0.208 nm is labeled on the (111) lattice fringes in the Figure 4E image; the number is not in the text layer. Read from the panel label printed to 0.001 nm: half-width a = 0.001 nm as the reading resolution, standard uncertainty a/sqrt(3) ~ 0.0006 nm, kept as 0.001 nm",
+            "origin": "measured",
+            "qualifier": "approximate",
+            "target": "scale:commons/10.3389-fchem.2025.1525245/material/cu-metal",
+            "uncertainty": 0.001,
+            "uncertainty_evaluation": "type_b",
+            "uncertainty_kind": "standard_uncertainty",
+            "unit": "nm",
+            "value": 0.208,
+            "variable": "scale:commons/10.3389-fchem.2025.1525245/variable/lattice-fringe-spacing"
+          }
+        ],
+        "sampling": "local_region",
+        "technique": "HAADF-STEM, EDS mapping and HRTEM (post-reaction)",
+        "technique_id": "CHMO:0000730"
+      }
+    },
+    {
+      "id": "scale:commons/10.3389-fchem.2025.1525245/ch/cuag-xas",
+      "label": "Characterization",
+      "props": {
+        "name": "Operando time-resolved XAS at the Cu K-edge of CuAg nanowires",
+        "conditions": {
+          "electrode_potential": {
+            "status": "present",
+            "as_reported": "−1.0 V vs. RHE",
+            "unit": "V",
+            "value": -1.0
+          }
+        },
+        "evidence": [
+          {
+            "id": "ev-ch10a",
+            "kind": "text",
+            "locator": "p. 7, section 3.2",
+            "quote": "Operando time-resolved XAS results show that the metallic Cu phase is maintained during electrocatalytic conditions",
+            "source": "scale:commons/source/10.3389-fchem.2025.1525245"
+          },
+          {
+            "id": "ev-ch10b",
+            "kind": "text",
+            "locator": "p. 7, section 3.2",
+            "quote": "The XANES of the Cu K-edge of the CuAg nanowires catalysts match the corresponding reference of Cu foil",
+            "source": "scale:commons/source/10.3389-fchem.2025.1525245"
+          },
+          {
+            "id": "ev-ch10c",
+            "kind": "text",
+            "locator": "p. 7, section 3.2",
+            "quote": "reveals the characteristic peaks at 2.2 \u0001A, which correspond to the\nCu-Cu scattering paths in the metallic Cu spectra",
+            "source": "scale:commons/source/10.3389-fchem.2025.1525245"
+          }
+        ],
+        "experiment_kind": "physical",
+        "experiment_status": "completed",
+        "note": "the Figure 4F,G spectra are not digitized (extraction_error gap GAP-A45A873A)",
+        "observation_mode": "operando",
+        "origin": "reported",
+        "result_values": [
+          {
+            "id": "ftexafs_cu_cu_distance",
+            "status": "present",
+            "as_reported": "2.2 A",
+            "evidence_ids": [
+              "ev-ch10c"
+            ],
+            "note": "printed as '2.2 A' with a mangled angstrom glyph in the text layer; read as 2.2 Å",
+            "origin": "reported",
+            "target": "scale:commons/10.3389-fchem.2025.1525245/material/cu-metal",
+            "unit": "Å",
+            "value": 2.2,
+            "variable": "scale:commons/10.3389-fchem.2025.1525245/variable/exafs-peak-distance"
+          }
+        ],
+        "sampling": "ensemble",
+        "technique": "operando time-resolved XAS, Cu K-edge",
+        "technique_id": "CHMO:0000298"
+      }
+    },
+    {
+      "id": "scale:commons/10.3389-fchem.2025.1525245/claim/amorphous-intrinsic",
+      "label": "Claim",
+      "props": {
+        "name": "Amorphous surface structure is intrinsic to the working Cu, not beam damage",
+        "claim_kind": "finding",
+        "claim_status": "supported",
+        "evidence": [
+          {
+            "id": "ev-cl1",
+            "kind": "text",
+            "locator": "p. 5, section 3.1",
+            "quote": "we conclude that an amorphous structure on the catalyst surfaces generated by a working Cu is not due to electron beam damage",
+            "source": "scale:commons/source/10.3389-fchem.2025.1525245"
+          }
+        ],
+        "inference_type": "interventional",
+        "origin": "reported",
+        "scope": "Cu nanowires in the polymer electrochemical liquid cell during CO2RR",
+        "statement": "The amorphous structure generated on the surface of a working Cu catalyst under CO2RR forms intrinsically under electrochemical conditions and is not due to electron-beam damage."
+      }
+    },
+    {
+      "id": "scale:commons/10.3389-fchem.2025.1525245/claim/beam-crystallizes",
+      "label": "Claim",
+      "props": {
+        "name": "Electron-beam irradiation crystallizes the amorphous interphase to Cu2O",
+        "claim_kind": "finding",
+        "claim_status": "supported",
+        "evidence": [
+          {
+            "id": "ev-cl2",
+            "kind": "text",
+            "evidence_type": "ECO:0000033",
+            "locator": "p. 5, section 3.1",
+            "note": "second-hand: the authors' finding as published in Zhang et al., 2024",
+            "quote": "we found electron-beam irradiation promotes crystallization of this amorphous interphase, resulting in the formation of Cu2O nanocrystals",
+            "source": "scale:commons/source/10.3389-fchem.2025.1525245"
+          }
+        ],
+        "inference_type": "observational",
+        "note": "reported from the authors' earlier study (Zhang et al., 2024), cited in this source",
+        "origin": "reported",
+        "statement": "Electron-beam irradiation promotes crystallization of the amorphous interphase, resulting in the formation of Cu2O nanocrystals."
+      }
+    },
+    {
+      "id": "scale:commons/10.3389-fchem.2025.1525245/claim/interphase-mediates",
+      "label": "Claim",
+      "props": {
+        "name": "Amorphous interphase mediates surface reconstruction to a performance-enhancing stepped surface",
+        "claim_kind": "structure_property",
+        "claim_status": "supported",
+        "evidence": [
+          {
+            "id": "ev-cl4",
+            "kind": "text",
+            "locator": "p. 6, section 3.1",
+            "quote": "Our direct observations indicate that the amorphous interphase can mediate surface reconstruction, resulting in a stepped surface that enhances catalytic performance",
+            "source": "scale:commons/source/10.3389-fchem.2025.1525245"
+          }
+        ],
+        "inference_type": "observational",
+        "origin": "reported",
+        "statement": "The amorphous interphase can mediate surface reconstruction, resulting in a stepped surface that enhances catalytic performance."
+      }
+    },
+    {
+      "id": "scale:commons/10.3389-fchem.2025.1525245/claim/stepped-cu0cu1",
+      "label": "Claim",
+      "props": {
+        "name": "Stepped surfaces and Cu0/Cu+ coexistence proposed behind the performance improvement",
+        "claim_kind": "mechanism",
+        "claim_status": "proposed",
+        "evidence": [
+          {
+            "id": "ev-cl5",
+            "kind": "text",
+            "locator": "p. 6, section 3.1",
+            "quote": "Theoretical calculations suggest that the performance improvement may be due to the formation of stepped surfaces and the coexistence of Cu0 and Cu1⁺ ions within the amorphous interphase",
+            "source": "scale:commons/source/10.3389-fchem.2025.1525245"
+          }
+        ],
+        "inference_type": "computational",
+        "note": "no computational details (method, level of theory, numbers) are given in the source",
+        "origin": "reported",
+        "statement": "Theoretical calculations suggest the performance improvement may be due to the formation of stepped surfaces and the coexistence of Cu0 and Cu+ ions within the amorphous interphase."
+      }
+    },
+    {
+      "id": "scale:commons/10.3389-fchem.2025.1525245/claim/vacancy-energy",
+      "label": "Claim",
+      "props": {
+        "name": "Amorphous interphase lowers the vacancy formation energy at the Cu interface",
+        "claim_kind": "mechanism",
+        "claim_status": "supported",
+        "evidence": [
+          {
+            "id": "ev-cl3",
+            "kind": "text",
+            "locator": "p. 6, section 3.1",
+            "quote": "alters the vacancy formation energy of copper atoms at the interface between crystalline Cu and amorphous region, reducing the energy difference between atomic steps and terraces",
+            "source": "scale:commons/source/10.3389-fchem.2025.1525245"
+          }
+        ],
+        "inference_type": "observational",
+        "origin": "reported",
+        "statement": "The appearance of the amorphous interphase alters the vacancy formation energy of Cu atoms at the crystalline Cu / amorphous interface, reducing the energy difference between atomic steps and terraces, so that Cu atoms readily dissolve at steps and on terraces, leaving atomic pits."
+      }
+    },
+    {
+      "id": "scale:commons/10.3389-fchem.2025.1525245/dataset/cuag-xas-spectra",
+      "label": "Dataset",
+      "props": {
+        "name": "Cu K-edge XANES and FT-EXAFS spectra of CuAg nanowires at −1.0 V vs. RHE",
+        "availability": "not_reported",
+        "data_kind": "spectrum",
+        "evidence": [
+          {
+            "id": "ev-ds1",
+            "kind": "text",
+            "locator": "p. 7, Figure 4 caption (F,G)",
+            "quote": "XANES and (G) FT-EXAFS spectra of Cu K-edge for Cu foil and CuAg nanowires at −1.0 V vs. RHE, respectively",
+            "source": "scale:commons/source/10.3389-fchem.2025.1525245"
+          }
+        ],
+        "note": "shown in Figure 4F,G; no deposited spectral data is reported in the source; the plotted spectra are not digitized (extraction_error gap GAP-A45A873A)",
+        "origin": "reported"
+      }
+    },
+    {
+      "id": "scale:commons/10.3389-fchem.2025.1525245/electrode/ce-pt",
+      "label": "Electrode",
+      "props": {
+        "name": "Pt counter electrode (liquid-cell chip)",
+        "evidence": [
+          {
+            "id": "ev-ce",
+            "kind": "text",
+            "locator": "p. 5, section 3.1",
+            "quote": "Cu nanowire catalysts gradually dissolve into the electrolyte under the potential of −1.1 V vs. Pt counter electrode",
+            "source": "scale:commons/source/10.3389-fchem.2025.1525245"
+          }
+        ],
+        "note": "the Cu-nanowire potential is stated against this counter electrode",
+        "origin": "reported",
+        "sample_kind": "electrode",
+        "substrate": "Pt"
+      }
+    },
+    {
+      "id": "scale:commons/10.3389-fchem.2025.1525245/electrode/we-cu-nw",
+      "label": "Electrode",
+      "props": {
+        "name": "Cu nanowire working electrode (liquid-cell bottom chip)",
+        "evidence": [
+          {
+            "id": "ev-we",
+            "kind": "text",
+            "locator": "p. 5, section 2.2",
+            "note": "end of the sentence on p. 4-5 that says the nanocatalysts are drop-cast onto the electrodes of the liquid-cell bottom chip; the sentence's start is on p. 4 (see link/9's quote)",
+            "quote": "electrodes of the electrochemical liquid cell bottom chip",
+            "source": "scale:commons/source/10.3389-fchem.2025.1525245"
+          }
+        ],
+        "origin": "reported",
+        "preparation_status": "prepared",
+        "sample_kind": "electrode",
+        "substrate": "bottom chip electrode of the electrochemical liquid cell"
+      }
+    },
+    {
+      "id": "scale:commons/10.3389-fchem.2025.1525245/electrolyte/khco3-co2",
+      "label": "Electrolyte",
+      "props": {
+        "name": "CO2-saturated 0.1 M KHCO3",
+        "evidence": [
+          {
+            "id": "ev-elec",
+            "kind": "text",
+            "locator": "p. 5, section 3.1",
+            "quote": "CO2-saturated 0.1 M KHCO3 electrolyte",
+            "source": "scale:commons/source/10.3389-fchem.2025.1525245"
+          }
+        ],
+        "origin": "reported",
+        "pH": {
+          "status": "not_reported",
+          "missing_reason": "not_stated_in_source"
+        }
+      }
+    },
+    {
+      "id": "scale:commons/10.3389-fchem.2025.1525245/hypothesis/dissolution-tradeoff",
+      "label": "Hypothesis",
+      "props": {
+        "name": "Dissolution shortens lifetime while curvature creates active sites",
+        "evidence": [
+          {
+            "id": "ev-hy1",
+            "kind": "text",
+            "locator": "p. 5, section 3.1",
+            "quote": "We anticipate that such a dissolution process compromises the stability and lifetime of the catalyst, although the increased surface curvature generates a high density of active sites that enhance catalytic activity",
+            "source": "scale:commons/source/10.3389-fchem.2025.1525245"
+          }
+        ],
+        "hypothesis_kind": "causal",
+        "hypothesis_status": "proposed",
+        "origin": "reported",
+        "statement": "The dissolution of the Cu nanowires compromises the stability and lifetime of the catalyst, although the increased surface curvature generates a high density of active sites that enhance catalytic activity."
+      }
+    },
+    {
+      "id": "scale:commons/10.3389-fchem.2025.1525245/material/ag-metal",
+      "label": "Material",
+      "props": {
+        "name": "Ag (crystalline shell)",
+        "crystallinity": "crystalline",
+        "evidence": [
+          {
+            "id": "ev-agmetal",
+            "kind": "text",
+            "locator": "p. 7",
+            "quote": "HRTEM image also conﬁrms the atomic crystalline structure of the Cu core and Ag shell",
+            "source": "scale:commons/source/10.3389-fchem.2025.1525245"
+          }
+        ],
+        "formula": "Ag",
+        "material_family": "metal",
+        "origin": "reported"
+      }
+    },
+    {
+      "id": "scale:commons/10.3389-fchem.2025.1525245/material/cu-amorphous",
+      "label": "Material",
+      "props": {
+        "name": "amorphous Cu-rich interphase",
+        "crystallinity": "amorphous",
+        "evidence": [
+          {
+            "id": "ev-cuamorh",
+            "kind": "text",
+            "locator": "p. 5",
+            "quote": "a thin amorphous layer is present on the Cu surface",
+            "source": "scale:commons/source/10.3389-fchem.2025.1525245"
+          }
+        ],
+        "material_family": "metal",
+        "note": "thin layer at the surface of the working Cu nanowire; EELS shows Cu+ ions within it; the authors propose coexistence of Cu0 and Cu+ ions",
+        "origin": "reported"
+      }
+    },
+    {
+      "id": "scale:commons/10.3389-fchem.2025.1525245/material/cu-metal",
+      "label": "Material",
+      "props": {
+        "name": "Cu (metallic, crystalline)",
+        "crystallinity": "crystalline",
+        "evidence": [
+          {
+            "id": "ev-cumetal",
+            "kind": "text",
+            "locator": "p. 6",
+            "quote": "only Cu0 signals are detected within the crystalline Cu region",
+            "source": "scale:commons/source/10.3389-fchem.2025.1525245"
+          }
+        ],
+        "formula": "Cu",
+        "material_family": "metal",
+        "origin": "reported"
+      }
+    },
+    {
+      "id": "scale:commons/10.3389-fchem.2025.1525245/material/cu2o",
+      "label": "Material",
+      "props": {
+        "name": "Cu2O (nanocrystals)",
+        "crystallinity": "crystalline",
+        "evidence": [
+          {
+            "id": "ev-cu2o",
+            "kind": "text",
+            "locator": "p. 5",
+            "quote": "we found electron-beam irradiation promotes crystallization of this amorphous interphase, resulting in the formation of Cu2O nanocrystals",
+            "source": "scale:commons/source/10.3389-fchem.2025.1525245"
+          }
+        ],
+        "formula": "Cu2O",
+        "material_family": "oxide",
+        "note": "forms when electron-beam irradiation crystallizes the amorphous interphase (authors' earlier study, Zhang et al., 2024)",
+        "origin": "reported"
+      }
+    },
+    {
+      "id": "scale:commons/10.3389-fchem.2025.1525245/preparation/ag-deposition",
+      "label": "Preparation",
+      "props": {
+        "name": "Ag deposition on the Cu nanowires",
+        "evidence": [
+          {
+            "id": "ev-prep3",
+            "kind": "text",
+            "locator": "p. 7, section 3.2",
+            "quote": "followed by Ag deposition through the heterogeneous nucleation in liquid",
+            "source": "scale:commons/source/10.3389-fchem.2025.1525245"
+          }
+        ],
+        "method": "heterogeneous nucleation in liquid",
+        "note": "no conditions (Ag precursor, concentration, time) are stated; the source gives no method family for the deposition",
+        "origin": "reported"
+      }
+    },
+    {
+      "id": "scale:commons/10.3389-fchem.2025.1525245/preparation/cu-nw-hydrothermal",
+      "label": "Preparation",
+      "props": {
+        "name": "Cu nanowire hydrothermal synthesis",
+        "evidence": [
+          {
+            "id": "ev-prep2",
+            "kind": "text",
+            "locator": "p. 7, section 3.2",
+            "quote": "Cu nanowires are ﬁrst prepared using a hydrothermal method",
+            "source": "scale:commons/source/10.3389-fchem.2025.1525245"
+          }
+        ],
+        "method": "hydrothermal method",
+        "note": "no conditions (temperature, duration, vessel filling, precursors) are stated",
+        "origin": "reported",
+        "preparation_methods": [
+          "hydrothermal"
+        ]
+      }
+    },
+    {
+      "id": "scale:commons/10.3389-fchem.2025.1525245/preparation/cuag-nw",
+      "label": "Preparation",
+      "props": {
+        "name": "CuAg nanowire synthesis",
+        "evidence": [
+          {
+            "id": "ev-prep1",
+            "kind": "text",
+            "locator": "p. 7, section 3.2",
+            "quote": "Cu nanowires are ﬁrst prepared using a hydrothermal method, followed by Ag deposition through the heterogeneous nucleation in liquid",
+            "source": "scale:commons/source/10.3389-fchem.2025.1525245"
+          }
+        ],
+        "method": "Cu nanowire hydrothermal growth followed by Ag deposition through heterogeneous nucleation in liquid",
+        "origin": "reported",
+        "steps": [
+          "Cu nanowires prepared using a hydrothermal method",
+          "Ag deposition through the heterogeneous nucleation in liquid"
+        ]
+      }
+    },
+    {
+      "id": "scale:commons/10.3389-fchem.2025.1525245/reaction/co2rr",
+      "label": "Reaction",
+      "props": {
+        "name": "CO2 electroreduction reaction (CO2RR)",
+        "balance_status": "not_reported",
+        "direction": "not_reported",
+        "evidence": [
+          {
+            "id": "ev-rxn",
+            "kind": "text",
+            "locator": "p. 5, section 3.1",
+            "quote": "Cu nanowires are ﬁrst used as the model catalysts for CO2RR in CO2-saturated 0.1 M KHCO3 electrolyte",
+            "source": "scale:commons/source/10.3389-fchem.2025.1525245"
+          }
+        ],
+        "origin": "reported"
+      }
+    },
+    {
+      "id": "scale:commons/10.3389-fchem.2025.1525245/sample/cu-foil",
+      "label": "Sample",
+      "props": {
+        "name": "Cu foil (XAS reference)",
+        "evidence": [
+          {
+            "id": "ev-cufoil",
+            "kind": "text",
+            "locator": "p. 7",
+            "quote": "The XANES of the Cu K-edge of the CuAg nanowires catalysts match the corresponding reference of Cu foil",
+            "source": "scale:commons/source/10.3389-fchem.2025.1525245"
+          }
+        ],
+        "note": "preparation of the Cu foil is not reported (missing_reason: not_stated_in_source); the source only calls it the XAS reference the CuAg nanowires' XANES match",
+        "origin": "reported",
+        "preparation_status": "not_reported",
+        "sample_kind": "other"
+      }
+    },
+    {
+      "id": "scale:commons/10.3389-fchem.2025.1525245/sample/cu-nw",
+      "label": "CatalystSample",
+      "props": {
+        "name": "Cu nanowire catalyst specimen (drop-cast on the liquid-cell electrode)",
+        "evidence": [
+          {
+            "id": "ev-sampcu",
+            "kind": "text",
+            "locator": "p. 4, section 2.2",
+            "quote": "the as-synthesized nanocatalysts are dispersed in a liquid medium (e.g., ethanol, isopropanol, or others)",
+            "source": "scale:commons/source/10.3389-fchem.2025.1525245"
+          }
+        ],
+        "note": "as-synthesized nanocatalysts dispersed in a liquid medium (e.g., ethanol, isopropanol) and drop-cast onto the liquid-cell bottom chip electrode; the source gives no synthesis for the Cu nanowires used in section 3.1",
+        "origin": "reported",
+        "preparation_status": "prepared",
+        "sample_kind": "batch"
+      }
+    },
+    {
+      "id": "scale:commons/10.3389-fchem.2025.1525245/sample/cu-nw-int",
+      "label": "CatalystSample",
+      "props": {
+        "name": "Cu nanowires (intermediate of the CuAg nanowire synthesis)",
+        "evidence": [
+          {
+            "id": "ev-sampcuint",
+            "kind": "text",
+            "locator": "p. 7",
+            "quote": "Cu nanowires are ﬁrst prepared using a hydrothermal method, followed by Ag deposition through the heterogeneous nucleation in liquid",
+            "source": "scale:commons/source/10.3389-fchem.2025.1525245"
+          }
+        ],
+        "origin": "reported",
+        "preparation_status": "prepared",
+        "sample_kind": "batch"
+      }
+    },
+    {
+      "id": "scale:commons/10.3389-fchem.2025.1525245/sample/cuag-nw",
+      "label": "CatalystSample",
+      "props": {
+        "name": "CuAg nanowire sample",
+        "evidence": [
+          {
+            "id": "ev-sampcuag",
+            "kind": "text",
+            "locator": "p. 7",
+            "quote": "We synthesize CuAg nanowire as the model system",
+            "source": "scale:commons/source/10.3389-fchem.2025.1525245"
+          }
+        ],
+        "origin": "reported",
+        "preparation_status": "prepared",
+        "sample_kind": "batch"
+      }
+    },
+    {
+      "id": "scale:commons/10.3389-fchem.2025.1525245/site/cu-steps",
+      "label": "ActiveSite",
+      "props": {
+        "name": "atomic steps / stepped Cu surface sites",
+        "evidence": [
+          {
+            "id": "ev-site1",
+            "kind": "text",
+            "locator": "p. 5, section 3.1",
+            "quote": "the increased surface curvature generates a high density of active sites that enhance catalytic activity",
+            "source": "scale:commons/source/10.3389-fchem.2025.1525245"
+          }
+        ],
+        "note": "the authors anticipate that the increased surface curvature generates a high density of active sites; the stepped surface is proposed to enhance performance",
+        "origin": "reported",
+        "site_kind": "step_edge"
+      }
+    },
+    {
+      "id": "scale:commons/10.3389-fchem.2025.1525245/species/ag",
+      "label": "ChemicalSpecies",
+      "props": {
+        "name": "Ag",
+        "elemental_composition": {
+          "Ag": 1
+        },
+        "evidence": [
+          {
+            "id": "ev-ag",
+            "kind": "text",
+            "locator": "p. 7",
+            "quote": "The Cu nanowire is covered with an ultrathin Ag layer, forming a core-shell conﬁguration",
+            "source": "scale:commons/source/10.3389-fchem.2025.1525245"
+          }
+        ],
+        "formula": "Ag",
+        "origin": "reported",
+        "species_kind": "element"
+      }
+    },
+    {
+      "id": "scale:commons/10.3389-fchem.2025.1525245/species/co2",
+      "label": "ChemicalSpecies",
+      "props": {
+        "name": "CO2",
+        "charge": 0,
+        "elemental_composition": {
+          "C": 1,
+          "O": 2
+        },
+        "evidence": [
+          {
+            "id": "ev-co2",
+            "kind": "text",
+            "locator": "p. 5",
+            "quote": "0.1M KHCO3 solution saturated with CO2 gas",
+            "source": "scale:commons/source/10.3389-fchem.2025.1525245"
+          }
+        ],
+        "formula": "CO2",
+        "origin": "reported",
+        "species_kind": "molecule"
+      }
+    },
+    {
+      "id": "scale:commons/10.3389-fchem.2025.1525245/species/cu",
+      "label": "ChemicalSpecies",
+      "props": {
+        "name": "Cu",
+        "elemental_composition": {
+          "Cu": 1
+        },
+        "evidence": [
+          {
+            "id": "ev-cu",
+            "kind": "text",
+            "locator": "p. 5",
+            "quote": "the EDS analysis indicates that the nanowires are composed of pure copper",
+            "source": "scale:commons/source/10.3389-fchem.2025.1525245"
+          }
+        ],
+        "formula": "Cu",
+        "origin": "reported",
+        "species_kind": "element"
+      }
+    },
+    {
+      "id": "scale:commons/10.3389-fchem.2025.1525245/species/cu-ion",
+      "label": "ChemicalSpecies",
+      "props": {
+        "name": "Cu+",
+        "charge": 1,
+        "elemental_composition": {
+          "Cu": 1
+        },
+        "evidence": [
+          {
+            "id": "ev-cuion",
+            "kind": "text",
+            "locator": "p. 6",
+            "quote": "a peak corresponding to Cu⁺ ions emerges and intensiﬁes with distance from the interface",
+            "source": "scale:commons/source/10.3389-fchem.2025.1525245"
+          }
+        ],
+        "formula": "Cu+",
+        "origin": "reported",
+        "species_kind": "ion"
+      }
+    },
+    {
+      "id": "scale:commons/10.3389-fchem.2025.1525245/species/khco3",
+      "label": "ChemicalSpecies",
+      "props": {
+        "name": "KHCO3",
+        "charge": 0,
+        "elemental_composition": {
+          "C": 1,
+          "H": 1,
+          "K": 1,
+          "O": 3
+        },
+        "evidence": [
+          {
+            "id": "ev-khco3",
+            "kind": "text",
+            "locator": "p. 5",
+            "quote": "0.1M KHCO3 solution saturated with CO2 gas",
+            "source": "scale:commons/source/10.3389-fchem.2025.1525245"
+          }
+        ],
+        "formula": "KHCO3",
+        "note": "the source reports the neutral salt KHCO3 (0.1 M); charge 0, not the bicarbonate ion HCO3-",
+        "origin": "reported",
+        "species_kind": "molecule"
+      }
+    },
+    {
+      "id": "scale:commons/10.3389-fchem.2025.1525245/state/cu-post-eds",
+      "label": "CatalystState",
+      "props": {
+        "name": "Cu nanowire state after CO2RR (EDS: pure copper, no oxide layer)",
+        "evidence": [
+          {
+            "id": "ev-st2a",
+            "kind": "text",
+            "locator": "p. 5, section 3.1",
+            "quote": "the EDS analysis indicates that the nanowires are composed of pure copper, with no detectable oxidized surface layer",
+            "source": "scale:commons/source/10.3389-fchem.2025.1525245"
+          }
+        ],
+        "morphology": "EDS shows a uniform distribution of Cu throughout the reacted nanowire; O levels similar to the background electrolyte; no detectable oxidized surface layer",
+        "origin": "reported",
+        "state_kind": "post_reaction"
+      }
+    },
+    {
+      "id": "scale:commons/10.3389-fchem.2025.1525245/state/cu-working",
+      "label": "CatalystState",
+      "props": {
+        "name": "Cu nanowire working state during CO2RR",
+        "conditions": {
+          "electrode_potential": {
+            "status": "present",
+            "as_reported": "−1.1 V vs. Pt counter electrode",
+            "unit": "V",
+            "value": -1.1
+          }
+        },
+        "dynamics": [
+          "dissolving",
+          "reconstructing"
+        ],
+        "evidence": [
+          {
+            "id": "ev-st1a",
+            "kind": "text",
+            "locator": "p. 5, section 3.1",
+            "quote": "the diameter of the Cu nanowires decreases, and the initially ﬂat surfaces evolve with the appearance of pronounced curvatures",
+            "source": "scale:commons/source/10.3389-fchem.2025.1525245"
+          },
+          {
+            "id": "ev-st1b",
+            "kind": "text",
+            "locator": "p. 6, section 3.1",
+            "quote": "Cu atoms readily dissolve at atom steps and on atom terraces, leaving some atomic pits",
+            "source": "scale:commons/source/10.3389-fchem.2025.1525245"
+          }
+        ],
+        "morphology": "Cu nanowires dissolve into the electrolyte; the diameter decreases and the initially flat surfaces develop pronounced curvatures; a thin amorphous interphase forms on the surface and grows into the crystalline Cu; Cu atoms dissolve at atomic steps and terraces, leaving atomic pits",
+        "origin": "reported",
+        "regime": "drifting",
+        "state_kind": "working"
+      }
+    },
+    {
+      "id": "scale:commons/10.3389-fchem.2025.1525245/state/cuag-asprepared",
+      "label": "CatalystState",
+      "props": {
+        "name": "CuAg nanowire as-prepared state (Cu core, ultrathin Ag shell)",
+        "architecture": [
+          "core_shell"
+        ],
+        "evidence": [
+          {
+            "id": "ev-st3a",
+            "kind": "text",
+            "locator": "p. 7, section 3.2",
+            "quote": "The Cu nanowire is covered with an ultrathin Ag layer, forming a core-shell conﬁguration",
+            "source": "scale:commons/source/10.3389-fchem.2025.1525245"
+          },
+          {
+            "id": "ev-st3b",
+            "kind": "text",
+            "locator": "p. 7, section 3.2",
+            "quote": "HRTEM image also conﬁrms the atomic crystalline structure of the Cu core and Ag shell",
+            "source": "scale:commons/source/10.3389-fchem.2025.1525245"
+          }
+        ],
+        "morphology": "Cu nanowire covered with an ultrathin Ag layer (core-shell); atomic crystalline Cu core and Ag shell",
+        "origin": "reported",
+        "state_kind": "as_prepared"
+      }
+    },
+    {
+      "id": "scale:commons/10.3389-fchem.2025.1525245/state/cuag-post",
+      "label": "CatalystState",
+      "props": {
+        "name": "CuAg nanowire state after CO2RR (roughened, granular Cu nanoparticles, voids and cracks)",
+        "dynamics": [
+          "reconstructing"
+        ],
+        "evidence": [
+          {
+            "id": "ev-st5a",
+            "kind": "text",
+            "locator": "p. 7, section 3.2",
+            "quote": "HAADF-STEM and EDS mapping show the nanowires display surface roughening, exhibiting granular Cu nanoparticles generated from the as-prepared CuAg nanowire, resulting in the formation of voids and cracks inside the nanowire",
+            "source": "scale:commons/source/10.3389-fchem.2025.1525245"
+          },
+          {
+            "id": "ev-st5b",
+            "kind": "text",
+            "locator": "p. 7, Figure 4 caption (E)",
+            "quote": "HRTEM image shows the exposure of the Cu (111) facet on CuAg nanowires surface after electrocatalysis",
+            "source": "scale:commons/source/10.3389-fchem.2025.1525245"
+          }
+        ],
+        "exposed_facets": [
+          "(111)"
+        ],
+        "morphology": "surface roughening; granular Cu nanoparticles generated from the as-prepared CuAg nanowire; voids and cracks inside the nanowire; reconstructed Cu nanoparticles exposing the Cu (111) facet; Ag distribution relatively unchanged",
+        "origin": "reported",
+        "state_kind": "post_reaction"
+      }
+    },
+    {
+      "id": "scale:commons/10.3389-fchem.2025.1525245/state/cuag-working",
+      "label": "CatalystState",
+      "props": {
+        "name": "CuAg nanowire working state during CO2RR (metallic Cu maintained)",
+        "conditions": {
+          "electrode_potential": {
+            "status": "present",
+            "as_reported": "−1.0 V vs. RHE",
+            "unit": "V",
+            "value": -1.0
+          }
+        },
+        "evidence": [
+          {
+            "id": "ev-st4a",
+            "kind": "text",
+            "locator": "p. 7, section 3.2",
+            "quote": "Operando time-resolved XAS results show that the metallic Cu phase is maintained during electrocatalytic conditions",
+            "source": "scale:commons/source/10.3389-fchem.2025.1525245"
+          }
+        ],
+        "morphology": "operando XAS shows the metallic Cu phase is maintained under electrocatalytic conditions",
+        "origin": "reported",
+        "regime": "steady",
+        "state_kind": "working"
+      }
+    },
+    {
+      "id": "scale:commons/10.3389-fchem.2025.1525245/test/cu-nw-ectem",
+      "label": "CatalyticTest",
+      "props": {
+        "name": "In-situ EC-TEM of Cu nanowires during CO2RR at −1.1 V vs Pt counter electrode",
+        "approach": "exploratory",
+        "charge_passed": {
+          "status": "not_reported",
+          "missing_reason": "not_stated_in_source"
+        },
+        "control_mode": "not_reported",
+        "current_density": {
+          "status": "not_reported",
+          "missing_reason": "not_stated_in_source"
+        },
+        "current_normalization": "not_reported",
+        "driving_forces": [
+          "electro"
+        ],
+        "electrode_potential": {
+          "status": "present",
+          "as_reported": "−1.1 V vs. Pt counter electrode",
+          "note": "potential stated against the Pt counter electrode, not a standard reference scale",
+          "unit": "V",
+          "value": -1.1
+        },
+        "evidence": [
+          {
+            "id": "ev-t1a",
+            "kind": "text",
+            "locator": "p. 5, section 3.1",
+            "quote": "Cu nanowires are ﬁrst used as the model catalysts for CO2RR in CO2-saturated 0.1 M KHCO3 electrolyte",
+            "source": "scale:commons/source/10.3389-fchem.2025.1525245"
+          },
+          {
+            "id": "ev-t1b",
+            "kind": "text",
+            "locator": "p. 5, section 3.1",
+            "quote": "Cu nanowire catalysts gradually dissolve into the electrolyte under the potential of −1.1 V vs. Pt counter electrode",
+            "source": "scale:commons/source/10.3389-fchem.2025.1525245"
+          }
+        ],
+        "experiment_kind": "physical",
+        "experiment_status": "completed",
+        "goal": "investigate",
+        "interpretations": [
+          "material_stability"
+        ],
+        "ir_compensation": "not_reported",
+        "manipulation": "interventional",
+        "origin": "reported",
+        "reference_scale": "other",
+        "temperature": {
+          "status": "not_reported",
+          "missing_reason": "not_stated_in_source"
+        },
+        "test_kind": "stability"
+      }
+    },
+    {
+      "id": "scale:commons/10.3389-fchem.2025.1525245/test/cuag-corr",
+      "label": "CatalyticTest",
+      "props": {
+        "name": "CO2RR on CuAg nanowires at −1.0 V vs RHE (post-reaction TEM and operando XAS)",
+        "approach": "exploratory",
+        "charge_passed": {
+          "status": "not_reported",
+          "missing_reason": "not_stated_in_source"
+        },
+        "control_mode": "not_reported",
+        "current_density": {
+          "status": "not_reported",
+          "missing_reason": "not_stated_in_source"
+        },
+        "current_normalization": "not_reported",
+        "driving_forces": [
+          "electro"
+        ],
+        "electrode_potential": {
+          "status": "present",
+          "as_reported": "−1.0 V vs. RHE",
+          "unit": "V",
+          "value": -1.0
+        },
+        "evidence": [
+          {
+            "id": "ev-t2a",
+            "kind": "text",
+            "locator": "p. 7, section 3.2",
+            "quote": "TEM characterizations of the CuAg nanowires are carried out after CO2RR at −1.0 V vs. RHE",
+            "source": "scale:commons/source/10.3389-fchem.2025.1525245"
+          },
+          {
+            "id": "ev-t2b",
+            "kind": "text",
+            "locator": "p. 7, section 3.2",
+            "quote": "Operando time-resolved XAS results show that the metallic Cu phase is maintained during electrocatalytic conditions",
+            "source": "scale:commons/source/10.3389-fchem.2025.1525245"
+          }
+        ],
+        "experiment_kind": "physical",
+        "experiment_status": "completed",
+        "goal": "investigate",
+        "interpretations": [
+          "material_stability"
+        ],
+        "ir_compensation": "not_reported",
+        "manipulation": "interventional",
+        "note": "The electrolyte, cell and electrodes of the CuAg CO2RR experiment are not stated in the source; the potential is given only as −1.0 V vs. RHE.",
+        "origin": "reported",
+        "reference_scale": "rhe",
+        "temperature": {
+          "status": "not_reported",
+          "missing_reason": "not_stated_in_source"
+        },
+        "test_kind": "stability"
+      }
+    },
+    {
+      "id": "scale:commons/10.3389-fchem.2025.1525245/variable/amorphization-onset-time",
+      "label": "Variable",
+      "props": {
+        "name": "time until the amorphous layer is seen to form",
+        "definition": "time after which an amorphous layer is seen to have formed on the crystalline Cu surface in the in-situ HRTEM image sequence",
+        "evidence": [
+          {
+            "id": "ev-var1",
+            "kind": "text",
+            "locator": "p. 5, section 3.1",
+            "quote": "After approximately 1 s, an amorphous layer forms and grows into the crystalline Cu",
+            "source": "scale:commons/source/10.3389-fchem.2025.1525245"
+          }
+        ],
+        "origin": "reported",
+        "quantity_kind": "time",
+        "scale": "quantitative",
+        "unit": "s"
+      }
+    },
+    {
+      "id": "scale:commons/10.3389-fchem.2025.1525245/variable/beam-exposure",
+      "label": "Variable",
+      "props": {
+        "name": "electron-beam exposure of the specimen before observation",
+        "definition": "whether the specimen was irradiated by the electron beam (and how much) before the recorded observation",
+        "evidence": [
+          {
+            "id": "ev-var4",
+            "kind": "text",
+            "locator": "p. 5, section 3.1",
+            "quote": "To rule out the inﬂuence of electron beam irradiation, we conduct ex-situ control experiments",
+            "source": "scale:commons/source/10.3389-fchem.2025.1525245"
+          }
+        ],
+        "origin": "reported",
+        "quantity_kind": "electron_dose",
+        "scale": "nominal"
+      }
+    },
+    {
+      "id": "scale:commons/10.3389-fchem.2025.1525245/variable/exafs-peak-distance",
+      "label": "Variable",
+      "props": {
+        "name": "Cu-Cu FT-EXAFS peak distance",
+        "definition": "distance of the FT-EXAFS peak assigned to the Cu-Cu scattering path",
+        "evidence": [
+          {
+            "id": "ev-var2",
+            "kind": "text",
+            "locator": "p. 7, section 3.2",
+            "quote": "reveals the characteristic peaks at 2.2 \u0001A, which correspond to the\nCu-Cu scattering paths in the metallic Cu spectra",
+            "source": "scale:commons/source/10.3389-fchem.2025.1525245"
+          }
+        ],
+        "origin": "reported",
+        "quantity_kind": "interatomic_distance",
+        "scale": "quantitative",
+        "unit": "Å"
+      }
+    },
+    {
+      "id": "scale:commons/10.3389-fchem.2025.1525245/variable/lattice-fringe-spacing",
+      "label": "Variable",
+      "props": {
+        "name": "Cu(111) lattice fringe spacing",
+        "definition": "spacing of the exposed Cu (111) lattice fringes in the post-reaction HRTEM image",
+        "evidence": [
+          {
+            "id": "ev-var3",
+            "kind": "text",
+            "locator": "p. 7, Figure 4 caption",
+            "quote": "HRTEM image shows the exposure of the Cu (111) facet on CuAg nanowires surface after electrocatalysis",
+            "source": "scale:commons/source/10.3389-fchem.2025.1525245"
+          },
+          {
+            "id": "ev-var3b",
+            "kind": "figure",
+            "locator": "p. 7, Figure 4E (panel label)",
+            "note": "the 0.208 nm spacing is the label on the (111) lattice fringes in the Figure 4E panel image; not in the text layer",
+            "quote": "HRTEM image shows the exposure of the Cu (111) facet on CuAg nanowires surface after electrocatalysis",
+            "reading": "vision",
+            "source": "scale:commons/source/10.3389-fchem.2025.1525245",
+            "transcription": "0.208 nm Cu (111)"
+          }
+        ],
+        "note": "value read from the Figure 4E panel label (0.208 nm Cu (111)), not printed in the text",
+        "origin": "reported",
+        "quantity_kind": "lattice_parameter",
+        "scale": "quantitative",
+        "unit": "nm"
+      }
+    },
+    {
+      "id": "scale:commons/source/10.3389-fchem.2025.1525245",
+      "label": "Source",
+      "props": {
+        "name": "In-situ/operando study of Cu-based nanocatalysts for CO2 electroreduction using electrochemical liquid cell TEM",
+        "kind": "article",
+        "doi": "10.3389/fchem.2025.1525245",
+        "licence": "https://creativecommons.org/licenses/by/4.0/",
+        "origin": "curated",
+        "retrieved_from": "1069407.pdf",
+        "retrieved_on": "2026-11-04",
+        "text_sha256": "7f476a1651e32adcc3eddeddbf3a7736c3d14017700ec91ce93d6799c12d8171",
+        "text_version": "version_of_record",
+        "title": "In-situ/operando study of Cu-based nanocatalysts for CO2 electroreduction using electrochemical liquid cell TEM",
+        "url": "https://doi.org/10.3389/fchem.2025.1525245",
+        "venue": "Frontiers in Chemistry",
+        "year": 2025
+      }
+    }
+  ],
+  "links": [
+    {
+      "id": "scale:commons/10.3389-fchem.2025.1525245/catalyst/cu-nw/reported-in/10.3389-fchem.2025.1525245",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 5, section 3.1"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.3389-fchem.2025.1525245/catalyst/cu-nw",
+      "target": "scale:commons/source/10.3389-fchem.2025.1525245"
+    },
+    {
+      "id": "scale:commons/10.3389-fchem.2025.1525245/catalyst/cuag-nw/reported-in/10.3389-fchem.2025.1525245",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 7"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.3389-fchem.2025.1525245/catalyst/cuag-nw",
+      "target": "scale:commons/source/10.3389-fchem.2025.1525245"
+    },
+    {
+      "id": "scale:commons/10.3389-fchem.2025.1525245/cell/polymer-liquid-cell/reported-in/10.3389-fchem.2025.1525245",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 3, section 2.1",
+          "p. 5, section 2.2"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.3389-fchem.2025.1525245/cell/polymer-liquid-cell",
+      "target": "scale:commons/source/10.3389-fchem.2025.1525245"
+    },
+    {
+      "id": "scale:commons/10.3389-fchem.2025.1525245/ch/cu-cryoem/reported-in/10.3389-fchem.2025.1525245",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 5, section 3.1"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.3389-fchem.2025.1525245/ch/cu-cryoem",
+      "target": "scale:commons/source/10.3389-fchem.2025.1525245"
+    },
+    {
+      "id": "scale:commons/10.3389-fchem.2025.1525245/ch/cu-eds-post/reported-in/10.3389-fchem.2025.1525245",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 5, section 3.1",
+          "p. 6, Figure 3 caption (B)"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.3389-fchem.2025.1525245/ch/cu-eds-post",
+      "target": "scale:commons/source/10.3389-fchem.2025.1525245"
+    },
+    {
+      "id": "scale:commons/10.3389-fchem.2025.1525245/ch/cu-eels/reported-in/10.3389-fchem.2025.1525245",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 6, section 3.1"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.3389-fchem.2025.1525245/ch/cu-eels",
+      "target": "scale:commons/source/10.3389-fchem.2025.1525245"
+    },
+    {
+      "id": "scale:commons/10.3389-fchem.2025.1525245/ch/cu-exsitu-control/reported-in/10.3389-fchem.2025.1525245",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 5, section 3.1"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.3389-fchem.2025.1525245/ch/cu-exsitu-control",
+      "target": "scale:commons/source/10.3389-fchem.2025.1525245"
+    },
+    {
+      "id": "scale:commons/10.3389-fchem.2025.1525245/ch/cu-hrtem-atomic/reported-in/10.3389-fchem.2025.1525245",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 6, Figure 3 caption (E)",
+          "p. 6, section 3.1"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.3389-fchem.2025.1525245/ch/cu-hrtem-atomic",
+      "target": "scale:commons/source/10.3389-fchem.2025.1525245"
+    },
+    {
+      "id": "scale:commons/10.3389-fchem.2025.1525245/ch/cu-hrtem-dyn/reported-in/10.3389-fchem.2025.1525245",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 5, section 3.1",
+          "p. 6, Figure 3 caption (D)"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.3389-fchem.2025.1525245/ch/cu-hrtem-dyn",
+      "target": "scale:commons/source/10.3389-fchem.2025.1525245"
+    },
+    {
+      "id": "scale:commons/10.3389-fchem.2025.1525245/ch/cu-insitu-haadf/reported-in/10.3389-fchem.2025.1525245",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 5, section 3.1",
+          "p. 6, Figure 3 caption (A)"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.3389-fchem.2025.1525245/ch/cu-insitu-haadf",
+      "target": "scale:commons/source/10.3389-fchem.2025.1525245"
+    },
+    {
+      "id": "scale:commons/10.3389-fchem.2025.1525245/ch/cuag-haadf-pre/reported-in/10.3389-fchem.2025.1525245",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 7, Figure 4 caption (B)",
+          "p. 7, section 3.2"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.3389-fchem.2025.1525245/ch/cuag-haadf-pre",
+      "target": "scale:commons/source/10.3389-fchem.2025.1525245"
+    },
+    {
+      "id": "scale:commons/10.3389-fchem.2025.1525245/ch/cuag-tem-post/reported-in/10.3389-fchem.2025.1525245",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 7, Figure 4 caption (D)",
+          "p. 7, Figure 4 caption (E)",
+          "p. 7, Figure 4E (panel label)",
+          "p. 7, section 3.2"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.3389-fchem.2025.1525245/ch/cuag-tem-post",
+      "target": "scale:commons/source/10.3389-fchem.2025.1525245"
+    },
+    {
+      "id": "scale:commons/10.3389-fchem.2025.1525245/ch/cuag-xas/reported-in/10.3389-fchem.2025.1525245",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 7, section 3.2"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.3389-fchem.2025.1525245/ch/cuag-xas",
+      "target": "scale:commons/source/10.3389-fchem.2025.1525245"
+    },
+    {
+      "id": "scale:commons/10.3389-fchem.2025.1525245/claim/amorphous-intrinsic/reported-in/10.3389-fchem.2025.1525245",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 5, section 3.1"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.3389-fchem.2025.1525245/claim/amorphous-intrinsic",
+      "target": "scale:commons/source/10.3389-fchem.2025.1525245"
+    },
+    {
+      "id": "scale:commons/10.3389-fchem.2025.1525245/claim/beam-crystallizes/reported-in/10.3389-fchem.2025.1525245",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 5, section 3.1"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.3389-fchem.2025.1525245/claim/beam-crystallizes",
+      "target": "scale:commons/source/10.3389-fchem.2025.1525245"
+    },
+    {
+      "id": "scale:commons/10.3389-fchem.2025.1525245/claim/interphase-mediates/reported-in/10.3389-fchem.2025.1525245",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 6, section 3.1"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.3389-fchem.2025.1525245/claim/interphase-mediates",
+      "target": "scale:commons/source/10.3389-fchem.2025.1525245"
+    },
+    {
+      "id": "scale:commons/10.3389-fchem.2025.1525245/claim/stepped-cu0cu1/reported-in/10.3389-fchem.2025.1525245",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 6, section 3.1"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.3389-fchem.2025.1525245/claim/stepped-cu0cu1",
+      "target": "scale:commons/source/10.3389-fchem.2025.1525245"
+    },
+    {
+      "id": "scale:commons/10.3389-fchem.2025.1525245/claim/vacancy-energy/reported-in/10.3389-fchem.2025.1525245",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 6, section 3.1"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.3389-fchem.2025.1525245/claim/vacancy-energy",
+      "target": "scale:commons/source/10.3389-fchem.2025.1525245"
+    },
+    {
+      "id": "scale:commons/10.3389-fchem.2025.1525245/dataset/cuag-xas-spectra/reported-in/10.3389-fchem.2025.1525245",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 7, Figure 4 caption (F,G)"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.3389-fchem.2025.1525245/dataset/cuag-xas-spectra",
+      "target": "scale:commons/source/10.3389-fchem.2025.1525245"
+    },
+    {
+      "id": "scale:commons/10.3389-fchem.2025.1525245/electrode/ce-pt/reported-in/10.3389-fchem.2025.1525245",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 5, section 3.1"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.3389-fchem.2025.1525245/electrode/ce-pt",
+      "target": "scale:commons/source/10.3389-fchem.2025.1525245"
+    },
+    {
+      "id": "scale:commons/10.3389-fchem.2025.1525245/electrode/we-cu-nw/reported-in/10.3389-fchem.2025.1525245",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 5, section 2.2"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.3389-fchem.2025.1525245/electrode/we-cu-nw",
+      "target": "scale:commons/source/10.3389-fchem.2025.1525245"
+    },
+    {
+      "id": "scale:commons/10.3389-fchem.2025.1525245/electrolyte/khco3-co2/reported-in/10.3389-fchem.2025.1525245",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 5, section 3.1"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.3389-fchem.2025.1525245/electrolyte/khco3-co2",
+      "target": "scale:commons/source/10.3389-fchem.2025.1525245"
+    },
+    {
+      "id": "scale:commons/10.3389-fchem.2025.1525245/hypothesis/dissolution-tradeoff/reported-in/10.3389-fchem.2025.1525245",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 5, section 3.1"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.3389-fchem.2025.1525245/hypothesis/dissolution-tradeoff",
+      "target": "scale:commons/source/10.3389-fchem.2025.1525245"
+    },
+    {
+      "id": "scale:commons/10.3389-fchem.2025.1525245/link/1",
+      "type": "HAS_FORMULATION",
+      "props": {
+        "evidence": [
+          {
+            "id": "e",
+            "kind": "text",
+            "locator": "p. 5, section 3.1",
+            "quote": "Cu nanowires are ﬁrst used as the model catalysts for CO2RR",
+            "source": "scale:commons/source/10.3389-fchem.2025.1525245"
+          }
+        ],
+        "origin": "reported"
+      },
+      "source": "scale:commons/10.3389-fchem.2025.1525245/sample/cu-nw",
+      "target": "scale:commons/10.3389-fchem.2025.1525245/catalyst/cu-nw"
+    },
+    {
+      "id": "scale:commons/10.3389-fchem.2025.1525245/link/10",
+      "type": "PART_OF",
+      "props": {
+        "evidence": [
+          {
+            "id": "e",
+            "kind": "text",
+            "locator": "p. 7, section 3.2",
+            "quote": "Cu nanowires are ﬁrst prepared using a hydrothermal method",
+            "source": "scale:commons/source/10.3389-fchem.2025.1525245"
+          }
+        ],
+        "order": 1,
+        "origin": "reported"
+      },
+      "source": "scale:commons/10.3389-fchem.2025.1525245/preparation/cu-nw-hydrothermal",
+      "target": "scale:commons/10.3389-fchem.2025.1525245/preparation/cuag-nw"
+    },
+    {
+      "id": "scale:commons/10.3389-fchem.2025.1525245/link/11",
+      "type": "PART_OF",
+      "props": {
+        "evidence": [
+          {
+            "id": "e",
+            "kind": "text",
+            "locator": "p. 7, section 3.2",
+            "quote": "followed by Ag deposition through the heterogeneous nucleation in liquid",
+            "source": "scale:commons/source/10.3389-fchem.2025.1525245"
+          }
+        ],
+        "order": 2,
+        "origin": "reported"
+      },
+      "source": "scale:commons/10.3389-fchem.2025.1525245/preparation/ag-deposition",
+      "target": "scale:commons/10.3389-fchem.2025.1525245/preparation/cuag-nw"
+    },
+    {
+      "id": "scale:commons/10.3389-fchem.2025.1525245/link/12",
+      "type": "HAS_OUTPUT",
+      "props": {
+        "evidence": [
+          {
+            "id": "e",
+            "kind": "text",
+            "locator": "p. 7, section 3.2",
+            "quote": "Cu nanowires are ﬁrst prepared using a hydrothermal method",
+            "source": "scale:commons/source/10.3389-fchem.2025.1525245"
+          }
+        ],
+        "origin": "reported"
+      },
+      "source": "scale:commons/10.3389-fchem.2025.1525245/preparation/cu-nw-hydrothermal",
+      "target": "scale:commons/10.3389-fchem.2025.1525245/sample/cu-nw-int"
+    },
+    {
+      "id": "scale:commons/10.3389-fchem.2025.1525245/link/13",
+      "type": "HAS_OUTPUT",
+      "props": {
+        "evidence": [
+          {
+            "id": "e",
+            "kind": "text",
+            "locator": "p. 7, section 3.2",
+            "quote": "followed by Ag deposition through the heterogeneous nucleation in liquid",
+            "source": "scale:commons/source/10.3389-fchem.2025.1525245"
+          }
+        ],
+        "origin": "reported"
+      },
+      "source": "scale:commons/10.3389-fchem.2025.1525245/preparation/ag-deposition",
+      "target": "scale:commons/10.3389-fchem.2025.1525245/sample/cuag-nw"
+    },
+    {
+      "id": "scale:commons/10.3389-fchem.2025.1525245/link/14",
+      "type": "HAS_OUTPUT",
+      "props": {
+        "evidence": [
+          {
+            "id": "e",
+            "kind": "text",
+            "locator": "p. 7, section 3.2",
+            "quote": "We synthesize CuAg nanowire as the model system",
+            "source": "scale:commons/source/10.3389-fchem.2025.1525245"
+          }
+        ],
+        "origin": "reported"
+      },
+      "source": "scale:commons/10.3389-fchem.2025.1525245/preparation/cuag-nw",
+      "target": "scale:commons/10.3389-fchem.2025.1525245/sample/cuag-nw"
+    },
+    {
+      "id": "scale:commons/10.3389-fchem.2025.1525245/link/15",
+      "type": "HAS_INPUT",
+      "props": {
+        "evidence": [
+          {
+            "id": "e",
+            "kind": "text",
+            "locator": "p. 7, section 3.2",
+            "quote": "Cu nanowires are ﬁrst prepared using a hydrothermal method, followed by Ag deposition through the heterogeneous nucleation in liquid",
+            "source": "scale:commons/source/10.3389-fchem.2025.1525245"
+          }
+        ],
+        "note": "the Cu nanowires onto which Ag is deposited",
+        "origin": "reported",
+        "role": "material"
+      },
+      "source": "scale:commons/10.3389-fchem.2025.1525245/preparation/ag-deposition",
+      "target": "scale:commons/10.3389-fchem.2025.1525245/sample/cu-nw-int"
+    },
+    {
+      "id": "scale:commons/10.3389-fchem.2025.1525245/link/16",
+      "type": "USES_CATALYST",
+      "props": {
+        "evidence": [
+          {
+            "id": "e",
+            "kind": "text",
+            "locator": "p. 5, section 3.1",
+            "quote": "Cu nanowires are ﬁrst used as the model catalysts for CO2RR in CO2-saturated 0.1 M KHCO3 electrolyte",
+            "source": "scale:commons/source/10.3389-fchem.2025.1525245"
+          }
+        ],
+        "origin": "reported",
+        "state": "as_prepared"
+      },
+      "source": "scale:commons/10.3389-fchem.2025.1525245/test/cu-nw-ectem",
+      "target": "scale:commons/10.3389-fchem.2025.1525245/sample/cu-nw"
+    },
+    {
+      "id": "scale:commons/10.3389-fchem.2025.1525245/link/17",
+      "type": "OF_REACTION",
+      "props": {
+        "evidence": [
+          {
+            "id": "e",
+            "kind": "text",
+            "locator": "p. 5, section 3.1",
+            "quote": "Cu nanowires are ﬁrst used as the model catalysts for CO2RR in CO2-saturated 0.1 M KHCO3 electrolyte",
+            "source": "scale:commons/source/10.3389-fchem.2025.1525245"
+          }
+        ],
+        "origin": "reported"
+      },
+      "source": "scale:commons/10.3389-fchem.2025.1525245/test/cu-nw-ectem",
+      "target": "scale:commons/10.3389-fchem.2025.1525245/reaction/co2rr"
+    },
+    {
+      "id": "scale:commons/10.3389-fchem.2025.1525245/link/18",
+      "type": "IN_ELECTROLYTE",
+      "props": {
+        "evidence": [
+          {
+            "id": "e",
+            "kind": "text",
+            "locator": "p. 5, section 3.1",
+            "quote": "Cu nanowires are ﬁrst used as the model catalysts for CO2RR in CO2-saturated 0.1 M KHCO3 electrolyte",
+            "source": "scale:commons/source/10.3389-fchem.2025.1525245"
+          }
+        ],
+        "origin": "reported"
+      },
+      "source": "scale:commons/10.3389-fchem.2025.1525245/test/cu-nw-ectem",
+      "target": "scale:commons/10.3389-fchem.2025.1525245/electrolyte/khco3-co2"
+    },
+    {
+      "id": "scale:commons/10.3389-fchem.2025.1525245/link/19",
+      "type": "IN_CELL",
+      "props": {
+        "evidence": [
+          {
+            "id": "e",
+            "kind": "text",
+            "locator": "p. 3, section 2.1",
+            "quote": "The polymer electrochemical liquid cells with the two-electrode system allows for measurement of electrocatalytic reactions",
+            "source": "scale:commons/source/10.3389-fchem.2025.1525245"
+          }
+        ],
+        "origin": "reported"
+      },
+      "source": "scale:commons/10.3389-fchem.2025.1525245/test/cu-nw-ectem",
+      "target": "scale:commons/10.3389-fchem.2025.1525245/cell/polymer-liquid-cell"
+    },
+    {
+      "id": "scale:commons/10.3389-fchem.2025.1525245/link/2",
+      "type": "HAS_FORMULATION",
+      "props": {
+        "evidence": [
+          {
+            "id": "e",
+            "kind": "text",
+            "locator": "p. 7, section 3.2",
+            "quote": "Cu nanowires are ﬁrst prepared using a hydrothermal method",
+            "source": "scale:commons/source/10.3389-fchem.2025.1525245"
+          }
+        ],
+        "origin": "reported"
+      },
+      "source": "scale:commons/10.3389-fchem.2025.1525245/sample/cu-nw-int",
+      "target": "scale:commons/10.3389-fchem.2025.1525245/catalyst/cu-nw"
+    },
+    {
+      "id": "scale:commons/10.3389-fchem.2025.1525245/link/20",
+      "type": "USES_ELECTRODE",
+      "props": {
+        "evidence": [
+          {
+            "id": "e",
+            "kind": "text",
+            "locator": "p. 5, section 2.2",
+            "note": "end of the p. 4-5 sentence saying the nanocatalysts are drop-cast onto the electrodes of the liquid-cell bottom chip; the sentence's start is on p. 4",
+            "quote": "electrodes of the electrochemical liquid cell bottom chip",
+            "source": "scale:commons/source/10.3389-fchem.2025.1525245"
+          }
+        ],
+        "origin": "reported",
+        "role": "working"
+      },
+      "source": "scale:commons/10.3389-fchem.2025.1525245/test/cu-nw-ectem",
+      "target": "scale:commons/10.3389-fchem.2025.1525245/electrode/we-cu-nw"
+    },
+    {
+      "id": "scale:commons/10.3389-fchem.2025.1525245/link/21",
+      "type": "USES_ELECTRODE",
+      "props": {
+        "evidence": [
+          {
+            "id": "e",
+            "kind": "text",
+            "locator": "p. 5, section 3.1",
+            "quote": "under the potential of −1.1 V vs. Pt counter electrode",
+            "source": "scale:commons/source/10.3389-fchem.2025.1525245"
+          }
+        ],
+        "origin": "reported",
+        "role": "counter"
+      },
+      "source": "scale:commons/10.3389-fchem.2025.1525245/test/cu-nw-ectem",
+      "target": "scale:commons/10.3389-fchem.2025.1525245/electrode/ce-pt"
+    },
+    {
+      "id": "scale:commons/10.3389-fchem.2025.1525245/link/22",
+      "type": "USES_CATALYST",
+      "props": {
+        "evidence": [
+          {
+            "id": "e",
+            "kind": "text",
+            "locator": "p. 7, section 3.2",
+            "quote": "TEM characterizations of the CuAg nanowires are carried out after CO2RR at −1.0 V vs. RHE",
+            "source": "scale:commons/source/10.3389-fchem.2025.1525245"
+          }
+        ],
+        "origin": "reported",
+        "state": "as_prepared"
+      },
+      "source": "scale:commons/10.3389-fchem.2025.1525245/test/cuag-corr",
+      "target": "scale:commons/10.3389-fchem.2025.1525245/sample/cuag-nw"
+    },
+    {
+      "id": "scale:commons/10.3389-fchem.2025.1525245/link/23",
+      "type": "OF_REACTION",
+      "props": {
+        "evidence": [
+          {
+            "id": "e",
+            "kind": "text",
+            "locator": "p. 7, section 3.2",
+            "quote": "TEM characterizations of the CuAg nanowires are carried out after CO2RR at −1.0 V vs. RHE",
+            "source": "scale:commons/source/10.3389-fchem.2025.1525245"
+          }
+        ],
+        "origin": "reported"
+      },
+      "source": "scale:commons/10.3389-fchem.2025.1525245/test/cuag-corr",
+      "target": "scale:commons/10.3389-fchem.2025.1525245/reaction/co2rr"
+    },
+    {
+      "id": "scale:commons/10.3389-fchem.2025.1525245/link/24",
+      "type": "CHARACTERIZES",
+      "props": {
+        "origin": "reported",
+        "state": "operating"
+      },
+      "source": "scale:commons/10.3389-fchem.2025.1525245/ch/cu-insitu-haadf",
+      "target": "scale:commons/10.3389-fchem.2025.1525245/sample/cu-nw"
+    },
+    {
+      "id": "scale:commons/10.3389-fchem.2025.1525245/link/25",
+      "type": "CHARACTERIZES",
+      "props": {
+        "origin": "reported",
+        "state": "spent"
+      },
+      "source": "scale:commons/10.3389-fchem.2025.1525245/ch/cu-eds-post",
+      "target": "scale:commons/10.3389-fchem.2025.1525245/sample/cu-nw"
+    },
+    {
+      "id": "scale:commons/10.3389-fchem.2025.1525245/link/26",
+      "type": "CHARACTERIZES",
+      "props": {
+        "origin": "reported",
+        "state": "operating"
+      },
+      "source": "scale:commons/10.3389-fchem.2025.1525245/ch/cu-cryoem",
+      "target": "scale:commons/10.3389-fchem.2025.1525245/sample/cu-nw"
+    },
+    {
+      "id": "scale:commons/10.3389-fchem.2025.1525245/link/27",
+      "type": "CHARACTERIZES",
+      "props": {
+        "origin": "reported",
+        "state": "operating"
+      },
+      "source": "scale:commons/10.3389-fchem.2025.1525245/ch/cu-eels",
+      "target": "scale:commons/10.3389-fchem.2025.1525245/sample/cu-nw"
+    },
+    {
+      "id": "scale:commons/10.3389-fchem.2025.1525245/link/28",
+      "type": "CHARACTERIZES",
+      "props": {
+        "origin": "reported",
+        "state": "operating"
+      },
+      "source": "scale:commons/10.3389-fchem.2025.1525245/ch/cu-hrtem-dyn",
+      "target": "scale:commons/10.3389-fchem.2025.1525245/sample/cu-nw"
+    },
+    {
+      "id": "scale:commons/10.3389-fchem.2025.1525245/link/29",
+      "type": "CHARACTERIZES",
+      "props": {
+        "origin": "reported",
+        "state": "operating"
+      },
+      "source": "scale:commons/10.3389-fchem.2025.1525245/ch/cu-hrtem-atomic",
+      "target": "scale:commons/10.3389-fchem.2025.1525245/sample/cu-nw"
+    },
+    {
+      "id": "scale:commons/10.3389-fchem.2025.1525245/link/3",
+      "type": "HAS_FORMULATION",
+      "props": {
+        "evidence": [
+          {
+            "id": "e",
+            "kind": "text",
+            "locator": "p. 7, section 3.2",
+            "quote": "We synthesize CuAg nanowire as the model system",
+            "source": "scale:commons/source/10.3389-fchem.2025.1525245"
+          }
+        ],
+        "origin": "reported"
+      },
+      "source": "scale:commons/10.3389-fchem.2025.1525245/sample/cuag-nw",
+      "target": "scale:commons/10.3389-fchem.2025.1525245/catalyst/cuag-nw"
+    },
+    {
+      "id": "scale:commons/10.3389-fchem.2025.1525245/link/30",
+      "type": "CHARACTERIZES",
+      "props": {
+        "origin": "reported",
+        "state": "not_reported"
+      },
+      "source": "scale:commons/10.3389-fchem.2025.1525245/ch/cu-exsitu-control",
+      "target": "scale:commons/10.3389-fchem.2025.1525245/sample/cu-nw"
+    },
+    {
+      "id": "scale:commons/10.3389-fchem.2025.1525245/link/31",
+      "type": "CHARACTERIZES",
+      "props": {
+        "origin": "reported",
+        "state": "as_prepared"
+      },
+      "source": "scale:commons/10.3389-fchem.2025.1525245/ch/cuag-haadf-pre",
+      "target": "scale:commons/10.3389-fchem.2025.1525245/sample/cuag-nw"
+    },
+    {
+      "id": "scale:commons/10.3389-fchem.2025.1525245/link/32",
+      "type": "CHARACTERIZES",
+      "props": {
+        "origin": "reported",
+        "state": "spent"
+      },
+      "source": "scale:commons/10.3389-fchem.2025.1525245/ch/cuag-tem-post",
+      "target": "scale:commons/10.3389-fchem.2025.1525245/sample/cuag-nw"
+    },
+    {
+      "id": "scale:commons/10.3389-fchem.2025.1525245/link/33",
+      "type": "CHARACTERIZES",
+      "props": {
+        "origin": "reported",
+        "state": "operating"
+      },
+      "source": "scale:commons/10.3389-fchem.2025.1525245/ch/cuag-xas",
+      "target": "scale:commons/10.3389-fchem.2025.1525245/sample/cuag-nw"
+    },
+    {
+      "id": "scale:commons/10.3389-fchem.2025.1525245/link/34",
+      "type": "DURING",
+      "props": {
+        "origin": "reported",
+        "specimen": "same_specimen"
+      },
+      "source": "scale:commons/10.3389-fchem.2025.1525245/ch/cu-insitu-haadf",
+      "target": "scale:commons/10.3389-fchem.2025.1525245/test/cu-nw-ectem"
+    },
+    {
+      "id": "scale:commons/10.3389-fchem.2025.1525245/link/35",
+      "type": "DURING",
+      "props": {
+        "note": "the working catalyst is fast-frozen during the test, then imaged",
+        "origin": "reported",
+        "specimen": "same_specimen"
+      },
+      "source": "scale:commons/10.3389-fchem.2025.1525245/ch/cu-cryoem",
+      "target": "scale:commons/10.3389-fchem.2025.1525245/test/cu-nw-ectem"
+    },
+    {
+      "id": "scale:commons/10.3389-fchem.2025.1525245/link/36",
+      "type": "DURING",
+      "props": {
+        "note": "on the fast-frozen working catalyst (cryo-EM)",
+        "origin": "reported",
+        "specimen": "same_specimen"
+      },
+      "source": "scale:commons/10.3389-fchem.2025.1525245/ch/cu-eels",
+      "target": "scale:commons/10.3389-fchem.2025.1525245/test/cu-nw-ectem"
+    },
+    {
+      "id": "scale:commons/10.3389-fchem.2025.1525245/link/37",
+      "type": "DURING",
+      "props": {
+        "origin": "reported",
+        "specimen": "same_specimen"
+      },
+      "source": "scale:commons/10.3389-fchem.2025.1525245/ch/cu-hrtem-dyn",
+      "target": "scale:commons/10.3389-fchem.2025.1525245/test/cu-nw-ectem"
+    },
+    {
+      "id": "scale:commons/10.3389-fchem.2025.1525245/link/38",
+      "type": "DURING",
+      "props": {
+        "origin": "reported",
+        "specimen": "same_specimen"
+      },
+      "source": "scale:commons/10.3389-fchem.2025.1525245/ch/cu-hrtem-atomic",
+      "target": "scale:commons/10.3389-fchem.2025.1525245/test/cu-nw-ectem"
+    },
+    {
+      "id": "scale:commons/10.3389-fchem.2025.1525245/link/39",
+      "type": "DURING",
+      "props": {
+        "note": "operando XAS during electrocatalysis at −1.0 V vs. RHE; the source does not state which specimen or whether kinetics were measured in the XAS cell",
+        "origin": "reported"
+      },
+      "source": "scale:commons/10.3389-fchem.2025.1525245/ch/cuag-xas",
+      "target": "scale:commons/10.3389-fchem.2025.1525245/test/cuag-corr"
+    },
+    {
+      "id": "scale:commons/10.3389-fchem.2025.1525245/link/4",
+      "type": "HAS_COMPONENT",
+      "props": {
+        "evidence": [
+          {
+            "id": "e",
+            "kind": "text",
+            "locator": "p. 5, section 3.1",
+            "quote": "the nanowires are composed of pure copper",
+            "source": "scale:commons/source/10.3389-fchem.2025.1525245"
+          }
+        ],
+        "origin": "reported",
+        "role": "active_phase"
+      },
+      "source": "scale:commons/10.3389-fchem.2025.1525245/catalyst/cu-nw",
+      "target": "scale:commons/10.3389-fchem.2025.1525245/species/cu"
+    },
+    {
+      "id": "scale:commons/10.3389-fchem.2025.1525245/link/40",
+      "type": "CONTROL_FOR",
+      "props": {
+        "control_kind": "negative",
+        "differs_in": [
+          "scale:commons/10.3389-fchem.2025.1525245/variable/beam-exposure"
+        ],
+        "note": "ex-situ controls rule out electron-beam irradiation as the origin of the amorphous structure",
+        "origin": "reported"
+      },
+      "source": "scale:commons/10.3389-fchem.2025.1525245/ch/cu-exsitu-control",
+      "target": "scale:commons/10.3389-fchem.2025.1525245/ch/cu-cryoem"
+    },
+    {
+      "id": "scale:commons/10.3389-fchem.2025.1525245/link/41",
+      "type": "DETECTS",
+      "props": {
+        "dominance": "majority",
+        "evidence": [
+          {
+            "id": "e",
+            "kind": "text",
+            "locator": "p. 5, section 3.1",
+            "quote": "the EDS analysis indicates that the nanowires are composed of pure copper",
+            "source": "scale:commons/source/10.3389-fchem.2025.1525245"
+          }
+        ],
+        "location": "whole_particle",
+        "note": "a uniform distribution of Cu throughout the nanowire",
+        "origin": "reported"
+      },
+      "source": "scale:commons/10.3389-fchem.2025.1525245/ch/cu-eds-post",
+      "target": "scale:commons/10.3389-fchem.2025.1525245/material/cu-metal"
+    },
+    {
+      "id": "scale:commons/10.3389-fchem.2025.1525245/link/42",
+      "type": "DETECTS",
+      "props": {
+        "evidence": [
+          {
+            "id": "e",
+            "kind": "text",
+            "locator": "p. 5, section 3.1",
+            "quote": "the EDS analysis indicates that the nanowires are composed of pure copper, with no detectable oxidized surface layer",
+            "source": "scale:commons/source/10.3389-fchem.2025.1525245"
+          }
+        ],
+        "location": "surface",
+        "negated": true,
+        "note": "O levels between the nanowire and the background electrolyte remain similar; no detectable oxidized surface layer",
+        "origin": "reported"
+      },
+      "source": "scale:commons/10.3389-fchem.2025.1525245/ch/cu-eds-post",
+      "target": "scale:commons/10.3389-fchem.2025.1525245/material/cu2o"
+    },
+    {
+      "id": "scale:commons/10.3389-fchem.2025.1525245/link/43",
+      "type": "DETECTS",
+      "props": {
+        "evidence": [
+          {
+            "id": "e",
+            "kind": "text",
+            "locator": "p. 5, section 3.1",
+            "quote": "a thin amorphous layer is present on the Cu surface",
+            "source": "scale:commons/source/10.3389-fchem.2025.1525245"
+          }
+        ],
+        "location": "surface",
+        "origin": "reported"
+      },
+      "source": "scale:commons/10.3389-fchem.2025.1525245/ch/cu-cryoem",
+      "target": "scale:commons/10.3389-fchem.2025.1525245/material/cu-amorphous"
+    },
+    {
+      "id": "scale:commons/10.3389-fchem.2025.1525245/link/44",
+      "type": "DETECTS",
+      "props": {
+        "evidence": [
+          {
+            "id": "e",
+            "kind": "text",
+            "locator": "p. 6, section 3.1",
+            "quote": "only Cu0 signals are detected within the crystalline Cu region",
+            "source": "scale:commons/source/10.3389-fchem.2025.1525245"
+          }
+        ],
+        "note": "only Cu0 signals detected within the crystalline Cu region",
+        "origin": "reported"
+      },
+      "source": "scale:commons/10.3389-fchem.2025.1525245/ch/cu-eels",
+      "target": "scale:commons/10.3389-fchem.2025.1525245/species/cu"
+    },
+    {
+      "id": "scale:commons/10.3389-fchem.2025.1525245/link/45",
+      "type": "DETECTS",
+      "props": {
+        "evidence": [
+          {
+            "id": "e",
+            "kind": "text",
+            "locator": "p. 6, section 3.1",
+            "quote": "a peak corresponding to Cu⁺ ions emerges and intensiﬁes with distance from the interface",
+            "source": "scale:commons/source/10.3389-fchem.2025.1525245"
+          }
+        ],
+        "location": "surface",
+        "note": "a Cu+ peak emerges and intensifies with distance from the interface, within the amorphous interphase",
+        "origin": "reported"
+      },
+      "source": "scale:commons/10.3389-fchem.2025.1525245/ch/cu-eels",
+      "target": "scale:commons/10.3389-fchem.2025.1525245/species/cu-ion"
+    },
+    {
+      "id": "scale:commons/10.3389-fchem.2025.1525245/link/46",
+      "type": "DETECTS",
+      "props": {
+        "evidence": [
+          {
+            "id": "e",
+            "kind": "text",
+            "locator": "p. 5, section 3.1",
+            "quote": "an amorphous layer forms and grows into the crystalline Cu",
+            "source": "scale:commons/source/10.3389-fchem.2025.1525245"
+          }
+        ],
+        "location": "surface",
+        "note": "the amorphous layer forms and grows into the crystalline Cu, with opposing projected-area trends (interconversion)",
+        "origin": "reported"
+      },
+      "source": "scale:commons/10.3389-fchem.2025.1525245/ch/cu-hrtem-dyn",
+      "target": "scale:commons/10.3389-fchem.2025.1525245/material/cu-amorphous"
+    },
+    {
+      "id": "scale:commons/10.3389-fchem.2025.1525245/link/47",
+      "type": "DETECTS",
+      "props": {
+        "evidence": [
+          {
+            "id": "e",
+            "kind": "text",
+            "locator": "p. 7, section 3.2",
+            "quote": "HRTEM image also conﬁrms the atomic crystalline structure of the Cu core and Ag shell",
+            "source": "scale:commons/source/10.3389-fchem.2025.1525245"
+          }
+        ],
+        "note": "Cu core of the nanowire",
+        "origin": "reported"
+      },
+      "source": "scale:commons/10.3389-fchem.2025.1525245/ch/cuag-haadf-pre",
+      "target": "scale:commons/10.3389-fchem.2025.1525245/material/cu-metal"
+    },
+    {
+      "id": "scale:commons/10.3389-fchem.2025.1525245/link/48",
+      "type": "DETECTS",
+      "props": {
+        "evidence": [
+          {
+            "id": "e",
+            "kind": "text",
+            "locator": "p. 7, section 3.2",
+            "quote": "The Cu nanowire is covered with an ultrathin Ag layer, forming a core-shell conﬁguration",
+            "source": "scale:commons/source/10.3389-fchem.2025.1525245"
+          }
+        ],
+        "location": "overlayer",
+        "note": "ultrathin Ag shell",
+        "origin": "reported"
+      },
+      "source": "scale:commons/10.3389-fchem.2025.1525245/ch/cuag-haadf-pre",
+      "target": "scale:commons/10.3389-fchem.2025.1525245/material/ag-metal"
+    },
+    {
+      "id": "scale:commons/10.3389-fchem.2025.1525245/link/49",
+      "type": "DETECTS",
+      "props": {
+        "evidence": [
+          {
+            "id": "e",
+            "kind": "text",
+            "locator": "p. 7, section 3.2",
+            "quote": "granular Cu nanoparticles generated from the as-prepared CuAg nanowire, resulting in the formation of voids and cracks inside the nanowire",
+            "source": "scale:commons/source/10.3389-fchem.2025.1525245"
+          }
+        ],
+        "location": "separate_domain",
+        "note": "granular Cu nanoparticles generated from the as-prepared CuAg nanowire; voids and cracks inside the nanowire",
+        "origin": "reported"
+      },
+      "source": "scale:commons/10.3389-fchem.2025.1525245/ch/cuag-tem-post",
+      "target": "scale:commons/10.3389-fchem.2025.1525245/material/cu-metal"
+    },
+    {
+      "id": "scale:commons/10.3389-fchem.2025.1525245/link/5",
+      "type": "HAS_COMPONENT",
+      "props": {
+        "evidence": [
+          {
+            "id": "e",
+            "kind": "text",
+            "locator": "p. 7, section 3.2",
+            "quote": "HRTEM image also conﬁrms the atomic crystalline structure of the Cu core and Ag shell",
+            "source": "scale:commons/source/10.3389-fchem.2025.1525245"
+          }
+        ],
+        "note": "Cu core of the CuAg nanowire",
+        "origin": "reported",
+        "role": "active_component"
+      },
+      "source": "scale:commons/10.3389-fchem.2025.1525245/catalyst/cuag-nw",
+      "target": "scale:commons/10.3389-fchem.2025.1525245/species/cu"
+    },
+    {
+      "id": "scale:commons/10.3389-fchem.2025.1525245/link/50",
+      "type": "DETECTS",
+      "props": {
+        "evidence": [
+          {
+            "id": "e",
+            "kind": "text",
+            "locator": "p. 7, section 3.2",
+            "quote": "compared with Cu, Ag is relatively stable without obvious change of distribution",
+            "source": "scale:commons/source/10.3389-fchem.2025.1525245"
+          }
+        ],
+        "note": "compared with Cu, Ag is relatively stable without obvious change of distribution",
+        "origin": "reported"
+      },
+      "source": "scale:commons/10.3389-fchem.2025.1525245/ch/cuag-tem-post",
+      "target": "scale:commons/10.3389-fchem.2025.1525245/material/ag-metal"
+    },
+    {
+      "id": "scale:commons/10.3389-fchem.2025.1525245/link/51",
+      "type": "STATE_OF",
+      "props": {
+        "origin": "reported"
+      },
+      "source": "scale:commons/10.3389-fchem.2025.1525245/state/cu-working",
+      "target": "scale:commons/10.3389-fchem.2025.1525245/sample/cu-nw"
+    },
+    {
+      "id": "scale:commons/10.3389-fchem.2025.1525245/link/52",
+      "type": "STATE_OF",
+      "props": {
+        "origin": "reported"
+      },
+      "source": "scale:commons/10.3389-fchem.2025.1525245/state/cu-post-eds",
+      "target": "scale:commons/10.3389-fchem.2025.1525245/sample/cu-nw"
+    },
+    {
+      "id": "scale:commons/10.3389-fchem.2025.1525245/link/53",
+      "type": "STATE_OF",
+      "props": {
+        "origin": "reported"
+      },
+      "source": "scale:commons/10.3389-fchem.2025.1525245/state/cuag-asprepared",
+      "target": "scale:commons/10.3389-fchem.2025.1525245/sample/cuag-nw"
+    },
+    {
+      "id": "scale:commons/10.3389-fchem.2025.1525245/link/54",
+      "type": "STATE_OF",
+      "props": {
+        "origin": "reported"
+      },
+      "source": "scale:commons/10.3389-fchem.2025.1525245/state/cuag-working",
+      "target": "scale:commons/10.3389-fchem.2025.1525245/sample/cuag-nw"
+    },
+    {
+      "id": "scale:commons/10.3389-fchem.2025.1525245/link/55",
+      "type": "STATE_OF",
+      "props": {
+        "origin": "reported"
+      },
+      "source": "scale:commons/10.3389-fchem.2025.1525245/state/cuag-post",
+      "target": "scale:commons/10.3389-fchem.2025.1525245/sample/cuag-nw"
+    },
+    {
+      "id": "scale:commons/10.3389-fchem.2025.1525245/link/56",
+      "type": "REACHED_BY",
+      "props": {
+        "origin": "reported",
+        "timing": "during"
+      },
+      "source": "scale:commons/10.3389-fchem.2025.1525245/state/cu-working",
+      "target": "scale:commons/10.3389-fchem.2025.1525245/test/cu-nw-ectem"
+    },
+    {
+      "id": "scale:commons/10.3389-fchem.2025.1525245/link/57",
+      "type": "REACHED_BY",
+      "props": {
+        "origin": "reported",
+        "timing": "after"
+      },
+      "source": "scale:commons/10.3389-fchem.2025.1525245/state/cu-post-eds",
+      "target": "scale:commons/10.3389-fchem.2025.1525245/test/cu-nw-ectem"
+    },
+    {
+      "id": "scale:commons/10.3389-fchem.2025.1525245/link/58",
+      "type": "REACHED_BY",
+      "props": {
+        "origin": "reported",
+        "timing": "during"
+      },
+      "source": "scale:commons/10.3389-fchem.2025.1525245/state/cuag-working",
+      "target": "scale:commons/10.3389-fchem.2025.1525245/test/cuag-corr"
+    },
+    {
+      "id": "scale:commons/10.3389-fchem.2025.1525245/link/59",
+      "type": "REACHED_BY",
+      "props": {
+        "origin": "reported",
+        "timing": "after"
+      },
+      "source": "scale:commons/10.3389-fchem.2025.1525245/state/cuag-post",
+      "target": "scale:commons/10.3389-fchem.2025.1525245/test/cuag-corr"
+    },
+    {
+      "id": "scale:commons/10.3389-fchem.2025.1525245/link/6",
+      "type": "HAS_COMPONENT",
+      "props": {
+        "evidence": [
+          {
+            "id": "e",
+            "kind": "text",
+            "locator": "p. 7, section 3.2",
+            "quote": "The Cu nanowire is covered with an ultrathin Ag layer, forming a core-shell conﬁguration",
+            "source": "scale:commons/source/10.3389-fchem.2025.1525245"
+          }
+        ],
+        "note": "ultrathin Ag shell of the CuAg nanowire",
+        "origin": "reported",
+        "role": "other"
+      },
+      "source": "scale:commons/10.3389-fchem.2025.1525245/catalyst/cuag-nw",
+      "target": "scale:commons/10.3389-fchem.2025.1525245/species/ag"
+    },
+    {
+      "id": "scale:commons/10.3389-fchem.2025.1525245/link/60",
+      "type": "REACHED_BY",
+      "props": {
+        "origin": "reported",
+        "timing": "after"
+      },
+      "source": "scale:commons/10.3389-fchem.2025.1525245/state/cuag-asprepared",
+      "target": "scale:commons/10.3389-fchem.2025.1525245/preparation/ag-deposition"
+    },
+    {
+      "id": "scale:commons/10.3389-fchem.2025.1525245/link/61",
+      "type": "DETERMINED_BY",
+      "props": {
+        "origin": "reported"
+      },
+      "source": "scale:commons/10.3389-fchem.2025.1525245/state/cu-working",
+      "target": "scale:commons/10.3389-fchem.2025.1525245/ch/cu-insitu-haadf"
+    },
+    {
+      "id": "scale:commons/10.3389-fchem.2025.1525245/link/62",
+      "type": "DETERMINED_BY",
+      "props": {
+        "origin": "reported"
+      },
+      "source": "scale:commons/10.3389-fchem.2025.1525245/state/cu-working",
+      "target": "scale:commons/10.3389-fchem.2025.1525245/ch/cu-cryoem"
+    },
+    {
+      "id": "scale:commons/10.3389-fchem.2025.1525245/link/63",
+      "type": "DETERMINED_BY",
+      "props": {
+        "origin": "reported"
+      },
+      "source": "scale:commons/10.3389-fchem.2025.1525245/state/cu-working",
+      "target": "scale:commons/10.3389-fchem.2025.1525245/ch/cu-eels"
+    },
+    {
+      "id": "scale:commons/10.3389-fchem.2025.1525245/link/64",
+      "type": "DETERMINED_BY",
+      "props": {
+        "origin": "reported"
+      },
+      "source": "scale:commons/10.3389-fchem.2025.1525245/state/cu-working",
+      "target": "scale:commons/10.3389-fchem.2025.1525245/ch/cu-hrtem-dyn"
+    },
+    {
+      "id": "scale:commons/10.3389-fchem.2025.1525245/link/65",
+      "type": "DETERMINED_BY",
+      "props": {
+        "origin": "reported"
+      },
+      "source": "scale:commons/10.3389-fchem.2025.1525245/state/cu-working",
+      "target": "scale:commons/10.3389-fchem.2025.1525245/ch/cu-hrtem-atomic"
+    },
+    {
+      "id": "scale:commons/10.3389-fchem.2025.1525245/link/66",
+      "type": "DETERMINED_BY",
+      "props": {
+        "origin": "reported"
+      },
+      "source": "scale:commons/10.3389-fchem.2025.1525245/state/cu-post-eds",
+      "target": "scale:commons/10.3389-fchem.2025.1525245/ch/cu-eds-post"
+    },
+    {
+      "id": "scale:commons/10.3389-fchem.2025.1525245/link/67",
+      "type": "DETERMINED_BY",
+      "props": {
+        "origin": "reported"
+      },
+      "source": "scale:commons/10.3389-fchem.2025.1525245/state/cuag-asprepared",
+      "target": "scale:commons/10.3389-fchem.2025.1525245/ch/cuag-haadf-pre"
+    },
+    {
+      "id": "scale:commons/10.3389-fchem.2025.1525245/link/68",
+      "type": "DETERMINED_BY",
+      "props": {
+        "origin": "reported"
+      },
+      "source": "scale:commons/10.3389-fchem.2025.1525245/state/cuag-working",
+      "target": "scale:commons/10.3389-fchem.2025.1525245/ch/cuag-xas"
+    },
+    {
+      "id": "scale:commons/10.3389-fchem.2025.1525245/link/69",
+      "type": "DETERMINED_BY",
+      "props": {
+        "origin": "reported"
+      },
+      "source": "scale:commons/10.3389-fchem.2025.1525245/state/cuag-post",
+      "target": "scale:commons/10.3389-fchem.2025.1525245/ch/cuag-tem-post"
+    },
+    {
+      "id": "scale:commons/10.3389-fchem.2025.1525245/link/7",
+      "type": "HAS_COMPONENT",
+      "props": {
+        "concentration": {
+          "status": "present",
+          "as_reported": "0.1M KHCO3",
+          "unit": "mol/L",
+          "value": 0.1
+        },
+        "evidence": [
+          {
+            "id": "e",
+            "kind": "text",
+            "locator": "p. 5, section 3.1",
+            "quote": "CO2-saturated 0.1 M KHCO3 electrolyte",
+            "source": "scale:commons/source/10.3389-fchem.2025.1525245"
+          }
+        ],
+        "note": "electrolyte salt (KHCO3, 0.1 M)",
+        "origin": "reported",
+        "role": "other"
+      },
+      "source": "scale:commons/10.3389-fchem.2025.1525245/electrolyte/khco3-co2",
+      "target": "scale:commons/10.3389-fchem.2025.1525245/species/khco3"
+    },
+    {
+      "id": "scale:commons/10.3389-fchem.2025.1525245/link/70",
+      "type": "HAS_PHASE",
+      "props": {
+        "dominance": "majority",
+        "note": "crystalline Cu0 throughout the reaction",
+        "origin": "reported"
+      },
+      "source": "scale:commons/10.3389-fchem.2025.1525245/state/cu-working",
+      "target": "scale:commons/10.3389-fchem.2025.1525245/material/cu-metal"
+    },
+    {
+      "id": "scale:commons/10.3389-fchem.2025.1525245/link/71",
+      "type": "HAS_PHASE",
+      "props": {
+        "location": "surface",
+        "note": "thin amorphous interphase at the surface; forms and fluctuates",
+        "origin": "reported"
+      },
+      "source": "scale:commons/10.3389-fchem.2025.1525245/state/cu-working",
+      "target": "scale:commons/10.3389-fchem.2025.1525245/material/cu-amorphous"
+    },
+    {
+      "id": "scale:commons/10.3389-fchem.2025.1525245/link/72",
+      "type": "HAS_PHASE",
+      "props": {
+        "dominance": "majority",
+        "note": "pure copper; no detectable oxidized surface layer",
+        "origin": "reported"
+      },
+      "source": "scale:commons/10.3389-fchem.2025.1525245/state/cu-post-eds",
+      "target": "scale:commons/10.3389-fchem.2025.1525245/material/cu-metal"
+    },
+    {
+      "id": "scale:commons/10.3389-fchem.2025.1525245/link/73",
+      "type": "HAS_PHASE",
+      "props": {
+        "layer": 1,
+        "note": "Cu core",
+        "origin": "reported"
+      },
+      "source": "scale:commons/10.3389-fchem.2025.1525245/state/cuag-asprepared",
+      "target": "scale:commons/10.3389-fchem.2025.1525245/material/cu-metal"
+    },
+    {
+      "id": "scale:commons/10.3389-fchem.2025.1525245/link/74",
+      "type": "HAS_PHASE",
+      "props": {
+        "layer": 2,
+        "location": "overlayer",
+        "note": "ultrathin Ag shell",
+        "origin": "reported"
+      },
+      "source": "scale:commons/10.3389-fchem.2025.1525245/state/cuag-asprepared",
+      "target": "scale:commons/10.3389-fchem.2025.1525245/material/ag-metal"
+    },
+    {
+      "id": "scale:commons/10.3389-fchem.2025.1525245/link/75",
+      "type": "HAS_PHASE",
+      "props": {
+        "dominance": "majority",
+        "note": "metallic Cu phase maintained during electrocatalytic conditions",
+        "origin": "reported"
+      },
+      "source": "scale:commons/10.3389-fchem.2025.1525245/state/cuag-working",
+      "target": "scale:commons/10.3389-fchem.2025.1525245/material/cu-metal"
+    },
+    {
+      "id": "scale:commons/10.3389-fchem.2025.1525245/link/76",
+      "type": "HAS_PHASE",
+      "props": {
+        "location": "separate_domain",
+        "note": "granular Cu nanoparticles; voids and cracks inside the nanowire",
+        "origin": "reported"
+      },
+      "source": "scale:commons/10.3389-fchem.2025.1525245/state/cuag-post",
+      "target": "scale:commons/10.3389-fchem.2025.1525245/material/cu-metal"
+    },
+    {
+      "id": "scale:commons/10.3389-fchem.2025.1525245/link/77",
+      "type": "HAS_PHASE",
+      "props": {
+        "note": "Ag relatively stable without obvious change of distribution",
+        "origin": "reported"
+      },
+      "source": "scale:commons/10.3389-fchem.2025.1525245/state/cuag-post",
+      "target": "scale:commons/10.3389-fchem.2025.1525245/material/ag-metal"
+    },
+    {
+      "id": "scale:commons/10.3389-fchem.2025.1525245/link/78",
+      "type": "HAS_SITE",
+      "props": {
+        "status": "hypothesized",
+        "evidence": [
+          {
+            "id": "e",
+            "kind": "text",
+            "locator": "p. 5-6, section 3.1",
+            "quote": "the increased surface curvature generates a high density of active sites that enhance catalytic activity",
+            "source": "scale:commons/source/10.3389-fchem.2025.1525245"
+          }
+        ],
+        "note": "the authors anticipate that the increased surface curvature generates a high density of active sites; the stepped surface is proposed to enhance performance",
+        "origin": "reported"
+      },
+      "source": "scale:commons/10.3389-fchem.2025.1525245/state/cu-working",
+      "target": "scale:commons/10.3389-fchem.2025.1525245/site/cu-steps"
+    },
+    {
+      "id": "scale:commons/10.3389-fchem.2025.1525245/link/79",
+      "type": "LOCATED_ON",
+      "props": {
+        "note": "atomic steps and stepped surfaces of the Cu nanowire",
+        "origin": "reported"
+      },
+      "source": "scale:commons/10.3389-fchem.2025.1525245/site/cu-steps",
+      "target": "scale:commons/10.3389-fchem.2025.1525245/material/cu-metal"
+    },
+    {
+      "id": "scale:commons/10.3389-fchem.2025.1525245/link/8",
+      "type": "HAS_COMPONENT",
+      "props": {
+        "concentration": {
+          "status": "not_reported",
+          "missing_reason": "not_stated_in_source"
+        },
+        "evidence": [
+          {
+            "id": "e",
+            "kind": "text",
+            "locator": "p. 5, section 2.2",
+            "quote": "0.1M KHCO3 solution saturated with CO2 gas",
+            "source": "scale:commons/source/10.3389-fchem.2025.1525245"
+          }
+        ],
+        "note": "saturating gas; the electrolyte is saturated with CO2",
+        "origin": "reported",
+        "role": "other"
+      },
+      "source": "scale:commons/10.3389-fchem.2025.1525245/electrolyte/khco3-co2",
+      "target": "scale:commons/10.3389-fchem.2025.1525245/species/co2"
+    },
+    {
+      "id": "scale:commons/10.3389-fchem.2025.1525245/link/80",
+      "type": "CONCLUDES",
+      "props": {
+        "origin": "reported"
+      },
+      "source": "scale:commons/10.3389-fchem.2025.1525245/test/cu-nw-ectem",
+      "target": "scale:commons/10.3389-fchem.2025.1525245/claim/interphase-mediates"
+    },
+    {
+      "id": "scale:commons/10.3389-fchem.2025.1525245/link/81",
+      "type": "CONCLUDES",
+      "props": {
+        "origin": "reported"
+      },
+      "source": "scale:commons/10.3389-fchem.2025.1525245/ch/cu-exsitu-control",
+      "target": "scale:commons/10.3389-fchem.2025.1525245/claim/amorphous-intrinsic"
+    },
+    {
+      "id": "scale:commons/10.3389-fchem.2025.1525245/link/82",
+      "type": "CONCLUDES",
+      "props": {
+        "origin": "reported"
+      },
+      "source": "scale:commons/10.3389-fchem.2025.1525245/ch/cu-hrtem-atomic",
+      "target": "scale:commons/10.3389-fchem.2025.1525245/claim/vacancy-energy"
+    },
+    {
+      "id": "scale:commons/10.3389-fchem.2025.1525245/link/83",
+      "type": "SUPPORTS",
+      "props": {
+        "origin": "reported"
+      },
+      "source": "scale:commons/10.3389-fchem.2025.1525245/ch/cu-cryoem",
+      "target": "scale:commons/10.3389-fchem.2025.1525245/claim/amorphous-intrinsic"
+    },
+    {
+      "id": "scale:commons/10.3389-fchem.2025.1525245/link/84",
+      "type": "SUPPORTS",
+      "props": {
+        "note": "the EELS finding of Cu+ within the amorphous interphase is part of the basis of the proposed mechanism",
+        "origin": "reported"
+      },
+      "source": "scale:commons/10.3389-fchem.2025.1525245/ch/cu-eels",
+      "target": "scale:commons/10.3389-fchem.2025.1525245/claim/stepped-cu0cu1"
+    },
+    {
+      "id": "scale:commons/10.3389-fchem.2025.1525245/link/85",
+      "type": "ABOUT",
+      "props": {
+        "origin": "reported"
+      },
+      "source": "scale:commons/10.3389-fchem.2025.1525245/claim/amorphous-intrinsic",
+      "target": "scale:commons/10.3389-fchem.2025.1525245/state/cu-working"
+    },
+    {
+      "id": "scale:commons/10.3389-fchem.2025.1525245/link/86",
+      "type": "ABOUT",
+      "props": {
+        "origin": "reported"
+      },
+      "source": "scale:commons/10.3389-fchem.2025.1525245/claim/amorphous-intrinsic",
+      "target": "scale:commons/10.3389-fchem.2025.1525245/material/cu-amorphous"
+    },
+    {
+      "id": "scale:commons/10.3389-fchem.2025.1525245/link/87",
+      "type": "ABOUT",
+      "props": {
+        "origin": "reported"
+      },
+      "source": "scale:commons/10.3389-fchem.2025.1525245/claim/beam-crystallizes",
+      "target": "scale:commons/10.3389-fchem.2025.1525245/material/cu2o"
+    },
+    {
+      "id": "scale:commons/10.3389-fchem.2025.1525245/link/88",
+      "type": "ABOUT",
+      "props": {
+        "origin": "reported"
+      },
+      "source": "scale:commons/10.3389-fchem.2025.1525245/claim/beam-crystallizes",
+      "target": "scale:commons/10.3389-fchem.2025.1525245/material/cu-amorphous"
+    },
+    {
+      "id": "scale:commons/10.3389-fchem.2025.1525245/link/89",
+      "type": "ABOUT",
+      "props": {
+        "origin": "reported"
+      },
+      "source": "scale:commons/10.3389-fchem.2025.1525245/claim/vacancy-energy",
+      "target": "scale:commons/10.3389-fchem.2025.1525245/material/cu-amorphous"
+    },
+    {
+      "id": "scale:commons/10.3389-fchem.2025.1525245/link/9",
+      "type": "HAS_PART",
+      "props": {
+        "evidence": [
+          {
+            "id": "e",
+            "kind": "text",
+            "locator": "p. 4-5, section 2.2",
+            "quote": "the as-synthesized nanocatalysts are dispersed in a liquid medium (e.g., ethanol, isopropanol, or others)",
+            "source": "scale:commons/source/10.3389-fchem.2025.1525245"
+          }
+        ],
+        "origin": "reported",
+        "role": "catalyst layer"
+      },
+      "source": "scale:commons/10.3389-fchem.2025.1525245/electrode/we-cu-nw",
+      "target": "scale:commons/10.3389-fchem.2025.1525245/sample/cu-nw"
+    },
+    {
+      "id": "scale:commons/10.3389-fchem.2025.1525245/link/90",
+      "type": "ABOUT",
+      "props": {
+        "origin": "reported"
+      },
+      "source": "scale:commons/10.3389-fchem.2025.1525245/claim/vacancy-energy",
+      "target": "scale:commons/10.3389-fchem.2025.1525245/state/cu-working"
+    },
+    {
+      "id": "scale:commons/10.3389-fchem.2025.1525245/link/91",
+      "type": "ABOUT",
+      "props": {
+        "origin": "reported"
+      },
+      "source": "scale:commons/10.3389-fchem.2025.1525245/claim/interphase-mediates",
+      "target": "scale:commons/10.3389-fchem.2025.1525245/state/cu-working"
+    },
+    {
+      "id": "scale:commons/10.3389-fchem.2025.1525245/link/92",
+      "type": "ABOUT",
+      "props": {
+        "origin": "reported"
+      },
+      "source": "scale:commons/10.3389-fchem.2025.1525245/claim/interphase-mediates",
+      "target": "scale:commons/10.3389-fchem.2025.1525245/reaction/co2rr"
+    },
+    {
+      "id": "scale:commons/10.3389-fchem.2025.1525245/link/93",
+      "type": "ABOUT",
+      "props": {
+        "origin": "reported"
+      },
+      "source": "scale:commons/10.3389-fchem.2025.1525245/claim/stepped-cu0cu1",
+      "target": "scale:commons/10.3389-fchem.2025.1525245/state/cu-working"
+    },
+    {
+      "id": "scale:commons/10.3389-fchem.2025.1525245/link/94",
+      "type": "ABOUT",
+      "props": {
+        "origin": "reported"
+      },
+      "source": "scale:commons/10.3389-fchem.2025.1525245/claim/stepped-cu0cu1",
+      "target": "scale:commons/10.3389-fchem.2025.1525245/reaction/co2rr"
+    },
+    {
+      "id": "scale:commons/10.3389-fchem.2025.1525245/link/95",
+      "type": "ABOUT",
+      "props": {
+        "origin": "reported"
+      },
+      "source": "scale:commons/10.3389-fchem.2025.1525245/hypothesis/dissolution-tradeoff",
+      "target": "scale:commons/10.3389-fchem.2025.1525245/state/cu-working"
+    },
+    {
+      "id": "scale:commons/10.3389-fchem.2025.1525245/link/96",
+      "type": "HAS_INPUT",
+      "props": {
+        "origin": "reported",
+        "role": "reference_standard"
+      },
+      "source": "scale:commons/10.3389-fchem.2025.1525245/ch/cuag-xas",
+      "target": "scale:commons/10.3389-fchem.2025.1525245/sample/cu-foil"
+    },
+    {
+      "id": "scale:commons/10.3389-fchem.2025.1525245/link/97",
+      "type": "HAS_OUTPUT",
+      "props": {
+        "origin": "reported"
+      },
+      "source": "scale:commons/10.3389-fchem.2025.1525245/ch/cuag-xas",
+      "target": "scale:commons/10.3389-fchem.2025.1525245/dataset/cuag-xas-spectra"
+    },
+    {
+      "id": "scale:commons/10.3389-fchem.2025.1525245/material/ag-metal/reported-in/10.3389-fchem.2025.1525245",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 7"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.3389-fchem.2025.1525245/material/ag-metal",
+      "target": "scale:commons/source/10.3389-fchem.2025.1525245"
+    },
+    {
+      "id": "scale:commons/10.3389-fchem.2025.1525245/material/cu-amorphous/reported-in/10.3389-fchem.2025.1525245",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 5"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.3389-fchem.2025.1525245/material/cu-amorphous",
+      "target": "scale:commons/source/10.3389-fchem.2025.1525245"
+    },
+    {
+      "id": "scale:commons/10.3389-fchem.2025.1525245/material/cu-metal/reported-in/10.3389-fchem.2025.1525245",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 6"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.3389-fchem.2025.1525245/material/cu-metal",
+      "target": "scale:commons/source/10.3389-fchem.2025.1525245"
+    },
+    {
+      "id": "scale:commons/10.3389-fchem.2025.1525245/material/cu2o/reported-in/10.3389-fchem.2025.1525245",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 5"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.3389-fchem.2025.1525245/material/cu2o",
+      "target": "scale:commons/source/10.3389-fchem.2025.1525245"
+    },
+    {
+      "id": "scale:commons/10.3389-fchem.2025.1525245/preparation/ag-deposition/reported-in/10.3389-fchem.2025.1525245",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 7, section 3.2"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.3389-fchem.2025.1525245/preparation/ag-deposition",
+      "target": "scale:commons/source/10.3389-fchem.2025.1525245"
+    },
+    {
+      "id": "scale:commons/10.3389-fchem.2025.1525245/preparation/cu-nw-hydrothermal/reported-in/10.3389-fchem.2025.1525245",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 7, section 3.2"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.3389-fchem.2025.1525245/preparation/cu-nw-hydrothermal",
+      "target": "scale:commons/source/10.3389-fchem.2025.1525245"
+    },
+    {
+      "id": "scale:commons/10.3389-fchem.2025.1525245/preparation/cuag-nw/reported-in/10.3389-fchem.2025.1525245",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 7, section 3.2"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.3389-fchem.2025.1525245/preparation/cuag-nw",
+      "target": "scale:commons/source/10.3389-fchem.2025.1525245"
+    },
+    {
+      "id": "scale:commons/10.3389-fchem.2025.1525245/reaction/co2rr/reported-in/10.3389-fchem.2025.1525245",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 5, section 3.1"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.3389-fchem.2025.1525245/reaction/co2rr",
+      "target": "scale:commons/source/10.3389-fchem.2025.1525245"
+    },
+    {
+      "id": "scale:commons/10.3389-fchem.2025.1525245/sample/cu-foil/reported-in/10.3389-fchem.2025.1525245",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 7"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.3389-fchem.2025.1525245/sample/cu-foil",
+      "target": "scale:commons/source/10.3389-fchem.2025.1525245"
+    },
+    {
+      "id": "scale:commons/10.3389-fchem.2025.1525245/sample/cu-nw-int/reported-in/10.3389-fchem.2025.1525245",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 7"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.3389-fchem.2025.1525245/sample/cu-nw-int",
+      "target": "scale:commons/source/10.3389-fchem.2025.1525245"
+    },
+    {
+      "id": "scale:commons/10.3389-fchem.2025.1525245/sample/cu-nw/reported-in/10.3389-fchem.2025.1525245",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 4, section 2.2"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.3389-fchem.2025.1525245/sample/cu-nw",
+      "target": "scale:commons/source/10.3389-fchem.2025.1525245"
+    },
+    {
+      "id": "scale:commons/10.3389-fchem.2025.1525245/sample/cuag-nw/reported-in/10.3389-fchem.2025.1525245",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 7"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.3389-fchem.2025.1525245/sample/cuag-nw",
+      "target": "scale:commons/source/10.3389-fchem.2025.1525245"
+    },
+    {
+      "id": "scale:commons/10.3389-fchem.2025.1525245/site/cu-steps/reported-in/10.3389-fchem.2025.1525245",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 5, section 3.1"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.3389-fchem.2025.1525245/site/cu-steps",
+      "target": "scale:commons/source/10.3389-fchem.2025.1525245"
+    },
+    {
+      "id": "scale:commons/10.3389-fchem.2025.1525245/species/ag/reported-in/10.3389-fchem.2025.1525245",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 7"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.3389-fchem.2025.1525245/species/ag",
+      "target": "scale:commons/source/10.3389-fchem.2025.1525245"
+    },
+    {
+      "id": "scale:commons/10.3389-fchem.2025.1525245/species/co2/reported-in/10.3389-fchem.2025.1525245",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 5"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.3389-fchem.2025.1525245/species/co2",
+      "target": "scale:commons/source/10.3389-fchem.2025.1525245"
+    },
+    {
+      "id": "scale:commons/10.3389-fchem.2025.1525245/species/cu-ion/reported-in/10.3389-fchem.2025.1525245",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 6"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.3389-fchem.2025.1525245/species/cu-ion",
+      "target": "scale:commons/source/10.3389-fchem.2025.1525245"
+    },
+    {
+      "id": "scale:commons/10.3389-fchem.2025.1525245/species/cu/reported-in/10.3389-fchem.2025.1525245",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 5"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.3389-fchem.2025.1525245/species/cu",
+      "target": "scale:commons/source/10.3389-fchem.2025.1525245"
+    },
+    {
+      "id": "scale:commons/10.3389-fchem.2025.1525245/species/khco3/reported-in/10.3389-fchem.2025.1525245",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 5"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.3389-fchem.2025.1525245/species/khco3",
+      "target": "scale:commons/source/10.3389-fchem.2025.1525245"
+    },
+    {
+      "id": "scale:commons/10.3389-fchem.2025.1525245/state/cu-post-eds/reported-in/10.3389-fchem.2025.1525245",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 5, section 3.1"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.3389-fchem.2025.1525245/state/cu-post-eds",
+      "target": "scale:commons/source/10.3389-fchem.2025.1525245"
+    },
+    {
+      "id": "scale:commons/10.3389-fchem.2025.1525245/state/cu-working/reported-in/10.3389-fchem.2025.1525245",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 5, section 3.1",
+          "p. 6, section 3.1"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.3389-fchem.2025.1525245/state/cu-working",
+      "target": "scale:commons/source/10.3389-fchem.2025.1525245"
+    },
+    {
+      "id": "scale:commons/10.3389-fchem.2025.1525245/state/cuag-asprepared/reported-in/10.3389-fchem.2025.1525245",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 7, section 3.2"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.3389-fchem.2025.1525245/state/cuag-asprepared",
+      "target": "scale:commons/source/10.3389-fchem.2025.1525245"
+    },
+    {
+      "id": "scale:commons/10.3389-fchem.2025.1525245/state/cuag-post/reported-in/10.3389-fchem.2025.1525245",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 7, Figure 4 caption (E)",
+          "p. 7, section 3.2"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.3389-fchem.2025.1525245/state/cuag-post",
+      "target": "scale:commons/source/10.3389-fchem.2025.1525245"
+    },
+    {
+      "id": "scale:commons/10.3389-fchem.2025.1525245/state/cuag-working/reported-in/10.3389-fchem.2025.1525245",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 7, section 3.2"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.3389-fchem.2025.1525245/state/cuag-working",
+      "target": "scale:commons/source/10.3389-fchem.2025.1525245"
+    },
+    {
+      "id": "scale:commons/10.3389-fchem.2025.1525245/test/cu-nw-ectem/reported-in/10.3389-fchem.2025.1525245",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 5, section 3.1"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.3389-fchem.2025.1525245/test/cu-nw-ectem",
+      "target": "scale:commons/source/10.3389-fchem.2025.1525245"
+    },
+    {
+      "id": "scale:commons/10.3389-fchem.2025.1525245/test/cuag-corr/reported-in/10.3389-fchem.2025.1525245",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 7, section 3.2"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.3389-fchem.2025.1525245/test/cuag-corr",
+      "target": "scale:commons/source/10.3389-fchem.2025.1525245"
+    },
+    {
+      "id": "scale:commons/10.3389-fchem.2025.1525245/variable/amorphization-onset-time/reported-in/10.3389-fchem.2025.1525245",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 5, section 3.1"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.3389-fchem.2025.1525245/variable/amorphization-onset-time",
+      "target": "scale:commons/source/10.3389-fchem.2025.1525245"
+    },
+    {
+      "id": "scale:commons/10.3389-fchem.2025.1525245/variable/beam-exposure/reported-in/10.3389-fchem.2025.1525245",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 5, section 3.1"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.3389-fchem.2025.1525245/variable/beam-exposure",
+      "target": "scale:commons/source/10.3389-fchem.2025.1525245"
+    },
+    {
+      "id": "scale:commons/10.3389-fchem.2025.1525245/variable/exafs-peak-distance/reported-in/10.3389-fchem.2025.1525245",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 7, section 3.2"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.3389-fchem.2025.1525245/variable/exafs-peak-distance",
+      "target": "scale:commons/source/10.3389-fchem.2025.1525245"
+    },
+    {
+      "id": "scale:commons/10.3389-fchem.2025.1525245/variable/lattice-fringe-spacing/reported-in/10.3389-fchem.2025.1525245",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 7, Figure 4 caption",
+          "p. 7, Figure 4E (panel label)"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.3389-fchem.2025.1525245/variable/lattice-fringe-spacing",
+      "target": "scale:commons/source/10.3389-fchem.2025.1525245"
+    }
+  ],
+  "schema_version": "0.8.2",
+  "source": "scale:commons/source/10.3389-fchem.2025.1525245"
+}

@@ -2,6 +2,15 @@
 
 ## Unreleased
 
+- **catal-commons holds 100 more sources: CO2 electroreduction papers under CC BY (graphs only; no schema change, no
+  migration).** One hundred openly licensed papers (97 CC BY 4.0, 3 CC BY 3.0, each licence as printed on the copy read)
+  from the CO2RR collection of the catalysis index, each curated with the curate-corpus skill under scale-catal 0.8.1,
+  passed by its check and an independent second reading (not yet by a person), and added with `scale graph contribute
+  --by diazr04`: 12,441 records, 36,623 links, 74,748 evidence-backed triples, 235 new shared records, every quote kept
+  in full (open sources). Papers under NC, ND or SA terms, without a licence, or with no data of their own (reviews) are
+  left out. A first batch, so that the commons' growth by batches can be checked before more follow. The commons tests'
+  folder fixture now also leaves out the shared records the sources brought, keeping the steward and the project the
+  header names.
 - **Any source into a graph of one's own, by one entry point (tools and a skill; no schema change, no migration).**
   `scale add-source FILE_OR_DOI --into DOC` (and the agent tool `scale_add_source`, gated by the destination's access)
   reads what the source is and routes it: a table (CSV, .xlsx) is matched to the built-in mappings and, when nothing
@@ -224,7 +233,7 @@
 
 - **An API reader samples as its endpoint does, not greedily (curate-corpus, no schema change, no migration).**
   `review-api` asked for `temperature: 0`. A reasoning reader decoded greedily falls into loops: on a CO2RR run
-  (DeepSeek-V4.1-Flash on vLLM, high reasoning), 897 of 1,257 readings ended with no verdict, each after about 150,000
+  (an open-weight reader on vLLM, high reasoning), 897 of 1,257 readings ended with no verdict, each after about 150,000
   tokens of thinking in which 88% of the lines repeated others ("Now, check the document's links for species/el-mg…
   Good."). Now a reading carries no sampling of its own, so the endpoint's default applies (for a served model, the
   one in its generation config), and `prepare --api-temperature/--api-top-p` or `review-api --temperature/--top-p`

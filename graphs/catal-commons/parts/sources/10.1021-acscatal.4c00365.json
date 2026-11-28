@@ -1,0 +1,2527 @@
+{
+  "nodes": [
+    {
+      "id": "scale:commons/10.1021-acscatal.4c00365/catalyst/au-nanocubes",
+      "label": "Catalyst",
+      "props": {
+        "name": "Au nanocubes (NO3RR reference in Figure 13)",
+        "catalyst_family": "metal",
+        "evidence": [
+          {
+            "id": "sec44c",
+            "kind": "text",
+            "locator": "Section 4.4, p. 6054",
+            "quote": "Both Cu/CuAu SAAs showed a higher NO3RR activity than Cu and Au nanocubes. Especially, the ordered Cu/CuAu SAA catalysts showed a high NH3 selectivity with a FE of 85.5% and an exceedingly high NH3 yield rate of 8.47 mol h−1 g−1.",
+            "source": "scale:commons/source/10.1021-acscatal.4c00365"
+          },
+          {
+            "id": "fig13ef",
+            "kind": "figure",
+            "locator": "Figure 13e,f, p. 6056",
+            "note": "digitized by pixel measurement (produced_by ex:pub/10.1021-acscatal.4c00365/experiment/digitize-fig13ef): panel e y axis linear 0-100 % with labelled ticks every 20 % (47.1 px per 20 %), panel f y axis linear 0-10 mol gcat-1 h-1 with labelled ticks every 2 (49.6 px per 2); x axis 'Potential(V vs. RHE)', groups left to right -0.2 to -0.6 V vs RHE; in each group the bars are Au cubes, Cu cubes, Cu/CuAu SAA (dilute), Cu/CuAu ordered SAA; every bar read twice (second pass with stricter colour thresholds), the second readings kept on the digitization experiment's results",
+            "quote": "(e) FE of NH3 and (f) NH3 yield rates at different potentials for the catalysts.",
+            "source": "scale:commons/source/10.1021-acscatal.4c00365"
+          }
+        ],
+        "nominal_formula": "Au",
+        "origin": "curated"
+      }
+    },
+    {
+      "id": "scale:commons/10.1021-acscatal.4c00365/catalyst/cu-cuau-dilute",
+      "label": "Catalyst",
+      "props": {
+        "name": "dilute Cu/CuAu SAA nanocubes",
+        "catalyst_family": "alloy",
+        "evidence": [
+          {
+            "id": "sec25a",
+            "kind": "text",
+            "locator": "Section 2.5, p. 6048",
+            "quote": "Recently, our group synthesized two different structures of core/shell Cu/CuAu SAA nanocubes and Cu/CuAu ordered intermetallic SAA nanocubes with controllable shell thickness, surface structure, and Au atom density (Figure 2e).",
+            "source": "scale:commons/source/10.1021-acscatal.4c00365"
+          },
+          {
+            "id": "sec25b",
+            "kind": "text",
+            "locator": "Section 2.5, p. 6048",
+            "quote": "With the CuAu SAA growth on the Cu nanocube surface, a 3.7 wt % Au doping led to the dilute dispersion of Au atoms into the face-centered cubic (fcc) Cu structure.",
+            "source": "scale:commons/source/10.1021-acscatal.4c00365"
+          }
+        ],
+        "nominal_formula": "Cu/CuAu",
+        "origin": "curated"
+      }
+    },
+    {
+      "id": "scale:commons/10.1021-acscatal.4c00365/catalyst/cu-cuau-ordered",
+      "label": "Catalyst",
+      "props": {
+        "name": "ordered Cu/CuAu SAA nanocubes",
+        "catalyst_family": "alloy",
+        "evidence": [
+          {
+            "id": "sec25a",
+            "kind": "text",
+            "locator": "Section 2.5, p. 6048",
+            "quote": "Recently, our group synthesized two different structures of core/shell Cu/CuAu SAA nanocubes and Cu/CuAu ordered intermetallic SAA nanocubes with controllable shell thickness, surface structure, and Au atom density (Figure 2e).",
+            "source": "scale:commons/source/10.1021-acscatal.4c00365"
+          },
+          {
+            "id": "sec25c",
+            "kind": "text",
+            "locator": "Section 2.5, p. 6048",
+            "quote": "In contrast, 7.5 wt % Au in Cu/CuAu led to the formation of an ordered SAA shell with the body-centered tetragonal intermetallic CuAu, in which Au atoms are completely isolated by Cu atoms.",
+            "source": "scale:commons/source/10.1021-acscatal.4c00365"
+          }
+        ],
+        "nominal_formula": "Cu/CuAu",
+        "origin": "curated"
+      }
+    },
+    {
+      "id": "scale:commons/10.1021-acscatal.4c00365/catalyst/cu-nanocubes",
+      "label": "Catalyst",
+      "props": {
+        "name": "Cu nanocubes (NO3RR reference in Figure 13)",
+        "catalyst_family": "metal",
+        "evidence": [
+          {
+            "id": "sec44c",
+            "kind": "text",
+            "locator": "Section 4.4, p. 6054",
+            "quote": "Both Cu/CuAu SAAs showed a higher NO3RR activity than Cu and Au nanocubes. Especially, the ordered Cu/CuAu SAA catalysts showed a high NH3 selectivity with a FE of 85.5% and an exceedingly high NH3 yield rate of 8.47 mol h−1 g−1.",
+            "source": "scale:commons/source/10.1021-acscatal.4c00365"
+          },
+          {
+            "id": "fig13ef",
+            "kind": "figure",
+            "locator": "Figure 13e,f, p. 6056",
+            "note": "digitized by pixel measurement (produced_by ex:pub/10.1021-acscatal.4c00365/experiment/digitize-fig13ef): panel e y axis linear 0-100 % with labelled ticks every 20 % (47.1 px per 20 %), panel f y axis linear 0-10 mol gcat-1 h-1 with labelled ticks every 2 (49.6 px per 2); x axis 'Potential(V vs. RHE)', groups left to right -0.2 to -0.6 V vs RHE; in each group the bars are Au cubes, Cu cubes, Cu/CuAu SAA (dilute), Cu/CuAu ordered SAA; every bar read twice (second pass with stricter colour thresholds), the second readings kept on the digitization experiment's results",
+            "quote": "(e) FE of NH3 and (f) NH3 yield rates at different potentials for the catalysts.",
+            "source": "scale:commons/source/10.1021-acscatal.4c00365"
+          }
+        ],
+        "nominal_formula": "Cu",
+        "origin": "curated"
+      }
+    },
+    {
+      "id": "scale:commons/10.1021-acscatal.4c00365/characterization/haadf-dilute",
+      "label": "Characterization",
+      "props": {
+        "name": "HAADF-STEM of the dilute Cu/CuAu SAA nanocubes",
+        "evidence": [
+          {
+            "id": "fig13ab",
+            "kind": "figure",
+            "locator": "Figure 13a,b, p. 6056",
+            "quote": "(a) HAADF-STEM and (b) atomic-resolution HAADF-STEM images of Cu/CuAu dilute SAA nanocubes. Figure b shows that dilute Au atoms are atomically dispersed on the surface of Cu nanocubes.",
+            "source": "scale:commons/source/10.1021-acscatal.4c00365"
+          }
+        ],
+        "information_depth": "projection",
+        "observation_mode": "ex_situ",
+        "origin": "curated",
+        "sampling": "local_region",
+        "technique": "HAADF-STEM"
+      }
+    },
+    {
+      "id": "scale:commons/10.1021-acscatal.4c00365/characterization/haadf-ordered",
+      "label": "Characterization",
+      "props": {
+        "name": "HAADF-STEM of the ordered Cu/CuAu SAA nanocubes",
+        "evidence": [
+          {
+            "id": "fig13cd",
+            "kind": "figure",
+            "locator": "Figure 13c,d, p. 6056",
+            "quote": "(c) HAADF-STEM and (d) atomic-resolution HAADF-STEM images of Cu/CuAu ordered SAA nanocubes. Specifically, in part d, the CuAu shell shows an ordered body-centered tetragonal structure, in which Au atoms are isolated by Cu atoms.",
+            "source": "scale:commons/source/10.1021-acscatal.4c00365"
+          }
+        ],
+        "information_depth": "projection",
+        "observation_mode": "ex_situ",
+        "origin": "curated",
+        "sampling": "local_region",
+        "technique": "HAADF-STEM"
+      }
+    },
+    {
+      "id": "scale:commons/10.1021-acscatal.4c00365/experiment/digitize-fig13ef",
+      "label": "Experiment",
+      "props": {
+        "name": "Pixel digitization of Figure 13e,f (p. 6056)",
+        "evidence": [
+          {
+            "id": "fig13ef-cap",
+            "kind": "figure",
+            "locator": "Figure 13e,f, p. 6056",
+            "note": "panel e: Faradaic Efficiency (%), linear 0-100, ticks 0/20/40/60/80/100; panel f: NH3 Yield Rate (mol gcat−1 h−1), linear 0-10, ticks 0/2/4/6/8/10; group centres at the x ticks -0.2, -0.3, -0.4, -0.5, -0.6 (V vs. RHE)",
+            "quote": "(e) FE of NH3 and (f) NH3 yield rates at different potentials for the catalysts.",
+            "source": "scale:commons/source/10.1021-acscatal.4c00365"
+          }
+        ],
+        "experiment_kind": "computational",
+        "note": "bar-top pixel measurement on the embedded figure image (830x542 px PNG extracted from PDF p. 6056 of the source); each panel's y axis calibrated on its labelled ticks (linear); every bar read twice with different colour thresholds; legend swatch boxes excluded from the bar search. Second readings (second pass, stricter colour thresholds), potentials -0.2 to -0.6 V vs RHE in order: Figure 13e FE (%) - Cu/CuAu ordered SAA [62.96, 73.98, 82.04, 85.01, 79.92]; Cu/CuAu SAA dilute [60.42, 71.02, 84.16, 81.62, 79.07]; Cu cubes [59.99, 64.66, 70.59, 72.71, 78.22]; Au cubes [48.55, 48.55, 42.61, 51.09, 57.03]. Figure 13f NH3 yield rate (mol h−1 g−1) - Cu/CuAu ordered SAA [0.67, 2.04, 4.63, 6.33, 8.43]; Cu/CuAu SAA dilute [0.55, 1.31, 2.49, 4.27, 6.21]; Cu cubes [0.22, 0.83, 2.12, 3.22, 4.83]; Au cubes [0.18, 0.59, 1.15, 2.53, 3.74]. Reading resolution 1 px = 0.424 % (panel e) and 0.040 mol h−1 g−1 (panel f).",
+        "origin": "curated"
+      }
+    },
+    {
+      "id": "scale:commons/10.1021-acscatal.4c00365/preparation/cu-cuau",
+      "label": "Preparation",
+      "props": {
+        "name": "Seed-mediated colloidal synthesis of Cu/CuAu SAA nanocubes",
+        "design_aims": [
+          "elemental_distribution",
+          "atomic_dispersion",
+          "atomic_ordering",
+          "composition"
+        ],
+        "evidence": [
+          {
+            "id": "sec44a",
+            "kind": "text",
+            "locator": "Section 4.4, p. 6054",
+            "quote": "Our group reported a direct solution-phase synthesis of Cu/\nCuAu core/shell nanocubes with tunable SAA layers.",
+            "source": "scale:commons/source/10.1021-acscatal.4c00365"
+          },
+          {
+            "id": "sec44b",
+            "kind": "text",
+            "locator": "Section 4.4, p. 6054",
+            "quote": "Using Cu nanocubes as a template and through a seed-mediated colloidal synthesis, we controlled the density of single-sites and the number of atomic layers and obtained two types of SAAs: dilute Cu/CuAu SAA and ordered Cu/CuAu SAA (Figure 13).",
+            "source": "scale:commons/source/10.1021-acscatal.4c00365"
+          },
+          {
+            "id": "sec25a",
+            "kind": "text",
+            "locator": "Section 2.5, p. 6048",
+            "quote": "Recently, our group synthesized two different structures of core/shell Cu/CuAu SAA nanocubes and Cu/CuAu ordered intermetallic SAA nanocubes with controllable shell thickness, surface structure, and Au atom density (Figure 2e).",
+            "source": "scale:commons/source/10.1021-acscatal.4c00365"
+          },
+          {
+            "id": "fig2e",
+            "kind": "figure",
+            "locator": "Figure 2e, p. 6047",
+            "quote": "(e) The core/shell Cu/CuAu SAA nanocrystal synthesis.",
+            "source": "scale:commons/source/10.1021-acscatal.4c00365"
+          }
+        ],
+        "method": "seed-mediated colloidal synthesis on Cu nanocube templates",
+        "origin": "curated",
+        "preparation_methods": [
+          "seeded_growth"
+        ],
+        "strategy": "Using Cu nanocubes as a template and through a seed-mediated colloidal synthesis, we controlled the density of single-sites and the number of atomic layers"
+      }
+    },
+    {
+      "id": "scale:commons/10.1021-acscatal.4c00365/reaction/no3rr-to-nh3",
+      "label": "Reaction",
+      "props": {
+        "name": "Electrochemical nitrate reduction to ammonia (NO3RR)",
+        "balance_status": "not_reported",
+        "direction": "not_reported",
+        "evidence": [
+          {
+            "id": "sec44d",
+            "kind": "text",
+            "locator": "Section 4.4, p. 6054",
+            "quote": "The electrochemical NO3RR offers a promising alternative route to the energy-intensive Haber−Bosch process for NH3 production.",
+            "source": "scale:commons/source/10.1021-acscatal.4c00365"
+          }
+        ],
+        "origin": "curated"
+      }
+    },
+    {
+      "id": "scale:commons/10.1021-acscatal.4c00365/sample/au-nanocubes",
+      "label": "CatalystSample",
+      "props": {
+        "name": "Au nanocubes, as tested in Figure 13e,f",
+        "evidence": [
+          {
+            "id": "sec44c",
+            "kind": "text",
+            "locator": "Section 4.4, p. 6054",
+            "quote": "Both Cu/CuAu SAAs showed a higher NO3RR activity than Cu and Au nanocubes. Especially, the ordered Cu/CuAu SAA catalysts showed a high NH3 selectivity with a FE of 85.5% and an exceedingly high NH3 yield rate of 8.47 mol h−1 g−1.",
+            "source": "scale:commons/source/10.1021-acscatal.4c00365"
+          },
+          {
+            "id": "fig13ef",
+            "kind": "figure",
+            "locator": "Figure 13e,f, p. 6056",
+            "note": "digitized by pixel measurement (produced_by ex:pub/10.1021-acscatal.4c00365/experiment/digitize-fig13ef): panel e y axis linear 0-100 % with labelled ticks every 20 % (47.1 px per 20 %), panel f y axis linear 0-10 mol gcat-1 h-1 with labelled ticks every 2 (49.6 px per 2); x axis 'Potential(V vs. RHE)', groups left to right -0.2 to -0.6 V vs RHE; in each group the bars are Au cubes, Cu cubes, Cu/CuAu SAA (dilute), Cu/CuAu ordered SAA; every bar read twice (second pass with stricter colour thresholds), the second readings kept on the digitization experiment's results",
+            "quote": "(e) FE of NH3 and (f) NH3 yield rates at different potentials for the catalysts.",
+            "source": "scale:commons/source/10.1021-acscatal.4c00365"
+          }
+        ],
+        "note": "sample_kind 'other': the source states the particles are nanocubes (Figure 13 legend 'Au cubes'; text 'Cu and Au nanocubes') but does not report the specimen's mounting/electrode form or its preparation (the authors' cited ref 65, not curated)",
+        "origin": "curated",
+        "preparation_status": "not_reported",
+        "sample_kind": "other"
+      }
+    },
+    {
+      "id": "scale:commons/10.1021-acscatal.4c00365/sample/cu-cuau-dilute",
+      "label": "CatalystSample",
+      "props": {
+        "name": "dilute Cu/CuAu SAA nanocubes, as prepared",
+        "evidence": [
+          {
+            "id": "sec25b",
+            "kind": "text",
+            "locator": "Section 2.5, p. 6048",
+            "quote": "With the CuAu SAA growth on the Cu nanocube surface, a 3.7 wt % Au doping led to the dilute dispersion of Au atoms into the face-centered cubic (fcc) Cu structure.",
+            "source": "scale:commons/source/10.1021-acscatal.4c00365"
+          },
+          {
+            "id": "fig13ab",
+            "kind": "figure",
+            "locator": "Figure 13a,b, p. 6056",
+            "quote": "(a) HAADF-STEM and (b) atomic-resolution HAADF-STEM images of Cu/CuAu dilute SAA nanocubes. Figure b shows that dilute Au atoms are atomically dispersed on the surface of Cu nanocubes.",
+            "source": "scale:commons/source/10.1021-acscatal.4c00365"
+          }
+        ],
+        "note": "sample_kind 'other': the source states the physical form of the particles - core/shell Cu/CuAu SAA nanocubes (Figure 13 caption 'Cu/CuAu dilute SAA nanocubes'; the linked CatalystState carries particle_shape ['cube']) - but not the form in which the specimen was mounted for testing (no electrode preparation is reported), so no enumerated sample_kind fits",
+        "origin": "curated",
+        "preparation_status": "prepared",
+        "sample_kind": "other"
+      }
+    },
+    {
+      "id": "scale:commons/10.1021-acscatal.4c00365/sample/cu-cuau-ordered",
+      "label": "CatalystSample",
+      "props": {
+        "name": "ordered Cu/CuAu SAA nanocubes, as prepared",
+        "evidence": [
+          {
+            "id": "sec25c",
+            "kind": "text",
+            "locator": "Section 2.5, p. 6048",
+            "quote": "In contrast, 7.5 wt % Au in Cu/CuAu led to the formation of an ordered SAA shell with the body-centered tetragonal intermetallic CuAu, in which Au atoms are completely isolated by Cu atoms.",
+            "source": "scale:commons/source/10.1021-acscatal.4c00365"
+          },
+          {
+            "id": "fig13cd",
+            "kind": "figure",
+            "locator": "Figure 13c,d, p. 6056",
+            "quote": "(c) HAADF-STEM and (d) atomic-resolution HAADF-STEM images of Cu/CuAu ordered SAA nanocubes. Specifically, in part d, the CuAu shell shows an ordered body-centered tetragonal structure, in which Au atoms are isolated by Cu atoms.",
+            "source": "scale:commons/source/10.1021-acscatal.4c00365"
+          }
+        ],
+        "note": "sample_kind 'other': the source states the physical form of the particles - Cu/CuAu ordered intermetallic SAA nanocubes (Figure 13 caption 'Cu/CuAu ordered SAA nanocubes'; the linked CatalystState carries particle_shape ['cube']) - but not the form in which the specimen was mounted for testing (no electrode preparation is reported), so no enumerated sample_kind fits",
+        "origin": "curated",
+        "preparation_status": "prepared",
+        "sample_kind": "other"
+      }
+    },
+    {
+      "id": "scale:commons/10.1021-acscatal.4c00365/sample/cu-nanocubes",
+      "label": "CatalystSample",
+      "props": {
+        "name": "Cu nanocubes, as tested in Figure 13e,f",
+        "evidence": [
+          {
+            "id": "sec44c",
+            "kind": "text",
+            "locator": "Section 4.4, p. 6054",
+            "quote": "Both Cu/CuAu SAAs showed a higher NO3RR activity than Cu and Au nanocubes. Especially, the ordered Cu/CuAu SAA catalysts showed a high NH3 selectivity with a FE of 85.5% and an exceedingly high NH3 yield rate of 8.47 mol h−1 g−1.",
+            "source": "scale:commons/source/10.1021-acscatal.4c00365"
+          },
+          {
+            "id": "fig13ef",
+            "kind": "figure",
+            "locator": "Figure 13e,f, p. 6056",
+            "note": "digitized by pixel measurement (produced_by ex:pub/10.1021-acscatal.4c00365/experiment/digitize-fig13ef): panel e y axis linear 0-100 % with labelled ticks every 20 % (47.1 px per 20 %), panel f y axis linear 0-10 mol gcat-1 h-1 with labelled ticks every 2 (49.6 px per 2); x axis 'Potential(V vs. RHE)', groups left to right -0.2 to -0.6 V vs RHE; in each group the bars are Au cubes, Cu cubes, Cu/CuAu SAA (dilute), Cu/CuAu ordered SAA; every bar read twice (second pass with stricter colour thresholds), the second readings kept on the digitization experiment's results",
+            "quote": "(e) FE of NH3 and (f) NH3 yield rates at different potentials for the catalysts.",
+            "source": "scale:commons/source/10.1021-acscatal.4c00365"
+          }
+        ],
+        "note": "sample_kind 'other': the source states the particles are nanocubes (Figure 13 legend 'Cu cubes'; text 'Cu and Au nanocubes') but does not report the specimen's mounting/electrode form or its preparation (the authors' cited ref 65, not curated)",
+        "origin": "curated",
+        "preparation_status": "not_reported",
+        "sample_kind": "other"
+      }
+    },
+    {
+      "id": "scale:commons/10.1021-acscatal.4c00365/software/pixel-digitizer",
+      "label": "Software",
+      "props": {
+        "name": "Python with NumPy and Pillow (pixel digitization script)",
+        "origin": "curated",
+        "software_kind": "library",
+        "version": "python 3.12.3; numpy 2.5.4; pillow 13.0.0"
+      }
+    },
+    {
+      "id": "scale:commons/10.1021-acscatal.4c00365/species/au",
+      "label": "ChemicalSpecies",
+      "props": {
+        "name": "gold",
+        "evidence": [
+          {
+            "id": "sec25a",
+            "kind": "text",
+            "locator": "Section 2.5, p. 6048",
+            "quote": "Recently, our group synthesized two different structures of core/shell Cu/CuAu SAA nanocubes and Cu/CuAu ordered intermetallic SAA nanocubes with controllable shell thickness, surface structure, and Au atom density (Figure 2e).",
+            "source": "scale:commons/source/10.1021-acscatal.4c00365"
+          }
+        ],
+        "formula": "Au",
+        "origin": "curated"
+      }
+    },
+    {
+      "id": "scale:commons/10.1021-acscatal.4c00365/species/cu",
+      "label": "ChemicalSpecies",
+      "props": {
+        "name": "copper",
+        "evidence": [
+          {
+            "id": "sec44b",
+            "kind": "text",
+            "locator": "Section 4.4, p. 6054",
+            "quote": "Using Cu nanocubes as a template and through a seed-mediated colloidal synthesis, we controlled the density of single-sites and the number of atomic layers and obtained two types of SAAs: dilute Cu/CuAu SAA and ordered Cu/CuAu SAA (Figure 13).",
+            "source": "scale:commons/source/10.1021-acscatal.4c00365"
+          }
+        ],
+        "formula": "Cu",
+        "origin": "curated"
+      }
+    },
+    {
+      "id": "scale:commons/10.1021-acscatal.4c00365/species/nh3",
+      "label": "ChemicalSpecies",
+      "props": {
+        "name": "ammonia",
+        "elemental_composition": {
+          "H": 3,
+          "N": 1
+        },
+        "evidence": [
+          {
+            "id": "sec44c",
+            "kind": "text",
+            "locator": "Section 4.4, p. 6054",
+            "quote": "Both Cu/CuAu SAAs showed a higher NO3RR activity than Cu and Au nanocubes. Especially, the ordered Cu/CuAu SAA catalysts showed a high NH3 selectivity with a FE of 85.5% and an exceedingly high NH3 yield rate of 8.47 mol h−1 g−1.",
+            "source": "scale:commons/source/10.1021-acscatal.4c00365"
+          }
+        ],
+        "formula": "NH3",
+        "origin": "curated"
+      }
+    },
+    {
+      "id": "scale:commons/10.1021-acscatal.4c00365/species/no3",
+      "label": "ChemicalSpecies",
+      "props": {
+        "name": "nitrate",
+        "charge": -1,
+        "elemental_composition": {
+          "N": 1,
+          "O": 3
+        },
+        "evidence": [
+          {
+            "id": "sec44d",
+            "kind": "text",
+            "locator": "Section 4.4, p. 6054",
+            "quote": "The electrochemical NO3RR offers a promising alternative route to the energy-intensive Haber−Bosch process for NH3 production.",
+            "source": "scale:commons/source/10.1021-acscatal.4c00365"
+          }
+        ],
+        "formula": "NO3-",
+        "note": "named only as the NO3RR reactant in this source; the NO3- identity is the reaction's name",
+        "origin": "curated"
+      }
+    },
+    {
+      "id": "scale:commons/10.1021-acscatal.4c00365/state/cu-cuau-dilute",
+      "label": "CatalystState",
+      "props": {
+        "name": "dilute Cu/CuAu SAA nanocubes as prepared",
+        "architecture": [
+          "core_shell",
+          "single_atoms",
+          "alloy"
+        ],
+        "evidence": [
+          {
+            "id": "sec25b",
+            "kind": "text",
+            "locator": "Section 2.5, p. 6048",
+            "quote": "With the CuAu SAA growth on the Cu nanocube surface, a 3.7 wt % Au doping led to the dilute dispersion of Au atoms into the face-centered cubic (fcc) Cu structure.",
+            "source": "scale:commons/source/10.1021-acscatal.4c00365"
+          },
+          {
+            "id": "fig13ab",
+            "kind": "figure",
+            "locator": "Figure 13a,b, p. 6056",
+            "quote": "(a) HAADF-STEM and (b) atomic-resolution HAADF-STEM images of Cu/CuAu dilute SAA nanocubes. Figure b shows that dilute Au atoms are atomically dispersed on the surface of Cu nanocubes.",
+            "source": "scale:commons/source/10.1021-acscatal.4c00365"
+          }
+        ],
+        "origin": "curated",
+        "particle_shape": [
+          "cube"
+        ],
+        "state_kind": "as_prepared"
+      }
+    },
+    {
+      "id": "scale:commons/10.1021-acscatal.4c00365/state/cu-cuau-ordered",
+      "label": "CatalystState",
+      "props": {
+        "name": "ordered Cu/CuAu SAA nanocubes as prepared",
+        "architecture": [
+          "core_shell",
+          "single_atoms",
+          "intermetallic"
+        ],
+        "evidence": [
+          {
+            "id": "sec25c",
+            "kind": "text",
+            "locator": "Section 2.5, p. 6048",
+            "quote": "In contrast, 7.5 wt % Au in Cu/CuAu led to the formation of an ordered SAA shell with the body-centered tetragonal intermetallic CuAu, in which Au atoms are completely isolated by Cu atoms.",
+            "source": "scale:commons/source/10.1021-acscatal.4c00365"
+          },
+          {
+            "id": "fig13cd",
+            "kind": "figure",
+            "locator": "Figure 13c,d, p. 6056",
+            "quote": "(c) HAADF-STEM and (d) atomic-resolution HAADF-STEM images of Cu/CuAu ordered SAA nanocubes. Specifically, in part d, the CuAu shell shows an ordered body-centered tetragonal structure, in which Au atoms are isolated by Cu atoms.",
+            "source": "scale:commons/source/10.1021-acscatal.4c00365"
+          }
+        ],
+        "origin": "curated",
+        "particle_shape": [
+          "cube"
+        ],
+        "state_kind": "as_prepared"
+      }
+    },
+    {
+      "id": "scale:commons/10.1021-acscatal.4c00365/test/no3rr-au-cubes",
+      "label": "CatalyticTest",
+      "props": {
+        "name": "NO3RR of the Au nanocube reference (Figure 13e,f)",
+        "charge_passed": {
+          "status": "not_reported",
+          "missing_reason": "not_stated_in_source"
+        },
+        "control_mode": "not_reported",
+        "current_density": {
+          "status": "not_reported",
+          "missing_reason": "not_stated_in_source"
+        },
+        "driving_forces": [
+          "electro"
+        ],
+        "electrode_potential": {
+          "status": "present",
+          "as_reported": "'FE of NH3 and (f) NH3 yield rates at different potentials' (Figure 13e,f); axis 'Potential(V vs. RHE)'",
+          "evidence_ids": [
+            "fig13ef"
+          ],
+          "lower": -0.6,
+          "note": "applied-potential range of the digitized series in Figure 13e,f; no single potential is printed in the text",
+          "qualifier": "approximate",
+          "unit": "V",
+          "upper": -0.2
+        },
+        "evidence": [
+          {
+            "id": "sec44c",
+            "kind": "text",
+            "locator": "Section 4.4, p. 6054",
+            "quote": "Both Cu/CuAu SAAs showed a higher NO3RR activity than Cu and Au nanocubes. Especially, the ordered Cu/CuAu SAA catalysts showed a high NH3 selectivity with a FE of 85.5% and an exceedingly high NH3 yield rate of 8.47 mol h−1 g−1.",
+            "source": "scale:commons/source/10.1021-acscatal.4c00365"
+          },
+          {
+            "id": "fig13ef",
+            "kind": "figure",
+            "locator": "Figure 13e,f, p. 6056",
+            "note": "digitized by pixel measurement (produced_by ex:pub/10.1021-acscatal.4c00365/experiment/digitize-fig13ef): panel e y axis linear 0-100 % with labelled ticks every 20 % (47.1 px per 20 %), panel f y axis linear 0-10 mol gcat-1 h-1 with labelled ticks every 2 (49.6 px per 2); x axis 'Potential(V vs. RHE)', groups left to right -0.2 to -0.6 V vs RHE; in each group the bars are Au cubes, Cu cubes, Cu/CuAu SAA (dilute), Cu/CuAu ordered SAA; every bar read twice (second pass with stricter colour thresholds), the second readings kept on the digitization experiment's results",
+            "quote": "(e) FE of NH3 and (f) NH3 yield rates at different potentials for the catalysts.",
+            "source": "scale:commons/source/10.1021-acscatal.4c00365"
+          }
+        ],
+        "experiment_kind": "physical",
+        "note": "Reference measurement the source reports for comparison ('Both Cu/CuAu SAAs showed a higher NO3RR activity than Cu and Au nanocubes.'); the values exist only in Figure 13e,f and are digitized here. The Au nanocubes' preparation is not reported in this text (ref 65, not curated). Cell, electrolyte and control mode are not reported in this text (they are in the authors' cited ref 65, not curated); the potentials come from Figure 13e,f's axis (V vs. RHE). Every bar of Figure 13e,f was read; no point was unreadable, so no extraction_error gap was needed.",
+        "origin": "curated",
+        "reference_scale": "rhe",
+        "result_values": [
+          {
+            "id": "fe_nh3_neg0p2v",
+            "status": "present",
+            "basis": "at E = −0.2 V vs RHE (Figure 13e)",
+            "evidence_ids": [
+              "fig13ef"
+            ],
+            "note": "E = -0.2 V vs RHE, Figure 13e (magenta bars, Au cubes); second reading 48.55",
+            "origin": "measured",
+            "produced_by": "scale:commons/10.1021-acscatal.4c00365/experiment/digitize-fig13ef",
+            "qualifier": "approximate",
+            "target": "scale:commons/10.1021-acscatal.4c00365/species/nh3",
+            "uncertainty": 0.25,
+            "uncertainty_evaluation": "type_b",
+            "uncertainty_kind": "standard_uncertainty",
+            "unit": "%",
+            "value": 48.55,
+            "variable": "scale:commons/10.1021-acscatal.4c00365/variable/fe-nh3"
+          },
+          {
+            "id": "fe_nh3_neg0p3v",
+            "status": "present",
+            "basis": "at E = −0.3 V vs RHE (Figure 13e)",
+            "evidence_ids": [
+              "fig13ef"
+            ],
+            "note": "E = -0.3 V vs RHE, Figure 13e (magenta bars, Au cubes); second reading 48.55",
+            "origin": "measured",
+            "produced_by": "scale:commons/10.1021-acscatal.4c00365/experiment/digitize-fig13ef",
+            "qualifier": "approximate",
+            "target": "scale:commons/10.1021-acscatal.4c00365/species/nh3",
+            "uncertainty": 0.25,
+            "uncertainty_evaluation": "type_b",
+            "uncertainty_kind": "standard_uncertainty",
+            "unit": "%",
+            "value": 48.55,
+            "variable": "scale:commons/10.1021-acscatal.4c00365/variable/fe-nh3"
+          },
+          {
+            "id": "fe_nh3_neg0p4v",
+            "status": "present",
+            "basis": "at E = −0.4 V vs RHE (Figure 13e)",
+            "evidence_ids": [
+              "fig13ef"
+            ],
+            "note": "E = -0.4 V vs RHE, Figure 13e (magenta bars, Au cubes); second reading 42.61",
+            "origin": "measured",
+            "produced_by": "scale:commons/10.1021-acscatal.4c00365/experiment/digitize-fig13ef",
+            "qualifier": "approximate",
+            "target": "scale:commons/10.1021-acscatal.4c00365/species/nh3",
+            "uncertainty": 0.25,
+            "uncertainty_evaluation": "type_b",
+            "uncertainty_kind": "standard_uncertainty",
+            "unit": "%",
+            "value": 42.61,
+            "variable": "scale:commons/10.1021-acscatal.4c00365/variable/fe-nh3"
+          },
+          {
+            "id": "fe_nh3_neg0p5v",
+            "status": "present",
+            "basis": "at E = −0.5 V vs RHE (Figure 13e)",
+            "evidence_ids": [
+              "fig13ef"
+            ],
+            "note": "E = -0.5 V vs RHE, Figure 13e (magenta bars, Au cubes); second reading 51.09",
+            "origin": "measured",
+            "produced_by": "scale:commons/10.1021-acscatal.4c00365/experiment/digitize-fig13ef",
+            "qualifier": "approximate",
+            "target": "scale:commons/10.1021-acscatal.4c00365/species/nh3",
+            "uncertainty": 0.25,
+            "uncertainty_evaluation": "type_b",
+            "uncertainty_kind": "standard_uncertainty",
+            "unit": "%",
+            "value": 51.09,
+            "variable": "scale:commons/10.1021-acscatal.4c00365/variable/fe-nh3"
+          },
+          {
+            "id": "fe_nh3_neg0p6v",
+            "status": "present",
+            "basis": "at E = −0.6 V vs RHE (Figure 13e)",
+            "evidence_ids": [
+              "fig13ef"
+            ],
+            "note": "E = -0.6 V vs RHE, Figure 13e (magenta bars, Au cubes); second reading 57.03",
+            "origin": "measured",
+            "produced_by": "scale:commons/10.1021-acscatal.4c00365/experiment/digitize-fig13ef",
+            "qualifier": "approximate",
+            "target": "scale:commons/10.1021-acscatal.4c00365/species/nh3",
+            "uncertainty": 0.25,
+            "uncertainty_evaluation": "type_b",
+            "uncertainty_kind": "standard_uncertainty",
+            "unit": "%",
+            "value": 57.03,
+            "variable": "scale:commons/10.1021-acscatal.4c00365/variable/fe-nh3"
+          },
+          {
+            "id": "rate_nh3_neg0p2v",
+            "status": "present",
+            "basis": "at E = −0.2 V vs RHE (Figure 13f)",
+            "evidence_ids": [
+              "fig13ef"
+            ],
+            "note": "E = -0.2 V vs RHE, Figure 13f (magenta bars, Au cubes); NH3 yield rate per gram of catalyst as plotted (axis 'mol gcat−1 h−1'); second reading 0.18",
+            "origin": "measured",
+            "produced_by": "scale:commons/10.1021-acscatal.4c00365/experiment/digitize-fig13ef",
+            "qualifier": "approximate",
+            "target": "scale:commons/10.1021-acscatal.4c00365/species/nh3",
+            "uncertainty": 0.03,
+            "uncertainty_evaluation": "type_b",
+            "uncertainty_kind": "standard_uncertainty",
+            "unit": "mol h−1 g−1",
+            "value": 0.18,
+            "variable": "scale:commons/10.1021-acscatal.4c00365/variable/nh3-yield-rate"
+          },
+          {
+            "id": "rate_nh3_neg0p3v",
+            "status": "present",
+            "basis": "at E = −0.3 V vs RHE (Figure 13f)",
+            "evidence_ids": [
+              "fig13ef"
+            ],
+            "note": "E = -0.3 V vs RHE, Figure 13f (magenta bars, Au cubes); NH3 yield rate per gram of catalyst as plotted (axis 'mol gcat−1 h−1'); second reading 0.59",
+            "origin": "measured",
+            "produced_by": "scale:commons/10.1021-acscatal.4c00365/experiment/digitize-fig13ef",
+            "qualifier": "approximate",
+            "target": "scale:commons/10.1021-acscatal.4c00365/species/nh3",
+            "uncertainty": 0.03,
+            "uncertainty_evaluation": "type_b",
+            "uncertainty_kind": "standard_uncertainty",
+            "unit": "mol h−1 g−1",
+            "value": 0.59,
+            "variable": "scale:commons/10.1021-acscatal.4c00365/variable/nh3-yield-rate"
+          },
+          {
+            "id": "rate_nh3_neg0p4v",
+            "status": "present",
+            "basis": "at E = −0.4 V vs RHE (Figure 13f)",
+            "evidence_ids": [
+              "fig13ef"
+            ],
+            "note": "E = -0.4 V vs RHE, Figure 13f (magenta bars, Au cubes); NH3 yield rate per gram of catalyst as plotted (axis 'mol gcat−1 h−1'); second reading 1.15",
+            "origin": "measured",
+            "produced_by": "scale:commons/10.1021-acscatal.4c00365/experiment/digitize-fig13ef",
+            "qualifier": "approximate",
+            "target": "scale:commons/10.1021-acscatal.4c00365/species/nh3",
+            "uncertainty": 0.03,
+            "uncertainty_evaluation": "type_b",
+            "uncertainty_kind": "standard_uncertainty",
+            "unit": "mol h−1 g−1",
+            "value": 1.15,
+            "variable": "scale:commons/10.1021-acscatal.4c00365/variable/nh3-yield-rate"
+          },
+          {
+            "id": "rate_nh3_neg0p5v",
+            "status": "present",
+            "basis": "at E = −0.5 V vs RHE (Figure 13f)",
+            "evidence_ids": [
+              "fig13ef"
+            ],
+            "note": "E = -0.5 V vs RHE, Figure 13f (magenta bars, Au cubes); NH3 yield rate per gram of catalyst as plotted (axis 'mol gcat−1 h−1'); second reading 2.53",
+            "origin": "measured",
+            "produced_by": "scale:commons/10.1021-acscatal.4c00365/experiment/digitize-fig13ef",
+            "qualifier": "approximate",
+            "target": "scale:commons/10.1021-acscatal.4c00365/species/nh3",
+            "uncertainty": 0.03,
+            "uncertainty_evaluation": "type_b",
+            "uncertainty_kind": "standard_uncertainty",
+            "unit": "mol h−1 g−1",
+            "value": 2.53,
+            "variable": "scale:commons/10.1021-acscatal.4c00365/variable/nh3-yield-rate"
+          },
+          {
+            "id": "rate_nh3_neg0p6v",
+            "status": "present",
+            "basis": "at E = −0.6 V vs RHE (Figure 13f)",
+            "evidence_ids": [
+              "fig13ef"
+            ],
+            "note": "E = -0.6 V vs RHE, Figure 13f (magenta bars, Au cubes); NH3 yield rate per gram of catalyst as plotted (axis 'mol gcat−1 h−1'); second reading 3.74",
+            "origin": "measured",
+            "produced_by": "scale:commons/10.1021-acscatal.4c00365/experiment/digitize-fig13ef",
+            "qualifier": "approximate",
+            "target": "scale:commons/10.1021-acscatal.4c00365/species/nh3",
+            "uncertainty": 0.03,
+            "uncertainty_evaluation": "type_b",
+            "uncertainty_kind": "standard_uncertainty",
+            "unit": "mol h−1 g−1",
+            "value": 3.74,
+            "variable": "scale:commons/10.1021-acscatal.4c00365/variable/nh3-yield-rate"
+          }
+        ],
+        "temperature": {
+          "status": "not_reported",
+          "missing_reason": "not_stated_in_source"
+        },
+        "test_kind": "activity"
+      }
+    },
+    {
+      "id": "scale:commons/10.1021-acscatal.4c00365/test/no3rr-cu-cubes",
+      "label": "CatalyticTest",
+      "props": {
+        "name": "NO3RR of the Cu nanocube reference (Figure 13e,f)",
+        "charge_passed": {
+          "status": "not_reported",
+          "missing_reason": "not_stated_in_source"
+        },
+        "control_mode": "not_reported",
+        "current_density": {
+          "status": "not_reported",
+          "missing_reason": "not_stated_in_source"
+        },
+        "driving_forces": [
+          "electro"
+        ],
+        "electrode_potential": {
+          "status": "present",
+          "as_reported": "'FE of NH3 and (f) NH3 yield rates at different potentials' (Figure 13e,f); axis 'Potential(V vs. RHE)'",
+          "evidence_ids": [
+            "fig13ef"
+          ],
+          "lower": -0.6,
+          "note": "applied-potential range of the digitized series in Figure 13e,f; no single potential is printed in the text",
+          "qualifier": "approximate",
+          "unit": "V",
+          "upper": -0.2
+        },
+        "evidence": [
+          {
+            "id": "sec44c",
+            "kind": "text",
+            "locator": "Section 4.4, p. 6054",
+            "quote": "Both Cu/CuAu SAAs showed a higher NO3RR activity than Cu and Au nanocubes. Especially, the ordered Cu/CuAu SAA catalysts showed a high NH3 selectivity with a FE of 85.5% and an exceedingly high NH3 yield rate of 8.47 mol h−1 g−1.",
+            "source": "scale:commons/source/10.1021-acscatal.4c00365"
+          },
+          {
+            "id": "fig13ef",
+            "kind": "figure",
+            "locator": "Figure 13e,f, p. 6056",
+            "note": "digitized by pixel measurement (produced_by ex:pub/10.1021-acscatal.4c00365/experiment/digitize-fig13ef): panel e y axis linear 0-100 % with labelled ticks every 20 % (47.1 px per 20 %), panel f y axis linear 0-10 mol gcat-1 h-1 with labelled ticks every 2 (49.6 px per 2); x axis 'Potential(V vs. RHE)', groups left to right -0.2 to -0.6 V vs RHE; in each group the bars are Au cubes, Cu cubes, Cu/CuAu SAA (dilute), Cu/CuAu ordered SAA; every bar read twice (second pass with stricter colour thresholds), the second readings kept on the digitization experiment's results",
+            "quote": "(e) FE of NH3 and (f) NH3 yield rates at different potentials for the catalysts.",
+            "source": "scale:commons/source/10.1021-acscatal.4c00365"
+          }
+        ],
+        "experiment_kind": "physical",
+        "note": "Reference measurement the source reports for comparison ('Both Cu/CuAu SAAs showed a higher NO3RR activity than Cu and Au nanocubes.'); the values exist only in Figure 13e,f and are digitized here. The Cu nanocubes' preparation is not reported in this text (ref 65, not curated). Cell, electrolyte and control mode are not reported in this text (they are in the authors' cited ref 65, not curated); the potentials come from Figure 13e,f's axis (V vs. RHE). Every bar of Figure 13e,f was read; no point was unreadable, so no extraction_error gap was needed.",
+        "origin": "curated",
+        "reference_scale": "rhe",
+        "result_values": [
+          {
+            "id": "fe_nh3_neg0p2v",
+            "status": "present",
+            "basis": "at E = −0.2 V vs RHE (Figure 13e)",
+            "evidence_ids": [
+              "fig13ef"
+            ],
+            "note": "E = -0.2 V vs RHE, Figure 13e (blue bars, Cu cubes); second reading 59.99",
+            "origin": "measured",
+            "produced_by": "scale:commons/10.1021-acscatal.4c00365/experiment/digitize-fig13ef",
+            "qualifier": "approximate",
+            "target": "scale:commons/10.1021-acscatal.4c00365/species/nh3",
+            "uncertainty": 0.25,
+            "uncertainty_evaluation": "type_b",
+            "uncertainty_kind": "standard_uncertainty",
+            "unit": "%",
+            "value": 59.99,
+            "variable": "scale:commons/10.1021-acscatal.4c00365/variable/fe-nh3"
+          },
+          {
+            "id": "fe_nh3_neg0p3v",
+            "status": "present",
+            "basis": "at E = −0.3 V vs RHE (Figure 13e)",
+            "evidence_ids": [
+              "fig13ef"
+            ],
+            "note": "E = -0.3 V vs RHE, Figure 13e (blue bars, Cu cubes); second reading 64.66",
+            "origin": "measured",
+            "produced_by": "scale:commons/10.1021-acscatal.4c00365/experiment/digitize-fig13ef",
+            "qualifier": "approximate",
+            "target": "scale:commons/10.1021-acscatal.4c00365/species/nh3",
+            "uncertainty": 0.42,
+            "uncertainty_evaluation": "type_b",
+            "uncertainty_kind": "standard_uncertainty",
+            "unit": "%",
+            "value": 64.87,
+            "variable": "scale:commons/10.1021-acscatal.4c00365/variable/fe-nh3"
+          },
+          {
+            "id": "fe_nh3_neg0p4v",
+            "status": "present",
+            "basis": "at E = −0.4 V vs RHE (Figure 13e)",
+            "evidence_ids": [
+              "fig13ef"
+            ],
+            "note": "E = -0.4 V vs RHE, Figure 13e (blue bars, Cu cubes); second reading 70.59",
+            "origin": "measured",
+            "produced_by": "scale:commons/10.1021-acscatal.4c00365/experiment/digitize-fig13ef",
+            "qualifier": "approximate",
+            "target": "scale:commons/10.1021-acscatal.4c00365/species/nh3",
+            "uncertainty": 0.25,
+            "uncertainty_evaluation": "type_b",
+            "uncertainty_kind": "standard_uncertainty",
+            "unit": "%",
+            "value": 70.59,
+            "variable": "scale:commons/10.1021-acscatal.4c00365/variable/fe-nh3"
+          },
+          {
+            "id": "fe_nh3_neg0p5v",
+            "status": "present",
+            "basis": "at E = −0.5 V vs RHE (Figure 13e)",
+            "evidence_ids": [
+              "fig13ef"
+            ],
+            "note": "E = -0.5 V vs RHE, Figure 13e (blue bars, Cu cubes); second reading 72.71",
+            "origin": "measured",
+            "produced_by": "scale:commons/10.1021-acscatal.4c00365/experiment/digitize-fig13ef",
+            "qualifier": "approximate",
+            "target": "scale:commons/10.1021-acscatal.4c00365/species/nh3",
+            "uncertainty": 0.25,
+            "uncertainty_evaluation": "type_b",
+            "uncertainty_kind": "standard_uncertainty",
+            "unit": "%",
+            "value": 72.71,
+            "variable": "scale:commons/10.1021-acscatal.4c00365/variable/fe-nh3"
+          },
+          {
+            "id": "fe_nh3_neg0p6v",
+            "status": "present",
+            "basis": "at E = −0.6 V vs RHE (Figure 13e)",
+            "evidence_ids": [
+              "fig13ef"
+            ],
+            "note": "E = -0.6 V vs RHE, Figure 13e (blue bars, Cu cubes); second reading 78.22",
+            "origin": "measured",
+            "produced_by": "scale:commons/10.1021-acscatal.4c00365/experiment/digitize-fig13ef",
+            "qualifier": "approximate",
+            "target": "scale:commons/10.1021-acscatal.4c00365/species/nh3",
+            "uncertainty": 0.25,
+            "uncertainty_evaluation": "type_b",
+            "uncertainty_kind": "standard_uncertainty",
+            "unit": "%",
+            "value": 78.22,
+            "variable": "scale:commons/10.1021-acscatal.4c00365/variable/fe-nh3"
+          },
+          {
+            "id": "rate_nh3_neg0p2v",
+            "status": "present",
+            "basis": "at E = −0.2 V vs RHE (Figure 13f)",
+            "evidence_ids": [
+              "fig13ef"
+            ],
+            "note": "E = -0.2 V vs RHE, Figure 13f (blue bars, Cu cubes); NH3 yield rate per gram of catalyst as plotted (axis 'mol gcat−1 h−1'); second reading 0.22",
+            "origin": "measured",
+            "produced_by": "scale:commons/10.1021-acscatal.4c00365/experiment/digitize-fig13ef",
+            "qualifier": "approximate",
+            "target": "scale:commons/10.1021-acscatal.4c00365/species/nh3",
+            "uncertainty": 0.03,
+            "uncertainty_evaluation": "type_b",
+            "uncertainty_kind": "standard_uncertainty",
+            "unit": "mol h−1 g−1",
+            "value": 0.22,
+            "variable": "scale:commons/10.1021-acscatal.4c00365/variable/nh3-yield-rate"
+          },
+          {
+            "id": "rate_nh3_neg0p3v",
+            "status": "present",
+            "basis": "at E = −0.3 V vs RHE (Figure 13f)",
+            "evidence_ids": [
+              "fig13ef"
+            ],
+            "note": "E = -0.3 V vs RHE, Figure 13f (blue bars, Cu cubes); NH3 yield rate per gram of catalyst as plotted (axis 'mol gcat−1 h−1'); second reading 0.83",
+            "origin": "measured",
+            "produced_by": "scale:commons/10.1021-acscatal.4c00365/experiment/digitize-fig13ef",
+            "qualifier": "approximate",
+            "target": "scale:commons/10.1021-acscatal.4c00365/species/nh3",
+            "uncertainty": 0.04,
+            "uncertainty_evaluation": "type_b",
+            "uncertainty_kind": "standard_uncertainty",
+            "unit": "mol h−1 g−1",
+            "value": 0.85,
+            "variable": "scale:commons/10.1021-acscatal.4c00365/variable/nh3-yield-rate"
+          },
+          {
+            "id": "rate_nh3_neg0p4v",
+            "status": "present",
+            "basis": "at E = −0.4 V vs RHE (Figure 13f)",
+            "evidence_ids": [
+              "fig13ef"
+            ],
+            "note": "E = -0.4 V vs RHE, Figure 13f (blue bars, Cu cubes); NH3 yield rate per gram of catalyst as plotted (axis 'mol gcat−1 h−1'); second reading 2.12",
+            "origin": "measured",
+            "produced_by": "scale:commons/10.1021-acscatal.4c00365/experiment/digitize-fig13ef",
+            "qualifier": "approximate",
+            "target": "scale:commons/10.1021-acscatal.4c00365/species/nh3",
+            "uncertainty": 0.04,
+            "uncertainty_evaluation": "type_b",
+            "uncertainty_kind": "standard_uncertainty",
+            "unit": "mol h−1 g−1",
+            "value": 2.14,
+            "variable": "scale:commons/10.1021-acscatal.4c00365/variable/nh3-yield-rate"
+          },
+          {
+            "id": "rate_nh3_neg0p5v",
+            "status": "present",
+            "basis": "at E = −0.5 V vs RHE (Figure 13f)",
+            "evidence_ids": [
+              "fig13ef"
+            ],
+            "note": "E = -0.5 V vs RHE, Figure 13f (blue bars, Cu cubes); NH3 yield rate per gram of catalyst as plotted (axis 'mol gcat−1 h−1'); second reading 3.22",
+            "origin": "measured",
+            "produced_by": "scale:commons/10.1021-acscatal.4c00365/experiment/digitize-fig13ef",
+            "qualifier": "approximate",
+            "target": "scale:commons/10.1021-acscatal.4c00365/species/nh3",
+            "uncertainty": 0.03,
+            "uncertainty_evaluation": "type_b",
+            "uncertainty_kind": "standard_uncertainty",
+            "unit": "mol h−1 g−1",
+            "value": 3.22,
+            "variable": "scale:commons/10.1021-acscatal.4c00365/variable/nh3-yield-rate"
+          },
+          {
+            "id": "rate_nh3_neg0p6v",
+            "status": "present",
+            "basis": "at E = −0.6 V vs RHE (Figure 13f)",
+            "evidence_ids": [
+              "fig13ef"
+            ],
+            "note": "E = -0.6 V vs RHE, Figure 13f (blue bars, Cu cubes); NH3 yield rate per gram of catalyst as plotted (axis 'mol gcat−1 h−1'); second reading 4.83",
+            "origin": "measured",
+            "produced_by": "scale:commons/10.1021-acscatal.4c00365/experiment/digitize-fig13ef",
+            "qualifier": "approximate",
+            "target": "scale:commons/10.1021-acscatal.4c00365/species/nh3",
+            "uncertainty": 0.04,
+            "uncertainty_evaluation": "type_b",
+            "uncertainty_kind": "standard_uncertainty",
+            "unit": "mol h−1 g−1",
+            "value": 4.85,
+            "variable": "scale:commons/10.1021-acscatal.4c00365/variable/nh3-yield-rate"
+          }
+        ],
+        "temperature": {
+          "status": "not_reported",
+          "missing_reason": "not_stated_in_source"
+        },
+        "test_kind": "activity"
+      }
+    },
+    {
+      "id": "scale:commons/10.1021-acscatal.4c00365/test/no3rr-dilute",
+      "label": "CatalyticTest",
+      "props": {
+        "name": "NO3RR of the dilute Cu/CuAu SAA nanocubes (Figure 13e,f)",
+        "charge_passed": {
+          "status": "not_reported",
+          "missing_reason": "not_stated_in_source"
+        },
+        "control_mode": "not_reported",
+        "current_density": {
+          "status": "not_reported",
+          "missing_reason": "not_stated_in_source"
+        },
+        "driving_forces": [
+          "electro"
+        ],
+        "electrode_potential": {
+          "status": "present",
+          "as_reported": "'FE of NH3 and (f) NH3 yield rates at different potentials' (Figure 13e,f); axis 'Potential(V vs. RHE)'",
+          "evidence_ids": [
+            "fig13ef"
+          ],
+          "lower": -0.6,
+          "note": "applied-potential range of the digitized series in Figure 13e,f; no single potential is printed in the text",
+          "qualifier": "approximate",
+          "unit": "V",
+          "upper": -0.2
+        },
+        "evidence": [
+          {
+            "id": "sec44c",
+            "kind": "text",
+            "locator": "Section 4.4, p. 6054",
+            "quote": "Both Cu/CuAu SAAs showed a higher NO3RR activity than Cu and Au nanocubes. Especially, the ordered Cu/CuAu SAA catalysts showed a high NH3 selectivity with a FE of 85.5% and an exceedingly high NH3 yield rate of 8.47 mol h−1 g−1.",
+            "source": "scale:commons/source/10.1021-acscatal.4c00365"
+          },
+          {
+            "id": "fig13ef",
+            "kind": "figure",
+            "locator": "Figure 13e,f, p. 6056",
+            "note": "digitized by pixel measurement (produced_by ex:pub/10.1021-acscatal.4c00365/experiment/digitize-fig13ef): panel e y axis linear 0-100 % with labelled ticks every 20 % (47.1 px per 20 %), panel f y axis linear 0-10 mol gcat-1 h-1 with labelled ticks every 2 (49.6 px per 2); x axis 'Potential(V vs. RHE)', groups left to right -0.2 to -0.6 V vs RHE; in each group the bars are Au cubes, Cu cubes, Cu/CuAu SAA (dilute), Cu/CuAu ordered SAA; every bar read twice (second pass with stricter colour thresholds), the second readings kept on the digitization experiment's results",
+            "quote": "(e) FE of NH3 and (f) NH3 yield rates at different potentials for the catalysts.",
+            "source": "scale:commons/source/10.1021-acscatal.4c00365"
+          }
+        ],
+        "experiment_kind": "physical",
+        "note": "The source's text prints no number for the dilute Cu/CuAu SAA: its potential-dependent NH3 FE and NH3 yield rate exist only in Figure 13e,f and are digitized here as result_values. The text states 'Both Cu/CuAu SAAs showed a higher NO3RR activity than Cu and Au nanocubes.' Cell, electrolyte and control mode are not reported in this text (they are in the authors' cited ref 65, not curated); the potentials come from Figure 13e,f's axis (V vs. RHE). Every bar of Figure 13e,f was read; no point was unreadable, so no extraction_error gap was needed.",
+        "origin": "curated",
+        "reference_scale": "rhe",
+        "result_values": [
+          {
+            "id": "fe_nh3_neg0p2v",
+            "status": "present",
+            "basis": "at E = −0.2 V vs RHE (Figure 13e)",
+            "evidence_ids": [
+              "fig13ef"
+            ],
+            "note": "E = -0.2 V vs RHE, Figure 13e (red bars, Cu/CuAu SAA (dilute)); second reading 60.42",
+            "origin": "measured",
+            "produced_by": "scale:commons/10.1021-acscatal.4c00365/experiment/digitize-fig13ef",
+            "qualifier": "approximate",
+            "target": "scale:commons/10.1021-acscatal.4c00365/species/nh3",
+            "uncertainty": 0.25,
+            "uncertainty_evaluation": "type_b",
+            "uncertainty_kind": "standard_uncertainty",
+            "unit": "%",
+            "value": 60.42,
+            "variable": "scale:commons/10.1021-acscatal.4c00365/variable/fe-nh3"
+          },
+          {
+            "id": "fe_nh3_neg0p3v",
+            "status": "present",
+            "basis": "at E = −0.3 V vs RHE (Figure 13e)",
+            "evidence_ids": [
+              "fig13ef"
+            ],
+            "note": "E = -0.3 V vs RHE, Figure 13e (red bars, Cu/CuAu SAA (dilute)); second reading 71.02",
+            "origin": "measured",
+            "produced_by": "scale:commons/10.1021-acscatal.4c00365/experiment/digitize-fig13ef",
+            "qualifier": "approximate",
+            "target": "scale:commons/10.1021-acscatal.4c00365/species/nh3",
+            "uncertainty": 0.25,
+            "uncertainty_evaluation": "type_b",
+            "uncertainty_kind": "standard_uncertainty",
+            "unit": "%",
+            "value": 71.02,
+            "variable": "scale:commons/10.1021-acscatal.4c00365/variable/fe-nh3"
+          },
+          {
+            "id": "fe_nh3_neg0p4v",
+            "status": "present",
+            "basis": "at E = −0.4 V vs RHE (Figure 13e)",
+            "evidence_ids": [
+              "fig13ef"
+            ],
+            "note": "E = -0.4 V vs RHE, Figure 13e (red bars, Cu/CuAu SAA (dilute)); second reading 84.16",
+            "origin": "measured",
+            "produced_by": "scale:commons/10.1021-acscatal.4c00365/experiment/digitize-fig13ef",
+            "qualifier": "approximate",
+            "target": "scale:commons/10.1021-acscatal.4c00365/species/nh3",
+            "uncertainty": 0.25,
+            "uncertainty_evaluation": "type_b",
+            "uncertainty_kind": "standard_uncertainty",
+            "unit": "%",
+            "value": 84.16,
+            "variable": "scale:commons/10.1021-acscatal.4c00365/variable/fe-nh3"
+          },
+          {
+            "id": "fe_nh3_neg0p5v",
+            "status": "present",
+            "basis": "at E = −0.5 V vs RHE (Figure 13e)",
+            "evidence_ids": [
+              "fig13ef"
+            ],
+            "note": "E = -0.5 V vs RHE, Figure 13e (red bars, Cu/CuAu SAA (dilute)); second reading 81.62",
+            "origin": "measured",
+            "produced_by": "scale:commons/10.1021-acscatal.4c00365/experiment/digitize-fig13ef",
+            "qualifier": "approximate",
+            "target": "scale:commons/10.1021-acscatal.4c00365/species/nh3",
+            "uncertainty": 0.25,
+            "uncertainty_evaluation": "type_b",
+            "uncertainty_kind": "standard_uncertainty",
+            "unit": "%",
+            "value": 81.62,
+            "variable": "scale:commons/10.1021-acscatal.4c00365/variable/fe-nh3"
+          },
+          {
+            "id": "fe_nh3_neg0p6v",
+            "status": "present",
+            "basis": "at E = −0.6 V vs RHE (Figure 13e)",
+            "evidence_ids": [
+              "fig13ef"
+            ],
+            "note": "E = -0.6 V vs RHE, Figure 13e (red bars, Cu/CuAu SAA (dilute)); second reading 79.07",
+            "origin": "measured",
+            "produced_by": "scale:commons/10.1021-acscatal.4c00365/experiment/digitize-fig13ef",
+            "qualifier": "approximate",
+            "target": "scale:commons/10.1021-acscatal.4c00365/species/nh3",
+            "uncertainty": 0.25,
+            "uncertainty_evaluation": "type_b",
+            "uncertainty_kind": "standard_uncertainty",
+            "unit": "%",
+            "value": 79.07,
+            "variable": "scale:commons/10.1021-acscatal.4c00365/variable/fe-nh3"
+          },
+          {
+            "id": "rate_nh3_neg0p2v",
+            "status": "present",
+            "basis": "at E = −0.2 V vs RHE (Figure 13f)",
+            "evidence_ids": [
+              "fig13ef"
+            ],
+            "note": "E = -0.2 V vs RHE, Figure 13f (red bars, Cu/CuAu SAA (dilute)); NH3 yield rate per gram of catalyst as plotted (axis 'mol gcat−1 h−1'); second reading 0.55",
+            "origin": "measured",
+            "produced_by": "scale:commons/10.1021-acscatal.4c00365/experiment/digitize-fig13ef",
+            "qualifier": "approximate",
+            "target": "scale:commons/10.1021-acscatal.4c00365/species/nh3",
+            "uncertainty": 0.03,
+            "uncertainty_evaluation": "type_b",
+            "uncertainty_kind": "standard_uncertainty",
+            "unit": "mol h−1 g−1",
+            "value": 0.55,
+            "variable": "scale:commons/10.1021-acscatal.4c00365/variable/nh3-yield-rate"
+          },
+          {
+            "id": "rate_nh3_neg0p3v",
+            "status": "present",
+            "basis": "at E = −0.3 V vs RHE (Figure 13f)",
+            "evidence_ids": [
+              "fig13ef"
+            ],
+            "note": "E = -0.3 V vs RHE, Figure 13f (red bars, Cu/CuAu SAA (dilute)); NH3 yield rate per gram of catalyst as plotted (axis 'mol gcat−1 h−1'); second reading 1.31",
+            "origin": "measured",
+            "produced_by": "scale:commons/10.1021-acscatal.4c00365/experiment/digitize-fig13ef",
+            "qualifier": "approximate",
+            "target": "scale:commons/10.1021-acscatal.4c00365/species/nh3",
+            "uncertainty": 0.03,
+            "uncertainty_evaluation": "type_b",
+            "uncertainty_kind": "standard_uncertainty",
+            "unit": "mol h−1 g−1",
+            "value": 1.31,
+            "variable": "scale:commons/10.1021-acscatal.4c00365/variable/nh3-yield-rate"
+          },
+          {
+            "id": "rate_nh3_neg0p4v",
+            "status": "present",
+            "basis": "at E = −0.4 V vs RHE (Figure 13f)",
+            "evidence_ids": [
+              "fig13ef"
+            ],
+            "note": "E = -0.4 V vs RHE, Figure 13f (red bars, Cu/CuAu SAA (dilute)); NH3 yield rate per gram of catalyst as plotted (axis 'mol gcat−1 h−1'); second reading 2.49",
+            "origin": "measured",
+            "produced_by": "scale:commons/10.1021-acscatal.4c00365/experiment/digitize-fig13ef",
+            "qualifier": "approximate",
+            "target": "scale:commons/10.1021-acscatal.4c00365/species/nh3",
+            "uncertainty": 0.04,
+            "uncertainty_evaluation": "type_b",
+            "uncertainty_kind": "standard_uncertainty",
+            "unit": "mol h−1 g−1",
+            "value": 2.51,
+            "variable": "scale:commons/10.1021-acscatal.4c00365/variable/nh3-yield-rate"
+          },
+          {
+            "id": "rate_nh3_neg0p5v",
+            "status": "present",
+            "basis": "at E = −0.5 V vs RHE (Figure 13f)",
+            "evidence_ids": [
+              "fig13ef"
+            ],
+            "note": "E = -0.5 V vs RHE, Figure 13f (red bars, Cu/CuAu SAA (dilute)); NH3 yield rate per gram of catalyst as plotted (axis 'mol gcat−1 h−1'); second reading 4.27",
+            "origin": "measured",
+            "produced_by": "scale:commons/10.1021-acscatal.4c00365/experiment/digitize-fig13ef",
+            "qualifier": "approximate",
+            "target": "scale:commons/10.1021-acscatal.4c00365/species/nh3",
+            "uncertainty": 0.03,
+            "uncertainty_evaluation": "type_b",
+            "uncertainty_kind": "standard_uncertainty",
+            "unit": "mol h−1 g−1",
+            "value": 4.27,
+            "variable": "scale:commons/10.1021-acscatal.4c00365/variable/nh3-yield-rate"
+          },
+          {
+            "id": "rate_nh3_neg0p6v",
+            "status": "present",
+            "basis": "at E = −0.6 V vs RHE (Figure 13f)",
+            "evidence_ids": [
+              "fig13ef"
+            ],
+            "note": "E = -0.6 V vs RHE, Figure 13f (red bars, Cu/CuAu SAA (dilute)); NH3 yield rate per gram of catalyst as plotted (axis 'mol gcat−1 h−1'); second reading 6.21",
+            "origin": "measured",
+            "produced_by": "scale:commons/10.1021-acscatal.4c00365/experiment/digitize-fig13ef",
+            "qualifier": "approximate",
+            "target": "scale:commons/10.1021-acscatal.4c00365/species/nh3",
+            "uncertainty": 0.04,
+            "uncertainty_evaluation": "type_b",
+            "uncertainty_kind": "standard_uncertainty",
+            "unit": "mol h−1 g−1",
+            "value": 6.23,
+            "variable": "scale:commons/10.1021-acscatal.4c00365/variable/nh3-yield-rate"
+          }
+        ],
+        "temperature": {
+          "status": "not_reported",
+          "missing_reason": "not_stated_in_source"
+        },
+        "test_kind": "activity"
+      }
+    },
+    {
+      "id": "scale:commons/10.1021-acscatal.4c00365/test/no3rr-ordered",
+      "label": "CatalyticTest",
+      "props": {
+        "name": "NO3RR of the ordered Cu/CuAu SAA nanocubes",
+        "charge_passed": {
+          "status": "not_reported",
+          "missing_reason": "not_stated_in_source"
+        },
+        "control_mode": "not_reported",
+        "current_density": {
+          "status": "not_reported",
+          "missing_reason": "not_stated_in_source"
+        },
+        "driving_forces": [
+          "electro"
+        ],
+        "electrode_potential": {
+          "status": "present",
+          "as_reported": "'FE of NH3 and (f) NH3 yield rates at different potentials' (Figure 13e,f); axis 'Potential(V vs. RHE)'",
+          "evidence_ids": [
+            "fig13ef"
+          ],
+          "lower": -0.6,
+          "note": "applied-potential range of the digitized series in Figure 13e,f; no single potential is printed in the text",
+          "qualifier": "approximate",
+          "unit": "V",
+          "upper": -0.2
+        },
+        "evidence": [
+          {
+            "id": "sec44c",
+            "kind": "text",
+            "locator": "Section 4.4, p. 6054",
+            "quote": "Both Cu/CuAu SAAs showed a higher NO3RR activity than Cu and Au nanocubes. Especially, the ordered Cu/CuAu SAA catalysts showed a high NH3 selectivity with a FE of 85.5% and an exceedingly high NH3 yield rate of 8.47 mol h−1 g−1.",
+            "source": "scale:commons/source/10.1021-acscatal.4c00365"
+          },
+          {
+            "id": "sec44b",
+            "kind": "text",
+            "locator": "Section 4.4, p. 6054",
+            "quote": "Using Cu nanocubes as a template and through a seed-mediated colloidal synthesis, we controlled the density of single-sites and the number of atomic layers and obtained two types of SAAs: dilute Cu/CuAu SAA and ordered Cu/CuAu SAA (Figure 13).",
+            "source": "scale:commons/source/10.1021-acscatal.4c00365"
+          },
+          {
+            "id": "fig13ef",
+            "kind": "figure",
+            "locator": "Figure 13e,f, p. 6056",
+            "note": "digitized by pixel measurement (produced_by ex:pub/10.1021-acscatal.4c00365/experiment/digitize-fig13ef): panel e y axis linear 0-100 % with labelled ticks every 20 % (47.1 px per 20 %), panel f y axis linear 0-10 mol gcat-1 h-1 with labelled ticks every 2 (49.6 px per 2); x axis 'Potential(V vs. RHE)', groups left to right -0.2 to -0.6 V vs RHE; in each group the bars are Au cubes, Cu cubes, Cu/CuAu SAA (dilute), Cu/CuAu ordered SAA; every bar read twice (second pass with stricter colour thresholds), the second readings kept on the digitization experiment's results",
+            "quote": "(e) FE of NH3 and (f) NH3 yield rates at different potentials for the catalysts.",
+            "source": "scale:commons/source/10.1021-acscatal.4c00365"
+          }
+        ],
+        "experiment_kind": "physical",
+        "faradaic_efficiency": [
+          {
+            "status": "present",
+            "as_reported": "a FE of 85.5%",
+            "evidence_ids": [
+              "sec44c",
+              "fig13ef"
+            ],
+            "target": "scale:commons/10.1021-acscatal.4c00365/species/nh3",
+            "unit": "%",
+            "value": 85.5
+          }
+        ],
+        "note": "control mode, cell, electrolyte: the source states none; they are in the cited work (ref 65). The potentials of the series come from Figure 13e,f's axis ('Potential(V vs. RHE)', groups -0.2 to -0.6 V), digitized here into result_values (the printed scalars FE 85.5 % and 8.47 mol h−1 g−1 correspond to the highest FE bar (-0.5 V, digitized 85.01 +/- 0.25) and the highest yield bar (-0.6 V, digitized 8.45 +/- 0.04)). Every bar of Figure 13e,f was read; no point was unreadable, so no extraction_error gap was needed. The source also reports both Cu/CuAu SAAs more active for the NO3RR than Cu and Au nanocubes (their tests are separate records), and attributes the ordered Cu/CuAu SAA's high activity to (001)-oriented Cu site ensembles by DFT calculations; these come from the authors' own cited work (ref 65), whose details this Perspective does not print and which was not curated as separate records.",
+        "origin": "curated",
+        "production_rate": {
+          "status": "present",
+          "as_reported": "8.47 mol h−1 g−1",
+          "evidence_ids": [
+            "sec44c",
+            "fig13ef"
+          ],
+          "note": "NH3 yield rate, per gram of catalyst as printed",
+          "unit": "mol h−1 g−1",
+          "value": 8.47
+        },
+        "reference_scale": "rhe",
+        "result_values": [
+          {
+            "id": "fe_nh3_neg0p2v",
+            "status": "present",
+            "basis": "at E = −0.2 V vs RHE (Figure 13e)",
+            "evidence_ids": [
+              "fig13ef"
+            ],
+            "note": "E = -0.2 V vs RHE, Figure 13e (cyan bars, Cu/CuAu ordered SAA); second reading 62.96",
+            "origin": "measured",
+            "produced_by": "scale:commons/10.1021-acscatal.4c00365/experiment/digitize-fig13ef",
+            "qualifier": "approximate",
+            "target": "scale:commons/10.1021-acscatal.4c00365/species/nh3",
+            "uncertainty": 0.25,
+            "uncertainty_evaluation": "type_b",
+            "uncertainty_kind": "standard_uncertainty",
+            "unit": "%",
+            "value": 62.96,
+            "variable": "scale:commons/10.1021-acscatal.4c00365/variable/fe-nh3"
+          },
+          {
+            "id": "fe_nh3_neg0p3v",
+            "status": "present",
+            "basis": "at E = −0.3 V vs RHE (Figure 13e)",
+            "evidence_ids": [
+              "fig13ef"
+            ],
+            "note": "E = -0.3 V vs RHE, Figure 13e (cyan bars, Cu/CuAu ordered SAA); second reading 73.98",
+            "origin": "measured",
+            "produced_by": "scale:commons/10.1021-acscatal.4c00365/experiment/digitize-fig13ef",
+            "qualifier": "approximate",
+            "target": "scale:commons/10.1021-acscatal.4c00365/species/nh3",
+            "uncertainty": 0.25,
+            "uncertainty_evaluation": "type_b",
+            "uncertainty_kind": "standard_uncertainty",
+            "unit": "%",
+            "value": 73.98,
+            "variable": "scale:commons/10.1021-acscatal.4c00365/variable/fe-nh3"
+          },
+          {
+            "id": "fe_nh3_neg0p4v",
+            "status": "present",
+            "basis": "at E = −0.4 V vs RHE (Figure 13e)",
+            "evidence_ids": [
+              "fig13ef"
+            ],
+            "note": "E = -0.4 V vs RHE, Figure 13e (cyan bars, Cu/CuAu ordered SAA); second reading 82.04",
+            "origin": "measured",
+            "produced_by": "scale:commons/10.1021-acscatal.4c00365/experiment/digitize-fig13ef",
+            "qualifier": "approximate",
+            "target": "scale:commons/10.1021-acscatal.4c00365/species/nh3",
+            "uncertainty": 0.42,
+            "uncertainty_evaluation": "type_b",
+            "uncertainty_kind": "standard_uncertainty",
+            "unit": "%",
+            "value": 82.25,
+            "variable": "scale:commons/10.1021-acscatal.4c00365/variable/fe-nh3"
+          },
+          {
+            "id": "fe_nh3_neg0p5v",
+            "status": "present",
+            "basis": "at E = −0.5 V vs RHE (Figure 13e)",
+            "evidence_ids": [
+              "fig13ef"
+            ],
+            "note": "E = -0.5 V vs RHE, Figure 13e (cyan bars, Cu/CuAu ordered SAA); second reading 85.01",
+            "origin": "measured",
+            "produced_by": "scale:commons/10.1021-acscatal.4c00365/experiment/digitize-fig13ef",
+            "qualifier": "approximate",
+            "target": "scale:commons/10.1021-acscatal.4c00365/species/nh3",
+            "uncertainty": 0.25,
+            "uncertainty_evaluation": "type_b",
+            "uncertainty_kind": "standard_uncertainty",
+            "unit": "%",
+            "value": 85.01,
+            "variable": "scale:commons/10.1021-acscatal.4c00365/variable/fe-nh3"
+          },
+          {
+            "id": "fe_nh3_neg0p6v",
+            "status": "present",
+            "basis": "at E = −0.6 V vs RHE (Figure 13e)",
+            "evidence_ids": [
+              "fig13ef"
+            ],
+            "note": "E = -0.6 V vs RHE, Figure 13e (cyan bars, Cu/CuAu ordered SAA); second reading 79.92",
+            "origin": "measured",
+            "produced_by": "scale:commons/10.1021-acscatal.4c00365/experiment/digitize-fig13ef",
+            "qualifier": "approximate",
+            "target": "scale:commons/10.1021-acscatal.4c00365/species/nh3",
+            "uncertainty": 0.25,
+            "uncertainty_evaluation": "type_b",
+            "uncertainty_kind": "standard_uncertainty",
+            "unit": "%",
+            "value": 79.92,
+            "variable": "scale:commons/10.1021-acscatal.4c00365/variable/fe-nh3"
+          },
+          {
+            "id": "rate_nh3_neg0p2v",
+            "status": "present",
+            "basis": "at E = −0.2 V vs RHE (Figure 13f)",
+            "evidence_ids": [
+              "fig13ef"
+            ],
+            "note": "E = -0.2 V vs RHE, Figure 13f (cyan bars, Cu/CuAu ordered SAA); NH3 yield rate per gram of catalyst as plotted (axis 'mol gcat−1 h−1'); second reading 0.67",
+            "origin": "measured",
+            "produced_by": "scale:commons/10.1021-acscatal.4c00365/experiment/digitize-fig13ef",
+            "qualifier": "approximate",
+            "target": "scale:commons/10.1021-acscatal.4c00365/species/nh3",
+            "uncertainty": 0.03,
+            "uncertainty_evaluation": "type_b",
+            "uncertainty_kind": "standard_uncertainty",
+            "unit": "mol h−1 g−1",
+            "value": 0.67,
+            "variable": "scale:commons/10.1021-acscatal.4c00365/variable/nh3-yield-rate"
+          },
+          {
+            "id": "rate_nh3_neg0p3v",
+            "status": "present",
+            "basis": "at E = −0.3 V vs RHE (Figure 13f)",
+            "evidence_ids": [
+              "fig13ef"
+            ],
+            "note": "E = -0.3 V vs RHE, Figure 13f (cyan bars, Cu/CuAu ordered SAA); NH3 yield rate per gram of catalyst as plotted (axis 'mol gcat−1 h−1'); second reading 2.04",
+            "origin": "measured",
+            "produced_by": "scale:commons/10.1021-acscatal.4c00365/experiment/digitize-fig13ef",
+            "qualifier": "approximate",
+            "target": "scale:commons/10.1021-acscatal.4c00365/species/nh3",
+            "uncertainty": 0.03,
+            "uncertainty_evaluation": "type_b",
+            "uncertainty_kind": "standard_uncertainty",
+            "unit": "mol h−1 g−1",
+            "value": 2.04,
+            "variable": "scale:commons/10.1021-acscatal.4c00365/variable/nh3-yield-rate"
+          },
+          {
+            "id": "rate_nh3_neg0p4v",
+            "status": "present",
+            "basis": "at E = −0.4 V vs RHE (Figure 13f)",
+            "evidence_ids": [
+              "fig13ef"
+            ],
+            "note": "E = -0.4 V vs RHE, Figure 13f (cyan bars, Cu/CuAu ordered SAA); NH3 yield rate per gram of catalyst as plotted (axis 'mol gcat−1 h−1'); second reading 4.63",
+            "origin": "measured",
+            "produced_by": "scale:commons/10.1021-acscatal.4c00365/experiment/digitize-fig13ef",
+            "qualifier": "approximate",
+            "target": "scale:commons/10.1021-acscatal.4c00365/species/nh3",
+            "uncertainty": 0.03,
+            "uncertainty_evaluation": "type_b",
+            "uncertainty_kind": "standard_uncertainty",
+            "unit": "mol h−1 g−1",
+            "value": 4.63,
+            "variable": "scale:commons/10.1021-acscatal.4c00365/variable/nh3-yield-rate"
+          },
+          {
+            "id": "rate_nh3_neg0p5v",
+            "status": "present",
+            "basis": "at E = −0.5 V vs RHE (Figure 13f)",
+            "evidence_ids": [
+              "fig13ef"
+            ],
+            "note": "E = -0.5 V vs RHE, Figure 13f (cyan bars, Cu/CuAu ordered SAA); NH3 yield rate per gram of catalyst as plotted (axis 'mol gcat−1 h−1'); second reading 6.33",
+            "origin": "measured",
+            "produced_by": "scale:commons/10.1021-acscatal.4c00365/experiment/digitize-fig13ef",
+            "qualifier": "approximate",
+            "target": "scale:commons/10.1021-acscatal.4c00365/species/nh3",
+            "uncertainty": 0.03,
+            "uncertainty_evaluation": "type_b",
+            "uncertainty_kind": "standard_uncertainty",
+            "unit": "mol h−1 g−1",
+            "value": 6.33,
+            "variable": "scale:commons/10.1021-acscatal.4c00365/variable/nh3-yield-rate"
+          },
+          {
+            "id": "rate_nh3_neg0p6v",
+            "status": "present",
+            "basis": "at E = −0.6 V vs RHE (Figure 13f)",
+            "evidence_ids": [
+              "fig13ef"
+            ],
+            "note": "E = -0.6 V vs RHE, Figure 13f (cyan bars, Cu/CuAu ordered SAA); NH3 yield rate per gram of catalyst as plotted (axis 'mol gcat−1 h−1'); second reading 8.43",
+            "origin": "measured",
+            "produced_by": "scale:commons/10.1021-acscatal.4c00365/experiment/digitize-fig13ef",
+            "qualifier": "approximate",
+            "target": "scale:commons/10.1021-acscatal.4c00365/species/nh3",
+            "uncertainty": 0.04,
+            "uncertainty_evaluation": "type_b",
+            "uncertainty_kind": "standard_uncertainty",
+            "unit": "mol h−1 g−1",
+            "value": 8.45,
+            "variable": "scale:commons/10.1021-acscatal.4c00365/variable/nh3-yield-rate"
+          }
+        ],
+        "temperature": {
+          "status": "not_reported",
+          "missing_reason": "not_stated_in_source"
+        },
+        "test_kind": "activity"
+      }
+    },
+    {
+      "id": "scale:commons/10.1021-acscatal.4c00365/variable/fe-nh3",
+      "label": "Variable",
+      "props": {
+        "name": "NH3 faradaic efficiency at the applied potential (Figure 13e)",
+        "definition": "FE of NH3 as plotted in Figure 13e for the four catalysts at -0.2 to -0.6 V vs RHE",
+        "origin": "curated",
+        "quantity_kind": "faradaic_efficiency",
+        "scale": "quantitative",
+        "unit": "%"
+      }
+    },
+    {
+      "id": "scale:commons/10.1021-acscatal.4c00365/variable/nh3-yield-rate",
+      "label": "Variable",
+      "props": {
+        "name": "NH3 yield rate at the applied potential (Figure 13f)",
+        "definition": "NH3 yield rate per gram of catalyst as plotted in Figure 13f (axis 'NH3 Yield Rate (mol gcat−1 h−1)')",
+        "origin": "curated",
+        "quantity_kind": "production_rate",
+        "scale": "quantitative",
+        "unit": "mol h−1 g−1"
+      }
+    },
+    {
+      "id": "scale:commons/source/10.1021-acscatal.4c00365",
+      "label": "Source",
+      "props": {
+        "name": "Electrifying Energy and Chemical Transformations with Single-Atom Alloy Nanoparticle Catalysts",
+        "kind": "article",
+        "doi": "10.1021/acscatal.4c00365",
+        "licence": "https://creativecommons.org/licenses/by/4.0/",
+        "origin": "curated",
+        "retrieved_from": "101108.pdf",
+        "retrieved_on": "2026-11-04",
+        "text_sha256": "d8a68ab49b263bfc5379b50288da026c869e2f49e8b3236bd210ed0bcb19d597",
+        "text_version": "version_of_record",
+        "title": "Electrifying Energy and Chemical Transformations with Single-Atom Alloy Nanoparticle Catalysts",
+        "url": "https://doi.org/10.1021/acscatal.4c00365",
+        "venue": "ACS Catalysis",
+        "year": 2024
+      }
+    }
+  ],
+  "links": [
+    {
+      "id": "scale:commons/10.1021-acscatal.4c00365/catalyst/au-nanocubes/has-au",
+      "type": "HAS_COMPONENT",
+      "props": {
+        "evidence": [
+          {
+            "id": "sec44c",
+            "kind": "text",
+            "locator": "Section 4.4, p. 6054",
+            "quote": "Both Cu/CuAu SAAs showed a higher NO3RR activity than Cu and Au nanocubes. Especially, the ordered Cu/CuAu SAA catalysts showed a high NH3 selectivity with a FE of 85.5% and an exceedingly high NH3 yield rate of 8.47 mol h−1 g−1.",
+            "source": "scale:commons/source/10.1021-acscatal.4c00365"
+          },
+          {
+            "id": "fig13ef",
+            "kind": "figure",
+            "locator": "Figure 13e,f, p. 6056",
+            "note": "digitized by pixel measurement (produced_by ex:pub/10.1021-acscatal.4c00365/experiment/digitize-fig13ef): panel e y axis linear 0-100 % with labelled ticks every 20 % (47.1 px per 20 %), panel f y axis linear 0-10 mol gcat-1 h-1 with labelled ticks every 2 (49.6 px per 2); x axis 'Potential(V vs. RHE)', groups left to right -0.2 to -0.6 V vs RHE; in each group the bars are Au cubes, Cu cubes, Cu/CuAu SAA (dilute), Cu/CuAu ordered SAA; every bar read twice (second pass with stricter colour thresholds), the second readings kept on the digitization experiment's results",
+            "quote": "(e) FE of NH3 and (f) NH3 yield rates at different potentials for the catalysts.",
+            "source": "scale:commons/source/10.1021-acscatal.4c00365"
+          }
+        ],
+        "origin": "curated",
+        "role": "active_phase"
+      },
+      "source": "scale:commons/10.1021-acscatal.4c00365/catalyst/au-nanocubes",
+      "target": "scale:commons/10.1021-acscatal.4c00365/species/au"
+    },
+    {
+      "id": "scale:commons/10.1021-acscatal.4c00365/catalyst/au-nanocubes/reported-in/10.1021-acscatal.4c00365",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "Figure 13e,f, p. 6056",
+          "Section 4.4, p. 6054"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.1021-acscatal.4c00365/catalyst/au-nanocubes",
+      "target": "scale:commons/source/10.1021-acscatal.4c00365"
+    },
+    {
+      "id": "scale:commons/10.1021-acscatal.4c00365/catalyst/cu-cuau-dilute/reported-in/10.1021-acscatal.4c00365",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "Section 2.5, p. 6048"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.1021-acscatal.4c00365/catalyst/cu-cuau-dilute",
+      "target": "scale:commons/source/10.1021-acscatal.4c00365"
+    },
+    {
+      "id": "scale:commons/10.1021-acscatal.4c00365/catalyst/cu-cuau-ordered/reported-in/10.1021-acscatal.4c00365",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "Section 2.5, p. 6048"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.1021-acscatal.4c00365/catalyst/cu-cuau-ordered",
+      "target": "scale:commons/source/10.1021-acscatal.4c00365"
+    },
+    {
+      "id": "scale:commons/10.1021-acscatal.4c00365/catalyst/cu-nanocubes/has-cu",
+      "type": "HAS_COMPONENT",
+      "props": {
+        "evidence": [
+          {
+            "id": "sec44c",
+            "kind": "text",
+            "locator": "Section 4.4, p. 6054",
+            "quote": "Both Cu/CuAu SAAs showed a higher NO3RR activity than Cu and Au nanocubes. Especially, the ordered Cu/CuAu SAA catalysts showed a high NH3 selectivity with a FE of 85.5% and an exceedingly high NH3 yield rate of 8.47 mol h−1 g−1.",
+            "source": "scale:commons/source/10.1021-acscatal.4c00365"
+          },
+          {
+            "id": "fig13ef",
+            "kind": "figure",
+            "locator": "Figure 13e,f, p. 6056",
+            "note": "digitized by pixel measurement (produced_by ex:pub/10.1021-acscatal.4c00365/experiment/digitize-fig13ef): panel e y axis linear 0-100 % with labelled ticks every 20 % (47.1 px per 20 %), panel f y axis linear 0-10 mol gcat-1 h-1 with labelled ticks every 2 (49.6 px per 2); x axis 'Potential(V vs. RHE)', groups left to right -0.2 to -0.6 V vs RHE; in each group the bars are Au cubes, Cu cubes, Cu/CuAu SAA (dilute), Cu/CuAu ordered SAA; every bar read twice (second pass with stricter colour thresholds), the second readings kept on the digitization experiment's results",
+            "quote": "(e) FE of NH3 and (f) NH3 yield rates at different potentials for the catalysts.",
+            "source": "scale:commons/source/10.1021-acscatal.4c00365"
+          }
+        ],
+        "origin": "curated",
+        "role": "active_phase"
+      },
+      "source": "scale:commons/10.1021-acscatal.4c00365/catalyst/cu-nanocubes",
+      "target": "scale:commons/10.1021-acscatal.4c00365/species/cu"
+    },
+    {
+      "id": "scale:commons/10.1021-acscatal.4c00365/catalyst/cu-nanocubes/reported-in/10.1021-acscatal.4c00365",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "Figure 13e,f, p. 6056",
+          "Section 4.4, p. 6054"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.1021-acscatal.4c00365/catalyst/cu-nanocubes",
+      "target": "scale:commons/source/10.1021-acscatal.4c00365"
+    },
+    {
+      "id": "scale:commons/10.1021-acscatal.4c00365/characterization/haadf-dilute/reported-in/10.1021-acscatal.4c00365",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "Figure 13a,b, p. 6056"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.1021-acscatal.4c00365/characterization/haadf-dilute",
+      "target": "scale:commons/source/10.1021-acscatal.4c00365"
+    },
+    {
+      "id": "scale:commons/10.1021-acscatal.4c00365/characterization/haadf-ordered/reported-in/10.1021-acscatal.4c00365",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "Figure 13c,d, p. 6056"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.1021-acscatal.4c00365/characterization/haadf-ordered",
+      "target": "scale:commons/source/10.1021-acscatal.4c00365"
+    },
+    {
+      "id": "scale:commons/10.1021-acscatal.4c00365/experiment/digitize-fig13ef/reported-in/10.1021-acscatal.4c00365",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "Figure 13e,f, p. 6056"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.1021-acscatal.4c00365/experiment/digitize-fig13ef",
+      "target": "scale:commons/source/10.1021-acscatal.4c00365"
+    },
+    {
+      "id": "scale:commons/10.1021-acscatal.4c00365/experiment/digitize-fig13ef/uses-software/pixel-digitizer",
+      "type": "USES_SOFTWARE",
+      "props": {
+        "origin": "curated",
+        "version": "python 3.12.3; numpy 2.5.4; pillow 13.0.0"
+      },
+      "source": "scale:commons/10.1021-acscatal.4c00365/experiment/digitize-fig13ef",
+      "target": "scale:commons/10.1021-acscatal.4c00365/software/pixel-digitizer"
+    },
+    {
+      "id": "scale:commons/10.1021-acscatal.4c00365/link/char-dilute",
+      "type": "CHARACTERIZES",
+      "props": {
+        "evidence": [
+          {
+            "id": "fig13ab",
+            "kind": "figure",
+            "locator": "Figure 13a,b, p. 6056",
+            "quote": "(a) HAADF-STEM and (b) atomic-resolution HAADF-STEM images of Cu/CuAu dilute SAA nanocubes. Figure b shows that dilute Au atoms are atomically dispersed on the surface of Cu nanocubes.",
+            "source": "scale:commons/source/10.1021-acscatal.4c00365"
+          }
+        ],
+        "origin": "curated",
+        "state": "as_prepared"
+      },
+      "source": "scale:commons/10.1021-acscatal.4c00365/characterization/haadf-dilute",
+      "target": "scale:commons/10.1021-acscatal.4c00365/sample/cu-cuau-dilute"
+    },
+    {
+      "id": "scale:commons/10.1021-acscatal.4c00365/link/char-ordered",
+      "type": "CHARACTERIZES",
+      "props": {
+        "evidence": [
+          {
+            "id": "fig13cd",
+            "kind": "figure",
+            "locator": "Figure 13c,d, p. 6056",
+            "quote": "(c) HAADF-STEM and (d) atomic-resolution HAADF-STEM images of Cu/CuAu ordered SAA nanocubes. Specifically, in part d, the CuAu shell shows an ordered body-centered tetragonal structure, in which Au atoms are isolated by Cu atoms.",
+            "source": "scale:commons/source/10.1021-acscatal.4c00365"
+          }
+        ],
+        "origin": "curated",
+        "state": "as_prepared"
+      },
+      "source": "scale:commons/10.1021-acscatal.4c00365/characterization/haadf-ordered",
+      "target": "scale:commons/10.1021-acscatal.4c00365/sample/cu-cuau-ordered"
+    },
+    {
+      "id": "scale:commons/10.1021-acscatal.4c00365/link/dilute-has-au",
+      "type": "HAS_COMPONENT",
+      "props": {
+        "evidence": [
+          {
+            "id": "sec25b",
+            "kind": "text",
+            "locator": "Section 2.5, p. 6048",
+            "quote": "With the CuAu SAA growth on the Cu nanocube surface, a 3.7 wt % Au doping led to the dilute dispersion of Au atoms into the face-centered cubic (fcc) Cu structure.",
+            "source": "scale:commons/source/10.1021-acscatal.4c00365"
+          }
+        ],
+        "fraction": {
+          "status": "present",
+          "as_reported": "3.7 wt %",
+          "evidence_ids": [
+            "sec25b"
+          ],
+          "unit": "wt %",
+          "value": 3.7
+        },
+        "fraction_basis": "mass",
+        "origin": "curated",
+        "role": "dopant"
+      },
+      "source": "scale:commons/10.1021-acscatal.4c00365/catalyst/cu-cuau-dilute",
+      "target": "scale:commons/10.1021-acscatal.4c00365/species/au"
+    },
+    {
+      "id": "scale:commons/10.1021-acscatal.4c00365/link/dilute-has-cu",
+      "type": "HAS_COMPONENT",
+      "props": {
+        "evidence": [
+          {
+            "id": "sec25b",
+            "kind": "text",
+            "locator": "Section 2.5, p. 6048",
+            "quote": "With the CuAu SAA growth on the Cu nanocube surface, a 3.7 wt % Au doping led to the dilute dispersion of Au atoms into the face-centered cubic (fcc) Cu structure.",
+            "source": "scale:commons/source/10.1021-acscatal.4c00365"
+          }
+        ],
+        "origin": "curated",
+        "role": "active_phase"
+      },
+      "source": "scale:commons/10.1021-acscatal.4c00365/catalyst/cu-cuau-dilute",
+      "target": "scale:commons/10.1021-acscatal.4c00365/species/cu"
+    },
+    {
+      "id": "scale:commons/10.1021-acscatal.4c00365/link/ordered-has-au",
+      "type": "HAS_COMPONENT",
+      "props": {
+        "evidence": [
+          {
+            "id": "sec25c",
+            "kind": "text",
+            "locator": "Section 2.5, p. 6048",
+            "quote": "In contrast, 7.5 wt % Au in Cu/CuAu led to the formation of an ordered SAA shell with the body-centered tetragonal intermetallic CuAu, in which Au atoms are completely isolated by Cu atoms.",
+            "source": "scale:commons/source/10.1021-acscatal.4c00365"
+          }
+        ],
+        "fraction": {
+          "status": "present",
+          "as_reported": "7.5 wt %",
+          "evidence_ids": [
+            "sec25c"
+          ],
+          "unit": "wt %",
+          "value": 7.5
+        },
+        "fraction_basis": "mass",
+        "origin": "curated",
+        "role": "dopant"
+      },
+      "source": "scale:commons/10.1021-acscatal.4c00365/catalyst/cu-cuau-ordered",
+      "target": "scale:commons/10.1021-acscatal.4c00365/species/au"
+    },
+    {
+      "id": "scale:commons/10.1021-acscatal.4c00365/link/ordered-has-cu",
+      "type": "HAS_COMPONENT",
+      "props": {
+        "evidence": [
+          {
+            "id": "sec25c",
+            "kind": "text",
+            "locator": "Section 2.5, p. 6048",
+            "quote": "In contrast, 7.5 wt % Au in Cu/CuAu led to the formation of an ordered SAA shell with the body-centered tetragonal intermetallic CuAu, in which Au atoms are completely isolated by Cu atoms.",
+            "source": "scale:commons/source/10.1021-acscatal.4c00365"
+          }
+        ],
+        "origin": "curated",
+        "role": "active_phase"
+      },
+      "source": "scale:commons/10.1021-acscatal.4c00365/catalyst/cu-cuau-ordered",
+      "target": "scale:commons/10.1021-acscatal.4c00365/species/cu"
+    },
+    {
+      "id": "scale:commons/10.1021-acscatal.4c00365/link/prep-out-dilute",
+      "type": "HAS_OUTPUT",
+      "props": {
+        "evidence": [
+          {
+            "id": "sec44b",
+            "kind": "text",
+            "locator": "Section 4.4, p. 6054",
+            "quote": "Using Cu nanocubes as a template and through a seed-mediated colloidal synthesis, we controlled the density of single-sites and the number of atomic layers and obtained two types of SAAs: dilute Cu/CuAu SAA and ordered Cu/CuAu SAA (Figure 13).",
+            "source": "scale:commons/source/10.1021-acscatal.4c00365"
+          },
+          {
+            "id": "sec25b",
+            "kind": "text",
+            "locator": "Section 2.5, p. 6048",
+            "quote": "With the CuAu SAA growth on the Cu nanocube surface, a 3.7 wt % Au doping led to the dilute dispersion of Au atoms into the face-centered cubic (fcc) Cu structure.",
+            "source": "scale:commons/source/10.1021-acscatal.4c00365"
+          }
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.1021-acscatal.4c00365/preparation/cu-cuau",
+      "target": "scale:commons/10.1021-acscatal.4c00365/sample/cu-cuau-dilute"
+    },
+    {
+      "id": "scale:commons/10.1021-acscatal.4c00365/link/prep-out-ordered",
+      "type": "HAS_OUTPUT",
+      "props": {
+        "evidence": [
+          {
+            "id": "sec44b",
+            "kind": "text",
+            "locator": "Section 4.4, p. 6054",
+            "quote": "Using Cu nanocubes as a template and through a seed-mediated colloidal synthesis, we controlled the density of single-sites and the number of atomic layers and obtained two types of SAAs: dilute Cu/CuAu SAA and ordered Cu/CuAu SAA (Figure 13).",
+            "source": "scale:commons/source/10.1021-acscatal.4c00365"
+          },
+          {
+            "id": "sec25c",
+            "kind": "text",
+            "locator": "Section 2.5, p. 6048",
+            "quote": "In contrast, 7.5 wt % Au in Cu/CuAu led to the formation of an ordered SAA shell with the body-centered tetragonal intermetallic CuAu, in which Au atoms are completely isolated by Cu atoms.",
+            "source": "scale:commons/source/10.1021-acscatal.4c00365"
+          }
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.1021-acscatal.4c00365/preparation/cu-cuau",
+      "target": "scale:commons/10.1021-acscatal.4c00365/sample/cu-cuau-ordered"
+    },
+    {
+      "id": "scale:commons/10.1021-acscatal.4c00365/link/reaction-has-nh3",
+      "type": "HAS_PARTICIPANT",
+      "props": {
+        "evidence": [
+          {
+            "id": "sec44d",
+            "kind": "text",
+            "locator": "Section 4.4, p. 6054",
+            "quote": "The electrochemical NO3RR offers a promising alternative route to the energy-intensive Haber−Bosch process for NH3 production.",
+            "source": "scale:commons/source/10.1021-acscatal.4c00365"
+          }
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.1021-acscatal.4c00365/reaction/no3rr-to-nh3",
+      "target": "scale:commons/10.1021-acscatal.4c00365/species/nh3"
+    },
+    {
+      "id": "scale:commons/10.1021-acscatal.4c00365/link/reaction-has-no3",
+      "type": "HAS_PARTICIPANT",
+      "props": {
+        "evidence": [
+          {
+            "id": "sec44d",
+            "kind": "text",
+            "locator": "Section 4.4, p. 6054",
+            "quote": "The electrochemical NO3RR offers a promising alternative route to the energy-intensive Haber−Bosch process for NH3 production.",
+            "source": "scale:commons/source/10.1021-acscatal.4c00365"
+          }
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.1021-acscatal.4c00365/reaction/no3rr-to-nh3",
+      "target": "scale:commons/10.1021-acscatal.4c00365/species/no3"
+    },
+    {
+      "id": "scale:commons/10.1021-acscatal.4c00365/link/sample-dilute-formulation",
+      "type": "HAS_FORMULATION",
+      "props": {
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.1021-acscatal.4c00365/sample/cu-cuau-dilute",
+      "target": "scale:commons/10.1021-acscatal.4c00365/catalyst/cu-cuau-dilute"
+    },
+    {
+      "id": "scale:commons/10.1021-acscatal.4c00365/link/sample-ordered-formulation",
+      "type": "HAS_FORMULATION",
+      "props": {
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.1021-acscatal.4c00365/sample/cu-cuau-ordered",
+      "target": "scale:commons/10.1021-acscatal.4c00365/catalyst/cu-cuau-ordered"
+    },
+    {
+      "id": "scale:commons/10.1021-acscatal.4c00365/link/state-dilute",
+      "type": "STATE_OF",
+      "props": {
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.1021-acscatal.4c00365/state/cu-cuau-dilute",
+      "target": "scale:commons/10.1021-acscatal.4c00365/sample/cu-cuau-dilute"
+    },
+    {
+      "id": "scale:commons/10.1021-acscatal.4c00365/link/state-dilute-det",
+      "type": "DETERMINED_BY",
+      "props": {
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.1021-acscatal.4c00365/state/cu-cuau-dilute",
+      "target": "scale:commons/10.1021-acscatal.4c00365/characterization/haadf-dilute"
+    },
+    {
+      "id": "scale:commons/10.1021-acscatal.4c00365/link/state-dilute-reached",
+      "type": "REACHED_BY",
+      "props": {
+        "origin": "curated",
+        "timing": "after"
+      },
+      "source": "scale:commons/10.1021-acscatal.4c00365/state/cu-cuau-dilute",
+      "target": "scale:commons/10.1021-acscatal.4c00365/preparation/cu-cuau"
+    },
+    {
+      "id": "scale:commons/10.1021-acscatal.4c00365/link/state-ordered",
+      "type": "STATE_OF",
+      "props": {
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.1021-acscatal.4c00365/state/cu-cuau-ordered",
+      "target": "scale:commons/10.1021-acscatal.4c00365/sample/cu-cuau-ordered"
+    },
+    {
+      "id": "scale:commons/10.1021-acscatal.4c00365/link/state-ordered-det",
+      "type": "DETERMINED_BY",
+      "props": {
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.1021-acscatal.4c00365/state/cu-cuau-ordered",
+      "target": "scale:commons/10.1021-acscatal.4c00365/characterization/haadf-ordered"
+    },
+    {
+      "id": "scale:commons/10.1021-acscatal.4c00365/link/state-ordered-reached",
+      "type": "REACHED_BY",
+      "props": {
+        "origin": "curated",
+        "timing": "after"
+      },
+      "source": "scale:commons/10.1021-acscatal.4c00365/state/cu-cuau-ordered",
+      "target": "scale:commons/10.1021-acscatal.4c00365/preparation/cu-cuau"
+    },
+    {
+      "id": "scale:commons/10.1021-acscatal.4c00365/link/test-of-reaction",
+      "type": "OF_REACTION",
+      "props": {
+        "evidence": [
+          {
+            "id": "sec44c",
+            "kind": "text",
+            "locator": "Section 4.4, p. 6054",
+            "quote": "Both Cu/CuAu SAAs showed a higher NO3RR activity than Cu and Au nanocubes. Especially, the ordered Cu/CuAu SAA catalysts showed a high NH3 selectivity with a FE of 85.5% and an exceedingly high NH3 yield rate of 8.47 mol h−1 g−1.",
+            "source": "scale:commons/source/10.1021-acscatal.4c00365"
+          },
+          {
+            "id": "sec44d",
+            "kind": "text",
+            "locator": "Section 4.4, p. 6054",
+            "quote": "The electrochemical NO3RR offers a promising alternative route to the energy-intensive Haber−Bosch process for NH3 production.",
+            "source": "scale:commons/source/10.1021-acscatal.4c00365"
+          }
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.1021-acscatal.4c00365/test/no3rr-ordered",
+      "target": "scale:commons/10.1021-acscatal.4c00365/reaction/no3rr-to-nh3"
+    },
+    {
+      "id": "scale:commons/10.1021-acscatal.4c00365/link/test-uses-ordered",
+      "type": "USES_CATALYST",
+      "props": {
+        "evidence": [
+          {
+            "id": "sec44c",
+            "kind": "text",
+            "locator": "Section 4.4, p. 6054",
+            "quote": "Both Cu/CuAu SAAs showed a higher NO3RR activity than Cu and Au nanocubes. Especially, the ordered Cu/CuAu SAA catalysts showed a high NH3 selectivity with a FE of 85.5% and an exceedingly high NH3 yield rate of 8.47 mol h−1 g−1.",
+            "source": "scale:commons/source/10.1021-acscatal.4c00365"
+          }
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.1021-acscatal.4c00365/test/no3rr-ordered",
+      "target": "scale:commons/10.1021-acscatal.4c00365/sample/cu-cuau-ordered"
+    },
+    {
+      "id": "scale:commons/10.1021-acscatal.4c00365/preparation/cu-cuau/reported-in/10.1021-acscatal.4c00365",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "Figure 2e, p. 6047",
+          "Section 2.5, p. 6048",
+          "Section 4.4, p. 6054"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.1021-acscatal.4c00365/preparation/cu-cuau",
+      "target": "scale:commons/source/10.1021-acscatal.4c00365"
+    },
+    {
+      "id": "scale:commons/10.1021-acscatal.4c00365/reaction/no3rr-to-nh3/reported-in/10.1021-acscatal.4c00365",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "Section 4.4, p. 6054"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.1021-acscatal.4c00365/reaction/no3rr-to-nh3",
+      "target": "scale:commons/source/10.1021-acscatal.4c00365"
+    },
+    {
+      "id": "scale:commons/10.1021-acscatal.4c00365/sample/au-nanocubes/has-formulation",
+      "type": "HAS_FORMULATION",
+      "props": {
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.1021-acscatal.4c00365/sample/au-nanocubes",
+      "target": "scale:commons/10.1021-acscatal.4c00365/catalyst/au-nanocubes"
+    },
+    {
+      "id": "scale:commons/10.1021-acscatal.4c00365/sample/au-nanocubes/reported-in/10.1021-acscatal.4c00365",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "Figure 13e,f, p. 6056",
+          "Section 4.4, p. 6054"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.1021-acscatal.4c00365/sample/au-nanocubes",
+      "target": "scale:commons/source/10.1021-acscatal.4c00365"
+    },
+    {
+      "id": "scale:commons/10.1021-acscatal.4c00365/sample/cu-cuau-dilute/reported-in/10.1021-acscatal.4c00365",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "Figure 13a,b, p. 6056",
+          "Section 2.5, p. 6048"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.1021-acscatal.4c00365/sample/cu-cuau-dilute",
+      "target": "scale:commons/source/10.1021-acscatal.4c00365"
+    },
+    {
+      "id": "scale:commons/10.1021-acscatal.4c00365/sample/cu-cuau-ordered/reported-in/10.1021-acscatal.4c00365",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "Figure 13c,d, p. 6056",
+          "Section 2.5, p. 6048"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.1021-acscatal.4c00365/sample/cu-cuau-ordered",
+      "target": "scale:commons/source/10.1021-acscatal.4c00365"
+    },
+    {
+      "id": "scale:commons/10.1021-acscatal.4c00365/sample/cu-nanocubes/has-formulation",
+      "type": "HAS_FORMULATION",
+      "props": {
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.1021-acscatal.4c00365/sample/cu-nanocubes",
+      "target": "scale:commons/10.1021-acscatal.4c00365/catalyst/cu-nanocubes"
+    },
+    {
+      "id": "scale:commons/10.1021-acscatal.4c00365/sample/cu-nanocubes/reported-in/10.1021-acscatal.4c00365",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "Figure 13e,f, p. 6056",
+          "Section 4.4, p. 6054"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.1021-acscatal.4c00365/sample/cu-nanocubes",
+      "target": "scale:commons/source/10.1021-acscatal.4c00365"
+    },
+    {
+      "id": "scale:commons/10.1021-acscatal.4c00365/species/au/reported-in/10.1021-acscatal.4c00365",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "Section 2.5, p. 6048"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.1021-acscatal.4c00365/species/au",
+      "target": "scale:commons/source/10.1021-acscatal.4c00365"
+    },
+    {
+      "id": "scale:commons/10.1021-acscatal.4c00365/species/cu/reported-in/10.1021-acscatal.4c00365",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "Section 4.4, p. 6054"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.1021-acscatal.4c00365/species/cu",
+      "target": "scale:commons/source/10.1021-acscatal.4c00365"
+    },
+    {
+      "id": "scale:commons/10.1021-acscatal.4c00365/species/nh3/reported-in/10.1021-acscatal.4c00365",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "Section 4.4, p. 6054"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.1021-acscatal.4c00365/species/nh3",
+      "target": "scale:commons/source/10.1021-acscatal.4c00365"
+    },
+    {
+      "id": "scale:commons/10.1021-acscatal.4c00365/species/no3/reported-in/10.1021-acscatal.4c00365",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "Section 4.4, p. 6054"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.1021-acscatal.4c00365/species/no3",
+      "target": "scale:commons/source/10.1021-acscatal.4c00365"
+    },
+    {
+      "id": "scale:commons/10.1021-acscatal.4c00365/state/cu-cuau-dilute/reported-in/10.1021-acscatal.4c00365",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "Figure 13a,b, p. 6056",
+          "Section 2.5, p. 6048"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.1021-acscatal.4c00365/state/cu-cuau-dilute",
+      "target": "scale:commons/source/10.1021-acscatal.4c00365"
+    },
+    {
+      "id": "scale:commons/10.1021-acscatal.4c00365/state/cu-cuau-ordered/reported-in/10.1021-acscatal.4c00365",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "Figure 13c,d, p. 6056",
+          "Section 2.5, p. 6048"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.1021-acscatal.4c00365/state/cu-cuau-ordered",
+      "target": "scale:commons/source/10.1021-acscatal.4c00365"
+    },
+    {
+      "id": "scale:commons/10.1021-acscatal.4c00365/test/no3rr-au-cubes/has-variable/fe-nh3",
+      "type": "HAS_VARIABLE",
+      "props": {
+        "origin": "curated",
+        "role": "target"
+      },
+      "source": "scale:commons/10.1021-acscatal.4c00365/test/no3rr-au-cubes",
+      "target": "scale:commons/10.1021-acscatal.4c00365/variable/fe-nh3"
+    },
+    {
+      "id": "scale:commons/10.1021-acscatal.4c00365/test/no3rr-au-cubes/has-variable/nh3-yield-rate",
+      "type": "HAS_VARIABLE",
+      "props": {
+        "origin": "curated",
+        "role": "target"
+      },
+      "source": "scale:commons/10.1021-acscatal.4c00365/test/no3rr-au-cubes",
+      "target": "scale:commons/10.1021-acscatal.4c00365/variable/nh3-yield-rate"
+    },
+    {
+      "id": "scale:commons/10.1021-acscatal.4c00365/test/no3rr-au-cubes/of-reaction",
+      "type": "OF_REACTION",
+      "props": {
+        "evidence": [
+          {
+            "id": "sec44c",
+            "kind": "text",
+            "locator": "Section 4.4, p. 6054",
+            "quote": "Both Cu/CuAu SAAs showed a higher NO3RR activity than Cu and Au nanocubes. Especially, the ordered Cu/CuAu SAA catalysts showed a high NH3 selectivity with a FE of 85.5% and an exceedingly high NH3 yield rate of 8.47 mol h−1 g−1.",
+            "source": "scale:commons/source/10.1021-acscatal.4c00365"
+          },
+          {
+            "id": "fig13ef",
+            "kind": "figure",
+            "locator": "Figure 13e,f, p. 6056",
+            "note": "digitized by pixel measurement (produced_by ex:pub/10.1021-acscatal.4c00365/experiment/digitize-fig13ef): panel e y axis linear 0-100 % with labelled ticks every 20 % (47.1 px per 20 %), panel f y axis linear 0-10 mol gcat-1 h-1 with labelled ticks every 2 (49.6 px per 2); x axis 'Potential(V vs. RHE)', groups left to right -0.2 to -0.6 V vs RHE; in each group the bars are Au cubes, Cu cubes, Cu/CuAu SAA (dilute), Cu/CuAu ordered SAA; every bar read twice (second pass with stricter colour thresholds), the second readings kept on the digitization experiment's results",
+            "quote": "(e) FE of NH3 and (f) NH3 yield rates at different potentials for the catalysts.",
+            "source": "scale:commons/source/10.1021-acscatal.4c00365"
+          }
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.1021-acscatal.4c00365/test/no3rr-au-cubes",
+      "target": "scale:commons/10.1021-acscatal.4c00365/reaction/no3rr-to-nh3"
+    },
+    {
+      "id": "scale:commons/10.1021-acscatal.4c00365/test/no3rr-au-cubes/reported-in/10.1021-acscatal.4c00365",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "Figure 13e,f, p. 6056",
+          "Section 4.4, p. 6054"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.1021-acscatal.4c00365/test/no3rr-au-cubes",
+      "target": "scale:commons/source/10.1021-acscatal.4c00365"
+    },
+    {
+      "id": "scale:commons/10.1021-acscatal.4c00365/test/no3rr-au-cubes/uses-catalyst",
+      "type": "USES_CATALYST",
+      "props": {
+        "evidence": [
+          {
+            "id": "sec44c",
+            "kind": "text",
+            "locator": "Section 4.4, p. 6054",
+            "quote": "Both Cu/CuAu SAAs showed a higher NO3RR activity than Cu and Au nanocubes. Especially, the ordered Cu/CuAu SAA catalysts showed a high NH3 selectivity with a FE of 85.5% and an exceedingly high NH3 yield rate of 8.47 mol h−1 g−1.",
+            "source": "scale:commons/source/10.1021-acscatal.4c00365"
+          },
+          {
+            "id": "fig13ef",
+            "kind": "figure",
+            "locator": "Figure 13e,f, p. 6056",
+            "note": "digitized by pixel measurement (produced_by ex:pub/10.1021-acscatal.4c00365/experiment/digitize-fig13ef): panel e y axis linear 0-100 % with labelled ticks every 20 % (47.1 px per 20 %), panel f y axis linear 0-10 mol gcat-1 h-1 with labelled ticks every 2 (49.6 px per 2); x axis 'Potential(V vs. RHE)', groups left to right -0.2 to -0.6 V vs RHE; in each group the bars are Au cubes, Cu cubes, Cu/CuAu SAA (dilute), Cu/CuAu ordered SAA; every bar read twice (second pass with stricter colour thresholds), the second readings kept on the digitization experiment's results",
+            "quote": "(e) FE of NH3 and (f) NH3 yield rates at different potentials for the catalysts.",
+            "source": "scale:commons/source/10.1021-acscatal.4c00365"
+          }
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.1021-acscatal.4c00365/test/no3rr-au-cubes",
+      "target": "scale:commons/10.1021-acscatal.4c00365/sample/au-nanocubes"
+    },
+    {
+      "id": "scale:commons/10.1021-acscatal.4c00365/test/no3rr-cu-cubes/has-variable/fe-nh3",
+      "type": "HAS_VARIABLE",
+      "props": {
+        "origin": "curated",
+        "role": "target"
+      },
+      "source": "scale:commons/10.1021-acscatal.4c00365/test/no3rr-cu-cubes",
+      "target": "scale:commons/10.1021-acscatal.4c00365/variable/fe-nh3"
+    },
+    {
+      "id": "scale:commons/10.1021-acscatal.4c00365/test/no3rr-cu-cubes/has-variable/nh3-yield-rate",
+      "type": "HAS_VARIABLE",
+      "props": {
+        "origin": "curated",
+        "role": "target"
+      },
+      "source": "scale:commons/10.1021-acscatal.4c00365/test/no3rr-cu-cubes",
+      "target": "scale:commons/10.1021-acscatal.4c00365/variable/nh3-yield-rate"
+    },
+    {
+      "id": "scale:commons/10.1021-acscatal.4c00365/test/no3rr-cu-cubes/of-reaction",
+      "type": "OF_REACTION",
+      "props": {
+        "evidence": [
+          {
+            "id": "sec44c",
+            "kind": "text",
+            "locator": "Section 4.4, p. 6054",
+            "quote": "Both Cu/CuAu SAAs showed a higher NO3RR activity than Cu and Au nanocubes. Especially, the ordered Cu/CuAu SAA catalysts showed a high NH3 selectivity with a FE of 85.5% and an exceedingly high NH3 yield rate of 8.47 mol h−1 g−1.",
+            "source": "scale:commons/source/10.1021-acscatal.4c00365"
+          },
+          {
+            "id": "fig13ef",
+            "kind": "figure",
+            "locator": "Figure 13e,f, p. 6056",
+            "note": "digitized by pixel measurement (produced_by ex:pub/10.1021-acscatal.4c00365/experiment/digitize-fig13ef): panel e y axis linear 0-100 % with labelled ticks every 20 % (47.1 px per 20 %), panel f y axis linear 0-10 mol gcat-1 h-1 with labelled ticks every 2 (49.6 px per 2); x axis 'Potential(V vs. RHE)', groups left to right -0.2 to -0.6 V vs RHE; in each group the bars are Au cubes, Cu cubes, Cu/CuAu SAA (dilute), Cu/CuAu ordered SAA; every bar read twice (second pass with stricter colour thresholds), the second readings kept on the digitization experiment's results",
+            "quote": "(e) FE of NH3 and (f) NH3 yield rates at different potentials for the catalysts.",
+            "source": "scale:commons/source/10.1021-acscatal.4c00365"
+          }
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.1021-acscatal.4c00365/test/no3rr-cu-cubes",
+      "target": "scale:commons/10.1021-acscatal.4c00365/reaction/no3rr-to-nh3"
+    },
+    {
+      "id": "scale:commons/10.1021-acscatal.4c00365/test/no3rr-cu-cubes/reported-in/10.1021-acscatal.4c00365",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "Figure 13e,f, p. 6056",
+          "Section 4.4, p. 6054"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.1021-acscatal.4c00365/test/no3rr-cu-cubes",
+      "target": "scale:commons/source/10.1021-acscatal.4c00365"
+    },
+    {
+      "id": "scale:commons/10.1021-acscatal.4c00365/test/no3rr-cu-cubes/uses-catalyst",
+      "type": "USES_CATALYST",
+      "props": {
+        "evidence": [
+          {
+            "id": "sec44c",
+            "kind": "text",
+            "locator": "Section 4.4, p. 6054",
+            "quote": "Both Cu/CuAu SAAs showed a higher NO3RR activity than Cu and Au nanocubes. Especially, the ordered Cu/CuAu SAA catalysts showed a high NH3 selectivity with a FE of 85.5% and an exceedingly high NH3 yield rate of 8.47 mol h−1 g−1.",
+            "source": "scale:commons/source/10.1021-acscatal.4c00365"
+          },
+          {
+            "id": "fig13ef",
+            "kind": "figure",
+            "locator": "Figure 13e,f, p. 6056",
+            "note": "digitized by pixel measurement (produced_by ex:pub/10.1021-acscatal.4c00365/experiment/digitize-fig13ef): panel e y axis linear 0-100 % with labelled ticks every 20 % (47.1 px per 20 %), panel f y axis linear 0-10 mol gcat-1 h-1 with labelled ticks every 2 (49.6 px per 2); x axis 'Potential(V vs. RHE)', groups left to right -0.2 to -0.6 V vs RHE; in each group the bars are Au cubes, Cu cubes, Cu/CuAu SAA (dilute), Cu/CuAu ordered SAA; every bar read twice (second pass with stricter colour thresholds), the second readings kept on the digitization experiment's results",
+            "quote": "(e) FE of NH3 and (f) NH3 yield rates at different potentials for the catalysts.",
+            "source": "scale:commons/source/10.1021-acscatal.4c00365"
+          }
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.1021-acscatal.4c00365/test/no3rr-cu-cubes",
+      "target": "scale:commons/10.1021-acscatal.4c00365/sample/cu-nanocubes"
+    },
+    {
+      "id": "scale:commons/10.1021-acscatal.4c00365/test/no3rr-dilute/has-variable/fe-nh3",
+      "type": "HAS_VARIABLE",
+      "props": {
+        "origin": "curated",
+        "role": "target"
+      },
+      "source": "scale:commons/10.1021-acscatal.4c00365/test/no3rr-dilute",
+      "target": "scale:commons/10.1021-acscatal.4c00365/variable/fe-nh3"
+    },
+    {
+      "id": "scale:commons/10.1021-acscatal.4c00365/test/no3rr-dilute/has-variable/nh3-yield-rate",
+      "type": "HAS_VARIABLE",
+      "props": {
+        "origin": "curated",
+        "role": "target"
+      },
+      "source": "scale:commons/10.1021-acscatal.4c00365/test/no3rr-dilute",
+      "target": "scale:commons/10.1021-acscatal.4c00365/variable/nh3-yield-rate"
+    },
+    {
+      "id": "scale:commons/10.1021-acscatal.4c00365/test/no3rr-dilute/of-reaction",
+      "type": "OF_REACTION",
+      "props": {
+        "evidence": [
+          {
+            "id": "sec44c",
+            "kind": "text",
+            "locator": "Section 4.4, p. 6054",
+            "quote": "Both Cu/CuAu SAAs showed a higher NO3RR activity than Cu and Au nanocubes. Especially, the ordered Cu/CuAu SAA catalysts showed a high NH3 selectivity with a FE of 85.5% and an exceedingly high NH3 yield rate of 8.47 mol h−1 g−1.",
+            "source": "scale:commons/source/10.1021-acscatal.4c00365"
+          },
+          {
+            "id": "fig13ef",
+            "kind": "figure",
+            "locator": "Figure 13e,f, p. 6056",
+            "note": "digitized by pixel measurement (produced_by ex:pub/10.1021-acscatal.4c00365/experiment/digitize-fig13ef): panel e y axis linear 0-100 % with labelled ticks every 20 % (47.1 px per 20 %), panel f y axis linear 0-10 mol gcat-1 h-1 with labelled ticks every 2 (49.6 px per 2); x axis 'Potential(V vs. RHE)', groups left to right -0.2 to -0.6 V vs RHE; in each group the bars are Au cubes, Cu cubes, Cu/CuAu SAA (dilute), Cu/CuAu ordered SAA; every bar read twice (second pass with stricter colour thresholds), the second readings kept on the digitization experiment's results",
+            "quote": "(e) FE of NH3 and (f) NH3 yield rates at different potentials for the catalysts.",
+            "source": "scale:commons/source/10.1021-acscatal.4c00365"
+          }
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.1021-acscatal.4c00365/test/no3rr-dilute",
+      "target": "scale:commons/10.1021-acscatal.4c00365/reaction/no3rr-to-nh3"
+    },
+    {
+      "id": "scale:commons/10.1021-acscatal.4c00365/test/no3rr-dilute/reported-in/10.1021-acscatal.4c00365",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "Figure 13e,f, p. 6056",
+          "Section 4.4, p. 6054"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.1021-acscatal.4c00365/test/no3rr-dilute",
+      "target": "scale:commons/source/10.1021-acscatal.4c00365"
+    },
+    {
+      "id": "scale:commons/10.1021-acscatal.4c00365/test/no3rr-dilute/uses-catalyst",
+      "type": "USES_CATALYST",
+      "props": {
+        "evidence": [
+          {
+            "id": "sec44c",
+            "kind": "text",
+            "locator": "Section 4.4, p. 6054",
+            "quote": "Both Cu/CuAu SAAs showed a higher NO3RR activity than Cu and Au nanocubes. Especially, the ordered Cu/CuAu SAA catalysts showed a high NH3 selectivity with a FE of 85.5% and an exceedingly high NH3 yield rate of 8.47 mol h−1 g−1.",
+            "source": "scale:commons/source/10.1021-acscatal.4c00365"
+          },
+          {
+            "id": "fig13ef",
+            "kind": "figure",
+            "locator": "Figure 13e,f, p. 6056",
+            "note": "digitized by pixel measurement (produced_by ex:pub/10.1021-acscatal.4c00365/experiment/digitize-fig13ef): panel e y axis linear 0-100 % with labelled ticks every 20 % (47.1 px per 20 %), panel f y axis linear 0-10 mol gcat-1 h-1 with labelled ticks every 2 (49.6 px per 2); x axis 'Potential(V vs. RHE)', groups left to right -0.2 to -0.6 V vs RHE; in each group the bars are Au cubes, Cu cubes, Cu/CuAu SAA (dilute), Cu/CuAu ordered SAA; every bar read twice (second pass with stricter colour thresholds), the second readings kept on the digitization experiment's results",
+            "quote": "(e) FE of NH3 and (f) NH3 yield rates at different potentials for the catalysts.",
+            "source": "scale:commons/source/10.1021-acscatal.4c00365"
+          }
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.1021-acscatal.4c00365/test/no3rr-dilute",
+      "target": "scale:commons/10.1021-acscatal.4c00365/sample/cu-cuau-dilute"
+    },
+    {
+      "id": "scale:commons/10.1021-acscatal.4c00365/test/no3rr-ordered/has-variable/fe-nh3",
+      "type": "HAS_VARIABLE",
+      "props": {
+        "origin": "curated",
+        "role": "target"
+      },
+      "source": "scale:commons/10.1021-acscatal.4c00365/test/no3rr-ordered",
+      "target": "scale:commons/10.1021-acscatal.4c00365/variable/fe-nh3"
+    },
+    {
+      "id": "scale:commons/10.1021-acscatal.4c00365/test/no3rr-ordered/has-variable/nh3-yield-rate",
+      "type": "HAS_VARIABLE",
+      "props": {
+        "origin": "curated",
+        "role": "target"
+      },
+      "source": "scale:commons/10.1021-acscatal.4c00365/test/no3rr-ordered",
+      "target": "scale:commons/10.1021-acscatal.4c00365/variable/nh3-yield-rate"
+    },
+    {
+      "id": "scale:commons/10.1021-acscatal.4c00365/test/no3rr-ordered/reported-in/10.1021-acscatal.4c00365",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "Figure 13e,f, p. 6056",
+          "Section 4.4, p. 6054"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.1021-acscatal.4c00365/test/no3rr-ordered",
+      "target": "scale:commons/source/10.1021-acscatal.4c00365"
+    }
+  ],
+  "schema_version": "0.8.2",
+  "source": "scale:commons/source/10.1021-acscatal.4c00365"
+}
