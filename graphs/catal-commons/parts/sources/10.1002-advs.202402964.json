@@ -1,0 +1,1983 @@
+{
+  "nodes": [
+    {
+      "id": "scale:commons/source/10.1002-advs.202402964",
+      "label": "Source",
+      "props": {
+        "name": "Rational Designing Microenvironment of Gas‐Diffusion Electrodes via Microgel‐Augmented CO 2 Availability for High‐Rate and Selective CO 2 Electroreduction to Ethylene",
+        "kind": "article",
+        "doi": "10.1002/advs.202402964",
+        "licence": "http://creativecommons.org/licenses/by/4.0/; http://creativecommons.org/licenses/by/4.0/",
+        "note": "copy read is the version of record; first page states CC BY 4.0; SI page S1 (from 1066542_SI.docx) appended to the text",
+        "origin": "curated",
+        "retrieved_from": "1066542.pdf",
+        "retrieved_on": "2026-11-04",
+        "text_sha256": "862ffd934ccf10b40db26d2174bd3182406932e073c914c064361419ec9842ed",
+        "text_version": "version_of_record",
+        "title": "Rational Designing Microenvironment of Gas‐Diffusion Electrodes via Microgel‐Augmented CO 2 Availability for High‐Rate and Selective CO 2 Electroreduction to Ethylene",
+        "url": "https://doi.org/10.1002/advs.202402964",
+        "venue": "Advanced Science",
+        "year": 2024
+      }
+    }
+  ],
+  "links": [
+    {
+      "id": "scale:commons/1066542/an/eis-fit/reported-in/10.1002-advs.202402964",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "[page 8]",
+          "[page S1] Table S1"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/1066542/an/eis-fit",
+      "target": "scale:commons/source/10.1002-advs.202402964"
+    },
+    {
+      "id": "scale:commons/1066542/an/products/reported-in/10.1002-advs.202402964",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "[page 11]",
+          "[page 12]"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/1066542/an/products",
+      "target": "scale:commons/source/10.1002-advs.202402964"
+    },
+    {
+      "id": "scale:commons/1066542/catalyst/cu2o/reported-in/10.1002-advs.202402964",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "[page 3]"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/1066542/catalyst/cu2o",
+      "target": "scale:commons/source/10.1002-advs.202402964"
+    },
+    {
+      "id": "scale:commons/1066542/catalyst/gde-cl05/reported-in/10.1002-advs.202402964",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "[page 11]"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/1066542/catalyst/gde-cl05",
+      "target": "scale:commons/source/10.1002-advs.202402964"
+    },
+    {
+      "id": "scale:commons/1066542/catalyst/gde-cl15/reported-in/10.1002-advs.202402964",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "[page 11]"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/1066542/catalyst/gde-cl15",
+      "target": "scale:commons/source/10.1002-advs.202402964"
+    },
+    {
+      "id": "scale:commons/1066542/catalyst/gde-cl2/reported-in/10.1002-advs.202402964",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "[page 11]"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/1066542/catalyst/gde-cl2",
+      "target": "scale:commons/source/10.1002-advs.202402964"
+    },
+    {
+      "id": "scale:commons/1066542/catalyst/gde-pdeaema20/reported-in/10.1002-advs.202402964",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "[page 11]"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/1066542/catalyst/gde-pdeaema20",
+      "target": "scale:commons/source/10.1002-advs.202402964"
+    },
+    {
+      "id": "scale:commons/1066542/catalyst/gde-pristine/reported-in/10.1002-advs.202402964",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "[page 11]"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/1066542/catalyst/gde-pristine",
+      "target": "scale:commons/source/10.1002-advs.202402964"
+    },
+    {
+      "id": "scale:commons/1066542/catalyst/gde-pvp10/reported-in/10.1002-advs.202402964",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "[page 11]"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/1066542/catalyst/gde-pvp10",
+      "target": "scale:commons/source/10.1002-advs.202402964"
+    },
+    {
+      "id": "scale:commons/1066542/catalyst/gde-pvp20/reported-in/10.1002-advs.202402964",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "[page 11]"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/1066542/catalyst/gde-pvp20",
+      "target": "scale:commons/source/10.1002-advs.202402964"
+    },
+    {
+      "id": "scale:commons/1066542/catalyst/gde-pvp30/reported-in/10.1002-advs.202402964",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "[page 11]"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/1066542/catalyst/gde-pvp30",
+      "target": "scale:commons/source/10.1002-advs.202402964"
+    },
+    {
+      "id": "scale:commons/1066542/catalyst/gde-sublayer/reported-in/10.1002-advs.202402964",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "[page 11]"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/1066542/catalyst/gde-sublayer",
+      "target": "scale:commons/source/10.1002-advs.202402964"
+    },
+    {
+      "id": "scale:commons/1066542/catalyst/mg-deaema/reported-in/10.1002-advs.202402964",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "[page 3]"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/1066542/catalyst/mg-deaema",
+      "target": "scale:commons/source/10.1002-advs.202402964"
+    },
+    {
+      "id": "scale:commons/1066542/catalyst/mg-pvp/reported-in/10.1002-advs.202402964",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "[page 3]"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/1066542/catalyst/mg-pvp",
+      "target": "scale:commons/source/10.1002-advs.202402964"
+    },
+    {
+      "id": "scale:commons/1066542/cell/flow/reported-in/10.1002-advs.202402964",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "[page 11]"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/1066542/cell/flow",
+      "target": "scale:commons/source/10.1002-advs.202402964"
+    },
+    {
+      "id": "scale:commons/1066542/cell/mea/reported-in/10.1002-advs.202402964",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "[page 11]"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/1066542/cell/mea",
+      "target": "scale:commons/source/10.1002-advs.202402964"
+    },
+    {
+      "id": "scale:commons/1066542/ch/co2-iso/reported-in/10.1002-advs.202402964",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "Figure 2d, page 5",
+          "[page 3]",
+          "[page 5]"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/1066542/ch/co2-iso",
+      "target": "scale:commons/source/10.1002-advs.202402964"
+    },
+    {
+      "id": "scale:commons/1066542/ch/co2-tpd/reported-in/10.1002-advs.202402964",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "[page 3]",
+          "[page S1]"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/1066542/ch/co2-tpd",
+      "target": "scale:commons/source/10.1002-advs.202402964"
+    },
+    {
+      "id": "scale:commons/1066542/ch/contact-angle/reported-in/10.1002-advs.202402964",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "[page 3]"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/1066542/ch/contact-angle",
+      "target": "scale:commons/source/10.1002-advs.202402964"
+    },
+    {
+      "id": "scale:commons/1066542/ch/dls/reported-in/10.1002-advs.202402964",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "[page 3]",
+          "[page 5]"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/1066542/ch/dls",
+      "target": "scale:commons/source/10.1002-advs.202402964"
+    },
+    {
+      "id": "scale:commons/1066542/ch/ecsa/reported-in/10.1002-advs.202402964",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "[page 11]",
+          "[page 6]"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/1066542/ch/ecsa",
+      "target": "scale:commons/source/10.1002-advs.202402964"
+    },
+    {
+      "id": "scale:commons/1066542/ch/edax/reported-in/10.1002-advs.202402964",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "[page 3]"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/1066542/ch/edax",
+      "target": "scale:commons/source/10.1002-advs.202402964"
+    },
+    {
+      "id": "scale:commons/1066542/ch/eis/reported-in/10.1002-advs.202402964",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "[page 8]",
+          "[page 9]"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/1066542/ch/eis",
+      "target": "scale:commons/source/10.1002-advs.202402964"
+    },
+    {
+      "id": "scale:commons/1066542/ch/fibsem/reported-in/10.1002-advs.202402964",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "[page 3]"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/1066542/ch/fibsem",
+      "target": "scale:commons/source/10.1002-advs.202402964"
+    },
+    {
+      "id": "scale:commons/1066542/ch/ftir/reported-in/10.1002-advs.202402964",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "[page 3]"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/1066542/ch/ftir",
+      "target": "scale:commons/source/10.1002-advs.202402964"
+    },
+    {
+      "id": "scale:commons/1066542/ch/hrtem/reported-in/10.1002-advs.202402964",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "[page 12]",
+          "[page 3]"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/1066542/ch/hrtem",
+      "target": "scale:commons/source/10.1002-advs.202402964"
+    },
+    {
+      "id": "scale:commons/1066542/ch/lsv-ar/reported-in/10.1002-advs.202402964",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "[page 6]",
+          "[page 7]"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/1066542/ch/lsv-ar",
+      "target": "scale:commons/source/10.1002-advs.202402964"
+    },
+    {
+      "id": "scale:commons/1066542/ch/lsv-co2/reported-in/10.1002-advs.202402964",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "Figure 3a, page 6",
+          "[page 5]"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/1066542/ch/lsv-co2",
+      "target": "scale:commons/source/10.1002-advs.202402964"
+    },
+    {
+      "id": "scale:commons/1066542/ch/sem-mg/reported-in/10.1002-advs.202402964",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "[page 3]",
+          "[page 5]"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/1066542/ch/sem-mg",
+      "target": "scale:commons/source/10.1002-advs.202402964"
+    },
+    {
+      "id": "scale:commons/1066542/ch/xps/reported-in/10.1002-advs.202402964",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "[page 12]",
+          "[page 3]"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/1066542/ch/xps",
+      "target": "scale:commons/source/10.1002-advs.202402964"
+    },
+    {
+      "id": "scale:commons/1066542/ch/xrd/reported-in/10.1002-advs.202402964",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "[page 12]",
+          "[page 3]"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/1066542/ch/xrd",
+      "target": "scale:commons/source/10.1002-advs.202402964"
+    },
+    {
+      "id": "scale:commons/1066542/claim/carbon-co/reported-in/10.1002-advs.202402964",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "[page 7]"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/1066542/claim/carbon-co",
+      "target": "scale:commons/source/10.1002-advs.202402964"
+    },
+    {
+      "id": "scale:commons/1066542/claim/co-coverage/reported-in/10.1002-advs.202402964",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "[page 7]"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/1066542/claim/co-coverage",
+      "target": "scale:commons/source/10.1002-advs.202402964"
+    },
+    {
+      "id": "scale:commons/1066542/claim/crosslinking/reported-in/10.1002-advs.202402964",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "[page 8]"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/1066542/claim/crosslinking",
+      "target": "scale:commons/source/10.1002-advs.202402964"
+    },
+    {
+      "id": "scale:commons/1066542/claim/cubic-c2plus/reported-in/10.1002-advs.202402964",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "[page 3]"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/1066542/claim/cubic-c2plus",
+      "target": "scale:commons/source/10.1002-advs.202402964"
+    },
+    {
+      "id": "scale:commons/1066542/claim/dual-function/reported-in/10.1002-advs.202402964",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "[page 7]"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/1066542/claim/dual-function",
+      "target": "scale:commons/source/10.1002-advs.202402964"
+    },
+    {
+      "id": "scale:commons/1066542/claim/flow-rate/reported-in/10.1002-advs.202402964",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "[page 8]"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/1066542/claim/flow-rate",
+      "target": "scale:commons/source/10.1002-advs.202402964"
+    },
+    {
+      "id": "scale:commons/1066542/claim/geometry/reported-in/10.1002-advs.202402964",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "[page 8]"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/1066542/claim/geometry",
+      "target": "scale:commons/source/10.1002-advs.202402964"
+    },
+    {
+      "id": "scale:commons/1066542/claim/humidity/reported-in/10.1002-advs.202402964",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "[page 9]"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/1066542/claim/humidity",
+      "target": "scale:commons/source/10.1002-advs.202402964"
+    },
+    {
+      "id": "scale:commons/1066542/claim/proton-diffusion/reported-in/10.1002-advs.202402964",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "[page 7]"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/1066542/claim/proton-diffusion",
+      "target": "scale:commons/source/10.1002-advs.202402964"
+    },
+    {
+      "id": "scale:commons/1066542/claim/pyridine-vs-tertiary/reported-in/10.1002-advs.202402964",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "[page 11]"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/1066542/claim/pyridine-vs-tertiary",
+      "target": "scale:commons/source/10.1002-advs.202402964"
+    },
+    {
+      "id": "scale:commons/1066542/claim/strategy/reported-in/10.1002-advs.202402964",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "[page 11]"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/1066542/claim/strategy",
+      "target": "scale:commons/source/10.1002-advs.202402964"
+    },
+    {
+      "id": "scale:commons/1066542/claim/triple-phase-current/reported-in/10.1002-advs.202402964",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "[page 8]"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/1066542/claim/triple-phase-current",
+      "target": "scale:commons/source/10.1002-advs.202402964"
+    },
+    {
+      "id": "scale:commons/1066542/claim/unswollen/reported-in/10.1002-advs.202402964",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "[page 3]"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/1066542/claim/unswollen",
+      "target": "scale:commons/source/10.1002-advs.202402964"
+    },
+    {
+      "id": "scale:commons/1066542/electrode/cl05/reported-in/10.1002-advs.202402964",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "[page 11]"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/1066542/electrode/cl05",
+      "target": "scale:commons/source/10.1002-advs.202402964"
+    },
+    {
+      "id": "scale:commons/1066542/electrode/cl15/reported-in/10.1002-advs.202402964",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "[page 11]"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/1066542/electrode/cl15",
+      "target": "scale:commons/source/10.1002-advs.202402964"
+    },
+    {
+      "id": "scale:commons/1066542/electrode/cl2/reported-in/10.1002-advs.202402964",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "[page 11]"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/1066542/electrode/cl2",
+      "target": "scale:commons/source/10.1002-advs.202402964"
+    },
+    {
+      "id": "scale:commons/1066542/electrode/iro2-anode/reported-in/10.1002-advs.202402964",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "[page 11]"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/1066542/electrode/iro2-anode",
+      "target": "scale:commons/source/10.1002-advs.202402964"
+    },
+    {
+      "id": "scale:commons/1066542/electrode/pdeaema20/reported-in/10.1002-advs.202402964",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "[page 11]"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/1066542/electrode/pdeaema20",
+      "target": "scale:commons/source/10.1002-advs.202402964"
+    },
+    {
+      "id": "scale:commons/1066542/electrode/pristine/reported-in/10.1002-advs.202402964",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "[page 11]"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/1066542/electrode/pristine",
+      "target": "scale:commons/source/10.1002-advs.202402964"
+    },
+    {
+      "id": "scale:commons/1066542/electrode/pvp10/reported-in/10.1002-advs.202402964",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "[page 11]"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/1066542/electrode/pvp10",
+      "target": "scale:commons/source/10.1002-advs.202402964"
+    },
+    {
+      "id": "scale:commons/1066542/electrode/pvp20/reported-in/10.1002-advs.202402964",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "[page 11]"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/1066542/electrode/pvp20",
+      "target": "scale:commons/source/10.1002-advs.202402964"
+    },
+    {
+      "id": "scale:commons/1066542/electrode/pvp30/reported-in/10.1002-advs.202402964",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "[page 11]"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/1066542/electrode/pvp30",
+      "target": "scale:commons/source/10.1002-advs.202402964"
+    },
+    {
+      "id": "scale:commons/1066542/electrode/sublayer/reported-in/10.1002-advs.202402964",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "[page 11]"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/1066542/electrode/sublayer",
+      "target": "scale:commons/source/10.1002-advs.202402964"
+    },
+    {
+      "id": "scale:commons/1066542/electrolyte/koh-1m/reported-in/10.1002-advs.202402964",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "[page 11]"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/1066542/electrolyte/koh-1m",
+      "target": "scale:commons/source/10.1002-advs.202402964"
+    },
+    {
+      "id": "scale:commons/1066542/feed/co2-30/reported-in/10.1002-advs.202402964",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "[page 11]"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/1066542/feed/co2-30",
+      "target": "scale:commons/source/10.1002-advs.202402964"
+    },
+    {
+      "id": "scale:commons/1066542/feed/co2-humid/reported-in/10.1002-advs.202402964",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "[page 11]"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/1066542/feed/co2-humid",
+      "target": "scale:commons/source/10.1002-advs.202402964"
+    },
+    {
+      "id": "scale:commons/1066542/hyp/microgel-co2/reported-in/10.1002-advs.202402964",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "[page 1]"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/1066542/hyp/microgel-co2",
+      "target": "scale:commons/source/10.1002-advs.202402964"
+    },
+    {
+      "id": "scale:commons/1066542/instrument/airbrush/reported-in/10.1002-advs.202402964",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "[page 11]"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/1066542/instrument/airbrush",
+      "target": "scale:commons/source/10.1002-advs.202402964"
+    },
+    {
+      "id": "scale:commons/1066542/instrument/bet/reported-in/10.1002-advs.202402964",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "[page 12]"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/1066542/instrument/bet",
+      "target": "scale:commons/source/10.1002-advs.202402964"
+    },
+    {
+      "id": "scale:commons/1066542/instrument/contact/reported-in/10.1002-advs.202402964",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "[page 12]"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/1066542/instrument/contact",
+      "target": "scale:commons/source/10.1002-advs.202402964"
+    },
+    {
+      "id": "scale:commons/1066542/instrument/dls/reported-in/10.1002-advs.202402964",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "[page 12]"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/1066542/instrument/dls",
+      "target": "scale:commons/source/10.1002-advs.202402964"
+    },
+    {
+      "id": "scale:commons/1066542/instrument/fibsem/reported-in/10.1002-advs.202402964",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "[page 12]"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/1066542/instrument/fibsem",
+      "target": "scale:commons/source/10.1002-advs.202402964"
+    },
+    {
+      "id": "scale:commons/1066542/instrument/gc/reported-in/10.1002-advs.202402964",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "[page 11]"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/1066542/instrument/gc",
+      "target": "scale:commons/source/10.1002-advs.202402964"
+    },
+    {
+      "id": "scale:commons/1066542/instrument/hplc/reported-in/10.1002-advs.202402964",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "[page 12]"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/1066542/instrument/hplc",
+      "target": "scale:commons/source/10.1002-advs.202402964"
+    },
+    {
+      "id": "scale:commons/1066542/instrument/hrtem/reported-in/10.1002-advs.202402964",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "[page 12]"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/1066542/instrument/hrtem",
+      "target": "scale:commons/source/10.1002-advs.202402964"
+    },
+    {
+      "id": "scale:commons/1066542/instrument/mfc/reported-in/10.1002-advs.202402964",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "[page 11]"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/1066542/instrument/mfc",
+      "target": "scale:commons/source/10.1002-advs.202402964"
+    },
+    {
+      "id": "scale:commons/1066542/instrument/potentiostat/reported-in/10.1002-advs.202402964",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "[page 11]"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/1066542/instrument/potentiostat",
+      "target": "scale:commons/source/10.1002-advs.202402964"
+    },
+    {
+      "id": "scale:commons/1066542/instrument/ref-agagcl/reported-in/10.1002-advs.202402964",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "[page 11]"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/1066542/instrument/ref-agagcl",
+      "target": "scale:commons/source/10.1002-advs.202402964"
+    },
+    {
+      "id": "scale:commons/1066542/instrument/sem/reported-in/10.1002-advs.202402964",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "[page 12]"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/1066542/instrument/sem",
+      "target": "scale:commons/source/10.1002-advs.202402964"
+    },
+    {
+      "id": "scale:commons/1066542/instrument/tpd/reported-in/10.1002-advs.202402964",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "[page 12]"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/1066542/instrument/tpd",
+      "target": "scale:commons/source/10.1002-advs.202402964"
+    },
+    {
+      "id": "scale:commons/1066542/instrument/xps/reported-in/10.1002-advs.202402964",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "[page 12]"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/1066542/instrument/xps",
+      "target": "scale:commons/source/10.1002-advs.202402964"
+    },
+    {
+      "id": "scale:commons/1066542/instrument/xrd/reported-in/10.1002-advs.202402964",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "[page 12]"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/1066542/instrument/xrd",
+      "target": "scale:commons/source/10.1002-advs.202402964"
+    },
+    {
+      "id": "scale:commons/1066542/prep/cu2o/reported-in/10.1002-advs.202402964",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "[page 11]"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/1066542/prep/cu2o",
+      "target": "scale:commons/source/10.1002-advs.202402964"
+    },
+    {
+      "id": "scale:commons/1066542/prep/cu2o/step1/reported-in/10.1002-advs.202402964",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "[page 11]"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/1066542/prep/cu2o/step1",
+      "target": "scale:commons/source/10.1002-advs.202402964"
+    },
+    {
+      "id": "scale:commons/1066542/prep/cu2o/step2/reported-in/10.1002-advs.202402964",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "[page 11]"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/1066542/prep/cu2o/step2",
+      "target": "scale:commons/source/10.1002-advs.202402964"
+    },
+    {
+      "id": "scale:commons/1066542/prep/cu2o/step3/reported-in/10.1002-advs.202402964",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "[page 11]"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/1066542/prep/cu2o/step3",
+      "target": "scale:commons/source/10.1002-advs.202402964"
+    },
+    {
+      "id": "scale:commons/1066542/prep/cu2o/step4/reported-in/10.1002-advs.202402964",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "[page 11]"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/1066542/prep/cu2o/step4",
+      "target": "scale:commons/source/10.1002-advs.202402964"
+    },
+    {
+      "id": "scale:commons/1066542/prep/gde-cl05/reported-in/10.1002-advs.202402964",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "[page 11]"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/1066542/prep/gde-cl05",
+      "target": "scale:commons/source/10.1002-advs.202402964"
+    },
+    {
+      "id": "scale:commons/1066542/prep/gde-cl05/step1/reported-in/10.1002-advs.202402964",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "[page 11]"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/1066542/prep/gde-cl05/step1",
+      "target": "scale:commons/source/10.1002-advs.202402964"
+    },
+    {
+      "id": "scale:commons/1066542/prep/gde-cl05/step2/reported-in/10.1002-advs.202402964",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "[page 11]"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/1066542/prep/gde-cl05/step2",
+      "target": "scale:commons/source/10.1002-advs.202402964"
+    },
+    {
+      "id": "scale:commons/1066542/prep/gde-cl05/step3/reported-in/10.1002-advs.202402964",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "[page 11]"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/1066542/prep/gde-cl05/step3",
+      "target": "scale:commons/source/10.1002-advs.202402964"
+    },
+    {
+      "id": "scale:commons/1066542/prep/gde-cl05/step4/reported-in/10.1002-advs.202402964",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "[page 11]"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/1066542/prep/gde-cl05/step4",
+      "target": "scale:commons/source/10.1002-advs.202402964"
+    },
+    {
+      "id": "scale:commons/1066542/prep/gde-cl05/step5/reported-in/10.1002-advs.202402964",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "[page 11]"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/1066542/prep/gde-cl05/step5",
+      "target": "scale:commons/source/10.1002-advs.202402964"
+    },
+    {
+      "id": "scale:commons/1066542/prep/gde-cl15/reported-in/10.1002-advs.202402964",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "[page 11]"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/1066542/prep/gde-cl15",
+      "target": "scale:commons/source/10.1002-advs.202402964"
+    },
+    {
+      "id": "scale:commons/1066542/prep/gde-cl15/step1/reported-in/10.1002-advs.202402964",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "[page 11]"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/1066542/prep/gde-cl15/step1",
+      "target": "scale:commons/source/10.1002-advs.202402964"
+    },
+    {
+      "id": "scale:commons/1066542/prep/gde-cl15/step2/reported-in/10.1002-advs.202402964",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "[page 11]"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/1066542/prep/gde-cl15/step2",
+      "target": "scale:commons/source/10.1002-advs.202402964"
+    },
+    {
+      "id": "scale:commons/1066542/prep/gde-cl15/step3/reported-in/10.1002-advs.202402964",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "[page 11]"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/1066542/prep/gde-cl15/step3",
+      "target": "scale:commons/source/10.1002-advs.202402964"
+    },
+    {
+      "id": "scale:commons/1066542/prep/gde-cl15/step4/reported-in/10.1002-advs.202402964",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "[page 11]"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/1066542/prep/gde-cl15/step4",
+      "target": "scale:commons/source/10.1002-advs.202402964"
+    },
+    {
+      "id": "scale:commons/1066542/prep/gde-cl15/step5/reported-in/10.1002-advs.202402964",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "[page 11]"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/1066542/prep/gde-cl15/step5",
+      "target": "scale:commons/source/10.1002-advs.202402964"
+    },
+    {
+      "id": "scale:commons/1066542/prep/gde-cl2/reported-in/10.1002-advs.202402964",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "[page 11]"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/1066542/prep/gde-cl2",
+      "target": "scale:commons/source/10.1002-advs.202402964"
+    },
+    {
+      "id": "scale:commons/1066542/prep/gde-cl2/step1/reported-in/10.1002-advs.202402964",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "[page 11]"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/1066542/prep/gde-cl2/step1",
+      "target": "scale:commons/source/10.1002-advs.202402964"
+    },
+    {
+      "id": "scale:commons/1066542/prep/gde-cl2/step2/reported-in/10.1002-advs.202402964",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "[page 11]"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/1066542/prep/gde-cl2/step2",
+      "target": "scale:commons/source/10.1002-advs.202402964"
+    },
+    {
+      "id": "scale:commons/1066542/prep/gde-cl2/step3/reported-in/10.1002-advs.202402964",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "[page 11]"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/1066542/prep/gde-cl2/step3",
+      "target": "scale:commons/source/10.1002-advs.202402964"
+    },
+    {
+      "id": "scale:commons/1066542/prep/gde-cl2/step4/reported-in/10.1002-advs.202402964",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "[page 11]"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/1066542/prep/gde-cl2/step4",
+      "target": "scale:commons/source/10.1002-advs.202402964"
+    },
+    {
+      "id": "scale:commons/1066542/prep/gde-cl2/step5/reported-in/10.1002-advs.202402964",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "[page 11]"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/1066542/prep/gde-cl2/step5",
+      "target": "scale:commons/source/10.1002-advs.202402964"
+    },
+    {
+      "id": "scale:commons/1066542/prep/gde-pdeaema20/reported-in/10.1002-advs.202402964",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "[page 11]"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/1066542/prep/gde-pdeaema20",
+      "target": "scale:commons/source/10.1002-advs.202402964"
+    },
+    {
+      "id": "scale:commons/1066542/prep/gde-pdeaema20/step1/reported-in/10.1002-advs.202402964",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "[page 11]"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/1066542/prep/gde-pdeaema20/step1",
+      "target": "scale:commons/source/10.1002-advs.202402964"
+    },
+    {
+      "id": "scale:commons/1066542/prep/gde-pdeaema20/step2/reported-in/10.1002-advs.202402964",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "[page 11]"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/1066542/prep/gde-pdeaema20/step2",
+      "target": "scale:commons/source/10.1002-advs.202402964"
+    },
+    {
+      "id": "scale:commons/1066542/prep/gde-pdeaema20/step3/reported-in/10.1002-advs.202402964",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "[page 11]"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/1066542/prep/gde-pdeaema20/step3",
+      "target": "scale:commons/source/10.1002-advs.202402964"
+    },
+    {
+      "id": "scale:commons/1066542/prep/gde-pdeaema20/step4/reported-in/10.1002-advs.202402964",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "[page 11]"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/1066542/prep/gde-pdeaema20/step4",
+      "target": "scale:commons/source/10.1002-advs.202402964"
+    },
+    {
+      "id": "scale:commons/1066542/prep/gde-pdeaema20/step5/reported-in/10.1002-advs.202402964",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "[page 11]"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/1066542/prep/gde-pdeaema20/step5",
+      "target": "scale:commons/source/10.1002-advs.202402964"
+    },
+    {
+      "id": "scale:commons/1066542/prep/gde-pristine/reported-in/10.1002-advs.202402964",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "[page 11]"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/1066542/prep/gde-pristine",
+      "target": "scale:commons/source/10.1002-advs.202402964"
+    },
+    {
+      "id": "scale:commons/1066542/prep/gde-pristine/step1/reported-in/10.1002-advs.202402964",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "[page 11]"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/1066542/prep/gde-pristine/step1",
+      "target": "scale:commons/source/10.1002-advs.202402964"
+    },
+    {
+      "id": "scale:commons/1066542/prep/gde-pristine/step3/reported-in/10.1002-advs.202402964",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "[page 11]"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/1066542/prep/gde-pristine/step3",
+      "target": "scale:commons/source/10.1002-advs.202402964"
+    },
+    {
+      "id": "scale:commons/1066542/prep/gde-pristine/step4/reported-in/10.1002-advs.202402964",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "[page 11]"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/1066542/prep/gde-pristine/step4",
+      "target": "scale:commons/source/10.1002-advs.202402964"
+    },
+    {
+      "id": "scale:commons/1066542/prep/gde-pristine/step5/reported-in/10.1002-advs.202402964",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "[page 11]"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/1066542/prep/gde-pristine/step5",
+      "target": "scale:commons/source/10.1002-advs.202402964"
+    },
+    {
+      "id": "scale:commons/1066542/prep/gde-pvp10/reported-in/10.1002-advs.202402964",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "[page 11]"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/1066542/prep/gde-pvp10",
+      "target": "scale:commons/source/10.1002-advs.202402964"
+    },
+    {
+      "id": "scale:commons/1066542/prep/gde-pvp10/step1/reported-in/10.1002-advs.202402964",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "[page 11]"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/1066542/prep/gde-pvp10/step1",
+      "target": "scale:commons/source/10.1002-advs.202402964"
+    },
+    {
+      "id": "scale:commons/1066542/prep/gde-pvp10/step2/reported-in/10.1002-advs.202402964",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "[page 11]"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/1066542/prep/gde-pvp10/step2",
+      "target": "scale:commons/source/10.1002-advs.202402964"
+    },
+    {
+      "id": "scale:commons/1066542/prep/gde-pvp10/step3/reported-in/10.1002-advs.202402964",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "[page 11]"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/1066542/prep/gde-pvp10/step3",
+      "target": "scale:commons/source/10.1002-advs.202402964"
+    },
+    {
+      "id": "scale:commons/1066542/prep/gde-pvp10/step4/reported-in/10.1002-advs.202402964",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "[page 11]"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/1066542/prep/gde-pvp10/step4",
+      "target": "scale:commons/source/10.1002-advs.202402964"
+    },
+    {
+      "id": "scale:commons/1066542/prep/gde-pvp10/step5/reported-in/10.1002-advs.202402964",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "[page 11]"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/1066542/prep/gde-pvp10/step5",
+      "target": "scale:commons/source/10.1002-advs.202402964"
+    },
+    {
+      "id": "scale:commons/1066542/prep/gde-pvp20/reported-in/10.1002-advs.202402964",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "[page 11]"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/1066542/prep/gde-pvp20",
+      "target": "scale:commons/source/10.1002-advs.202402964"
+    },
+    {
+      "id": "scale:commons/1066542/prep/gde-pvp20/step1/reported-in/10.1002-advs.202402964",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "[page 11]"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/1066542/prep/gde-pvp20/step1",
+      "target": "scale:commons/source/10.1002-advs.202402964"
+    },
+    {
+      "id": "scale:commons/1066542/prep/gde-pvp20/step2/reported-in/10.1002-advs.202402964",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "[page 11]"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/1066542/prep/gde-pvp20/step2",
+      "target": "scale:commons/source/10.1002-advs.202402964"
+    },
+    {
+      "id": "scale:commons/1066542/prep/gde-pvp20/step3/reported-in/10.1002-advs.202402964",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "[page 11]"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/1066542/prep/gde-pvp20/step3",
+      "target": "scale:commons/source/10.1002-advs.202402964"
+    },
+    {
+      "id": "scale:commons/1066542/prep/gde-pvp20/step4/reported-in/10.1002-advs.202402964",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "[page 11]"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/1066542/prep/gde-pvp20/step4",
+      "target": "scale:commons/source/10.1002-advs.202402964"
+    },
+    {
+      "id": "scale:commons/1066542/prep/gde-pvp20/step5/reported-in/10.1002-advs.202402964",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "[page 11]"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/1066542/prep/gde-pvp20/step5",
+      "target": "scale:commons/source/10.1002-advs.202402964"
+    },
+    {
+      "id": "scale:commons/1066542/prep/gde-pvp30/reported-in/10.1002-advs.202402964",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "[page 11]"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/1066542/prep/gde-pvp30",
+      "target": "scale:commons/source/10.1002-advs.202402964"
+    },
+    {
+      "id": "scale:commons/1066542/prep/gde-pvp30/step1/reported-in/10.1002-advs.202402964",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "[page 11]"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/1066542/prep/gde-pvp30/step1",
+      "target": "scale:commons/source/10.1002-advs.202402964"
+    },
+    {
+      "id": "scale:commons/1066542/prep/gde-pvp30/step2/reported-in/10.1002-advs.202402964",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "[page 11]"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/1066542/prep/gde-pvp30/step2",
+      "target": "scale:commons/source/10.1002-advs.202402964"
+    },
+    {
+      "id": "scale:commons/1066542/prep/gde-pvp30/step3/reported-in/10.1002-advs.202402964",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "[page 11]"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/1066542/prep/gde-pvp30/step3",
+      "target": "scale:commons/source/10.1002-advs.202402964"
+    },
+    {
+      "id": "scale:commons/1066542/prep/gde-pvp30/step4/reported-in/10.1002-advs.202402964",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "[page 11]"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/1066542/prep/gde-pvp30/step4",
+      "target": "scale:commons/source/10.1002-advs.202402964"
+    },
+    {
+      "id": "scale:commons/1066542/prep/gde-pvp30/step5/reported-in/10.1002-advs.202402964",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "[page 11]"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/1066542/prep/gde-pvp30/step5",
+      "target": "scale:commons/source/10.1002-advs.202402964"
+    },
+    {
+      "id": "scale:commons/1066542/prep/gde-sublayer/reported-in/10.1002-advs.202402964",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "[page 11]"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/1066542/prep/gde-sublayer",
+      "target": "scale:commons/source/10.1002-advs.202402964"
+    },
+    {
+      "id": "scale:commons/1066542/prep/gde-sublayer/step1/reported-in/10.1002-advs.202402964",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "[page 11]"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/1066542/prep/gde-sublayer/step1",
+      "target": "scale:commons/source/10.1002-advs.202402964"
+    },
+    {
+      "id": "scale:commons/1066542/prep/gde-sublayer/step2/reported-in/10.1002-advs.202402964",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "[page 11]"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/1066542/prep/gde-sublayer/step2",
+      "target": "scale:commons/source/10.1002-advs.202402964"
+    },
+    {
+      "id": "scale:commons/1066542/prep/mg-deaema/reported-in/10.1002-advs.202402964",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "[page 11]"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/1066542/prep/mg-deaema",
+      "target": "scale:commons/source/10.1002-advs.202402964"
+    },
+    {
+      "id": "scale:commons/1066542/prep/mg-deaema/step1/reported-in/10.1002-advs.202402964",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "[page 11]"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/1066542/prep/mg-deaema/step1",
+      "target": "scale:commons/source/10.1002-advs.202402964"
+    },
+    {
+      "id": "scale:commons/1066542/prep/mg-deaema/step2/reported-in/10.1002-advs.202402964",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "[page 11]"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/1066542/prep/mg-deaema/step2",
+      "target": "scale:commons/source/10.1002-advs.202402964"
+    },
+    {
+      "id": "scale:commons/1066542/prep/mg-deaema/step3/reported-in/10.1002-advs.202402964",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "[page 11]"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/1066542/prep/mg-deaema/step3",
+      "target": "scale:commons/source/10.1002-advs.202402964"
+    },
+    {
+      "id": "scale:commons/1066542/prep/mg-deaema/step4/reported-in/10.1002-advs.202402964",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "[page 11]"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/1066542/prep/mg-deaema/step4",
+      "target": "scale:commons/source/10.1002-advs.202402964"
+    },
+    {
+      "id": "scale:commons/1066542/prep/mg-deaema/step5/reported-in/10.1002-advs.202402964",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "[page 11]"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/1066542/prep/mg-deaema/step5",
+      "target": "scale:commons/source/10.1002-advs.202402964"
+    },
+    {
+      "id": "scale:commons/1066542/prep/mg-deaema/step6/reported-in/10.1002-advs.202402964",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "[page 11]"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/1066542/prep/mg-deaema/step6",
+      "target": "scale:commons/source/10.1002-advs.202402964"
+    },
+    {
+      "id": "scale:commons/1066542/prep/mg-pvp/reported-in/10.1002-advs.202402964",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "[page 11]"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/1066542/prep/mg-pvp",
+      "target": "scale:commons/source/10.1002-advs.202402964"
+    },
+    {
+      "id": "scale:commons/1066542/prep/mg-pvp/step1/reported-in/10.1002-advs.202402964",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "[page 11]"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/1066542/prep/mg-pvp/step1",
+      "target": "scale:commons/source/10.1002-advs.202402964"
+    },
+    {
+      "id": "scale:commons/1066542/prep/mg-pvp/step2/reported-in/10.1002-advs.202402964",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "[page 11]"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/1066542/prep/mg-pvp/step2",
+      "target": "scale:commons/source/10.1002-advs.202402964"
+    },
+    {
+      "id": "scale:commons/1066542/prep/mg-pvp/step3/reported-in/10.1002-advs.202402964",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "[page 11]"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/1066542/prep/mg-pvp/step3",
+      "target": "scale:commons/source/10.1002-advs.202402964"
+    },
+    {
+      "id": "scale:commons/1066542/prep/mg-pvp/step4/reported-in/10.1002-advs.202402964",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "[page 11]"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/1066542/prep/mg-pvp/step4",
+      "target": "scale:commons/source/10.1002-advs.202402964"
+    },
+    {
+      "id": "scale:commons/1066542/prep/mg-pvp/step5/reported-in/10.1002-advs.202402964",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "[page 11]"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/1066542/prep/mg-pvp/step5",
+      "target": "scale:commons/source/10.1002-advs.202402964"
+    },
+    {
+      "id": "scale:commons/1066542/prep/mg-pvp/step6/reported-in/10.1002-advs.202402964",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "[page 11]"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/1066542/prep/mg-pvp/step6",
+      "target": "scale:commons/source/10.1002-advs.202402964"
+    },
+    {
+      "id": "scale:commons/1066542/software/amira/reported-in/10.1002-advs.202402964",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "[page 12]"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/1066542/software/amira",
+      "target": "scale:commons/source/10.1002-advs.202402964"
+    },
+    {
+      "id": "scale:commons/1066542/software/casa/reported-in/10.1002-advs.202402964",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "[page 12]"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/1066542/software/casa",
+      "target": "scale:commons/source/10.1002-advs.202402964"
+    },
+    {
+      "id": "scale:commons/1066542/software/eisa/reported-in/10.1002-advs.202402964",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "[page 8]"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/1066542/software/eisa",
+      "target": "scale:commons/source/10.1002-advs.202402964"
+    },
+    {
+      "id": "scale:commons/1066542/species/pdeaema/reported-in/10.1002-advs.202402964",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "[page 3]"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/1066542/species/pdeaema",
+      "target": "scale:commons/source/10.1002-advs.202402964"
+    },
+    {
+      "id": "scale:commons/1066542/test/flow-ar/reported-in/10.1002-advs.202402964",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "[page 7]"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/1066542/test/flow-ar",
+      "target": "scale:commons/source/10.1002-advs.202402964"
+    },
+    {
+      "id": "scale:commons/1066542/test/flow-cl05/reported-in/10.1002-advs.202402964",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "Figure 3f, page 6",
+          "[page 11]",
+          "[page 7]",
+          "[page 8]"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/1066542/test/flow-cl05",
+      "target": "scale:commons/source/10.1002-advs.202402964"
+    },
+    {
+      "id": "scale:commons/1066542/test/flow-cl15/reported-in/10.1002-advs.202402964",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "Figure 3f, page 6",
+          "[page 11]",
+          "[page 7]",
+          "[page 8]"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/1066542/test/flow-cl15",
+      "target": "scale:commons/source/10.1002-advs.202402964"
+    },
+    {
+      "id": "scale:commons/1066542/test/flow-cl2/reported-in/10.1002-advs.202402964",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "Figure 3f, page 6",
+          "[page 11]",
+          "[page 7]",
+          "[page 8]"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/1066542/test/flow-cl2",
+      "target": "scale:commons/source/10.1002-advs.202402964"
+    },
+    {
+      "id": "scale:commons/1066542/test/flow-pdeaema20/reported-in/10.1002-advs.202402964",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "Figure 3c, page 6",
+          "[page 11]",
+          "[page 7]"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/1066542/test/flow-pdeaema20",
+      "target": "scale:commons/source/10.1002-advs.202402964"
+    },
+    {
+      "id": "scale:commons/1066542/test/flow-pristine/reported-in/10.1002-advs.202402964",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "Figure 3c, page 6",
+          "[page 11]",
+          "[page 7]"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/1066542/test/flow-pristine",
+      "target": "scale:commons/source/10.1002-advs.202402964"
+    },
+    {
+      "id": "scale:commons/1066542/test/flow-pvp10/reported-in/10.1002-advs.202402964",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "Figure 3c, page 6",
+          "[page 11]",
+          "[page 7]"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/1066542/test/flow-pvp10",
+      "target": "scale:commons/source/10.1002-advs.202402964"
+    },
+    {
+      "id": "scale:commons/1066542/test/flow-pvp20/reported-in/10.1002-advs.202402964",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "Figure 3c, page 6",
+          "Figure 3f, page 6",
+          "[page 11]",
+          "[page 7]",
+          "[page 8]"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/1066542/test/flow-pvp20",
+      "target": "scale:commons/source/10.1002-advs.202402964"
+    },
+    {
+      "id": "scale:commons/1066542/test/flow-sublayer/reported-in/10.1002-advs.202402964",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "Figure 3d, page 6",
+          "[page 11]",
+          "[page 7]"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/1066542/test/flow-sublayer",
+      "target": "scale:commons/source/10.1002-advs.202402964"
+    },
+    {
+      "id": "scale:commons/1066542/test/mea-pristine/reported-in/10.1002-advs.202402964",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "Figure 5b, page 10",
+          "Figure 5d, page 10",
+          "[page 11]",
+          "[page 9]"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/1066542/test/mea-pristine",
+      "target": "scale:commons/source/10.1002-advs.202402964"
+    },
+    {
+      "id": "scale:commons/1066542/test/mea-pvp10/reported-in/10.1002-advs.202402964",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "Figure 5b, page 10",
+          "Figure 5d, page 10",
+          "[page 11]",
+          "[page 9]"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/1066542/test/mea-pvp10",
+      "target": "scale:commons/source/10.1002-advs.202402964"
+    },
+    {
+      "id": "scale:commons/1066542/test/mea-pvp20/reported-in/10.1002-advs.202402964",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "Figure 5b, page 10",
+          "Figure 5c, page 10",
+          "Figure 5d, page 10",
+          "[page 10]",
+          "[page 11]",
+          "[page 9]"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/1066542/test/mea-pvp20",
+      "target": "scale:commons/source/10.1002-advs.202402964"
+    },
+    {
+      "id": "scale:commons/1066542/test/mea-stability/reported-in/10.1002-advs.202402964",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "Figure 5f, page 10",
+          "[page 10]"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/1066542/test/mea-stability",
+      "target": "scale:commons/source/10.1002-advs.202402964"
+    }
+  ],
+  "schema_version": "0.8.2",
+  "source": "scale:commons/source/10.1002-advs.202402964"
+}

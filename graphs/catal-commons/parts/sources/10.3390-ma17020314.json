@@ -1,0 +1,5049 @@
+{
+  "nodes": [
+    {
+      "id": "scale:commons/10.3390-ma17020314/an/photoinjection",
+      "label": "Analysis",
+      "props": {
+        "name": "photoinjection analysis of the electronic band structure of the insulating SnO2–C film",
+        "analysis_kind": "other",
+        "conditions": {
+          "work_function_al": {
+            "status": "present",
+            "as_reported": "about 3.8",
+            "qualifier": "approximate",
+            "unit": "eV",
+            "value": 3.8
+          },
+          "work_function_au": {
+            "status": "present",
+            "as_reported": "about 4.6",
+            "qualifier": "approximate",
+            "unit": "eV",
+            "value": 4.6
+          }
+        },
+        "evidence": [
+          {
+            "id": "ev1",
+            "kind": "text",
+            "locator": "p. 1, abstract",
+            "quote": "The main parameters of the electronic band structure of the insulating film, such as the transport gap EG (5.2 eV), optical gap Eopt (3.1 eV), electron affinity X (2.1 eV), and ionization potential J (7.3 eV), were determined.",
+            "source": "scale:commons/source/10.3390-ma17020314"
+          },
+          {
+            "id": "ev2",
+            "kind": "table",
+            "locator": "p. 9, Table 2",
+            "note": "Table 2 row; 'The differences in values of the thresholds are within the limits of the accuracy of a measurement'",
+            "quote": "Transport gap (Φ0e + Φ0h) 5.2",
+            "source": "scale:commons/source/10.3390-ma17020314"
+          },
+          {
+            "id": "ev3",
+            "kind": "text",
+            "locator": "p. 10, section 3.5",
+            "quote": "Electron affinity X and the ionization potential J were calculated according to relations [20]:",
+            "source": "scale:commons/source/10.3390-ma17020314"
+          },
+          {
+            "id": "ev4",
+            "kind": "text",
+            "locator": "p. 11, Supplementary Materials",
+            "quote": "Supplementary Materials S1: Electron affinity and ionization potential calculations.",
+            "source": "scale:commons/source/10.3390-ma17020314"
+          },
+          {
+            "id": "ev5",
+            "kind": "text",
+            "locator": "p. 9, section 3.5",
+            "quote": "Taking into account the fact that the work function for Au is higher than that for Al, in our case, they amount to about 4.6 and 3.8 eV, respectively",
+            "source": "scale:commons/source/10.3390-ma17020314"
+          }
+        ],
+        "experiment_kind": "computational",
+        "limitations": "thresholds are read from Fowler plots at two polarizations; the source states the differences in the threshold values are within the limits of the accuracy of a measurement, and gives the calculation method only in Supplementary Material S1, which was not examined",
+        "method": "internal photoemission (photoinjection) thresholds read in Fowler's coordinate system; transport gap, electron affinity and ionization potential from relations (1), (3) and (4)",
+        "origin": "curated",
+        "result_values": [
+          {
+            "id": "transport_gap",
+            "status": "present",
+            "definition": "transport gap EG = Φ0e + Φ0h (Equation 1), as printed in Table 2",
+            "evidence_ids": [
+              "ev1",
+              "ev2"
+            ],
+            "origin": "derived",
+            "produced_by": "scale:commons/10.3390-ma17020314/an/photoinjection",
+            "target": "scale:commons/10.3390-ma17020314/sample/ins",
+            "unit": "eV",
+            "value": 5.2,
+            "variable": "scale:commons/10.3390-ma17020314/var/transport_gap"
+          },
+          {
+            "id": "electron_affinity",
+            "status": "present",
+            "definition": "electron affinity X = WM − Φ0e (Equation 3); the calculation method is given in Supplementary Material S1, which was not examined",
+            "evidence_ids": [
+              "ev3",
+              "ev4"
+            ],
+            "origin": "derived",
+            "produced_by": "scale:commons/10.3390-ma17020314/an/photoinjection",
+            "target": "scale:commons/10.3390-ma17020314/sample/ins",
+            "unit": "eV",
+            "value": 2.1,
+            "variable": "scale:commons/10.3390-ma17020314/var/electron_affinity"
+          },
+          {
+            "id": "ionization_potential",
+            "status": "present",
+            "definition": "ionization potential J = EG + X (Equation 4); the calculation method is given in Supplementary Material S1, which was not examined",
+            "evidence_ids": [
+              "ev3",
+              "ev4"
+            ],
+            "origin": "derived",
+            "produced_by": "scale:commons/10.3390-ma17020314/an/photoinjection",
+            "target": "scale:commons/10.3390-ma17020314/sample/ins",
+            "unit": "eV",
+            "value": 7.3,
+            "variable": "scale:commons/10.3390-ma17020314/var/ionization_potential"
+          },
+          {
+            "id": "work_function_au",
+            "status": "present",
+            "as_reported": "about 4.6",
+            "evidence_ids": [
+              "ev5"
+            ],
+            "origin": "assumed",
+            "qualifier": "approximate",
+            "target": "scale:commons/10.3390-ma17020314/electrode/au",
+            "unit": "eV",
+            "value": 4.6,
+            "variable": "scale:commons/10.3390-ma17020314/var/work_function"
+          },
+          {
+            "id": "work_function_al",
+            "status": "present",
+            "as_reported": "about 3.8",
+            "evidence_ids": [
+              "ev5"
+            ],
+            "origin": "assumed",
+            "qualifier": "approximate",
+            "target": "scale:commons/10.3390-ma17020314/electrode/al",
+            "unit": "eV",
+            "value": 3.8,
+            "variable": "scale:commons/10.3390-ma17020314/var/work_function"
+          }
+        ]
+      }
+    },
+    {
+      "id": "scale:commons/10.3390-ma17020314/an/tauc",
+      "label": "Analysis",
+      "props": {
+        "name": "Tauc analysis of the UV–Vis absorption edge (insulating SnO2–C film)",
+        "analysis_kind": "spectral_fit",
+        "evidence": [
+          {
+            "id": "ev1",
+            "kind": "text",
+            "locator": "p. 10, section 3.6",
+            "quote": "Figure 8 depicts the absorption edge for the insulating SnO2–C film plotted according to the Tauc relation in Equation (5) with Eopt = 3.1 eV, also included in Table 2.",
+            "source": "scale:commons/source/10.3390-ma17020314"
+          },
+          {
+            "id": "ev2",
+            "kind": "figure",
+            "locator": "p. 11, Figure 8 caption",
+            "quote": "Optical gap marked in coordinates of absorption coefficient vs. photon energy hν according to the Tauc relation (Equation (5) with n = 2).",
+            "source": "scale:commons/source/10.3390-ma17020314"
+          },
+          {
+            "id": "ev3",
+            "kind": "figure",
+            "locator": "p. 11, Figure 8 caption",
+            "quote": "The coefficient B is given in 107 eV−1 m−1.",
+            "source": "scale:commons/source/10.3390-ma17020314"
+          }
+        ],
+        "experiment_kind": "computational",
+        "limitations": "the source prints no goodness-of-fit or uncertainty for the optical gap; the value is taken as printed (3.1 eV); the Tauc proportionality factor B cannot be extracted: the caption states only its units ('given in 107 eV−1 m−1') and the figure body (a raster image examined at high resolution) prints no numerical B value (GAP-225B5B2A)",
+        "method": "Tauc plot of (αhν)^(1/2) against photon energy (Equation 5, n = 2); optical gap from the extrapolated absorption edge",
+        "origin": "curated",
+        "result_values": [
+          {
+            "id": "optical_gap_insulating",
+            "status": "present",
+            "evidence_ids": [
+              "ev1",
+              "ev2"
+            ],
+            "origin": "fitted",
+            "produced_by": "scale:commons/10.3390-ma17020314/an/tauc",
+            "target": "scale:commons/10.3390-ma17020314/sample/ins",
+            "unit": "eV",
+            "value": 3.1,
+            "variable": "scale:commons/10.3390-ma17020314/var/optical_gap"
+          }
+        ]
+      }
+    },
+    {
+      "id": "scale:commons/10.3390-ma17020314/catalyst/sn-c-nanojunction",
+      "label": "Catalyst",
+      "props": {
+        "name": "oxidized Sn–C thin film (amorphous semiconductor–insulator nanojunctions)",
+        "evidence": [
+          {
+            "id": "ev1",
+            "kind": "text",
+            "locator": "p. 1, abstract",
+            "quote": "We have demonstrated a simple approach for developing a catalyst candidate consisting of amorphous semiconductor–insulator nanojunctions for (photo)catalytic hydrogen evolution or CO2 reduction.",
+            "source": "scale:commons/source/10.3390-ma17020314"
+          }
+        ],
+        "origin": "curated",
+        "unmodeled": [
+          "the catalyst candidate is proposed but not tested: the source reports no catalytic test"
+        ]
+      }
+    },
+    {
+      "id": "scale:commons/10.3390-ma17020314/char/afm-topo",
+      "label": "Characterization",
+      "props": {
+        "name": "AFM topography of the semiconducting film (roughness)",
+        "conditions": {
+          "line_scan_length": {
+            "status": "present",
+            "unit": "µm",
+            "value": 1
+          },
+          "magnification": {
+            "status": "present",
+            "text_value": "1 × 1 µm"
+          }
+        },
+        "evidence": [
+          {
+            "id": "ev1",
+            "kind": "text",
+            "locator": "p. 3, section 2",
+            "quote": "Topographic measurement was performed by a contact mode of Atomic Force Microscopy (Veeco AFM, New York, NY, USA).",
+            "source": "scale:commons/source/10.3390-ma17020314"
+          },
+          {
+            "id": "ev2",
+            "kind": "text",
+            "locator": "p. 4, section 3.1",
+            "quote": "The roughness of the surface is 7.8 nm.",
+            "source": "scale:commons/source/10.3390-ma17020314"
+          }
+        ],
+        "information_depth": "surface",
+        "observation_mode": "ex_situ",
+        "origin": "curated",
+        "result_values": [
+          {
+            "id": "surface_roughness",
+            "status": "present",
+            "evidence_ids": [
+              "ev2"
+            ],
+            "origin": "measured",
+            "target": "scale:commons/10.3390-ma17020314/state/semi",
+            "unit": "nm",
+            "value": 7.8,
+            "variable": "scale:commons/10.3390-ma17020314/var/surface_roughness"
+          }
+        ],
+        "sampling": "local_region",
+        "technique": "contact-mode atomic force microscopy (topography)",
+        "technique_id": "CHMO:0000113"
+      }
+    },
+    {
+      "id": "scale:commons/10.3390-ma17020314/char/cafm-ins",
+      "label": "Characterization",
+      "props": {
+        "name": "CAFM of the insulating SnO2–C film (no conductive features)",
+        "evidence": [
+          {
+            "id": "ev1",
+            "kind": "text",
+            "locator": "p. 3, section 3.1",
+            "quote": "The existence of semiconducting channels in the layer grown as semiconducting was tested by the conductive mode of AFM (CAFM), while the layer grown as insulating did not show any conductive features.",
+            "source": "scale:commons/source/10.3390-ma17020314"
+          },
+          {
+            "id": "ev2",
+            "kind": "text",
+            "locator": "p. 1, abstract",
+            "quote": "The insulator does not demonstrate any internal structure features.",
+            "source": "scale:commons/source/10.3390-ma17020314"
+          }
+        ],
+        "information_depth": "surface",
+        "observation_mode": "ex_situ",
+        "origin": "curated",
+        "result_values": [
+          {
+            "id": "conductive_features",
+            "status": "not_measured",
+            "note": "the layer grown as insulating did not show any conductive features under CAFM",
+            "target": "scale:commons/10.3390-ma17020314/state/ins",
+            "variable": "scale:commons/10.3390-ma17020314/var/area_fraction_conductive"
+          }
+        ],
+        "sampling": "local_region",
+        "technique": "conductive atomic force microscopy (CAFM, TUNA mode)",
+        "technique_id": "CHMO:0000113"
+      }
+    },
+    {
+      "id": "scale:commons/10.3390-ma17020314/char/cafm-semi",
+      "label": "Characterization",
+      "props": {
+        "name": "CAFM nanoconductivity of the semiconducting SnO2–C film (semi-sandwich)",
+        "conditions": {
+          "bias_at_highest_currents": {
+            "status": "present",
+            "as_reported": "a negative polarization of −2 V",
+            "unit": "V",
+            "value": -2
+          },
+          "bias_voltage_range": {
+            "status": "present",
+            "as_reported": "in the range of 0.5–2 V of a bias voltage",
+            "lower": 0.5,
+            "unit": "V",
+            "upper": 2
+          },
+          "electric_field": {
+            "status": "present",
+            "as_reported": "an electric field in the range of 2 × 108 V/m",
+            "unit": "V/m",
+            "value": 200000000.0
+          },
+          "environment": {
+            "status": "present",
+            "text_value": "ambient conditions"
+          },
+          "magnification": {
+            "status": "present",
+            "text_value": "1 × 1 µm"
+          }
+        },
+        "evidence": [
+          {
+            "id": "ev1",
+            "kind": "text",
+            "locator": "p. 2, section 2",
+            "quote": "Measurements of CAFM electrical nanoconductivity were carried out on semiconducting samples prepared on Au electrodes in a semi-sandwich configuration (Figure 1a)",
+            "source": "scale:commons/source/10.3390-ma17020314"
+          },
+          {
+            "id": "ev2",
+            "kind": "text",
+            "locator": "p. 3, section 3",
+            "quote": "The existence of semiconducting channels in the layer grown as semiconducting was tested by the conductive mode of AFM (CAFM), while the layer grown as insulating did not show any conductive features.",
+            "source": "scale:commons/source/10.3390-ma17020314"
+          },
+          {
+            "id": "ev3",
+            "kind": "text",
+            "locator": "p. 3, section 2",
+            "quote": "Current–voltage dependences were measured in ambient conditions for CAFM (nanoconductivity) and in a vacuum of 0.5 Pa at room temperature for macroconductivity and photoconductivity.",
+            "source": "scale:commons/source/10.3390-ma17020314"
+          },
+          {
+            "id": "ev4",
+            "kind": "text",
+            "locator": "p. 4, section 3.1",
+            "quote": "The calculated area of conductive sites is ~5%.",
+            "source": "scale:commons/source/10.3390-ma17020314"
+          },
+          {
+            "id": "ev5",
+            "kind": "text",
+            "locator": "p. 5, section 3.1",
+            "quote": "the most frequent counts (91%) indicate average conductivity, and 9% of counts are attributed to high conductivity from 2.4 × 10−4 S/m up to 9.9 × 10−4 S/m,",
+            "source": "scale:commons/source/10.3390-ma17020314"
+          },
+          {
+            "id": "ev6",
+            "kind": "text",
+            "locator": "p. 6, section 3.3",
+            "quote": "and the nanoconductivity value ranges from 2.4 × 10−4 S/m for average currents to 9.9 × 10−4 S/m for high currents as described above.",
+            "source": "scale:commons/source/10.3390-ma17020314"
+          },
+          {
+            "id": "ev7",
+            "kind": "text",
+            "locator": "p. 6, section 3.2",
+            "quote": "The sizes of individual channels were calculated based on CAFM maps of conductive site diameters and range from 20 to 500 nm2.",
+            "source": "scale:commons/source/10.3390-ma17020314"
+          },
+          {
+            "id": "ev8",
+            "kind": "text",
+            "locator": "p. 6, section 3.2",
+            "quote": "It should be noted that the shape of the channels and their surface area may be disturbed by convolution with the shape of the AFM tip; however, AFM well reflects the order of magnitude of the sizes and their large distribution.",
+            "source": "scale:commons/source/10.3390-ma17020314"
+          },
+          {
+            "id": "ev9",
+            "kind": "text",
+            "locator": "p. 4, section 3.1",
+            "quote": "The conductive structures were detected in the range of 0.5–2 V of a bias voltage, and the highest currents were recorded at a negative polarization of −2 V at an electric field in the range of 2 × 108 V/m.",
+            "source": "scale:commons/source/10.3390-ma17020314"
+          },
+          {
+            "id": "ev10",
+            "kind": "text",
+            "locator": "p. 4, section 3.1",
+            "quote": "Higher currents were recorded for negative polarization than for positive due to the existence of an asymmetrical junction between electrodes and the active layer (Au electrode—active layer—CAFM Pt/Ir tip).",
+            "source": "scale:commons/source/10.3390-ma17020314"
+          }
+        ],
+        "information_depth": "surface",
+        "observation_mode": "ex_situ",
+        "origin": "curated",
+        "result_values": [
+          {
+            "id": "nanoconductivity_range",
+            "status": "present",
+            "as_reported": "from 2.4 × 10−4 S/m up to 9.9 × 10−4 S/m",
+            "evidence_ids": [
+              "ev5",
+              "ev6"
+            ],
+            "lower": 0.00024,
+            "note": "high-conductivity counts (9% of counts); 91% of counts indicate average conductivity; the text also phrases the same range as 'from 2.4 × 10−4 S/m for average currents to 9.9 × 10−4 S/m for high currents'",
+            "origin": "measured",
+            "target": "scale:commons/10.3390-ma17020314/state/semi",
+            "unit": "S/m",
+            "upper": 0.00099,
+            "variable": "scale:commons/10.3390-ma17020314/var/conductivity"
+          },
+          {
+            "id": "conductive_site_area",
+            "status": "present",
+            "as_reported": "~5%",
+            "evidence_ids": [
+              "ev4"
+            ],
+            "origin": "measured",
+            "qualifier": "approximate",
+            "target": "scale:commons/10.3390-ma17020314/state/semi",
+            "unit": "%",
+            "value": 5,
+            "variable": "scale:commons/10.3390-ma17020314/var/area_fraction_conductive"
+          },
+          {
+            "id": "channel_cross_section_range",
+            "status": "present",
+            "as_reported": "range from 20 to 500 nm2",
+            "evidence_ids": [
+              "ev7",
+              "ev8"
+            ],
+            "lower": 20,
+            "note": "shape and surface area may be disturbed by convolution with the AFM tip shape, per the source",
+            "origin": "measured",
+            "target": "scale:commons/10.3390-ma17020314/state/semi",
+            "unit": "nm2",
+            "upper": 500,
+            "variable": "scale:commons/10.3390-ma17020314/var/channel_cross_section"
+          }
+        ],
+        "sampling": "local_region",
+        "technique": "conductive atomic force microscopy (CAFM, TUNA mode)",
+        "technique_id": "CHMO:0000113",
+        "transfer": "measured after air exposure, in ambient conditions"
+      }
+    },
+    {
+      "id": "scale:commons/10.3390-ma17020314/char/lcafm",
+      "label": "Characterization",
+      "props": {
+        "name": "LC-AFM local conductivity of a single conductive channel",
+        "evidence": [
+          {
+            "id": "ev1",
+            "kind": "text",
+            "locator": "p. 5, section 3.2",
+            "quote": "The local conductivity of one channel was measured by the I probe of LC-CAFM, and its value was 241 S/m, so the roughly calculated conductivity of one channel from the 1 × 1 µm CAFM measurement is very close to this value.",
+            "source": "scale:commons/source/10.3390-ma17020314"
+          },
+          {
+            "id": "ev2",
+            "kind": "text",
+            "locator": "p. 6, section 3.2",
+            "quote": "The channel exhibits ohmic conductivity (red and blue), and the surroundings show no conductivity at all (green).",
+            "source": "scale:commons/source/10.3390-ma17020314"
+          },
+          {
+            "id": "ev3",
+            "kind": "text",
+            "locator": "p. 6, section 3.2",
+            "quote": "Probably due to carbon mass transfer by the CAFM tip at the scanned surface, it was not possible to measure the conductivity of the single smaller channel.",
+            "source": "scale:commons/source/10.3390-ma17020314"
+          },
+          {
+            "id": "ev4",
+            "kind": "text",
+            "locator": "p. 6, section 3.2",
+            "quote": "The discrepancy between the forward (red) and backward (blue) curves at point (1), visible as hysteresis, can result from the higher current flow on the positive voltage side.",
+            "source": "scale:commons/source/10.3390-ma17020314"
+          }
+        ],
+        "information_depth": "surface",
+        "observation_mode": "ex_situ",
+        "origin": "curated",
+        "result_values": [
+          {
+            "id": "channel_conductivity",
+            "status": "present",
+            "definition": "local conductivity of one conductive channel, I probe",
+            "evidence_ids": [
+              "ev1",
+              "ev2"
+            ],
+            "origin": "measured",
+            "target": "scale:commons/10.3390-ma17020314/state/semi",
+            "unit": "S/m",
+            "value": 241,
+            "variable": "scale:commons/10.3390-ma17020314/var/conductivity"
+          },
+          {
+            "id": "smaller_channel_conductivity",
+            "status": "not_measured",
+            "evidence_ids": [
+              "ev3"
+            ],
+            "note": "probably due to carbon mass transfer by the CAFM tip at the scanned surface, the conductivity of the single smaller channel could not be measured",
+            "target": "scale:commons/10.3390-ma17020314/state/semi",
+            "variable": "scale:commons/10.3390-ma17020314/var/conductivity"
+          }
+        ],
+        "sampling": "single_particle",
+        "technique": "local conductivity atomic force microscopy (LC-CAFM, I probe)"
+      }
+    },
+    {
+      "id": "scale:commons/10.3390-ma17020314/char/macro-ins",
+      "label": "Characterization",
+      "props": {
+        "name": "macroconductivity of the insulating SnO2–C film (coplanar)",
+        "atmosphere": "vacuum of 0.5 Pa",
+        "conditions": {
+          "electric_field": {
+            "status": "present",
+            "as_reported": "an external field of 2 × 107 V/m",
+            "unit": "V/m",
+            "value": 20000000.0
+          },
+          "polarization_duration": {
+            "status": "present",
+            "as_reported": "at least 20 h",
+            "bound": "lower",
+            "unit": "h",
+            "value": 20
+          },
+          "temperature": {
+            "status": "present",
+            "text_value": "room temperature"
+          }
+        },
+        "evidence": [
+          {
+            "id": "ev1",
+            "kind": "text",
+            "locator": "p. 3, section 2",
+            "quote": "Samples were polarized by an external field of 2 × 107 V/m for at least 20 h.",
+            "source": "scale:commons/source/10.3390-ma17020314"
+          },
+          {
+            "id": "ev2",
+            "kind": "text",
+            "locator": "p. 7, section 3.3",
+            "quote": "Macroconductivity for the insulating film is 3.4 × 10−12 S/m, which gives an eight-order difference compared to the semiconductive layer.",
+            "source": "scale:commons/source/10.3390-ma17020314"
+          },
+          {
+            "id": "ev3",
+            "kind": "text",
+            "locator": "p. 3, section 2",
+            "quote": "Current–voltage dependences were measured in ambient conditions for CAFM (nanoconductivity) and in a vacuum of 0.5 Pa at room temperature for macroconductivity and photoconductivity.",
+            "source": "scale:commons/source/10.3390-ma17020314"
+          }
+        ],
+        "information_depth": "bulk",
+        "observation_mode": "ex_situ",
+        "origin": "curated",
+        "result_values": [
+          {
+            "id": "macro_conductivity",
+            "status": "present",
+            "evidence_ids": [
+              "ev2"
+            ],
+            "origin": "measured",
+            "target": "scale:commons/10.3390-ma17020314/state/ins",
+            "unit": "S/m",
+            "value": 3.4e-12,
+            "variable": "scale:commons/10.3390-ma17020314/var/conductivity"
+          }
+        ],
+        "technique": "macroconductivity (coplanar geometry, DC I–V)"
+      }
+    },
+    {
+      "id": "scale:commons/10.3390-ma17020314/char/macro-semi",
+      "label": "Characterization",
+      "props": {
+        "name": "macroconductivity of the semiconducting SnO2–C film (coplanar)",
+        "atmosphere": "vacuum of 0.5 Pa",
+        "conditions": {
+          "conductivity_calculation": {
+            "status": "present",
+            "text_value": "specific conductivity calculated from ohmic parts of the current–voltage characteristics"
+          },
+          "electric_field": {
+            "status": "present",
+            "as_reported": "an external field of 2 × 107 V/m",
+            "unit": "V/m",
+            "value": 20000000.0
+          },
+          "polarization_duration": {
+            "status": "present",
+            "as_reported": "at least 20 h",
+            "bound": "lower",
+            "unit": "h",
+            "value": 20
+          },
+          "temperature": {
+            "status": "present",
+            "text_value": "room temperature"
+          }
+        },
+        "evidence": [
+          {
+            "id": "ev1",
+            "kind": "text",
+            "locator": "p. 3, section 2",
+            "quote": "Samples were polarized by an external field of 2 × 107 V/m for at least 20 h.",
+            "source": "scale:commons/source/10.3390-ma17020314"
+          },
+          {
+            "id": "ev2",
+            "kind": "text",
+            "locator": "p. 6, section 3.3",
+            "quote": "The macroconductivity of the semiconducting SnO2–C composite layer measured in coplanar geometry (Figure 1b) is 3.97 × 10−3 S/m",
+            "source": "scale:commons/source/10.3390-ma17020314"
+          },
+          {
+            "id": "ev3",
+            "kind": "text",
+            "locator": "p. 3, section 2",
+            "quote": "Current–voltage dependences were measured in ambient conditions for CAFM (nanoconductivity) and in a vacuum of 0.5 Pa at room temperature for macroconductivity and photoconductivity.",
+            "source": "scale:commons/source/10.3390-ma17020314"
+          },
+          {
+            "id": "ev4",
+            "kind": "text",
+            "locator": "p. 7, section 3.3",
+            "quote": "For both macroconductivity and photoconductivity measurements, the samples were kept in a 0.5 Pa vacuum after air exposure during transfer from the reactor to the measuring chamber.",
+            "source": "scale:commons/source/10.3390-ma17020314"
+          }
+        ],
+        "information_depth": "bulk",
+        "observation_mode": "ex_situ",
+        "origin": "curated",
+        "result_values": [
+          {
+            "id": "macro_conductivity",
+            "status": "present",
+            "evidence_ids": [
+              "ev2"
+            ],
+            "origin": "measured",
+            "target": "scale:commons/10.3390-ma17020314/state/semi",
+            "unit": "S/m",
+            "value": 0.00397,
+            "variable": "scale:commons/10.3390-ma17020314/var/conductivity"
+          }
+        ],
+        "technique": "macroconductivity (coplanar geometry, DC I–V)"
+      }
+    },
+    {
+      "id": "scale:commons/10.3390-ma17020314/char/photoem",
+      "label": "Characterization",
+      "props": {
+        "name": "internal photoemission (photoconductivity) of the insulating SnO2–C film, Al–film–Au sandwich",
+        "atmosphere": "vacuum of 0.5 Pa",
+        "conditions": {
+          "bandwidth": {
+            "status": "present",
+            "definition": "constant monochromator bandwidth",
+            "unit": "nm",
+            "value": 15
+          },
+          "electric_field": {
+            "status": "present",
+            "as_reported": "Applied field was in the range of 107 V/m",
+            "qualifier": "approximate",
+            "unit": "V/m",
+            "value": 10000000.0
+          },
+          "illumination_time": {
+            "status": "present",
+            "definition": "specimen illuminated for 20 min after fixing each wavelength",
+            "unit": "min",
+            "value": 20
+          },
+          "method_note": {
+            "status": "present",
+            "text_value": "step-by-step method"
+          },
+          "photon_flux": {
+            "status": "present",
+            "as_reported": "2.2–6.6 × 1017 quanta/s*m2",
+            "definition": "quantum efficiency of incident light on the active surface of the electrodes",
+            "lower": 2.2e+17,
+            "unit": "quanta/(s*m2)",
+            "upper": 6.6e+17
+          },
+          "polarization_duration": {
+            "status": "present",
+            "as_reported": "at least 20 h",
+            "bound": "lower",
+            "evidence_ids": [
+              "ev10"
+            ],
+            "unit": "h",
+            "value": 20
+          },
+          "polarization_field": {
+            "status": "present",
+            "as_reported": "an external field of 2 × 107 V/m",
+            "evidence_ids": [
+              "ev10"
+            ],
+            "unit": "V/m",
+            "value": 20000000.0
+          },
+          "polarizations": {
+            "status": "present",
+            "text_value": "two opposite polarizations (Au negatively and positively polarized) to confirm the thresholds"
+          },
+          "temperature": {
+            "status": "present",
+            "text_value": "room temperature"
+          },
+          "wavelength_region": {
+            "status": "present",
+            "as_reported": "in the 230–600 nm wavelength region",
+            "lower": 230,
+            "unit": "nm",
+            "upper": 600
+          }
+        },
+        "evidence": [
+          {
+            "id": "ev1",
+            "kind": "text",
+            "locator": "p. 8, section 3.5",
+            "quote": "Photoconductivity measurements were taken in sandwich geometry, where the active layer is placed between Au and Al electrodes (Figure 1c).",
+            "source": "scale:commons/source/10.3390-ma17020314"
+          },
+          {
+            "id": "ev2",
+            "kind": "text",
+            "locator": "p. 9, section 3.5",
+            "quote": "polarizations to confirm the existence of the thresholds.",
+            "source": "scale:commons/source/10.3390-ma17020314"
+          },
+          {
+            "id": "ev3",
+            "kind": "figure",
+            "locator": "p. 9, Figure 6 caption",
+            "quote": "Applied field was in the range of 107 V/m. The threshold values are given in eV.",
+            "source": "scale:commons/source/10.3390-ma17020314"
+          },
+          {
+            "id": "ev4",
+            "kind": "table",
+            "locator": "p. 9, Table 2",
+            "note": "Table 2 rows (energies in eV); the differences in values of the thresholds are within the limits of the accuracy of a measurement, per the caption",
+            "quote": "Au contact barrier for electrons Φ0e 1.9 Au contact barrier for holes Φ0h 2.7 Al contact barrier for electrons Φ0e 2.4 Al contact barrier for holes Φ0h 3.3",
+            "source": "scale:commons/source/10.3390-ma17020314"
+          },
+          {
+            "id": "ev5",
+            "kind": "text",
+            "locator": "p. 9, section 3.5",
+            "quote": "they amount to about 4.6 and 3.8 eV, respectively; the difference in threshold heights for electrons as well as for holes measured for the Au and Al electrodes is about 0.6 eV.",
+            "source": "scale:commons/source/10.3390-ma17020314"
+          },
+          {
+            "id": "ev6",
+            "kind": "text",
+            "locator": "p. 9, section 3.5",
+            "quote": "it may be concluded that the lower threshold is connected with electron photoinjection, whereas the upper one refers to hole photoinjection",
+            "source": "scale:commons/source/10.3390-ma17020314"
+          },
+          {
+            "id": "ev8",
+            "kind": "text",
+            "locator": "p. 3, section 2",
+            "quote": "the specimen was illuminated for 20 min",
+            "source": "scale:commons/source/10.3390-ma17020314"
+          },
+          {
+            "id": "ev9",
+            "kind": "text",
+            "locator": "p. 2, section 2",
+            "quote": "A quantum efficiency of incident light of 2.2–6.6 × 1017 quanta/s*m2",
+            "source": "scale:commons/source/10.3390-ma17020314"
+          },
+          {
+            "id": "ev10",
+            "kind": "text",
+            "locator": "p. 3, section 2",
+            "note": "the sentence covers the macroconductivity and photoconductivity measurements together",
+            "quote": "Samples were polarized by an external field of 2 × 107 V/m for at least 20 h.",
+            "source": "scale:commons/source/10.3390-ma17020314"
+          }
+        ],
+        "information_depth": "bulk",
+        "observation_mode": "ex_situ",
+        "origin": "curated",
+        "result_values": [
+          {
+            "id": "au_barrier_electrons",
+            "status": "present",
+            "definition": "Au contact barrier for electrons Φ0e (photoinjection threshold)",
+            "evidence_ids": [
+              "ev4"
+            ],
+            "origin": "measured",
+            "target": "scale:commons/10.3390-ma17020314/electrode/au",
+            "unit": "eV",
+            "value": 1.9,
+            "variable": "scale:commons/10.3390-ma17020314/var/barrier_height"
+          },
+          {
+            "id": "au_barrier_holes",
+            "status": "present",
+            "definition": "Au contact barrier for holes Φ0h (photoinjection threshold)",
+            "evidence_ids": [
+              "ev4"
+            ],
+            "origin": "measured",
+            "target": "scale:commons/10.3390-ma17020314/electrode/au",
+            "unit": "eV",
+            "value": 2.7,
+            "variable": "scale:commons/10.3390-ma17020314/var/barrier_height"
+          },
+          {
+            "id": "al_barrier_electrons",
+            "status": "present",
+            "definition": "Al contact barrier for electrons Φ0e (photoinjection threshold)",
+            "evidence_ids": [
+              "ev4"
+            ],
+            "origin": "measured",
+            "target": "scale:commons/10.3390-ma17020314/electrode/al",
+            "unit": "eV",
+            "value": 2.4,
+            "variable": "scale:commons/10.3390-ma17020314/var/barrier_height"
+          },
+          {
+            "id": "al_barrier_holes",
+            "status": "present",
+            "definition": "Al contact barrier for holes Φ0h (photoinjection threshold)",
+            "evidence_ids": [
+              "ev4"
+            ],
+            "origin": "measured",
+            "target": "scale:commons/10.3390-ma17020314/electrode/al",
+            "unit": "eV",
+            "value": 3.3,
+            "variable": "scale:commons/10.3390-ma17020314/var/barrier_height"
+          },
+          {
+            "id": "threshold_difference_au_al",
+            "status": "present",
+            "as_reported": "about 0.6 eV",
+            "definition": "difference in threshold heights between the Au and Al electrodes, for electrons as well as holes",
+            "evidence_ids": [
+              "ev5"
+            ],
+            "origin": "measured",
+            "qualifier": "approximate",
+            "target": "scale:commons/10.3390-ma17020314/electrode/au",
+            "unit": "eV",
+            "value": 0.6,
+            "variable": "scale:commons/10.3390-ma17020314/var/threshold_difference"
+          }
+        ],
+        "technique": "internal photoemission (photoinjection), photocurrent quantum yield vs photon energy"
+      }
+    },
+    {
+      "id": "scale:commons/10.3390-ma17020314/char/uvvis",
+      "label": "Characterization",
+      "props": {
+        "name": "UV–Vis optical absorption of the SnO2–C films",
+        "conditions": {
+          "wavelength_region": {
+            "status": "present",
+            "as_reported": "from 230 to 600 nm",
+            "lower": 230,
+            "unit": "nm",
+            "upper": 600
+          }
+        },
+        "evidence": [
+          {
+            "id": "ev1",
+            "kind": "text",
+            "locator": "p. 3, section 2",
+            "quote": "Optical absorption measurements were performed in a wavelength range from 230 to 600 nm (Shimadzu UV-1800 spectrometer, Kyoto, Japan).",
+            "source": "scale:commons/source/10.3390-ma17020314"
+          },
+          {
+            "id": "ev2",
+            "kind": "text",
+            "locator": "p. 10, section 3.6",
+            "quote": "The semiconducting film did not show any optical activity because of its opacity.",
+            "source": "scale:commons/source/10.3390-ma17020314"
+          }
+        ],
+        "information_depth": "bulk",
+        "observation_mode": "ex_situ",
+        "origin": "curated",
+        "result_values": [
+          {
+            "id": "optical_gap_semiconducting",
+            "status": "not_measured",
+            "note": "the semiconducting film did not show any optical activity because of its opacity, so no optical gap is reported for it",
+            "target": "scale:commons/10.3390-ma17020314/sample/semi",
+            "variable": "scale:commons/10.3390-ma17020314/var/optical_gap"
+          }
+        ],
+        "technique": "UV–Vis optical absorption spectroscopy",
+        "technique_id": "CHMO:0000292"
+      }
+    },
+    {
+      "id": "scale:commons/10.3390-ma17020314/char/xps-ins",
+      "label": "Characterization",
+      "props": {
+        "name": "XPS of the insulating SnO2–C film (composition and Sn 3d states)",
+        "conditions": {
+          "analysis_area": {
+            "status": "present",
+            "text_value": "300 × 700 µm"
+          },
+          "anode_power": {
+            "status": "present",
+            "unit": "W",
+            "value": 150
+          },
+          "charge_compensation": {
+            "status": "present",
+            "text_value": "charge neutralizer; binding energies calibrated on the main carbon peak (C 1s, 285 eV)"
+          },
+          "excitation_source": {
+            "status": "present",
+            "text_value": "monochromatic Al Kα X-rays, 1486.6 eV"
+          },
+          "pass_energy": {
+            "status": "present",
+            "unit": "eV",
+            "value": 20
+          }
+        },
+        "evidence": [
+          {
+            "id": "ev1",
+            "kind": "text",
+            "locator": "p. 3, section 2",
+            "quote": "The XPS analyses were carried out with a Kratos AXIS Ultra spectrometer (Manchester, UK) using monochromatic Al Kα X-rays as an excitation energy source equal to 1486.6 eV.",
+            "source": "scale:commons/source/10.3390-ma17020314"
+          },
+          {
+            "id": "ev2",
+            "kind": "text",
+            "locator": "p. 3, section 2",
+            "quote": "All measurements were performed using a charge neutralizer, and the main carbon peak (C 1s, 285 eV) was used for the final calibration of each spectrum.",
+            "source": "scale:commons/source/10.3390-ma17020314"
+          },
+          {
+            "id": "ev3",
+            "kind": "table",
+            "locator": "p. 7, Table 1, row 'Insulating SnO2–C'",
+            "note": "row of Table 1 (O [%at], C [%at], Sn [%at], Sn:O)",
+            "quote": "Insulating SnO2–C 26.6 ± 0.5 63.3 ± 0.3 10.1 ± 0.3 0.38 ± 0.02",
+            "source": "scale:commons/source/10.3390-ma17020314"
+          },
+          {
+            "id": "ev4",
+            "kind": "text",
+            "locator": "p. 7, section 3.4",
+            "quote": "Metallic tin (Sn0) is assigned by 3d5/2 contributions to 485.0 eV for the insulating sample and 484.8 eV for the semiconducting one.",
+            "source": "scale:commons/source/10.3390-ma17020314"
+          },
+          {
+            "id": "ev5",
+            "kind": "text",
+            "locator": "p. 7, section 3.4",
+            "quote": "The second, dominant component at 487.2 eV and 486.6 eV can be assigned to Sn4+, i.e., SnO2, at the surface of the insulating and semiconducting layer, respectively [17].",
+            "source": "scale:commons/source/10.3390-ma17020314"
+          },
+          {
+            "id": "ev6",
+            "kind": "text",
+            "locator": "p. 7, section 3.4",
+            "quote": "The semiconducting sample contains 14.2% metallic Sn, whereas the insulating sample only 7.2%.",
+            "source": "scale:commons/source/10.3390-ma17020314"
+          }
+        ],
+        "information_depth": "surface",
+        "observation_mode": "ex_situ",
+        "origin": "curated",
+        "result_values": [
+          {
+            "id": "o_fraction",
+            "status": "present",
+            "as_reported": "26.6 ± 0.5",
+            "basis": "XPS atomic concentration, Table 1",
+            "evidence_ids": [
+              "ev3"
+            ],
+            "origin": "measured",
+            "target": "scale:commons/10.3390-ma17020314/species/oxygen",
+            "uncertainty": 0.5,
+            "uncertainty_evaluation": "not_stated",
+            "uncertainty_kind": "plus_minus_unspecified",
+            "unit": "at%",
+            "value": 26.6,
+            "variable": "scale:commons/10.3390-ma17020314/var/composition_fraction"
+          },
+          {
+            "id": "c_fraction",
+            "status": "present",
+            "as_reported": "63.3 ± 0.3",
+            "basis": "XPS atomic concentration, Table 1",
+            "evidence_ids": [
+              "ev3"
+            ],
+            "origin": "measured",
+            "target": "scale:commons/10.3390-ma17020314/species/carbon",
+            "uncertainty": 0.3,
+            "uncertainty_evaluation": "not_stated",
+            "uncertainty_kind": "plus_minus_unspecified",
+            "unit": "at%",
+            "value": 63.3,
+            "variable": "scale:commons/10.3390-ma17020314/var/composition_fraction"
+          },
+          {
+            "id": "sn_fraction",
+            "status": "present",
+            "as_reported": "10.1 ± 0.3",
+            "basis": "XPS atomic concentration of tin, Table 1",
+            "evidence_ids": [
+              "ev3"
+            ],
+            "note": "total tin over chemical states; the metallic Sn0 share is recorded separately as metallic_sn_fraction",
+            "origin": "measured",
+            "target": "scale:commons/10.3390-ma17020314/species/sn",
+            "uncertainty": 0.3,
+            "uncertainty_evaluation": "not_stated",
+            "uncertainty_kind": "plus_minus_unspecified",
+            "unit": "at%",
+            "value": 10.1,
+            "variable": "scale:commons/10.3390-ma17020314/var/composition_fraction"
+          },
+          {
+            "id": "sn_o_ratio",
+            "status": "present",
+            "as_reported": "0.38 ± 0.02",
+            "basis": "Sn:O atomic ratio, Table 1",
+            "evidence_ids": [
+              "ev3"
+            ],
+            "origin": "measured",
+            "target": "scale:commons/10.3390-ma17020314/species/sn",
+            "uncertainty": 0.02,
+            "uncertainty_evaluation": "not_stated",
+            "uncertainty_kind": "plus_minus_unspecified",
+            "unit": "1",
+            "value": 0.38,
+            "variable": "scale:commons/10.3390-ma17020314/var/atomic_ratio"
+          },
+          {
+            "id": "sn0_binding_energy",
+            "status": "present",
+            "definition": "Sn 3d5/2 contribution assigned to metallic tin (Sn0)",
+            "evidence_ids": [
+              "ev4"
+            ],
+            "origin": "measured",
+            "target": "scale:commons/10.3390-ma17020314/species/sn0",
+            "unit": "eV",
+            "value": 485.0,
+            "variable": "scale:commons/10.3390-ma17020314/var/binding_energy"
+          },
+          {
+            "id": "sn4_binding_energy",
+            "status": "present",
+            "definition": "dominant Sn 3d component assigned to Sn4+ (SnO2) at the surface",
+            "evidence_ids": [
+              "ev5"
+            ],
+            "origin": "measured",
+            "target": "scale:commons/10.3390-ma17020314/material/sno2",
+            "unit": "eV",
+            "value": 487.2,
+            "variable": "scale:commons/10.3390-ma17020314/var/binding_energy"
+          },
+          {
+            "id": "metallic_sn_fraction",
+            "status": "present",
+            "definition": "share of tin present as metallic Sn0, from the Sn 3d fit",
+            "evidence_ids": [
+              "ev6"
+            ],
+            "origin": "measured",
+            "target": "scale:commons/10.3390-ma17020314/species/sn0",
+            "unit": "%",
+            "value": 7.2,
+            "variable": "scale:commons/10.3390-ma17020314/var/metallic_fraction"
+          }
+        ],
+        "sampling": "ensemble",
+        "technique": "X-ray photoelectron spectroscopy (XPS)",
+        "technique_id": "CHMO:0000404"
+      }
+    },
+    {
+      "id": "scale:commons/10.3390-ma17020314/char/xps-semi",
+      "label": "Characterization",
+      "props": {
+        "name": "XPS of the semiconducting SnO2–C film (composition and Sn 3d states)",
+        "conditions": {
+          "analysis_area": {
+            "status": "present",
+            "text_value": "300 × 700 µm"
+          },
+          "anode_power": {
+            "status": "present",
+            "unit": "W",
+            "value": 150
+          },
+          "charge_compensation": {
+            "status": "present",
+            "text_value": "charge neutralizer; binding energies calibrated on the main carbon peak (C 1s, 285 eV)"
+          },
+          "excitation_source": {
+            "status": "present",
+            "text_value": "monochromatic Al Kα X-rays, 1486.6 eV"
+          },
+          "pass_energy": {
+            "status": "present",
+            "definition": "hemispherical electron energy analyzer pass energy, high-resolution elemental spectra",
+            "unit": "eV",
+            "value": 20
+          }
+        },
+        "evidence": [
+          {
+            "id": "ev1",
+            "kind": "text",
+            "locator": "p. 3, section 2",
+            "quote": "The XPS analyses were carried out with a Kratos AXIS Ultra spectrometer (Manchester, UK) using monochromatic Al Kα X-rays as an excitation energy source equal to 1486.6 eV.",
+            "source": "scale:commons/source/10.3390-ma17020314"
+          },
+          {
+            "id": "ev2",
+            "kind": "text",
+            "locator": "p. 3, section 2",
+            "quote": "All measurements were performed using a charge neutralizer, and the main carbon peak (C 1s, 285 eV) was used for the final calibration of each spectrum.",
+            "source": "scale:commons/source/10.3390-ma17020314"
+          },
+          {
+            "id": "ev3",
+            "kind": "table",
+            "locator": "p. 7, Table 1, row 'Semiconducting SnO2–C'",
+            "note": "row of Table 1 (O [%at], C [%at], Sn [%at], Sn:O)",
+            "quote": "Semiconducting SnO2–C 31.0 ± 0.2 43.1 ± 0.6 25.9 ± 0.8 0.84 ± 0.03",
+            "source": "scale:commons/source/10.3390-ma17020314"
+          },
+          {
+            "id": "ev4",
+            "kind": "text",
+            "locator": "p. 7, section 3.4",
+            "quote": "Metallic tin (Sn0) is assigned by 3d5/2 contributions to 485.0 eV for the insulating sample and 484.8 eV for the semiconducting one.",
+            "source": "scale:commons/source/10.3390-ma17020314"
+          },
+          {
+            "id": "ev5",
+            "kind": "text",
+            "locator": "p. 7, section 3.4",
+            "quote": "The second, dominant component at 487.2 eV and 486.6 eV can be assigned to Sn4+, i.e., SnO2, at the surface of the insulating and semiconducting layer, respectively [17].",
+            "source": "scale:commons/source/10.3390-ma17020314"
+          },
+          {
+            "id": "ev6",
+            "kind": "text",
+            "locator": "p. 7, section 3.4",
+            "quote": "The semiconducting sample contains 14.2% metallic Sn, whereas the insulating sample only 7.2%.",
+            "source": "scale:commons/source/10.3390-ma17020314"
+          }
+        ],
+        "information_depth": "surface",
+        "observation_mode": "ex_situ",
+        "origin": "curated",
+        "result_values": [
+          {
+            "id": "o_fraction",
+            "status": "present",
+            "as_reported": "31.0 ± 0.2",
+            "basis": "XPS atomic concentration, Table 1",
+            "evidence_ids": [
+              "ev3"
+            ],
+            "origin": "measured",
+            "target": "scale:commons/10.3390-ma17020314/species/oxygen",
+            "uncertainty": 0.2,
+            "uncertainty_evaluation": "not_stated",
+            "uncertainty_kind": "plus_minus_unspecified",
+            "unit": "at%",
+            "value": 31.0,
+            "variable": "scale:commons/10.3390-ma17020314/var/composition_fraction"
+          },
+          {
+            "id": "c_fraction",
+            "status": "present",
+            "as_reported": "43.1 ± 0.6",
+            "basis": "XPS atomic concentration, Table 1",
+            "evidence_ids": [
+              "ev3"
+            ],
+            "origin": "measured",
+            "target": "scale:commons/10.3390-ma17020314/species/carbon",
+            "uncertainty": 0.6,
+            "uncertainty_evaluation": "not_stated",
+            "uncertainty_kind": "plus_minus_unspecified",
+            "unit": "at%",
+            "value": 43.1,
+            "variable": "scale:commons/10.3390-ma17020314/var/composition_fraction"
+          },
+          {
+            "id": "sn_fraction",
+            "status": "present",
+            "as_reported": "25.9 ± 0.8",
+            "basis": "XPS atomic concentration of tin, Table 1",
+            "evidence_ids": [
+              "ev3"
+            ],
+            "note": "total tin over chemical states; the metallic Sn0 share is recorded separately as metallic_sn_fraction",
+            "origin": "measured",
+            "target": "scale:commons/10.3390-ma17020314/species/sn",
+            "uncertainty": 0.8,
+            "uncertainty_evaluation": "not_stated",
+            "uncertainty_kind": "plus_minus_unspecified",
+            "unit": "at%",
+            "value": 25.9,
+            "variable": "scale:commons/10.3390-ma17020314/var/composition_fraction"
+          },
+          {
+            "id": "sn_o_ratio",
+            "status": "present",
+            "as_reported": "0.84 ± 0.03",
+            "basis": "Sn:O atomic ratio, Table 1",
+            "evidence_ids": [
+              "ev3"
+            ],
+            "origin": "measured",
+            "target": "scale:commons/10.3390-ma17020314/species/sn",
+            "uncertainty": 0.03,
+            "uncertainty_evaluation": "not_stated",
+            "uncertainty_kind": "plus_minus_unspecified",
+            "unit": "1",
+            "value": 0.84,
+            "variable": "scale:commons/10.3390-ma17020314/var/atomic_ratio"
+          },
+          {
+            "id": "sn0_binding_energy",
+            "status": "present",
+            "definition": "Sn 3d5/2 contribution assigned to metallic tin (Sn0)",
+            "evidence_ids": [
+              "ev4"
+            ],
+            "origin": "measured",
+            "target": "scale:commons/10.3390-ma17020314/species/sn0",
+            "unit": "eV",
+            "value": 484.8,
+            "variable": "scale:commons/10.3390-ma17020314/var/binding_energy"
+          },
+          {
+            "id": "sn4_binding_energy",
+            "status": "present",
+            "definition": "dominant Sn 3d component assigned to Sn4+ (SnO2) at the surface",
+            "evidence_ids": [
+              "ev5"
+            ],
+            "origin": "measured",
+            "target": "scale:commons/10.3390-ma17020314/material/sno2",
+            "unit": "eV",
+            "value": 486.6,
+            "variable": "scale:commons/10.3390-ma17020314/var/binding_energy"
+          },
+          {
+            "id": "metallic_sn_fraction",
+            "status": "present",
+            "definition": "share of tin present as metallic Sn0, from the Sn 3d fit",
+            "evidence_ids": [
+              "ev6"
+            ],
+            "origin": "measured",
+            "target": "scale:commons/10.3390-ma17020314/species/sn0",
+            "unit": "%",
+            "value": 14.2,
+            "variable": "scale:commons/10.3390-ma17020314/var/metallic_fraction"
+          }
+        ],
+        "sampling": "ensemble",
+        "technique": "X-ray photoelectron spectroscopy (XPS)",
+        "technique_id": "CHMO:0000404"
+      }
+    },
+    {
+      "id": "scale:commons/10.3390-ma17020314/claim/candidate",
+      "label": "Claim",
+      "props": {
+        "name": "catalyst-candidate proposal for photocatalytic hydrogen evolution or CO2 reduction",
+        "claim_kind": "other",
+        "claim_status": "proposed",
+        "evidence": [
+          {
+            "id": "ev1",
+            "kind": "text",
+            "locator": "p. 1, abstract",
+            "quote": "We have demonstrated a simple approach for developing a catalyst candidate consisting of amorphous semiconductor–insulator nanojunctions for (photo)catalytic hydrogen evolution or CO2 reduction.",
+            "source": "scale:commons/source/10.3390-ma17020314"
+          },
+          {
+            "id": "ev2",
+            "kind": "text",
+            "locator": "p. 1, section 1",
+            "quote": "A key role in the development of a new class of semiconductor-based thin films with auto-organized LD heterojunctions toward increased photocatalytic activity is a fast and easy fabrication made possible by the application of cold plasma.",
+            "source": "scale:commons/source/10.3390-ma17020314"
+          }
+        ],
+        "inference_type": "expert_opinion",
+        "origin": "curated",
+        "scope": "proposed application; the source reports no catalytic measurement of hydrogen evolution or CO2 reduction",
+        "statement": "The authors propose the amorphous semiconductor–insulator nanojunctions of the oxidized Sn–C films as a simple catalyst-candidate approach for (photo)catalytic hydrogen evolution or CO2 reduction; no catalytic test is reported in this source."
+      }
+    },
+    {
+      "id": "scale:commons/10.3390-ma17020314/claim/channels",
+      "label": "Claim",
+      "props": {
+        "name": "self-assembled semiconducting SnO2 channels in an insulating carbon matrix",
+        "claim_kind": "structure_property",
+        "claim_status": "supported",
+        "evidence": [
+          {
+            "id": "ev1",
+            "kind": "text",
+            "locator": "p. 1, abstract",
+            "quote": "We assume that the semiconductor consists of an internal network of channels auto-organized during deposition.",
+            "source": "scale:commons/source/10.3390-ma17020314"
+          },
+          {
+            "id": "ev2",
+            "kind": "text",
+            "locator": "p. 2, section 1",
+            "quote": "We have demonstrated an internal structure of layers consisting of semiconducting Sn (oxidized to SnO2 by air exposure) channels embedded in an insulating carbon matrix",
+            "source": "scale:commons/source/10.3390-ma17020314"
+          },
+          {
+            "id": "ev3",
+            "kind": "text",
+            "locator": "p. 5, section 3.1",
+            "quote": "The nanoconductivity values testify to the existence of the semiconducting nature of the channels self-created in insulating surroundings during plasma deposition.",
+            "source": "scale:commons/source/10.3390-ma17020314"
+          },
+          {
+            "id": "ev4",
+            "kind": "text",
+            "locator": "p. 5, section 3.2",
+            "quote": "The high similarity of local conductivity values for conductive channels in our layers and nanowires from the literature indicates that we can expect SnO2 channels in our samples.",
+            "source": "scale:commons/source/10.3390-ma17020314"
+          },
+          {
+            "id": "ev5",
+            "kind": "text",
+            "locator": "p. 7, section 3.4",
+            "quote": "The higher Sn atom concentration is responsible for semiconductive properties. The higher carbon concentration in the insulating sample confirms the insulating properties of the carbon matrix.",
+            "source": "scale:commons/source/10.3390-ma17020314"
+          }
+        ],
+        "inference_type": "observational",
+        "origin": "curated",
+        "statement": "The semiconducting Sn–C film contains a self-assembled internal network of semiconducting channels — attributed to Sn oxidized to SnO2 by air exposure — embedded in an insulating carbon matrix, formed during the plasma deposition in a self-assembly process from partly oxidized Sn atoms; the nanoconductivity of the channels shows their semiconducting nature."
+      }
+    },
+    {
+      "id": "scale:commons/10.3390-ma17020314/claim/lit-comparison",
+      "label": "Claim",
+      "props": {
+        "name": "channel conductivity matches literature SnO2 conductivities",
+        "claim_kind": "comparison",
+        "claim_status": "proposed",
+        "evidence": [
+          {
+            "id": "ev1",
+            "kind": "text",
+            "evidence_type": "ECO:0000033",
+            "locator": "p. 5, section 3.2",
+            "quote": "Kim et al. reported the conductivity of the SnO2 nanowire to be similar and amount to 276 S/m [14], and Kiruthiga gave a conductivity value of 260 S/m for a pure SnO2 thin film [15].",
+            "source": "scale:commons/source/10.3390-ma17020314"
+          },
+          {
+            "id": "ev2",
+            "kind": "text",
+            "locator": "p. 5, section 3.2",
+            "quote": "The high similarity of local conductivity values for conductive channels in our layers and nanowires from the literature indicates that we can expect SnO2 channels in our samples.",
+            "source": "scale:commons/source/10.3390-ma17020314"
+          },
+          {
+            "id": "ev3",
+            "kind": "text",
+            "evidence_type": "ECO:0000033",
+            "locator": "p. 6, section 3.2",
+            "quote": "the conductivity of pure tin is 9.2 × 106 S/m.",
+            "source": "scale:commons/source/10.3390-ma17020314"
+          }
+        ],
+        "inference_type": "observational",
+        "limitations": "the comparison values are cited from other works (refs. [14], [15]) and are not results of this source; they are kept in the claim statement, not as this source's own measurements",
+        "origin": "curated",
+        "statement": "The measured single-channel conductivity (241 S/m) is similar to conductivities reported by others for a SnO2 nanowire (276 S/m, Kim et al. [14]) and a pure SnO2 thin film (260 S/m, Kiruthiga et al. [15]), which the authors take to indicate SnO2 channels in their samples; for comparison they quote the conductivity of pure tin as 9.2 × 10^6 S/m."
+      }
+    },
+    {
+      "id": "scale:commons/10.3390-ma17020314/claim/ntype",
+      "label": "Claim",
+      "props": {
+        "name": "the insulating film can be considered an n-type wide-gap semiconductor",
+        "claim_kind": "conclusion",
+        "claim_status": "supported",
+        "evidence": [
+          {
+            "id": "ev1",
+            "kind": "text",
+            "locator": "p. 11, Conclusions",
+            "quote": "The width of the energy gap of 5.2 eV (Table 2) suggests the insulating nature of the layer but due to the content of SnO2/Sn (n-type) and the existence of a rather wide optical gap of 3.1 eV, it can be also considered an n-type wide-gap semiconductor.",
+            "source": "scale:commons/source/10.3390-ma17020314"
+          }
+        ],
+        "inference_type": "observational",
+        "origin": "curated",
+        "statement": "The insulating SnO2–C film, whose 5.2 eV transport gap suggests an insulating nature, can also be considered an n-type wide-gap semiconductor because of its SnO2/Sn (n-type) content and its rather wide 3.1 eV optical gap."
+      }
+    },
+    {
+      "id": "scale:commons/10.3390-ma17020314/claim/percolation",
+      "label": "Claim",
+      "props": {
+        "name": "the abrupt conductivity change with coupling capacitance indicates percolation",
+        "claim_kind": "causal",
+        "claim_status": "proposed",
+        "evidence": [
+          {
+            "id": "ev1",
+            "kind": "text",
+            "locator": "p. 7, section 3.3",
+            "quote": "Such a significant change in conductivity for the two extreme capacity parameters indicates the occurrence of the percolation phenomenon, which was described for Sn–C layers in [12].",
+            "source": "scale:commons/source/10.3390-ma17020314"
+          },
+          {
+            "id": "ev2",
+            "kind": "text",
+            "locator": "p. 7, section 3.3",
+            "quote": "However, other phenomena resulting from changes in the chemistry of the plasma phase (i.e., species concentration, ion bombardment, electron temperature) can also influence the difference in conductivity.",
+            "source": "scale:commons/source/10.3390-ma17020314"
+          },
+          {
+            "id": "ev3",
+            "kind": "text",
+            "locator": "p. 1, section 1",
+            "quote": "These changes are attributed to the transition between the amorphous semiconductor and amorphous insulator (a-S:a-I) states.",
+            "source": "scale:commons/source/10.3390-ma17020314"
+          },
+          {
+            "id": "ev4",
+            "kind": "text",
+            "locator": "p. 11, Conclusions",
+            "quote": "We have shown that for the two extreme capacitances in the fabrication process, there is an abrupt transition of conductivity associated with an increase in the content of the semiconducting phase in the layer.",
+            "source": "scale:commons/source/10.3390-ma17020314"
+          }
+        ],
+        "inference_type": "observational",
+        "origin": "curated",
+        "statement": "The abrupt (eight-order) change in conductivity between the two extreme coupling capacitances indicates the occurrence of the percolation phenomenon (the amorphous-semiconductor-to-amorphous-insulator transition described for Sn–C layers); the authors note that other phenomena from changes in the plasma-phase chemistry (species concentration, ion bombardment, electron temperature) can also influence the difference in conductivity."
+      }
+    },
+    {
+      "id": "scale:commons/10.3390-ma17020314/claim/poole-frenkel",
+      "label": "Claim",
+      "props": {
+        "name": "conduction in the insulating film is bulk-limited (Poole–Frenkel)",
+        "claim_kind": "mechanism",
+        "claim_status": "proposed",
+        "evidence": [
+          {
+            "id": "ev1",
+            "kind": "text",
+            "locator": "p. 10, section 3.5",
+            "quote": "Based on the slight conductivity difference for the two directions of the applied field, we can assume that we are dealing with bulk-limited (i.e., Poole–Frenkel) conduction.",
+            "source": "scale:commons/source/10.3390-ma17020314"
+          },
+          {
+            "id": "ev2",
+            "kind": "text",
+            "locator": "p. 10, section 3.5",
+            "quote": "For contact-limited (Schottky) conduction, the difference should result in about eight orders of magnitude difference in the conductivity measured for two directions of the applied field [18].",
+            "source": "scale:commons/source/10.3390-ma17020314"
+          }
+        ],
+        "inference_type": "observational",
+        "origin": "curated",
+        "statement": "Based on the slight conductivity difference for the two directions of the applied field, the conduction in the insulating SnO2–C film is taken to be bulk-limited (Poole–Frenkel) rather than contact-limited (Schottky), since Schottky conduction would give an about eight-orders-of-magnitude difference between the two field directions."
+      }
+    },
+    {
+      "id": "scale:commons/10.3390-ma17020314/claim/sn-oxidized",
+      "label": "Claim",
+      "props": {
+        "name": "air exposure oxidized most of the Sn to SnO2 in both films",
+        "claim_kind": "conclusion",
+        "claim_status": "supported",
+        "evidence": [
+          {
+            "id": "ev1",
+            "kind": "text",
+            "locator": "p. 1, abstract",
+            "quote": "The layers, after air exposure, oxidized to SnO2/Sn–C.",
+            "source": "scale:commons/source/10.3390-ma17020314"
+          },
+          {
+            "id": "ev2",
+            "kind": "text",
+            "locator": "p. 11, Conclusions",
+            "quote": "In both samples, when exposed to air, most of the Sn is oxidized to SnO2, as indicated by local conductivity and atomic concentration tests (XPS).",
+            "source": "scale:commons/source/10.3390-ma17020314"
+          },
+          {
+            "id": "ev3",
+            "kind": "text",
+            "locator": "p. 7, section 3.4",
+            "quote": "The oxide formation is proportional to the Sn concentration.",
+            "source": "scale:commons/source/10.3390-ma17020314"
+          }
+        ],
+        "inference_type": "observational",
+        "origin": "curated",
+        "statement": "In both samples, exposure to air oxidized most of the metallic Sn to SnO2, as indicated by the local-conductivity and XPS atomic-concentration results; the oxide formation is proportional to the Sn concentration."
+      }
+    },
+    {
+      "id": "scale:commons/10.3390-ma17020314/electrode/al",
+      "label": "Electrode",
+      "props": {
+        "name": "Al top electrode (thermally evaporated, photoconductivity sandwich)",
+        "evidence": [
+          {
+            "id": "ev1",
+            "kind": "text",
+            "locator": "p. 2, section 2",
+            "quote": "The highly transparent top Al electrodes of known transmittance (typically 10 nm thick) were thermally evaporated perpendicularly to the bottom Au strips forming a sandwich configuration.",
+            "source": "scale:commons/source/10.3390-ma17020314"
+          }
+        ],
+        "origin": "curated",
+        "preparation_status": "prepared",
+        "sample_kind": "electrode",
+        "unmodeled": [
+          "top-electrode thickness ('typically 10 nm thick') and known transmittance: no schema field for an electrode film's thickness or transmittance"
+        ]
+      }
+    },
+    {
+      "id": "scale:commons/10.3390-ma17020314/electrode/au",
+      "label": "Electrode",
+      "props": {
+        "name": "Au bottom electrodes (strips on glass)",
+        "evidence": [
+          {
+            "id": "ev1",
+            "kind": "text",
+            "locator": "p. 2, section 2",
+            "quote": "The active surface of the electrodes was 4 mm2.",
+            "source": "scale:commons/source/10.3390-ma17020314"
+          }
+        ],
+        "geometric_area": {
+          "status": "present",
+          "definition": "active surface of the electrodes",
+          "unit": "mm2",
+          "value": 4
+        },
+        "origin": "curated",
+        "preparation_status": "not_reported",
+        "sample_kind": "electrode",
+        "substrate": "0.1 mm thick glass"
+      }
+    },
+    {
+      "id": "scale:commons/10.3390-ma17020314/inst/axis-ultra",
+      "label": "Instrument",
+      "props": {
+        "name": "Kratos AXIS Ultra XPS spectrometer",
+        "evidence": [
+          {
+            "id": "ev1",
+            "kind": "text",
+            "locator": "p. 3, section 2",
+            "quote": "The XPS analyses were carried out with a Kratos AXIS Ultra spectrometer (Manchester, UK) using monochromatic Al Kα X-rays as an excitation energy source equal to 1486.6 eV.",
+            "source": "scale:commons/source/10.3390-ma17020314"
+          }
+        ],
+        "instrument_kind": "X-ray photoelectron spectrometer",
+        "manufacturer": "Kratos",
+        "model": "AXIS Ultra",
+        "origin": "curated"
+      }
+    },
+    {
+      "id": "scale:commons/10.3390-ma17020314/inst/homebrew",
+      "label": "Instrument",
+      "props": {
+        "name": "homemade macroconductivity and photoconductivity system",
+        "evidence": [
+          {
+            "id": "ev1",
+            "kind": "text",
+            "locator": "p. 2, section 2",
+            "quote": "Three types of electrode geometry (Figure 1) were prepared for conductive atomic force microscopy (CAFM) measurements (Veeco Instruments Nanoscope III with TUNA mode) as well as macroconductivity and photoconductivity measurements (homemade system).",
+            "source": "scale:commons/source/10.3390-ma17020314"
+          }
+        ],
+        "instrument_kind": "conductivity measurement system",
+        "origin": "curated"
+      }
+    },
+    {
+      "id": "scale:commons/10.3390-ma17020314/inst/lodz-tech",
+      "label": "Institution",
+      "props": {
+        "name": "Lodz University of Technology",
+        "country": "Poland",
+        "evidence": [
+          {
+            "id": "ev1",
+            "kind": "text",
+            "locator": "p. 1, affiliations",
+            "quote": "Department of Molecular Engineering, Faculty of Process and Environmental Engineering, Lodz University of Technology",
+            "source": "scale:commons/source/10.3390-ma17020314"
+          }
+        ],
+        "institution_kind": "university",
+        "origin": "curated"
+      }
+    },
+    {
+      "id": "scale:commons/10.3390-ma17020314/inst/nanoscope3",
+      "label": "Instrument",
+      "props": {
+        "name": "Veeco Instruments Nanoscope III (CAFM, TUNA mode)",
+        "evidence": [
+          {
+            "id": "ev1",
+            "kind": "text",
+            "locator": "p. 2, section 2",
+            "quote": "Three types of electrode geometry (Figure 1) were prepared for conductive atomic force microscopy (CAFM) measurements (Veeco Instruments Nanoscope III with TUNA mode) as well as macroconductivity and photoconductivity measurements (homemade system).",
+            "source": "scale:commons/source/10.3390-ma17020314"
+          }
+        ],
+        "instrument_kind": "conductive atomic force microscope",
+        "manufacturer": "Veeco Instruments",
+        "model": "Nanoscope III",
+        "origin": "curated"
+      }
+    },
+    {
+      "id": "scale:commons/10.3390-ma17020314/inst/ncn-poland",
+      "label": "Institution",
+      "props": {
+        "name": "National Science Centre, Poland",
+        "country": "Poland",
+        "evidence": [
+          {
+            "id": "ev1",
+            "kind": "text",
+            "locator": "p. 12, Funding",
+            "quote": "This research was funded by the NATIONAL SCIENCE CENTER, Poland, grant number 2020/04/X/ST5/00451.",
+            "source": "scale:commons/source/10.3390-ma17020314"
+          }
+        ],
+        "institution_kind": "funding_agency",
+        "origin": "curated"
+      }
+    },
+    {
+      "id": "scale:commons/10.3390-ma17020314/inst/ntmdt-lcafm",
+      "label": "Instrument",
+      "props": {
+        "name": "NT-MDT local-conductivity CAFM with logarithmic current amplifier",
+        "evidence": [
+          {
+            "id": "ev1",
+            "kind": "text",
+            "locator": "p. 3, section 2",
+            "quote": "The conductivity of a single filament was measured by a local conductivity mode CAFM (NT-MDT, Moscow, Russia) with an amplifier providing linear characteristics up to 10 nA and logarithmic above this value to represent high dynamics at both low and high currents.",
+            "source": "scale:commons/source/10.3390-ma17020314"
+          }
+        ],
+        "instrument_kind": "local conductivity atomic force microscope",
+        "manufacturer": "NT-MDT",
+        "origin": "curated",
+        "settings": {
+          "amplifier": {
+            "status": "present",
+            "text_value": "linear characteristics up to 10 nA, logarithmic above this value"
+          }
+        }
+      }
+    },
+    {
+      "id": "scale:commons/10.3390-ma17020314/inst/univ-lodz",
+      "label": "Institution",
+      "props": {
+        "name": "University of Lodz",
+        "country": "Poland",
+        "evidence": [
+          {
+            "id": "ev1",
+            "kind": "text",
+            "locator": "p. 1, affiliations",
+            "quote": "Faculty of Physics and Applied Informatics, University of Lodz",
+            "source": "scale:commons/source/10.3390-ma17020314"
+          }
+        ],
+        "institution_kind": "university",
+        "origin": "curated"
+      }
+    },
+    {
+      "id": "scale:commons/10.3390-ma17020314/inst/uv1800",
+      "label": "Instrument",
+      "props": {
+        "name": "Shimadzu UV-1800 spectrometer",
+        "evidence": [
+          {
+            "id": "ev1",
+            "kind": "text",
+            "locator": "p. 3, section 2",
+            "quote": "Optical absorption measurements were performed in a wavelength range from 230 to 600 nm (Shimadzu UV-1800 spectrometer, Kyoto, Japan).",
+            "source": "scale:commons/source/10.3390-ma17020314"
+          }
+        ],
+        "instrument_kind": "UV-Vis spectrometer",
+        "manufacturer": "Shimadzu",
+        "model": "UV-1800",
+        "origin": "curated"
+      }
+    },
+    {
+      "id": "scale:commons/10.3390-ma17020314/light/xenon",
+      "label": "LightSource",
+      "props": {
+        "name": "150 W xenon lamp with double prism monochromator",
+        "evidence": [
+          {
+            "id": "ev1",
+            "kind": "text",
+            "locator": "p. 2, section 2",
+            "quote": "The photoconductivity measurements were carried out in the 230–600 nm wavelength region. A 150 W xenon lamp and a double prism monochromator were used as the light source.",
+            "source": "scale:commons/source/10.3390-ma17020314"
+          },
+          {
+            "id": "ev2",
+            "kind": "text",
+            "locator": "p. 3, section 2",
+            "quote": "and a constant bandwidth of 15 nm was maintained",
+            "source": "scale:commons/source/10.3390-ma17020314"
+          }
+        ],
+        "instrument_kind": "light_source",
+        "nominal_power": {
+          "status": "present",
+          "unit": "W",
+          "value": 150
+        },
+        "origin": "curated",
+        "settings": {
+          "bandwidth": {
+            "status": "present",
+            "definition": "constant bandwidth of the monochromator",
+            "unit": "nm",
+            "value": 15
+          },
+          "wavelength_region": {
+            "status": "present",
+            "as_reported": "the 230–600 nm wavelength region",
+            "lower": 230,
+            "unit": "nm",
+            "upper": 600
+          }
+        },
+        "source_kind": "xenon_lamp"
+      }
+    },
+    {
+      "id": "scale:commons/10.3390-ma17020314/material/c-matrix",
+      "label": "Material",
+      "props": {
+        "name": "insulating carbon matrix",
+        "crystallinity": "amorphous",
+        "evidence": [
+          {
+            "id": "ev1",
+            "kind": "text",
+            "locator": "p. 2, section 1",
+            "quote": "We have demonstrated an internal structure of layers consisting of semiconducting Sn (oxidized to SnO2 by air exposure) channels embedded in an insulating carbon matrix",
+            "source": "scale:commons/source/10.3390-ma17020314"
+          }
+        ],
+        "material_family": "carbon",
+        "origin": "curated"
+      }
+    },
+    {
+      "id": "scale:commons/10.3390-ma17020314/material/sn",
+      "label": "Material",
+      "props": {
+        "name": "metallic Sn in the films",
+        "evidence": [
+          {
+            "id": "ev1",
+            "kind": "text",
+            "locator": "p. 11, Conclusions",
+            "quote": "Both layers are deposited from TMT and contain metallic Sn.",
+            "source": "scale:commons/source/10.3390-ma17020314"
+          }
+        ],
+        "formula": "Sn",
+        "material_family": "metal",
+        "origin": "curated"
+      }
+    },
+    {
+      "id": "scale:commons/10.3390-ma17020314/material/sno2",
+      "label": "Material",
+      "props": {
+        "name": "SnO2 (tin oxide in the films)",
+        "evidence": [
+          {
+            "id": "ev1",
+            "kind": "text",
+            "locator": "p. 7, section 3.4",
+            "quote": "The second, dominant component at 487.2 eV and 486.6 eV can be assigned to Sn4+, i.e., SnO2, at the surface of the insulating and semiconducting layer, respectively [17].",
+            "source": "scale:commons/source/10.3390-ma17020314"
+          }
+        ],
+        "formula": "SnO2",
+        "material_family": "oxide",
+        "origin": "curated"
+      }
+    },
+    {
+      "id": "scale:commons/10.3390-ma17020314/material/sno2c-film",
+      "label": "Material",
+      "props": {
+        "name": "amorphous SnO2–C (Sn–C) thin film",
+        "crystallinity": "amorphous",
+        "evidence": [
+          {
+            "id": "ev1",
+            "kind": "text",
+            "locator": "p. 2, section 2, first sentence",
+            "quote": "Semiconducting and insulating amorphous SnO2–C films were produced from TMT by cold plasma PECVD using an acoustic frequency (af) 40 kHz three-electrode glow discharge reactor.",
+            "source": "scale:commons/source/10.3390-ma17020314"
+          }
+        ],
+        "material_family": "other",
+        "nominal_formula": "SnO2–C",
+        "origin": "curated",
+        "unmodeled": [
+          "relative proportions of the SnO2, carbon-matrix and metallic-Sn parts of the composite film (an XPS-measured surface composition) are recorded on the XPS characterizations, not on the material"
+        ]
+      }
+    },
+    {
+      "id": "scale:commons/10.3390-ma17020314/model/photoinjection",
+      "label": "Model",
+      "props": {
+        "name": "photoinjection model for a metal–insulator contact",
+        "assumptions": [
+          "Schottky conduction is limited by contact barriers with electrodes",
+          "the sum of the contact barrier heights for electrons (Φ0e) and holes (Φ0h) equals the transport gap EG",
+          "the lower Fowler threshold is electron photoinjection and the upper one hole photoinjection (the work function of Au is higher than that of Al)"
+        ],
+        "equations": [
+          "Y^(1/2) ~ hν − Φ (Fowler relation)",
+          "Φ0e + Φ0h = EG",
+          "X = WM − Φ0e",
+          "J = EG + X"
+        ],
+        "evidence": [
+          {
+            "id": "ev1",
+            "kind": "text",
+            "locator": "p. 8, section 3.5",
+            "quote": "assuming Schottky conduction is limited by contact barriers with electrodes [18]",
+            "source": "scale:commons/source/10.3390-ma17020314"
+          },
+          {
+            "id": "ev2",
+            "kind": "text",
+            "locator": "p. 8, section 3.5",
+            "quote": "A simple model of photoinjection of electrons and holes from metal to insulator expresses that the sum of the heights of contact barriers for electrons Φ0e and holes Φ0h gives the value of the transport gap EG for the investigated insulator (Table 2).",
+            "source": "scale:commons/source/10.3390-ma17020314"
+          },
+          {
+            "id": "ev3",
+            "kind": "text",
+            "locator": "p. 9, section 3.5",
+            "quote": "it may be concluded that the lower threshold is connected with electron photoinjection, whereas the upper one refers to hole photoinjection",
+            "source": "scale:commons/source/10.3390-ma17020314"
+          }
+        ],
+        "model_kind": "simple photoinjection model for a metal–insulator contact",
+        "origin": "curated"
+      }
+    },
+    {
+      "id": "scale:commons/10.3390-ma17020314/model/tauc",
+      "label": "Model",
+      "props": {
+        "name": "Tauc relation for the absorption edge (n = 2)",
+        "assumptions": [
+          "the equation is limited to the value n = 2",
+          "the optical gap is interpreted as a difference between the energy levels of the localized states in the valence and conduction bands, where the electronic transport proceeds by hopping and is lower than the transport gap"
+        ],
+        "equations": [
+          "α(hν) = B(hν − Eopt)^n, with n = 2"
+        ],
+        "evidence": [
+          {
+            "id": "ev1",
+            "kind": "text",
+            "locator": "p. 10, section 3.6",
+            "quote": "This equation, limited to the value n = 2, was originally proposed by Tauc et al. [19,23].",
+            "source": "scale:commons/source/10.3390-ma17020314"
+          }
+        ],
+        "model_kind": "Tauc relation (amorphous semiconductor absorption edge)",
+        "origin": "curated"
+      }
+    },
+    {
+      "id": "scale:commons/10.3390-ma17020314/person/balcerzak",
+      "label": "Person",
+      "props": {
+        "name": "Jacek Balcerzak",
+        "evidence": [
+          {
+            "id": "ev1",
+            "kind": "text",
+            "locator": "p. 1, author list",
+            "quote": "Jacek Balcerzak 1",
+            "source": "scale:commons/source/10.3390-ma17020314"
+          }
+        ],
+        "given_names": "Jacek",
+        "origin": "curated",
+        "surname": "Balcerzak"
+      }
+    },
+    {
+      "id": "scale:commons/10.3390-ma17020314/person/fratczak",
+      "label": "Person",
+      "props": {
+        "name": "Ewelina Zofia Frątczak",
+        "evidence": [
+          {
+            "id": "ev1",
+            "kind": "text",
+            "locator": "p. 1, author list",
+            "quote": "Ewelina Zofia Fr ˛atczak 1,*",
+            "source": "scale:commons/source/10.3390-ma17020314"
+          }
+        ],
+        "given_names": "Ewelina Zofia",
+        "origin": "curated",
+        "surname": "Frątczak"
+      }
+    },
+    {
+      "id": "scale:commons/10.3390-ma17020314/person/rogala",
+      "label": "Person",
+      "props": {
+        "name": "Maciej Rogala",
+        "evidence": [
+          {
+            "id": "ev1",
+            "kind": "text",
+            "locator": "p. 1, author list",
+            "quote": "and Maciej Rogala 2",
+            "source": "scale:commons/source/10.3390-ma17020314"
+          }
+        ],
+        "given_names": "Maciej",
+        "origin": "curated",
+        "surname": "Rogala"
+      }
+    },
+    {
+      "id": "scale:commons/10.3390-ma17020314/plasma/reactor",
+      "label": "PlasmaSource",
+      "props": {
+        "name": "acoustic-frequency (40 kHz) three-electrode glow discharge PECVD reactor",
+        "configuration": "in_plasma",
+        "discharge_gap": {
+          "status": "present",
+          "as_reported": "The distance between the main electrodes of the reactor was 2.5 cm",
+          "definition": "distance between the main electrodes",
+          "unit": "cm",
+          "value": 2.5
+        },
+        "discharge_kind": "glow",
+        "evidence": [
+          {
+            "id": "ev1",
+            "kind": "text",
+            "locator": "p. 2, section 2",
+            "quote": "Semiconducting and insulating amorphous SnO2–C films were produced from TMT by cold plasma PECVD using an acoustic frequency (af) 40 kHz three-electrode glow discharge reactor.",
+            "source": "scale:commons/source/10.3390-ma17020314"
+          }
+        ],
+        "instrument_kind": "plasma_source",
+        "note": "three-electrode reactor; the third neutral electrode placed perpendicularly to the main electrodes; the films are deposited on the neutral electrode, whose coupling capacitance to the hot electrode sets the ion impact energy",
+        "origin": "curated"
+      }
+    },
+    {
+      "id": "scale:commons/10.3390-ma17020314/prep/ins",
+      "label": "Preparation",
+      "props": {
+        "name": "PECVD of the insulating Sn–C film (0 pF coupling capacitance)",
+        "conditions": {
+          "coupling_capacitance": {
+            "status": "present",
+            "unit": "pF",
+            "value": 0
+          }
+        },
+        "evidence": [
+          {
+            "id": "ev1",
+            "kind": "text",
+            "locator": "p. 3, section 3",
+            "quote": "The insulating layer corresponds to a capacitance of 0 pF, and the semiconducting layer to around 2000 pF.",
+            "source": "scale:commons/source/10.3390-ma17020314"
+          },
+          {
+            "id": "ev2",
+            "kind": "text",
+            "locator": "p. 2, section 2",
+            "quote": "Semiconducting opaque Sn–C films 120 nm thick and insulating transparent films 130 nm thick were deposited on 0.1 mm thick glass substrates.",
+            "source": "scale:commons/source/10.3390-ma17020314"
+          }
+        ],
+        "method": "cold plasma PECVD",
+        "origin": "curated",
+        "outcomes": {
+          "film_thickness": {
+            "status": "present",
+            "definition": "thickness of the deposited insulating Sn–C film, as stated",
+            "unit": "nm",
+            "value": 130
+          }
+        },
+        "preparation_methods": [
+          "chemical_vapor_deposition",
+          "plasma_synthesis"
+        ]
+      }
+    },
+    {
+      "id": "scale:commons/10.3390-ma17020314/prep/pecvd",
+      "label": "Preparation",
+      "props": {
+        "name": "cold-plasma PECVD of amorphous Sn–C films from tetramethyltin",
+        "conditions": {
+          "excitation_frequency": {
+            "status": "present",
+            "unit": "kHz",
+            "value": 40
+          },
+          "plasma_power": {
+            "status": "present",
+            "as_reported": "The power supplied to the system was 500 W",
+            "unit": "W",
+            "value": 500
+          },
+          "precursor_flow_rate": {
+            "status": "present",
+            "as_reported": "The flow rate of TMT was 0.3 sccm",
+            "definition": "flow rate of the tetramethyltin (TMT) precursor",
+            "unit": "sccm",
+            "value": 0.3
+          },
+          "substrate": {
+            "status": "present",
+            "text_value": "0.1 mm thick glass"
+          },
+          "voltage_amplitude_high": {
+            "status": "present",
+            "note": "voltage amplitude on the neutral electrode; the source does not state which amplitude belongs to which coupling capacitance",
+            "unit": "V",
+            "value": 1350
+          },
+          "voltage_amplitude_low": {
+            "status": "present",
+            "note": "voltage amplitude on the neutral electrode; the source does not state which amplitude belongs to which coupling capacitance",
+            "unit": "V",
+            "value": 50
+          }
+        },
+        "evidence": [
+          {
+            "id": "ev1",
+            "kind": "text",
+            "locator": "p. 2, section 2",
+            "quote": "Semiconducting and insulating amorphous SnO2–C films were produced from TMT by cold plasma PECVD using an acoustic frequency (af) 40 kHz three-electrode glow discharge reactor.",
+            "source": "scale:commons/source/10.3390-ma17020314"
+          },
+          {
+            "id": "ev2",
+            "kind": "text",
+            "locator": "p. 2, section 2",
+            "quote": "The power supplied to the system was 500 W, and the voltage amplitude values on the neutral electrode were controlled by the coupling capacity between the neutral and hot electrode and amounted to 50 and 1350 V.",
+            "source": "scale:commons/source/10.3390-ma17020314"
+          },
+          {
+            "id": "ev3",
+            "kind": "text",
+            "locator": "p. 2, section 2",
+            "quote": "The flow rate of TMT was 0.3 sccm, and the pressure in the reactor chamber was 4.2 Pa.",
+            "source": "scale:commons/source/10.3390-ma17020314"
+          },
+          {
+            "id": "ev4",
+            "kind": "text",
+            "locator": "p. 1, section 1",
+            "quote": "The peculiarity of the layers obtained by the application method lies in the possibility of tuning the type of their electrical and optical properties by changing the coupling capacitance during application in cold plasma. This is due to the change in the ions’ energy bombarding the substrate surface.",
+            "source": "scale:commons/source/10.3390-ma17020314"
+          },
+          {
+            "id": "ev5",
+            "kind": "text",
+            "locator": "p. 2, section 2",
+            "quote": "The amplitude represents the ion impact energy.",
+            "source": "scale:commons/source/10.3390-ma17020314"
+          }
+        ],
+        "method": "cold plasma PECVD (plasma-enhanced chemical vapour deposition) in an acoustic-frequency (40 kHz) three-electrode glow discharge reactor",
+        "origin": "curated",
+        "preparation_methods": [
+          "chemical_vapor_deposition",
+          "plasma_synthesis"
+        ],
+        "pressure": {
+          "status": "present",
+          "unit": "Pa",
+          "value": 4.2
+        },
+        "steps": [
+          "deposition of Sn–C films from TMT vapour in the 40 kHz glow discharge",
+          "exposure of the layers to air (oxidation to SnO2/Sn–C)",
+          "thermal evaporation of Al top electrodes on insulating films for the photoconductivity specimens"
+        ],
+        "strategy": "tune the film's electrical and optical type (amorphous semiconductor vs amorphous insulator) by the coupling capacitance of the neutral electrode, which sets the ion impact energy"
+      }
+    },
+    {
+      "id": "scale:commons/10.3390-ma17020314/prep/semi",
+      "label": "Preparation",
+      "props": {
+        "name": "PECVD of the semiconducting Sn–C film (~2000 pF coupling capacitance)",
+        "conditions": {
+          "coupling_capacitance": {
+            "status": "present",
+            "as_reported": "around 2000 pF",
+            "qualifier": "approximate",
+            "unit": "pF",
+            "value": 2000
+          }
+        },
+        "evidence": [
+          {
+            "id": "ev1",
+            "kind": "text",
+            "locator": "p. 3, section 3",
+            "quote": "The insulating layer corresponds to a capacitance of 0 pF, and the semiconducting layer to around 2000 pF.",
+            "source": "scale:commons/source/10.3390-ma17020314"
+          },
+          {
+            "id": "ev2",
+            "kind": "text",
+            "locator": "p. 2, section 2",
+            "quote": "Semiconducting opaque Sn–C films 120 nm thick and insulating transparent films 130 nm thick were deposited on 0.1 mm thick glass substrates.",
+            "source": "scale:commons/source/10.3390-ma17020314"
+          }
+        ],
+        "method": "cold plasma PECVD",
+        "origin": "curated",
+        "outcomes": {
+          "film_thickness": {
+            "status": "present",
+            "definition": "thickness of the deposited semiconducting Sn–C film, as stated",
+            "unit": "nm",
+            "value": 120
+          }
+        },
+        "preparation_methods": [
+          "chemical_vapor_deposition",
+          "plasma_synthesis"
+        ]
+      }
+    },
+    {
+      "id": "scale:commons/10.3390-ma17020314/sample/ins",
+      "label": "CatalystSample",
+      "props": {
+        "name": "insulating SnO2–C film (deposited at 0 pF coupling capacitance)",
+        "evidence": [
+          {
+            "id": "ev1",
+            "kind": "text",
+            "locator": "p. 2, section 2",
+            "quote": "Semiconducting opaque Sn–C films 120 nm thick and insulating transparent films 130 nm thick were deposited on 0.1 mm thick glass substrates.",
+            "source": "scale:commons/source/10.3390-ma17020314"
+          }
+        ],
+        "origin": "curated",
+        "sample_kind": "film"
+      }
+    },
+    {
+      "id": "scale:commons/10.3390-ma17020314/sample/semi",
+      "label": "CatalystSample",
+      "props": {
+        "name": "semiconducting SnO2–C film (deposited at ~2000 pF coupling capacitance)",
+        "evidence": [
+          {
+            "id": "ev1",
+            "kind": "text",
+            "locator": "p. 2, section 2",
+            "quote": "Semiconducting opaque Sn–C films 120 nm thick and insulating transparent films 130 nm thick were deposited on 0.1 mm thick glass substrates.",
+            "source": "scale:commons/source/10.3390-ma17020314"
+          }
+        ],
+        "origin": "curated",
+        "sample_kind": "film"
+      }
+    },
+    {
+      "id": "scale:commons/10.3390-ma17020314/species/al",
+      "label": "ChemicalSpecies",
+      "props": {
+        "name": "aluminium",
+        "elemental_composition": {
+          "Al": 1
+        },
+        "evidence": [
+          {
+            "id": "ev1",
+            "kind": "text",
+            "locator": "p. 2, Materials and Methods",
+            "quote": "The highly transparent top Al electrodes of known transmittance (typically 10 nm thick) were thermally evaporated perpendicularly to the bottom Au strips forming a sandwich configuration.",
+            "source": "scale:commons/source/10.3390-ma17020314"
+          }
+        ],
+        "formula": "Al",
+        "origin": "curated"
+      }
+    },
+    {
+      "id": "scale:commons/10.3390-ma17020314/species/carbon",
+      "label": "ChemicalSpecies",
+      "props": {
+        "name": "carbon",
+        "elemental_composition": {
+          "C": 1
+        },
+        "evidence": [
+          {
+            "id": "ev1",
+            "kind": "text",
+            "locator": "p. 7, section 3.4",
+            "quote": "Wide scans revealed that both insulating and semiconducting deposits are composed of oxygen, carbon, and tin.",
+            "source": "scale:commons/source/10.3390-ma17020314"
+          }
+        ],
+        "formula": "C",
+        "origin": "curated"
+      }
+    },
+    {
+      "id": "scale:commons/10.3390-ma17020314/species/co2",
+      "label": "ChemicalSpecies",
+      "props": {
+        "name": "carbon dioxide",
+        "elemental_composition": {
+          "C": 1,
+          "O": 2
+        },
+        "evidence": [
+          {
+            "id": "ev1",
+            "kind": "text",
+            "locator": "p. 1, abstract",
+            "quote": "We have demonstrated a simple approach for developing a catalyst candidate consisting of amorphous semiconductor–insulator nanojunctions for (photo)catalytic hydrogen evolution or CO2 reduction.",
+            "source": "scale:commons/source/10.3390-ma17020314"
+          }
+        ],
+        "formula": "CO2",
+        "origin": "curated"
+      }
+    },
+    {
+      "id": "scale:commons/10.3390-ma17020314/species/h2",
+      "label": "ChemicalSpecies",
+      "props": {
+        "name": "hydrogen",
+        "elemental_composition": {
+          "H": 2
+        },
+        "evidence": [
+          {
+            "id": "ev1",
+            "kind": "text",
+            "locator": "p. 1, abstract",
+            "quote": "We have demonstrated a simple approach for developing a catalyst candidate consisting of amorphous semiconductor–insulator nanojunctions for (photo)catalytic hydrogen evolution or CO2 reduction.",
+            "source": "scale:commons/source/10.3390-ma17020314"
+          }
+        ],
+        "formula": "H2",
+        "origin": "curated"
+      }
+    },
+    {
+      "id": "scale:commons/10.3390-ma17020314/species/oxygen",
+      "label": "ChemicalSpecies",
+      "props": {
+        "name": "oxygen",
+        "elemental_composition": {
+          "O": 1
+        },
+        "evidence": [
+          {
+            "id": "ev1",
+            "kind": "text",
+            "locator": "p. 7, section 3.4",
+            "quote": "Wide scans revealed that both insulating and semiconducting deposits are composed of oxygen, carbon, and tin.",
+            "source": "scale:commons/source/10.3390-ma17020314"
+          }
+        ],
+        "formula": "O",
+        "origin": "curated"
+      }
+    },
+    {
+      "id": "scale:commons/10.3390-ma17020314/species/sn",
+      "label": "ChemicalSpecies",
+      "props": {
+        "name": "tin (Sn, total over chemical states)",
+        "elemental_composition": {
+          "Sn": 1
+        },
+        "evidence": [
+          {
+            "id": "ev1",
+            "kind": "text",
+            "locator": "p. 7, section 3.4",
+            "quote": "Wide scans revealed that both insulating and semiconducting deposits are composed of oxygen, carbon, and tin.",
+            "source": "scale:commons/source/10.3390-ma17020314"
+          }
+        ],
+        "formula": "Sn",
+        "note": "generic tin species carrying the total-Sn results of Table 1 (Sn [%at], Sn:O), which sum over Sn0 and Sn4+; the Sn0-specific results (binding energies, metallic fraction) stay on species/sn0",
+        "origin": "curated"
+      }
+    },
+    {
+      "id": "scale:commons/10.3390-ma17020314/species/sn0",
+      "label": "ChemicalSpecies",
+      "props": {
+        "name": "metallic tin (Sn0)",
+        "elemental_composition": {
+          "Sn": 1
+        },
+        "evidence": [
+          {
+            "id": "ev1",
+            "kind": "text",
+            "locator": "p. 7, section 3.4",
+            "quote": "Metallic tin (Sn0) is assigned by 3d5/2 contributions to 485.0 eV for the insulating sample and 484.8 eV for the semiconducting one.",
+            "source": "scale:commons/source/10.3390-ma17020314"
+          }
+        ],
+        "formula": "Sn",
+        "origin": "curated"
+      }
+    },
+    {
+      "id": "scale:commons/10.3390-ma17020314/species/tmt",
+      "label": "ChemicalSpecies",
+      "props": {
+        "name": "tetramethyltin (TMT)",
+        "elemental_composition": {
+          "C": 4,
+          "H": 12,
+          "Sn": 1
+        },
+        "evidence": [
+          {
+            "id": "ev1",
+            "kind": "text",
+            "locator": "p. 1, abstract",
+            "quote": "Amorphous carbon–tin films (Sn–C) produced from tetramethyl tin (TMT)",
+            "source": "scale:commons/source/10.3390-ma17020314"
+          }
+        ],
+        "formula": "C4H12Sn",
+        "origin": "curated"
+      }
+    },
+    {
+      "id": "scale:commons/10.3390-ma17020314/state/ins",
+      "label": "CatalystState",
+      "props": {
+        "name": "insulating SnO2–C film, as prepared (after air exposure)",
+        "architecture": [
+          "thin_film"
+        ],
+        "evidence": [
+          {
+            "id": "ev1",
+            "kind": "text",
+            "locator": "p. 1, abstract",
+            "quote": "The insulator does not demonstrate any internal structure features.",
+            "source": "scale:commons/source/10.3390-ma17020314"
+          }
+        ],
+        "morphology": "amorphous insulating film without internal conductive structure; transparent",
+        "origin": "curated",
+        "state_kind": "as_prepared"
+      }
+    },
+    {
+      "id": "scale:commons/10.3390-ma17020314/state/semi",
+      "label": "CatalystState",
+      "props": {
+        "name": "semiconducting SnO2–C film, as prepared (after air exposure)",
+        "architecture": [
+          "thin_film"
+        ],
+        "evidence": [
+          {
+            "id": "ev1",
+            "kind": "text",
+            "locator": "p. 1, abstract",
+            "quote": "We assume that the semiconductor consists of an internal network of channels auto-organized during deposition.",
+            "source": "scale:commons/source/10.3390-ma17020314"
+          }
+        ],
+        "morphology": "amorphous semiconducting film with self-assembled semiconducting SnO2 channels (conductive filaments) in an insulating carbon matrix; opaque",
+        "origin": "curated",
+        "state_kind": "as_prepared"
+      }
+    },
+    {
+      "id": "scale:commons/10.3390-ma17020314/step/air-ins",
+      "label": "ProcedureStep",
+      "props": {
+        "name": "air exposure of the insulating layer (oxidation to SnO2/Sn–C)",
+        "action": "oxidize",
+        "evidence": [
+          {
+            "id": "ev1",
+            "kind": "text",
+            "locator": "p. 2, section 2",
+            "quote": "The layers were exposed to air, and the following measurement techniques were applied.",
+            "source": "scale:commons/source/10.3390-ma17020314"
+          },
+          {
+            "id": "ev2",
+            "kind": "text",
+            "locator": "p. 1, abstract",
+            "quote": "The layers, after air exposure, oxidized to SnO2/Sn–C.",
+            "source": "scale:commons/source/10.3390-ma17020314"
+          }
+        ],
+        "method": "exposure to air after deposition",
+        "origin": "curated"
+      }
+    },
+    {
+      "id": "scale:commons/10.3390-ma17020314/step/air-semi",
+      "label": "ProcedureStep",
+      "props": {
+        "name": "air exposure of the semiconducting layer (oxidation to SnO2/Sn–C)",
+        "action": "oxidize",
+        "evidence": [
+          {
+            "id": "ev1",
+            "kind": "text",
+            "locator": "p. 2, section 2",
+            "quote": "The layers were exposed to air, and the following measurement techniques were applied.",
+            "source": "scale:commons/source/10.3390-ma17020314"
+          },
+          {
+            "id": "ev2",
+            "kind": "text",
+            "locator": "p. 1, abstract",
+            "quote": "The layers, after air exposure, oxidized to SnO2/Sn–C.",
+            "source": "scale:commons/source/10.3390-ma17020314"
+          }
+        ],
+        "method": "exposure to air after deposition",
+        "origin": "curated"
+      }
+    },
+    {
+      "id": "scale:commons/10.3390-ma17020314/step/deposit-ins",
+      "label": "ProcedureStep",
+      "props": {
+        "name": "PECVD deposition of the insulating Sn–C film",
+        "action": "deposit",
+        "conditions": {
+          "coupling_capacitance": {
+            "status": "present",
+            "unit": "pF",
+            "value": 0
+          }
+        },
+        "duration": {
+          "status": "not_reported",
+          "missing_reason": "not_stated_in_source"
+        },
+        "evidence": [
+          {
+            "id": "ev1",
+            "kind": "text",
+            "locator": "p. 2, section 2",
+            "quote": "Semiconducting and insulating amorphous SnO2–C films were produced from TMT by cold plasma PECVD using an acoustic frequency (af) 40 kHz three-electrode glow discharge reactor.",
+            "source": "scale:commons/source/10.3390-ma17020314"
+          }
+        ],
+        "gas_flow_mode": "not_reported",
+        "method": "PECVD from tetramethyltin (TMT) vapour in the 40 kHz three-electrode glow discharge; coupling capacitance 0 pF",
+        "origin": "curated",
+        "ramp_rate": {
+          "status": "not_reported",
+          "missing_reason": "not_stated_in_source"
+        },
+        "temperature": {
+          "status": "not_reported",
+          "missing_reason": "not_stated_in_source"
+        }
+      }
+    },
+    {
+      "id": "scale:commons/10.3390-ma17020314/step/deposit-semi",
+      "label": "ProcedureStep",
+      "props": {
+        "name": "PECVD deposition of the semiconducting Sn–C film",
+        "action": "deposit",
+        "conditions": {
+          "coupling_capacitance": {
+            "status": "present",
+            "as_reported": "around 2000 pF",
+            "qualifier": "approximate",
+            "unit": "pF",
+            "value": 2000
+          }
+        },
+        "duration": {
+          "status": "not_reported",
+          "missing_reason": "not_stated_in_source"
+        },
+        "evidence": [
+          {
+            "id": "ev1",
+            "kind": "text",
+            "locator": "p. 2, section 2",
+            "quote": "Semiconducting and insulating amorphous SnO2–C films were produced from TMT by cold plasma PECVD using an acoustic frequency (af) 40 kHz three-electrode glow discharge reactor.",
+            "source": "scale:commons/source/10.3390-ma17020314"
+          }
+        ],
+        "gas_flow_mode": "not_reported",
+        "method": "PECVD from tetramethyltin (TMT) vapour in the 40 kHz three-electrode glow discharge; coupling capacitance around 2000 pF",
+        "origin": "curated",
+        "ramp_rate": {
+          "status": "not_reported",
+          "missing_reason": "not_stated_in_source"
+        },
+        "temperature": {
+          "status": "not_reported",
+          "missing_reason": "not_stated_in_source"
+        }
+      }
+    },
+    {
+      "id": "scale:commons/10.3390-ma17020314/step/evaporate-al",
+      "label": "ProcedureStep",
+      "props": {
+        "name": "thermal evaporation of the Al top electrodes (photoconductivity sandwich)",
+        "action": "evaporate",
+        "evidence": [
+          {
+            "id": "ev1",
+            "kind": "text",
+            "locator": "p. 2, section 2",
+            "quote": "The highly transparent top Al electrodes of known transmittance (typically 10 nm thick) were thermally evaporated perpendicularly to the bottom Au strips forming a sandwich configuration.",
+            "source": "scale:commons/source/10.3390-ma17020314"
+          }
+        ],
+        "method": "thermal evaporation, perpendicularly to the bottom Au strips, forming a sandwich configuration",
+        "origin": "curated"
+      }
+    },
+    {
+      "id": "scale:commons/10.3390-ma17020314/var/area_fraction_conductive",
+      "label": "Variable",
+      "props": {
+        "name": "conductive site area fraction",
+        "definition": "share of the scanned film area that is conductive (CAFM)",
+        "evidence": [
+          {
+            "id": "ev1",
+            "kind": "text",
+            "locator": "p. 4, section 3.1",
+            "quote": "The calculated area of conductive sites is ~5%.",
+            "source": "scale:commons/source/10.3390-ma17020314"
+          }
+        ],
+        "origin": "curated",
+        "quantity_kind": "conductive_site_area_fraction",
+        "scale": "quantitative",
+        "unit": "%"
+      }
+    },
+    {
+      "id": "scale:commons/10.3390-ma17020314/var/atomic_ratio",
+      "label": "Variable",
+      "props": {
+        "name": "atomic ratio",
+        "definition": "atomic ratio of tin to oxygen (Sn:O) from XPS",
+        "evidence": [
+          {
+            "id": "ev1",
+            "kind": "text",
+            "locator": "p. 7, section 3.4",
+            "quote": "the ratio of tin to oxygen for a semiconducting deposit is twice as high as for an insulating one, which in turn is close to the theoretical value of 0.5 for SnO2",
+            "source": "scale:commons/source/10.3390-ma17020314"
+          }
+        ],
+        "origin": "curated",
+        "quantity_kind": "atomic_ratio",
+        "scale": "quantitative",
+        "unit": "1"
+      }
+    },
+    {
+      "id": "scale:commons/10.3390-ma17020314/var/barrier_height",
+      "label": "Variable",
+      "props": {
+        "name": "contact barrier height",
+        "definition": "height of the metal–insulator contact barrier for electrons or holes, from photoinjection thresholds",
+        "evidence": [
+          {
+            "id": "ev1",
+            "kind": "text",
+            "locator": "p. 8, section 3.5",
+            "quote": "A simple model of photoinjection of electrons and holes from metal to insulator expresses that the sum of the heights of contact barriers for electrons Φ0e and holes Φ0h gives the value of the transport gap EG for the investigated insulator (Table 2).",
+            "source": "scale:commons/source/10.3390-ma17020314"
+          }
+        ],
+        "origin": "curated",
+        "quantity_kind": "contact_barrier_height",
+        "scale": "quantitative",
+        "unit": "eV"
+      }
+    },
+    {
+      "id": "scale:commons/10.3390-ma17020314/var/binding_energy",
+      "label": "Variable",
+      "props": {
+        "name": "binding energy",
+        "definition": "XPS Sn 3d peak binding energy of a tin chemical state",
+        "evidence": [
+          {
+            "id": "ev1",
+            "kind": "text",
+            "locator": "p. 7, section 3.4",
+            "quote": "Metallic tin (Sn0) is assigned by 3d5/2 contributions to 485.0 eV for the insulating sample and 484.8 eV for the semiconducting one.",
+            "source": "scale:commons/source/10.3390-ma17020314"
+          }
+        ],
+        "origin": "curated",
+        "quantity_kind": "binding_energy",
+        "scale": "quantitative",
+        "unit": "eV"
+      }
+    },
+    {
+      "id": "scale:commons/10.3390-ma17020314/var/channel_cross_section",
+      "label": "Variable",
+      "props": {
+        "name": "channel cross section area",
+        "definition": "cross-sectional area of an individual conductive channel, from CAFM maps of conductive site diameters",
+        "evidence": [
+          {
+            "id": "ev1",
+            "kind": "text",
+            "locator": "p. 6, section 3.2",
+            "quote": "The sizes of individual channels were calculated based on CAFM maps of conductive site diameters and range from 20 to 500 nm2.",
+            "source": "scale:commons/source/10.3390-ma17020314"
+          }
+        ],
+        "origin": "curated",
+        "quantity_kind": "channel_cross_section_area",
+        "scale": "quantitative",
+        "unit": "nm2"
+      }
+    },
+    {
+      "id": "scale:commons/10.3390-ma17020314/var/composition_fraction",
+      "label": "Variable",
+      "props": {
+        "name": "composition fraction",
+        "definition": "XPS atomic concentration of an element in the sample surface",
+        "evidence": [
+          {
+            "id": "ev1",
+            "kind": "text",
+            "locator": "p. 7, section 3.4",
+            "quote": "Wide scans revealed that both insulating and semiconducting deposits are composed of oxygen, carbon, and tin.",
+            "source": "scale:commons/source/10.3390-ma17020314"
+          }
+        ],
+        "origin": "curated",
+        "quantity_kind": "composition_fraction",
+        "scale": "quantitative",
+        "unit": "%at"
+      }
+    },
+    {
+      "id": "scale:commons/10.3390-ma17020314/var/conductivity",
+      "label": "Variable",
+      "props": {
+        "name": "electrical conductivity",
+        "definition": "electrical conductivity of a film or a single channel",
+        "evidence": [
+          {
+            "id": "ev1",
+            "kind": "text",
+            "locator": "p. 3, section 2 (ohmic conductivity from I–V characteristics)",
+            "quote": "The specific conductivity was calculated from ohmic parts of the current–",
+            "source": "scale:commons/source/10.3390-ma17020314"
+          }
+        ],
+        "origin": "curated",
+        "quantity_kind": "electrical_conductivity",
+        "scale": "quantitative",
+        "unit": "S/m"
+      }
+    },
+    {
+      "id": "scale:commons/10.3390-ma17020314/var/electron_affinity",
+      "label": "Variable",
+      "props": {
+        "name": "electron affinity",
+        "definition": "electron affinity X of the insulating film, calculated as X = WM − Φ0e",
+        "evidence": [
+          {
+            "id": "ev1",
+            "kind": "text",
+            "locator": "p. 10, section 3.5",
+            "quote": "Electron affinity X and the ionization potential J were calculated according to relations [20]:",
+            "source": "scale:commons/source/10.3390-ma17020314"
+          }
+        ],
+        "origin": "curated",
+        "quantity_kind": "electron_affinity",
+        "scale": "quantitative",
+        "unit": "eV"
+      }
+    },
+    {
+      "id": "scale:commons/10.3390-ma17020314/var/ionization_potential",
+      "label": "Variable",
+      "props": {
+        "name": "ionization potential",
+        "definition": "ionization potential J of the insulating film, calculated as J = EG + X",
+        "evidence": [
+          {
+            "id": "ev1",
+            "kind": "text",
+            "locator": "p. 10, section 3.5",
+            "quote": "Electron affinity X and the ionization potential J were calculated according to relations [20]:",
+            "source": "scale:commons/source/10.3390-ma17020314"
+          }
+        ],
+        "origin": "curated",
+        "quantity_kind": "ionization_potential",
+        "scale": "quantitative",
+        "unit": "eV"
+      }
+    },
+    {
+      "id": "scale:commons/10.3390-ma17020314/var/metallic_fraction",
+      "label": "Variable",
+      "props": {
+        "name": "metallic sn fraction",
+        "definition": "share of tin present as metallic Sn0, from the XPS Sn 3d fit",
+        "evidence": [
+          {
+            "id": "ev1",
+            "kind": "text",
+            "locator": "p. 7, section 3.4",
+            "quote": "The semiconducting sample contains 14.2% metallic Sn, whereas the insulating sample only 7.2%.",
+            "source": "scale:commons/source/10.3390-ma17020314"
+          }
+        ],
+        "origin": "curated",
+        "quantity_kind": "metallic_sn_fraction",
+        "scale": "quantitative",
+        "unit": "%"
+      }
+    },
+    {
+      "id": "scale:commons/10.3390-ma17020314/var/optical_gap",
+      "label": "Variable",
+      "props": {
+        "name": "optical gap",
+        "definition": "optical gap Eopt from UV–Vis absorption (Tauc relation, n = 2)",
+        "evidence": [
+          {
+            "id": "ev1",
+            "kind": "text",
+            "locator": "p. 10, section 3.6",
+            "quote": "The optical gap Eopt has been estimated from UV–Vis absorption spectra by applying the Tauc equation:",
+            "source": "scale:commons/source/10.3390-ma17020314"
+          }
+        ],
+        "origin": "curated",
+        "quantity_kind": "optical_gap",
+        "scale": "quantitative",
+        "unit": "eV"
+      }
+    },
+    {
+      "id": "scale:commons/10.3390-ma17020314/var/photon_flux",
+      "label": "Variable",
+      "props": {
+        "name": "photon flux",
+        "definition": "quantum efficiency of incident light illuminating the active surface of the electrodes",
+        "evidence": [
+          {
+            "id": "ev1",
+            "kind": "text",
+            "locator": "p. 2, section 2",
+            "quote": "A quantum efficiency of incident light of 2.2–6.6 × 1017 quanta/s*m2",
+            "source": "scale:commons/source/10.3390-ma17020314"
+          }
+        ],
+        "origin": "curated",
+        "quantity_kind": "photon_flux",
+        "scale": "quantitative",
+        "unit": "quanta/(s*m2)"
+      }
+    },
+    {
+      "id": "scale:commons/10.3390-ma17020314/var/surface_roughness",
+      "label": "Variable",
+      "props": {
+        "name": "surface roughness",
+        "definition": "AFM surface roughness of the film",
+        "evidence": [
+          {
+            "id": "ev1",
+            "kind": "text",
+            "locator": "p. 4, section 3.1",
+            "quote": "The roughness of the surface is 7.8 nm.",
+            "source": "scale:commons/source/10.3390-ma17020314"
+          }
+        ],
+        "origin": "curated",
+        "quantity_kind": "surface_roughness",
+        "scale": "quantitative",
+        "unit": "nm"
+      }
+    },
+    {
+      "id": "scale:commons/10.3390-ma17020314/var/tauc_coefficient",
+      "label": "Variable",
+      "props": {
+        "name": "tauc proportionality factor",
+        "definition": "proportionality factor B of the Tauc relation (units as printed in the Figure 8 caption: given in 10^7 eV−1 m−1)",
+        "evidence": [
+          {
+            "id": "ev1",
+            "kind": "text",
+            "locator": "p. 11, Figure 8 caption",
+            "quote": "The coefficient B is given in 107 eV−1 m−1.",
+            "source": "scale:commons/source/10.3390-ma17020314"
+          }
+        ],
+        "origin": "curated",
+        "quantity_kind": "tauc_proportionality_factor",
+        "scale": "quantitative",
+        "unit": "eV-1 m-1"
+      }
+    },
+    {
+      "id": "scale:commons/10.3390-ma17020314/var/threshold_difference",
+      "label": "Variable",
+      "props": {
+        "name": "threshold height difference",
+        "definition": "difference in photoinjection threshold heights between the Au and Al electrodes",
+        "evidence": [
+          {
+            "id": "ev1",
+            "kind": "text",
+            "locator": "p. 9, section 3.5",
+            "quote": "the difference in threshold heights for electrons as well as for holes measured for the Au and Al electrodes is about 0.6 eV",
+            "source": "scale:commons/source/10.3390-ma17020314"
+          }
+        ],
+        "origin": "curated",
+        "quantity_kind": "threshold_height_difference",
+        "scale": "quantitative",
+        "unit": "eV"
+      }
+    },
+    {
+      "id": "scale:commons/10.3390-ma17020314/var/transport_gap",
+      "label": "Variable",
+      "props": {
+        "name": "transport gap",
+        "definition": "transport gap EG of the insulating film (sum of electron and hole contact barrier heights)",
+        "evidence": [
+          {
+            "id": "ev1",
+            "kind": "text",
+            "locator": "p. 1, abstract",
+            "quote": "the transport gap EG (5.2 eV)",
+            "source": "scale:commons/source/10.3390-ma17020314"
+          }
+        ],
+        "origin": "curated",
+        "quantity_kind": "transport_gap",
+        "scale": "quantitative",
+        "unit": "eV"
+      }
+    },
+    {
+      "id": "scale:commons/10.3390-ma17020314/var/work_function",
+      "label": "Variable",
+      "props": {
+        "name": "work function",
+        "definition": "work function of the metal electrode used in the photoinjection calculation",
+        "evidence": [
+          {
+            "id": "ev1",
+            "kind": "text",
+            "locator": "p. 9, section 3.5",
+            "quote": "Taking into account the fact that the work function for Au is higher than that for Al, in our case, they amount to about 4.6 and 3.8 eV, respectively",
+            "source": "scale:commons/source/10.3390-ma17020314"
+          }
+        ],
+        "origin": "curated",
+        "quantity_kind": "work_function",
+        "scale": "quantitative",
+        "unit": "eV"
+      }
+    },
+    {
+      "id": "scale:commons/source/10.3390-ma17020314",
+      "label": "Source",
+      "props": {
+        "name": "Optoelectronic Properties of Cold Plasma-Deposited, Oxidized Sn–C Thin Films",
+        "kind": "article",
+        "doi": "10.3390/ma17020314",
+        "licence": "https://creativecommons.org/licenses/by/4.0/",
+        "origin": "curated",
+        "retrieved_from": "1015472.pdf",
+        "retrieved_on": "2026-11-04",
+        "text_sha256": "faf9e2c75f6157ae4f160b9fbbd540d158ff5b7d3667b0c057ade8f79460a8ce",
+        "text_version": "version_of_record",
+        "title": "Optoelectronic Properties of Cold Plasma-Deposited, Oxidized Sn–C Thin Films",
+        "url": "https://doi.org/10.3390/ma17020314",
+        "venue": "Materials",
+        "year": 2024
+      }
+    }
+  ],
+  "links": [
+    {
+      "id": "scale:commons/10.3390-ma17020314/an/photoinjection/reported-in/10.3390-ma17020314",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 1, abstract",
+          "p. 10, section 3.5",
+          "p. 11, Supplementary Materials",
+          "p. 9, Table 2",
+          "p. 9, section 3.5"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.3390-ma17020314/an/photoinjection",
+      "target": "scale:commons/source/10.3390-ma17020314"
+    },
+    {
+      "id": "scale:commons/10.3390-ma17020314/an/tauc/reported-in/10.3390-ma17020314",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 10, section 3.6",
+          "p. 11, Figure 8 caption"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.3390-ma17020314/an/tauc",
+      "target": "scale:commons/source/10.3390-ma17020314"
+    },
+    {
+      "id": "scale:commons/10.3390-ma17020314/catalyst/sn-c-nanojunction/reported-in/10.3390-ma17020314",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 1, abstract"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.3390-ma17020314/catalyst/sn-c-nanojunction",
+      "target": "scale:commons/source/10.3390-ma17020314"
+    },
+    {
+      "id": "scale:commons/10.3390-ma17020314/char/afm-topo/reported-in/10.3390-ma17020314",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 3, section 2",
+          "p. 4, section 3.1"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.3390-ma17020314/char/afm-topo",
+      "target": "scale:commons/source/10.3390-ma17020314"
+    },
+    {
+      "id": "scale:commons/10.3390-ma17020314/char/cafm-ins/reported-in/10.3390-ma17020314",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 1, abstract",
+          "p. 3, section 3.1"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.3390-ma17020314/char/cafm-ins",
+      "target": "scale:commons/source/10.3390-ma17020314"
+    },
+    {
+      "id": "scale:commons/10.3390-ma17020314/char/cafm-semi/reported-in/10.3390-ma17020314",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 2, section 2",
+          "p. 3, section 2",
+          "p. 3, section 3",
+          "p. 4, section 3.1",
+          "p. 5, section 3.1",
+          "p. 6, section 3.2",
+          "p. 6, section 3.3"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.3390-ma17020314/char/cafm-semi",
+      "target": "scale:commons/source/10.3390-ma17020314"
+    },
+    {
+      "id": "scale:commons/10.3390-ma17020314/char/lcafm/reported-in/10.3390-ma17020314",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 5, section 3.2",
+          "p. 6, section 3.2"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.3390-ma17020314/char/lcafm",
+      "target": "scale:commons/source/10.3390-ma17020314"
+    },
+    {
+      "id": "scale:commons/10.3390-ma17020314/char/macro-ins/reported-in/10.3390-ma17020314",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 3, section 2",
+          "p. 7, section 3.3"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.3390-ma17020314/char/macro-ins",
+      "target": "scale:commons/source/10.3390-ma17020314"
+    },
+    {
+      "id": "scale:commons/10.3390-ma17020314/char/macro-semi/reported-in/10.3390-ma17020314",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 3, section 2",
+          "p. 6, section 3.3",
+          "p. 7, section 3.3"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.3390-ma17020314/char/macro-semi",
+      "target": "scale:commons/source/10.3390-ma17020314"
+    },
+    {
+      "id": "scale:commons/10.3390-ma17020314/char/photoem/reported-in/10.3390-ma17020314",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 2, section 2",
+          "p. 3, section 2",
+          "p. 8, section 3.5",
+          "p. 9, Figure 6 caption",
+          "p. 9, Table 2",
+          "p. 9, section 3.5"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.3390-ma17020314/char/photoem",
+      "target": "scale:commons/source/10.3390-ma17020314"
+    },
+    {
+      "id": "scale:commons/10.3390-ma17020314/char/uvvis/reported-in/10.3390-ma17020314",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 10, section 3.6",
+          "p. 3, section 2"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.3390-ma17020314/char/uvvis",
+      "target": "scale:commons/source/10.3390-ma17020314"
+    },
+    {
+      "id": "scale:commons/10.3390-ma17020314/char/xps-ins/reported-in/10.3390-ma17020314",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 3, section 2",
+          "p. 7, Table 1, row 'Insulating SnO2–C'",
+          "p. 7, section 3.4"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.3390-ma17020314/char/xps-ins",
+      "target": "scale:commons/source/10.3390-ma17020314"
+    },
+    {
+      "id": "scale:commons/10.3390-ma17020314/char/xps-semi/reported-in/10.3390-ma17020314",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 3, section 2",
+          "p. 7, Table 1, row 'Semiconducting SnO2–C'",
+          "p. 7, section 3.4"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.3390-ma17020314/char/xps-semi",
+      "target": "scale:commons/source/10.3390-ma17020314"
+    },
+    {
+      "id": "scale:commons/10.3390-ma17020314/claim/candidate/reported-in/10.3390-ma17020314",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 1, abstract",
+          "p. 1, section 1"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.3390-ma17020314/claim/candidate",
+      "target": "scale:commons/source/10.3390-ma17020314"
+    },
+    {
+      "id": "scale:commons/10.3390-ma17020314/claim/channels/reported-in/10.3390-ma17020314",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 1, abstract",
+          "p. 2, section 1",
+          "p. 5, section 3.1",
+          "p. 5, section 3.2",
+          "p. 7, section 3.4"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.3390-ma17020314/claim/channels",
+      "target": "scale:commons/source/10.3390-ma17020314"
+    },
+    {
+      "id": "scale:commons/10.3390-ma17020314/claim/lit-comparison/reported-in/10.3390-ma17020314",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 5, section 3.2",
+          "p. 6, section 3.2"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.3390-ma17020314/claim/lit-comparison",
+      "target": "scale:commons/source/10.3390-ma17020314"
+    },
+    {
+      "id": "scale:commons/10.3390-ma17020314/claim/ntype/reported-in/10.3390-ma17020314",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 11, Conclusions"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.3390-ma17020314/claim/ntype",
+      "target": "scale:commons/source/10.3390-ma17020314"
+    },
+    {
+      "id": "scale:commons/10.3390-ma17020314/claim/percolation/reported-in/10.3390-ma17020314",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 1, section 1",
+          "p. 11, Conclusions",
+          "p. 7, section 3.3"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.3390-ma17020314/claim/percolation",
+      "target": "scale:commons/source/10.3390-ma17020314"
+    },
+    {
+      "id": "scale:commons/10.3390-ma17020314/claim/poole-frenkel/reported-in/10.3390-ma17020314",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 10, section 3.5"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.3390-ma17020314/claim/poole-frenkel",
+      "target": "scale:commons/source/10.3390-ma17020314"
+    },
+    {
+      "id": "scale:commons/10.3390-ma17020314/claim/sn-oxidized/reported-in/10.3390-ma17020314",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 1, abstract",
+          "p. 11, Conclusions",
+          "p. 7, section 3.4"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.3390-ma17020314/claim/sn-oxidized",
+      "target": "scale:commons/source/10.3390-ma17020314"
+    },
+    {
+      "id": "scale:commons/10.3390-ma17020314/electrode/al/reported-in/10.3390-ma17020314",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 2, section 2"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.3390-ma17020314/electrode/al",
+      "target": "scale:commons/source/10.3390-ma17020314"
+    },
+    {
+      "id": "scale:commons/10.3390-ma17020314/electrode/au/reported-in/10.3390-ma17020314",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 2, section 2"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.3390-ma17020314/electrode/au",
+      "target": "scale:commons/source/10.3390-ma17020314"
+    },
+    {
+      "id": "scale:commons/10.3390-ma17020314/inst/axis-ultra/reported-in/10.3390-ma17020314",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 3, section 2"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.3390-ma17020314/inst/axis-ultra",
+      "target": "scale:commons/source/10.3390-ma17020314"
+    },
+    {
+      "id": "scale:commons/10.3390-ma17020314/inst/homebrew/reported-in/10.3390-ma17020314",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 2, section 2"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.3390-ma17020314/inst/homebrew",
+      "target": "scale:commons/source/10.3390-ma17020314"
+    },
+    {
+      "id": "scale:commons/10.3390-ma17020314/inst/lodz-tech/reported-in/10.3390-ma17020314",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 1, affiliations"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.3390-ma17020314/inst/lodz-tech",
+      "target": "scale:commons/source/10.3390-ma17020314"
+    },
+    {
+      "id": "scale:commons/10.3390-ma17020314/inst/nanoscope3/reported-in/10.3390-ma17020314",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 2, section 2"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.3390-ma17020314/inst/nanoscope3",
+      "target": "scale:commons/source/10.3390-ma17020314"
+    },
+    {
+      "id": "scale:commons/10.3390-ma17020314/inst/ncn-poland/reported-in/10.3390-ma17020314",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 12, Funding"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.3390-ma17020314/inst/ncn-poland",
+      "target": "scale:commons/source/10.3390-ma17020314"
+    },
+    {
+      "id": "scale:commons/10.3390-ma17020314/inst/ntmdt-lcafm/reported-in/10.3390-ma17020314",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 3, section 2"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.3390-ma17020314/inst/ntmdt-lcafm",
+      "target": "scale:commons/source/10.3390-ma17020314"
+    },
+    {
+      "id": "scale:commons/10.3390-ma17020314/inst/univ-lodz/reported-in/10.3390-ma17020314",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 1, affiliations"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.3390-ma17020314/inst/univ-lodz",
+      "target": "scale:commons/source/10.3390-ma17020314"
+    },
+    {
+      "id": "scale:commons/10.3390-ma17020314/inst/uv1800/reported-in/10.3390-ma17020314",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 3, section 2"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.3390-ma17020314/inst/uv1800",
+      "target": "scale:commons/source/10.3390-ma17020314"
+    },
+    {
+      "id": "scale:commons/10.3390-ma17020314/light/xenon/reported-in/10.3390-ma17020314",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 2, section 2",
+          "p. 3, section 2"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.3390-ma17020314/light/xenon",
+      "target": "scale:commons/source/10.3390-ma17020314"
+    },
+    {
+      "id": "scale:commons/10.3390-ma17020314/link/an-in-1",
+      "type": "HAS_INPUT",
+      "props": {
+        "origin": "curated",
+        "role": "data"
+      },
+      "source": "scale:commons/10.3390-ma17020314/an/tauc",
+      "target": "scale:commons/10.3390-ma17020314/char/uvvis"
+    },
+    {
+      "id": "scale:commons/10.3390-ma17020314/link/an-in-2",
+      "type": "HAS_INPUT",
+      "props": {
+        "origin": "curated",
+        "role": "data"
+      },
+      "source": "scale:commons/10.3390-ma17020314/an/photoinjection",
+      "target": "scale:commons/10.3390-ma17020314/char/photoem"
+    },
+    {
+      "id": "scale:commons/10.3390-ma17020314/link/an-model-1",
+      "type": "USES_MODEL",
+      "props": {
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.3390-ma17020314/an/tauc",
+      "target": "scale:commons/10.3390-ma17020314/model/tauc"
+    },
+    {
+      "id": "scale:commons/10.3390-ma17020314/link/an-model-2",
+      "type": "USES_MODEL",
+      "props": {
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.3390-ma17020314/an/photoinjection",
+      "target": "scale:commons/10.3390-ma17020314/model/photoinjection"
+    },
+    {
+      "id": "scale:commons/10.3390-ma17020314/link/an-uvvis-instr",
+      "type": "USES_INSTRUMENT",
+      "props": {
+        "origin": "curated",
+        "role": "analysis"
+      },
+      "source": "scale:commons/10.3390-ma17020314/an/tauc",
+      "target": "scale:commons/10.3390-ma17020314/inst/uv1800"
+    },
+    {
+      "id": "scale:commons/10.3390-ma17020314/link/auth-1",
+      "type": "AUTHORED_BY",
+      "props": {
+        "origin": "curated",
+        "position": 1,
+        "role": "author"
+      },
+      "source": "scale:commons/source/10.3390-ma17020314",
+      "target": "scale:commons/10.3390-ma17020314/person/fratczak"
+    },
+    {
+      "id": "scale:commons/10.3390-ma17020314/link/auth-2",
+      "type": "AUTHORED_BY",
+      "props": {
+        "origin": "curated",
+        "position": 2,
+        "role": "author"
+      },
+      "source": "scale:commons/source/10.3390-ma17020314",
+      "target": "scale:commons/10.3390-ma17020314/person/balcerzak"
+    },
+    {
+      "id": "scale:commons/10.3390-ma17020314/link/auth-3",
+      "type": "AUTHORED_BY",
+      "props": {
+        "origin": "curated",
+        "position": 3,
+        "role": "author"
+      },
+      "source": "scale:commons/source/10.3390-ma17020314",
+      "target": "scale:commons/10.3390-ma17020314/person/rogala"
+    },
+    {
+      "id": "scale:commons/10.3390-ma17020314/link/char-el-1",
+      "type": "HAS_INPUT",
+      "props": {
+        "note": "semi-sandwich configuration on Au electrodes",
+        "origin": "curated",
+        "role": "material"
+      },
+      "source": "scale:commons/10.3390-ma17020314/char/cafm-semi",
+      "target": "scale:commons/10.3390-ma17020314/electrode/au"
+    },
+    {
+      "id": "scale:commons/10.3390-ma17020314/link/char-el-2",
+      "type": "HAS_INPUT",
+      "props": {
+        "note": "sandwich geometry between Au and Al electrodes",
+        "origin": "curated",
+        "role": "material"
+      },
+      "source": "scale:commons/10.3390-ma17020314/char/photoem",
+      "target": "scale:commons/10.3390-ma17020314/electrode/au"
+    },
+    {
+      "id": "scale:commons/10.3390-ma17020314/link/char-el-3",
+      "type": "HAS_INPUT",
+      "props": {
+        "note": "sandwich geometry between Au and Al electrodes",
+        "origin": "curated",
+        "role": "material"
+      },
+      "source": "scale:commons/10.3390-ma17020314/char/photoem",
+      "target": "scale:commons/10.3390-ma17020314/electrode/al"
+    },
+    {
+      "id": "scale:commons/10.3390-ma17020314/link/char-instr-1",
+      "type": "USES_INSTRUMENT",
+      "props": {
+        "origin": "curated",
+        "role": "measurement"
+      },
+      "source": "scale:commons/10.3390-ma17020314/char/cafm-semi",
+      "target": "scale:commons/10.3390-ma17020314/inst/nanoscope3"
+    },
+    {
+      "id": "scale:commons/10.3390-ma17020314/link/char-instr-10",
+      "type": "USES_INSTRUMENT",
+      "props": {
+        "origin": "curated",
+        "role": "measurement"
+      },
+      "source": "scale:commons/10.3390-ma17020314/char/uvvis",
+      "target": "scale:commons/10.3390-ma17020314/inst/uv1800"
+    },
+    {
+      "id": "scale:commons/10.3390-ma17020314/link/char-instr-2",
+      "type": "USES_INSTRUMENT",
+      "props": {
+        "origin": "curated",
+        "role": "measurement"
+      },
+      "source": "scale:commons/10.3390-ma17020314/char/cafm-ins",
+      "target": "scale:commons/10.3390-ma17020314/inst/nanoscope3"
+    },
+    {
+      "id": "scale:commons/10.3390-ma17020314/link/char-instr-3",
+      "type": "USES_INSTRUMENT",
+      "props": {
+        "origin": "curated",
+        "role": "measurement"
+      },
+      "source": "scale:commons/10.3390-ma17020314/char/afm-topo",
+      "target": "scale:commons/10.3390-ma17020314/inst/nanoscope3"
+    },
+    {
+      "id": "scale:commons/10.3390-ma17020314/link/char-instr-4",
+      "type": "USES_INSTRUMENT",
+      "props": {
+        "origin": "curated",
+        "role": "measurement"
+      },
+      "source": "scale:commons/10.3390-ma17020314/char/lcafm",
+      "target": "scale:commons/10.3390-ma17020314/inst/ntmdt-lcafm"
+    },
+    {
+      "id": "scale:commons/10.3390-ma17020314/link/char-instr-5",
+      "type": "USES_INSTRUMENT",
+      "props": {
+        "origin": "curated",
+        "role": "measurement"
+      },
+      "source": "scale:commons/10.3390-ma17020314/char/macro-semi",
+      "target": "scale:commons/10.3390-ma17020314/inst/homebrew"
+    },
+    {
+      "id": "scale:commons/10.3390-ma17020314/link/char-instr-6",
+      "type": "USES_INSTRUMENT",
+      "props": {
+        "origin": "curated",
+        "role": "measurement"
+      },
+      "source": "scale:commons/10.3390-ma17020314/char/macro-ins",
+      "target": "scale:commons/10.3390-ma17020314/inst/homebrew"
+    },
+    {
+      "id": "scale:commons/10.3390-ma17020314/link/char-instr-7",
+      "type": "USES_INSTRUMENT",
+      "props": {
+        "origin": "curated",
+        "role": "measurement"
+      },
+      "source": "scale:commons/10.3390-ma17020314/char/xps-semi",
+      "target": "scale:commons/10.3390-ma17020314/inst/axis-ultra"
+    },
+    {
+      "id": "scale:commons/10.3390-ma17020314/link/char-instr-8",
+      "type": "USES_INSTRUMENT",
+      "props": {
+        "origin": "curated",
+        "role": "measurement"
+      },
+      "source": "scale:commons/10.3390-ma17020314/char/xps-ins",
+      "target": "scale:commons/10.3390-ma17020314/inst/axis-ultra"
+    },
+    {
+      "id": "scale:commons/10.3390-ma17020314/link/char-instr-9",
+      "type": "USES_INSTRUMENT",
+      "props": {
+        "origin": "curated",
+        "role": "measurement"
+      },
+      "source": "scale:commons/10.3390-ma17020314/char/photoem",
+      "target": "scale:commons/10.3390-ma17020314/inst/homebrew"
+    },
+    {
+      "id": "scale:commons/10.3390-ma17020314/link/char-light-1",
+      "type": "ILLUMINATED_BY",
+      "props": {
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.3390-ma17020314/char/photoem",
+      "target": "scale:commons/10.3390-ma17020314/light/xenon"
+    },
+    {
+      "id": "scale:commons/10.3390-ma17020314/link/char-samp-1",
+      "type": "CHARACTERIZES",
+      "props": {
+        "origin": "curated",
+        "state": "as_prepared"
+      },
+      "source": "scale:commons/10.3390-ma17020314/char/cafm-semi",
+      "target": "scale:commons/10.3390-ma17020314/sample/semi"
+    },
+    {
+      "id": "scale:commons/10.3390-ma17020314/link/char-samp-10",
+      "type": "CHARACTERIZES",
+      "props": {
+        "origin": "curated",
+        "state": "as_prepared"
+      },
+      "source": "scale:commons/10.3390-ma17020314/char/uvvis",
+      "target": "scale:commons/10.3390-ma17020314/sample/ins"
+    },
+    {
+      "id": "scale:commons/10.3390-ma17020314/link/char-samp-11",
+      "type": "CHARACTERIZES",
+      "props": {
+        "origin": "curated",
+        "state": "as_prepared"
+      },
+      "source": "scale:commons/10.3390-ma17020314/char/uvvis",
+      "target": "scale:commons/10.3390-ma17020314/sample/semi"
+    },
+    {
+      "id": "scale:commons/10.3390-ma17020314/link/char-samp-2",
+      "type": "CHARACTERIZES",
+      "props": {
+        "origin": "curated",
+        "state": "as_prepared"
+      },
+      "source": "scale:commons/10.3390-ma17020314/char/cafm-ins",
+      "target": "scale:commons/10.3390-ma17020314/sample/ins"
+    },
+    {
+      "id": "scale:commons/10.3390-ma17020314/link/char-samp-3",
+      "type": "CHARACTERIZES",
+      "props": {
+        "origin": "curated",
+        "state": "as_prepared"
+      },
+      "source": "scale:commons/10.3390-ma17020314/char/afm-topo",
+      "target": "scale:commons/10.3390-ma17020314/sample/semi"
+    },
+    {
+      "id": "scale:commons/10.3390-ma17020314/link/char-samp-4",
+      "type": "CHARACTERIZES",
+      "props": {
+        "origin": "curated",
+        "state": "as_prepared"
+      },
+      "source": "scale:commons/10.3390-ma17020314/char/lcafm",
+      "target": "scale:commons/10.3390-ma17020314/sample/semi"
+    },
+    {
+      "id": "scale:commons/10.3390-ma17020314/link/char-samp-5",
+      "type": "CHARACTERIZES",
+      "props": {
+        "origin": "curated",
+        "state": "as_prepared"
+      },
+      "source": "scale:commons/10.3390-ma17020314/char/macro-semi",
+      "target": "scale:commons/10.3390-ma17020314/sample/semi"
+    },
+    {
+      "id": "scale:commons/10.3390-ma17020314/link/char-samp-6",
+      "type": "CHARACTERIZES",
+      "props": {
+        "origin": "curated",
+        "state": "as_prepared"
+      },
+      "source": "scale:commons/10.3390-ma17020314/char/macro-ins",
+      "target": "scale:commons/10.3390-ma17020314/sample/ins"
+    },
+    {
+      "id": "scale:commons/10.3390-ma17020314/link/char-samp-7",
+      "type": "CHARACTERIZES",
+      "props": {
+        "origin": "curated",
+        "state": "as_prepared"
+      },
+      "source": "scale:commons/10.3390-ma17020314/char/xps-semi",
+      "target": "scale:commons/10.3390-ma17020314/sample/semi"
+    },
+    {
+      "id": "scale:commons/10.3390-ma17020314/link/char-samp-8",
+      "type": "CHARACTERIZES",
+      "props": {
+        "origin": "curated",
+        "state": "as_prepared"
+      },
+      "source": "scale:commons/10.3390-ma17020314/char/xps-ins",
+      "target": "scale:commons/10.3390-ma17020314/sample/ins"
+    },
+    {
+      "id": "scale:commons/10.3390-ma17020314/link/char-samp-9",
+      "type": "CHARACTERIZES",
+      "props": {
+        "origin": "curated",
+        "state": "as_prepared"
+      },
+      "source": "scale:commons/10.3390-ma17020314/char/photoem",
+      "target": "scale:commons/10.3390-ma17020314/sample/ins"
+    },
+    {
+      "id": "scale:commons/10.3390-ma17020314/link/claim-about-1",
+      "type": "ABOUT",
+      "props": {
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.3390-ma17020314/claim/channels",
+      "target": "scale:commons/10.3390-ma17020314/state/semi"
+    },
+    {
+      "id": "scale:commons/10.3390-ma17020314/link/claim-about-2",
+      "type": "ABOUT",
+      "props": {
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.3390-ma17020314/claim/percolation",
+      "target": "scale:commons/10.3390-ma17020314/prep/pecvd"
+    },
+    {
+      "id": "scale:commons/10.3390-ma17020314/link/claim-about-3",
+      "type": "ABOUT",
+      "props": {
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.3390-ma17020314/claim/poole-frenkel",
+      "target": "scale:commons/10.3390-ma17020314/state/ins"
+    },
+    {
+      "id": "scale:commons/10.3390-ma17020314/link/claim-about-4",
+      "type": "ABOUT",
+      "props": {
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.3390-ma17020314/claim/ntype",
+      "target": "scale:commons/10.3390-ma17020314/state/ins"
+    },
+    {
+      "id": "scale:commons/10.3390-ma17020314/link/claim-about-5",
+      "type": "ABOUT",
+      "props": {
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.3390-ma17020314/claim/candidate",
+      "target": "scale:commons/10.3390-ma17020314/catalyst/sn-c-nanojunction"
+    },
+    {
+      "id": "scale:commons/10.3390-ma17020314/link/claim-about-6",
+      "type": "ABOUT",
+      "props": {
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.3390-ma17020314/claim/lit-comparison",
+      "target": "scale:commons/10.3390-ma17020314/material/sno2"
+    },
+    {
+      "id": "scale:commons/10.3390-ma17020314/link/claim-about-7",
+      "type": "ABOUT",
+      "props": {
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.3390-ma17020314/claim/sn-oxidized",
+      "target": "scale:commons/10.3390-ma17020314/material/sno2c-film"
+    },
+    {
+      "id": "scale:commons/10.3390-ma17020314/link/claim-conc-1",
+      "type": "CONCLUDES",
+      "props": {
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.3390-ma17020314/char/xps-semi",
+      "target": "scale:commons/10.3390-ma17020314/claim/sn-oxidized"
+    },
+    {
+      "id": "scale:commons/10.3390-ma17020314/link/claim-conc-2",
+      "type": "CONCLUDES",
+      "props": {
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.3390-ma17020314/char/xps-ins",
+      "target": "scale:commons/10.3390-ma17020314/claim/sn-oxidized"
+    },
+    {
+      "id": "scale:commons/10.3390-ma17020314/link/claim-sup-1",
+      "type": "SUPPORTS",
+      "props": {
+        "origin": "curated",
+        "premise_refs": [
+          {
+            "path": "/result_values/nanoconductivity_range",
+            "record": "scale:commons/10.3390-ma17020314/char/cafm-semi"
+          },
+          {
+            "path": "/result_values/conductive_site_area",
+            "record": "scale:commons/10.3390-ma17020314/char/cafm-semi"
+          }
+        ]
+      },
+      "source": "scale:commons/10.3390-ma17020314/char/cafm-semi",
+      "target": "scale:commons/10.3390-ma17020314/claim/channels"
+    },
+    {
+      "id": "scale:commons/10.3390-ma17020314/link/claim-sup-10",
+      "type": "SUPPORTS",
+      "props": {
+        "origin": "curated",
+        "premise_refs": [
+          {
+            "path": "/result_values/sn4_binding_energy",
+            "record": "scale:commons/10.3390-ma17020314/char/xps-semi"
+          },
+          {
+            "path": "/result_values/metallic_sn_fraction",
+            "record": "scale:commons/10.3390-ma17020314/char/xps-semi"
+          }
+        ]
+      },
+      "source": "scale:commons/10.3390-ma17020314/char/xps-semi",
+      "target": "scale:commons/10.3390-ma17020314/claim/sn-oxidized"
+    },
+    {
+      "id": "scale:commons/10.3390-ma17020314/link/claim-sup-11",
+      "type": "SUPPORTS",
+      "props": {
+        "origin": "curated",
+        "premise_refs": [
+          {
+            "path": "/result_values/sn4_binding_energy",
+            "record": "scale:commons/10.3390-ma17020314/char/xps-ins"
+          },
+          {
+            "path": "/result_values/metallic_sn_fraction",
+            "record": "scale:commons/10.3390-ma17020314/char/xps-ins"
+          }
+        ]
+      },
+      "source": "scale:commons/10.3390-ma17020314/char/xps-ins",
+      "target": "scale:commons/10.3390-ma17020314/claim/sn-oxidized"
+    },
+    {
+      "id": "scale:commons/10.3390-ma17020314/link/claim-sup-2",
+      "type": "SUPPORTS",
+      "props": {
+        "origin": "curated",
+        "premise_refs": [
+          {
+            "path": "/result_values/channel_conductivity",
+            "record": "scale:commons/10.3390-ma17020314/char/lcafm"
+          }
+        ]
+      },
+      "source": "scale:commons/10.3390-ma17020314/char/lcafm",
+      "target": "scale:commons/10.3390-ma17020314/claim/channels"
+    },
+    {
+      "id": "scale:commons/10.3390-ma17020314/link/claim-sup-3",
+      "type": "SUPPORTS",
+      "props": {
+        "origin": "curated",
+        "premise_refs": [
+          {
+            "path": "/result_values/sn_fraction",
+            "record": "scale:commons/10.3390-ma17020314/char/xps-semi"
+          },
+          {
+            "path": "/result_values/metallic_sn_fraction",
+            "record": "scale:commons/10.3390-ma17020314/char/xps-semi"
+          }
+        ]
+      },
+      "source": "scale:commons/10.3390-ma17020314/char/xps-semi",
+      "target": "scale:commons/10.3390-ma17020314/claim/channels"
+    },
+    {
+      "id": "scale:commons/10.3390-ma17020314/link/claim-sup-4",
+      "type": "SUPPORTS",
+      "props": {
+        "origin": "curated",
+        "premise_refs": [
+          {
+            "path": "/result_values/macro_conductivity",
+            "record": "scale:commons/10.3390-ma17020314/char/macro-semi"
+          }
+        ]
+      },
+      "source": "scale:commons/10.3390-ma17020314/char/macro-semi",
+      "target": "scale:commons/10.3390-ma17020314/claim/percolation"
+    },
+    {
+      "id": "scale:commons/10.3390-ma17020314/link/claim-sup-5",
+      "type": "SUPPORTS",
+      "props": {
+        "origin": "curated",
+        "premise_refs": [
+          {
+            "path": "/result_values/macro_conductivity",
+            "record": "scale:commons/10.3390-ma17020314/char/macro-ins"
+          }
+        ]
+      },
+      "source": "scale:commons/10.3390-ma17020314/char/macro-ins",
+      "target": "scale:commons/10.3390-ma17020314/claim/percolation"
+    },
+    {
+      "id": "scale:commons/10.3390-ma17020314/link/claim-sup-6",
+      "type": "SUPPORTS",
+      "props": {
+        "origin": "curated",
+        "premise_refs": [
+          {
+            "path": "/result_values/macro_conductivity",
+            "record": "scale:commons/10.3390-ma17020314/char/macro-ins"
+          }
+        ]
+      },
+      "source": "scale:commons/10.3390-ma17020314/char/macro-ins",
+      "target": "scale:commons/10.3390-ma17020314/claim/poole-frenkel"
+    },
+    {
+      "id": "scale:commons/10.3390-ma17020314/link/claim-sup-7",
+      "type": "SUPPORTS",
+      "props": {
+        "origin": "curated",
+        "premise_refs": [
+          {
+            "path": "/result_values/transport_gap",
+            "record": "scale:commons/10.3390-ma17020314/an/photoinjection"
+          },
+          {
+            "path": "/result_values/electron_affinity",
+            "record": "scale:commons/10.3390-ma17020314/an/photoinjection"
+          }
+        ]
+      },
+      "source": "scale:commons/10.3390-ma17020314/an/photoinjection",
+      "target": "scale:commons/10.3390-ma17020314/claim/ntype"
+    },
+    {
+      "id": "scale:commons/10.3390-ma17020314/link/claim-sup-8",
+      "type": "SUPPORTS",
+      "props": {
+        "origin": "curated",
+        "premise_refs": [
+          {
+            "path": "/result_values/optical_gap_insulating",
+            "record": "scale:commons/10.3390-ma17020314/an/tauc"
+          }
+        ]
+      },
+      "source": "scale:commons/10.3390-ma17020314/an/tauc",
+      "target": "scale:commons/10.3390-ma17020314/claim/ntype"
+    },
+    {
+      "id": "scale:commons/10.3390-ma17020314/link/claim-sup-9",
+      "type": "SUPPORTS",
+      "props": {
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.3390-ma17020314/claim/channels",
+      "target": "scale:commons/10.3390-ma17020314/claim/candidate"
+    },
+    {
+      "id": "scale:commons/10.3390-ma17020314/link/cphase-1",
+      "type": "HAS_PHASE",
+      "props": {
+        "evidence": [
+          {
+            "id": "ev1",
+            "kind": "text",
+            "locator": "p. 1, abstract",
+            "quote": "The layers, after air exposure, oxidized to SnO2/Sn–C.",
+            "source": "scale:commons/source/10.3390-ma17020314"
+          }
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.3390-ma17020314/catalyst/sn-c-nanojunction",
+      "target": "scale:commons/10.3390-ma17020314/material/sno2"
+    },
+    {
+      "id": "scale:commons/10.3390-ma17020314/link/cphase-2",
+      "type": "HAS_PHASE",
+      "props": {
+        "evidence": [
+          {
+            "id": "ev1",
+            "kind": "text",
+            "locator": "p. 11, Conclusions",
+            "quote": "We attribute this to the observations of the appearance of semiconductive self-assembled filaments in an insulating carbon matrix for semiconductive samples.",
+            "source": "scale:commons/source/10.3390-ma17020314"
+          }
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.3390-ma17020314/catalyst/sn-c-nanojunction",
+      "target": "scale:commons/10.3390-ma17020314/material/c-matrix"
+    },
+    {
+      "id": "scale:commons/10.3390-ma17020314/link/cphase-3",
+      "type": "HAS_PHASE",
+      "props": {
+        "evidence": [
+          {
+            "id": "ev1",
+            "kind": "text",
+            "locator": "p. 11, Conclusions",
+            "quote": "Both layers are deposited from TMT and contain metallic Sn.",
+            "source": "scale:commons/source/10.3390-ma17020314"
+          }
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.3390-ma17020314/catalyst/sn-c-nanojunction",
+      "target": "scale:commons/10.3390-ma17020314/material/sn"
+    },
+    {
+      "id": "scale:commons/10.3390-ma17020314/link/det-1",
+      "type": "DETERMINED_BY",
+      "props": {
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.3390-ma17020314/state/semi",
+      "target": "scale:commons/10.3390-ma17020314/char/cafm-semi"
+    },
+    {
+      "id": "scale:commons/10.3390-ma17020314/link/det-2",
+      "type": "DETERMINED_BY",
+      "props": {
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.3390-ma17020314/state/semi",
+      "target": "scale:commons/10.3390-ma17020314/char/lcafm"
+    },
+    {
+      "id": "scale:commons/10.3390-ma17020314/link/det-3",
+      "type": "DETERMINED_BY",
+      "props": {
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.3390-ma17020314/state/semi",
+      "target": "scale:commons/10.3390-ma17020314/char/xps-semi"
+    },
+    {
+      "id": "scale:commons/10.3390-ma17020314/link/det-4",
+      "type": "DETERMINED_BY",
+      "props": {
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.3390-ma17020314/state/semi",
+      "target": "scale:commons/10.3390-ma17020314/char/afm-topo"
+    },
+    {
+      "id": "scale:commons/10.3390-ma17020314/link/det-5",
+      "type": "DETERMINED_BY",
+      "props": {
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.3390-ma17020314/state/ins",
+      "target": "scale:commons/10.3390-ma17020314/char/cafm-ins"
+    },
+    {
+      "id": "scale:commons/10.3390-ma17020314/link/det-6",
+      "type": "DETERMINED_BY",
+      "props": {
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.3390-ma17020314/state/ins",
+      "target": "scale:commons/10.3390-ma17020314/char/xps-ins"
+    },
+    {
+      "id": "scale:commons/10.3390-ma17020314/link/det-7",
+      "type": "DETERMINED_BY",
+      "props": {
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.3390-ma17020314/state/ins",
+      "target": "scale:commons/10.3390-ma17020314/char/macro-ins"
+    },
+    {
+      "id": "scale:commons/10.3390-ma17020314/link/form-1",
+      "type": "HAS_FORMULATION",
+      "props": {
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.3390-ma17020314/sample/semi",
+      "target": "scale:commons/10.3390-ma17020314/catalyst/sn-c-nanojunction"
+    },
+    {
+      "id": "scale:commons/10.3390-ma17020314/link/form-2",
+      "type": "HAS_FORMULATION",
+      "props": {
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.3390-ma17020314/sample/ins",
+      "target": "scale:commons/10.3390-ma17020314/catalyst/sn-c-nanojunction"
+    },
+    {
+      "id": "scale:commons/10.3390-ma17020314/link/fund-1",
+      "type": "FUNDED_BY",
+      "props": {
+        "award_id": "2020/04/X/ST5/00451",
+        "evidence": [
+          {
+            "id": "ev1",
+            "kind": "text",
+            "locator": "p. 12, Funding",
+            "quote": "This research was funded by the NATIONAL SCIENCE CENTER, Poland, grant number 2020/04/X/ST5/00451.",
+            "source": "scale:commons/source/10.3390-ma17020314"
+          }
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/source/10.3390-ma17020314",
+      "target": "scale:commons/10.3390-ma17020314/inst/ncn-poland"
+    },
+    {
+      "id": "scale:commons/10.3390-ma17020314/link/mem-1",
+      "type": "MEMBER_OF",
+      "props": {
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.3390-ma17020314/person/fratczak",
+      "target": "scale:commons/10.3390-ma17020314/inst/lodz-tech"
+    },
+    {
+      "id": "scale:commons/10.3390-ma17020314/link/mem-2",
+      "type": "MEMBER_OF",
+      "props": {
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.3390-ma17020314/person/balcerzak",
+      "target": "scale:commons/10.3390-ma17020314/inst/lodz-tech"
+    },
+    {
+      "id": "scale:commons/10.3390-ma17020314/link/mem-3",
+      "type": "MEMBER_OF",
+      "props": {
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.3390-ma17020314/person/rogala",
+      "target": "scale:commons/10.3390-ma17020314/inst/univ-lodz"
+    },
+    {
+      "id": "scale:commons/10.3390-ma17020314/link/phase-1",
+      "type": "HAS_PHASE",
+      "props": {
+        "evidence": [
+          {
+            "id": "ev1",
+            "kind": "text",
+            "locator": "p. 2, section 1",
+            "quote": "We have demonstrated an internal structure of layers consisting of semiconducting Sn (oxidized to SnO2 by air exposure) channels embedded in an insulating carbon matrix",
+            "source": "scale:commons/source/10.3390-ma17020314"
+          }
+        ],
+        "location": "separate_domain",
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.3390-ma17020314/material/sno2c-film",
+      "target": "scale:commons/10.3390-ma17020314/material/sno2"
+    },
+    {
+      "id": "scale:commons/10.3390-ma17020314/link/phase-2",
+      "type": "HAS_PHASE",
+      "props": {
+        "evidence": [
+          {
+            "id": "ev1",
+            "kind": "text",
+            "locator": "p. 2, section 1",
+            "quote": "We have demonstrated an internal structure of layers consisting of semiconducting Sn (oxidized to SnO2 by air exposure) channels embedded in an insulating carbon matrix",
+            "source": "scale:commons/source/10.3390-ma17020314"
+          }
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.3390-ma17020314/material/sno2c-film",
+      "target": "scale:commons/10.3390-ma17020314/material/c-matrix"
+    },
+    {
+      "id": "scale:commons/10.3390-ma17020314/link/phase-3",
+      "type": "HAS_PHASE",
+      "props": {
+        "evidence": [
+          {
+            "id": "ev1",
+            "kind": "text",
+            "locator": "p. 11, Conclusions",
+            "quote": "Both layers are deposited from TMT and contain metallic Sn.",
+            "source": "scale:commons/source/10.3390-ma17020314"
+          }
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.3390-ma17020314/material/sno2c-film",
+      "target": "scale:commons/10.3390-ma17020314/material/sn"
+    },
+    {
+      "id": "scale:commons/10.3390-ma17020314/link/prep-out-1",
+      "type": "HAS_OUTPUT",
+      "props": {
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.3390-ma17020314/prep/pecvd",
+      "target": "scale:commons/10.3390-ma17020314/material/sno2c-film"
+    },
+    {
+      "id": "scale:commons/10.3390-ma17020314/link/prep-out-2",
+      "type": "HAS_OUTPUT",
+      "props": {
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.3390-ma17020314/prep/semi",
+      "target": "scale:commons/10.3390-ma17020314/sample/semi"
+    },
+    {
+      "id": "scale:commons/10.3390-ma17020314/link/prep-out-3",
+      "type": "HAS_OUTPUT",
+      "props": {
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.3390-ma17020314/prep/ins",
+      "target": "scale:commons/10.3390-ma17020314/sample/ins"
+    },
+    {
+      "id": "scale:commons/10.3390-ma17020314/link/prep-parent-1",
+      "type": "PART_OF",
+      "props": {
+        "order": 1,
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.3390-ma17020314/prep/semi",
+      "target": "scale:commons/10.3390-ma17020314/prep/pecvd"
+    },
+    {
+      "id": "scale:commons/10.3390-ma17020314/link/prep-parent-2",
+      "type": "PART_OF",
+      "props": {
+        "order": 2,
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.3390-ma17020314/prep/ins",
+      "target": "scale:commons/10.3390-ma17020314/prep/pecvd"
+    },
+    {
+      "id": "scale:commons/10.3390-ma17020314/link/prep-plasma",
+      "type": "USES_INSTRUMENT",
+      "props": {
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.3390-ma17020314/prep/pecvd",
+      "target": "scale:commons/10.3390-ma17020314/plasma/reactor"
+    },
+    {
+      "id": "scale:commons/10.3390-ma17020314/link/reach-1",
+      "type": "REACHED_BY",
+      "props": {
+        "origin": "curated",
+        "timing": "after"
+      },
+      "source": "scale:commons/10.3390-ma17020314/state/semi",
+      "target": "scale:commons/10.3390-ma17020314/prep/semi"
+    },
+    {
+      "id": "scale:commons/10.3390-ma17020314/link/reach-2",
+      "type": "REACHED_BY",
+      "props": {
+        "origin": "curated",
+        "timing": "after"
+      },
+      "source": "scale:commons/10.3390-ma17020314/state/ins",
+      "target": "scale:commons/10.3390-ma17020314/prep/ins"
+    },
+    {
+      "id": "scale:commons/10.3390-ma17020314/link/samp-prep-1",
+      "type": "PREPARED_BY",
+      "props": {
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.3390-ma17020314/sample/semi",
+      "target": "scale:commons/10.3390-ma17020314/prep/semi"
+    },
+    {
+      "id": "scale:commons/10.3390-ma17020314/link/samp-prep-2",
+      "type": "PREPARED_BY",
+      "props": {
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.3390-ma17020314/sample/ins",
+      "target": "scale:commons/10.3390-ma17020314/prep/ins"
+    },
+    {
+      "id": "scale:commons/10.3390-ma17020314/link/state-1",
+      "type": "STATE_OF",
+      "props": {
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.3390-ma17020314/state/semi",
+      "target": "scale:commons/10.3390-ma17020314/sample/semi"
+    },
+    {
+      "id": "scale:commons/10.3390-ma17020314/link/state-2",
+      "type": "STATE_OF",
+      "props": {
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.3390-ma17020314/state/ins",
+      "target": "scale:commons/10.3390-ma17020314/sample/ins"
+    },
+    {
+      "id": "scale:commons/10.3390-ma17020314/link/step-in-1",
+      "type": "HAS_INPUT",
+      "props": {
+        "origin": "curated",
+        "role": "reagent",
+        "synthesis_function": [
+          "metal_precursor",
+          "carbon_source"
+        ]
+      },
+      "source": "scale:commons/10.3390-ma17020314/step/deposit-semi",
+      "target": "scale:commons/10.3390-ma17020314/species/tmt"
+    },
+    {
+      "id": "scale:commons/10.3390-ma17020314/link/step-in-2",
+      "type": "HAS_INPUT",
+      "props": {
+        "origin": "curated",
+        "role": "reagent",
+        "synthesis_function": [
+          "metal_precursor",
+          "carbon_source"
+        ]
+      },
+      "source": "scale:commons/10.3390-ma17020314/step/deposit-ins",
+      "target": "scale:commons/10.3390-ma17020314/species/tmt"
+    },
+    {
+      "id": "scale:commons/10.3390-ma17020314/link/step-in-3",
+      "type": "HAS_INPUT",
+      "props": {
+        "origin": "curated",
+        "role": "reagent"
+      },
+      "source": "scale:commons/10.3390-ma17020314/step/evaporate-al",
+      "target": "scale:commons/10.3390-ma17020314/species/al"
+    },
+    {
+      "id": "scale:commons/10.3390-ma17020314/link/step-ins-1",
+      "type": "PART_OF",
+      "props": {
+        "order": 1,
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.3390-ma17020314/step/deposit-ins",
+      "target": "scale:commons/10.3390-ma17020314/prep/ins"
+    },
+    {
+      "id": "scale:commons/10.3390-ma17020314/link/step-ins-2",
+      "type": "PART_OF",
+      "props": {
+        "order": 2,
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.3390-ma17020314/step/air-ins",
+      "target": "scale:commons/10.3390-ma17020314/prep/ins"
+    },
+    {
+      "id": "scale:commons/10.3390-ma17020314/link/step-ins-3",
+      "type": "PART_OF",
+      "props": {
+        "order": 3,
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.3390-ma17020314/step/evaporate-al",
+      "target": "scale:commons/10.3390-ma17020314/prep/ins"
+    },
+    {
+      "id": "scale:commons/10.3390-ma17020314/link/step-out-1",
+      "type": "HAS_OUTPUT",
+      "props": {
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.3390-ma17020314/step/evaporate-al",
+      "target": "scale:commons/10.3390-ma17020314/electrode/al"
+    },
+    {
+      "id": "scale:commons/10.3390-ma17020314/link/step-semi-1",
+      "type": "PART_OF",
+      "props": {
+        "order": 1,
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.3390-ma17020314/step/deposit-semi",
+      "target": "scale:commons/10.3390-ma17020314/prep/semi"
+    },
+    {
+      "id": "scale:commons/10.3390-ma17020314/link/step-semi-2",
+      "type": "PART_OF",
+      "props": {
+        "order": 2,
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.3390-ma17020314/step/air-semi",
+      "target": "scale:commons/10.3390-ma17020314/prep/semi"
+    },
+    {
+      "id": "scale:commons/10.3390-ma17020314/material/c-matrix/reported-in/10.3390-ma17020314",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 2, section 1"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.3390-ma17020314/material/c-matrix",
+      "target": "scale:commons/source/10.3390-ma17020314"
+    },
+    {
+      "id": "scale:commons/10.3390-ma17020314/material/sn/reported-in/10.3390-ma17020314",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 11, Conclusions"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.3390-ma17020314/material/sn",
+      "target": "scale:commons/source/10.3390-ma17020314"
+    },
+    {
+      "id": "scale:commons/10.3390-ma17020314/material/sno2/reported-in/10.3390-ma17020314",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 7, section 3.4"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.3390-ma17020314/material/sno2",
+      "target": "scale:commons/source/10.3390-ma17020314"
+    },
+    {
+      "id": "scale:commons/10.3390-ma17020314/material/sno2c-film/reported-in/10.3390-ma17020314",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 2, section 2, first sentence"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.3390-ma17020314/material/sno2c-film",
+      "target": "scale:commons/source/10.3390-ma17020314"
+    },
+    {
+      "id": "scale:commons/10.3390-ma17020314/model/photoinjection/reported-in/10.3390-ma17020314",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 8, section 3.5",
+          "p. 9, section 3.5"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.3390-ma17020314/model/photoinjection",
+      "target": "scale:commons/source/10.3390-ma17020314"
+    },
+    {
+      "id": "scale:commons/10.3390-ma17020314/model/tauc/reported-in/10.3390-ma17020314",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 10, section 3.6"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.3390-ma17020314/model/tauc",
+      "target": "scale:commons/source/10.3390-ma17020314"
+    },
+    {
+      "id": "scale:commons/10.3390-ma17020314/person/balcerzak/reported-in/10.3390-ma17020314",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 1, author list"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.3390-ma17020314/person/balcerzak",
+      "target": "scale:commons/source/10.3390-ma17020314"
+    },
+    {
+      "id": "scale:commons/10.3390-ma17020314/person/fratczak/reported-in/10.3390-ma17020314",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 1, author list"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.3390-ma17020314/person/fratczak",
+      "target": "scale:commons/source/10.3390-ma17020314"
+    },
+    {
+      "id": "scale:commons/10.3390-ma17020314/person/rogala/reported-in/10.3390-ma17020314",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 1, author list"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.3390-ma17020314/person/rogala",
+      "target": "scale:commons/source/10.3390-ma17020314"
+    },
+    {
+      "id": "scale:commons/10.3390-ma17020314/plasma/reactor/reported-in/10.3390-ma17020314",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 2, section 2"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.3390-ma17020314/plasma/reactor",
+      "target": "scale:commons/source/10.3390-ma17020314"
+    },
+    {
+      "id": "scale:commons/10.3390-ma17020314/prep/ins/reported-in/10.3390-ma17020314",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 2, section 2",
+          "p. 3, section 3"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.3390-ma17020314/prep/ins",
+      "target": "scale:commons/source/10.3390-ma17020314"
+    },
+    {
+      "id": "scale:commons/10.3390-ma17020314/prep/pecvd/reported-in/10.3390-ma17020314",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 1, section 1",
+          "p. 2, section 2"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.3390-ma17020314/prep/pecvd",
+      "target": "scale:commons/source/10.3390-ma17020314"
+    },
+    {
+      "id": "scale:commons/10.3390-ma17020314/prep/semi/reported-in/10.3390-ma17020314",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 2, section 2",
+          "p. 3, section 3"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.3390-ma17020314/prep/semi",
+      "target": "scale:commons/source/10.3390-ma17020314"
+    },
+    {
+      "id": "scale:commons/10.3390-ma17020314/sample/ins/reported-in/10.3390-ma17020314",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 2, section 2"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.3390-ma17020314/sample/ins",
+      "target": "scale:commons/source/10.3390-ma17020314"
+    },
+    {
+      "id": "scale:commons/10.3390-ma17020314/sample/semi/reported-in/10.3390-ma17020314",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 2, section 2"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.3390-ma17020314/sample/semi",
+      "target": "scale:commons/source/10.3390-ma17020314"
+    },
+    {
+      "id": "scale:commons/10.3390-ma17020314/species/al/reported-in/10.3390-ma17020314",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 2, Materials and Methods"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.3390-ma17020314/species/al",
+      "target": "scale:commons/source/10.3390-ma17020314"
+    },
+    {
+      "id": "scale:commons/10.3390-ma17020314/species/carbon/reported-in/10.3390-ma17020314",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 7, section 3.4"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.3390-ma17020314/species/carbon",
+      "target": "scale:commons/source/10.3390-ma17020314"
+    },
+    {
+      "id": "scale:commons/10.3390-ma17020314/species/co2/reported-in/10.3390-ma17020314",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 1, abstract"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.3390-ma17020314/species/co2",
+      "target": "scale:commons/source/10.3390-ma17020314"
+    },
+    {
+      "id": "scale:commons/10.3390-ma17020314/species/h2/reported-in/10.3390-ma17020314",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 1, abstract"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.3390-ma17020314/species/h2",
+      "target": "scale:commons/source/10.3390-ma17020314"
+    },
+    {
+      "id": "scale:commons/10.3390-ma17020314/species/oxygen/reported-in/10.3390-ma17020314",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 7, section 3.4"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.3390-ma17020314/species/oxygen",
+      "target": "scale:commons/source/10.3390-ma17020314"
+    },
+    {
+      "id": "scale:commons/10.3390-ma17020314/species/sn/reported-in/10.3390-ma17020314",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 7, section 3.4"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.3390-ma17020314/species/sn",
+      "target": "scale:commons/source/10.3390-ma17020314"
+    },
+    {
+      "id": "scale:commons/10.3390-ma17020314/species/sn0/reported-in/10.3390-ma17020314",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 7, section 3.4"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.3390-ma17020314/species/sn0",
+      "target": "scale:commons/source/10.3390-ma17020314"
+    },
+    {
+      "id": "scale:commons/10.3390-ma17020314/species/tmt/reported-in/10.3390-ma17020314",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 1, abstract"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.3390-ma17020314/species/tmt",
+      "target": "scale:commons/source/10.3390-ma17020314"
+    },
+    {
+      "id": "scale:commons/10.3390-ma17020314/state/ins/reported-in/10.3390-ma17020314",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 1, abstract"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.3390-ma17020314/state/ins",
+      "target": "scale:commons/source/10.3390-ma17020314"
+    },
+    {
+      "id": "scale:commons/10.3390-ma17020314/state/semi/reported-in/10.3390-ma17020314",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 1, abstract"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.3390-ma17020314/state/semi",
+      "target": "scale:commons/source/10.3390-ma17020314"
+    },
+    {
+      "id": "scale:commons/10.3390-ma17020314/step/air-ins/reported-in/10.3390-ma17020314",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 1, abstract",
+          "p. 2, section 2"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.3390-ma17020314/step/air-ins",
+      "target": "scale:commons/source/10.3390-ma17020314"
+    },
+    {
+      "id": "scale:commons/10.3390-ma17020314/step/air-semi/reported-in/10.3390-ma17020314",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 1, abstract",
+          "p. 2, section 2"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.3390-ma17020314/step/air-semi",
+      "target": "scale:commons/source/10.3390-ma17020314"
+    },
+    {
+      "id": "scale:commons/10.3390-ma17020314/step/deposit-ins/reported-in/10.3390-ma17020314",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 2, section 2"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.3390-ma17020314/step/deposit-ins",
+      "target": "scale:commons/source/10.3390-ma17020314"
+    },
+    {
+      "id": "scale:commons/10.3390-ma17020314/step/deposit-semi/reported-in/10.3390-ma17020314",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 2, section 2"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.3390-ma17020314/step/deposit-semi",
+      "target": "scale:commons/source/10.3390-ma17020314"
+    },
+    {
+      "id": "scale:commons/10.3390-ma17020314/step/evaporate-al/reported-in/10.3390-ma17020314",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 2, section 2"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.3390-ma17020314/step/evaporate-al",
+      "target": "scale:commons/source/10.3390-ma17020314"
+    },
+    {
+      "id": "scale:commons/10.3390-ma17020314/var/area_fraction_conductive/reported-in/10.3390-ma17020314",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 4, section 3.1"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.3390-ma17020314/var/area_fraction_conductive",
+      "target": "scale:commons/source/10.3390-ma17020314"
+    },
+    {
+      "id": "scale:commons/10.3390-ma17020314/var/atomic_ratio/reported-in/10.3390-ma17020314",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 7, section 3.4"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.3390-ma17020314/var/atomic_ratio",
+      "target": "scale:commons/source/10.3390-ma17020314"
+    },
+    {
+      "id": "scale:commons/10.3390-ma17020314/var/barrier_height/reported-in/10.3390-ma17020314",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 8, section 3.5"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.3390-ma17020314/var/barrier_height",
+      "target": "scale:commons/source/10.3390-ma17020314"
+    },
+    {
+      "id": "scale:commons/10.3390-ma17020314/var/binding_energy/reported-in/10.3390-ma17020314",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 7, section 3.4"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.3390-ma17020314/var/binding_energy",
+      "target": "scale:commons/source/10.3390-ma17020314"
+    },
+    {
+      "id": "scale:commons/10.3390-ma17020314/var/channel_cross_section/reported-in/10.3390-ma17020314",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 6, section 3.2"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.3390-ma17020314/var/channel_cross_section",
+      "target": "scale:commons/source/10.3390-ma17020314"
+    },
+    {
+      "id": "scale:commons/10.3390-ma17020314/var/composition_fraction/reported-in/10.3390-ma17020314",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 7, section 3.4"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.3390-ma17020314/var/composition_fraction",
+      "target": "scale:commons/source/10.3390-ma17020314"
+    },
+    {
+      "id": "scale:commons/10.3390-ma17020314/var/conductivity/reported-in/10.3390-ma17020314",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 3, section 2 (ohmic conductivity from I–V characteristics)"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.3390-ma17020314/var/conductivity",
+      "target": "scale:commons/source/10.3390-ma17020314"
+    },
+    {
+      "id": "scale:commons/10.3390-ma17020314/var/electron_affinity/reported-in/10.3390-ma17020314",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 10, section 3.5"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.3390-ma17020314/var/electron_affinity",
+      "target": "scale:commons/source/10.3390-ma17020314"
+    },
+    {
+      "id": "scale:commons/10.3390-ma17020314/var/ionization_potential/reported-in/10.3390-ma17020314",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 10, section 3.5"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.3390-ma17020314/var/ionization_potential",
+      "target": "scale:commons/source/10.3390-ma17020314"
+    },
+    {
+      "id": "scale:commons/10.3390-ma17020314/var/metallic_fraction/reported-in/10.3390-ma17020314",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 7, section 3.4"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.3390-ma17020314/var/metallic_fraction",
+      "target": "scale:commons/source/10.3390-ma17020314"
+    },
+    {
+      "id": "scale:commons/10.3390-ma17020314/var/optical_gap/reported-in/10.3390-ma17020314",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 10, section 3.6"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.3390-ma17020314/var/optical_gap",
+      "target": "scale:commons/source/10.3390-ma17020314"
+    },
+    {
+      "id": "scale:commons/10.3390-ma17020314/var/photon_flux/reported-in/10.3390-ma17020314",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 2, section 2"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.3390-ma17020314/var/photon_flux",
+      "target": "scale:commons/source/10.3390-ma17020314"
+    },
+    {
+      "id": "scale:commons/10.3390-ma17020314/var/surface_roughness/reported-in/10.3390-ma17020314",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 4, section 3.1"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.3390-ma17020314/var/surface_roughness",
+      "target": "scale:commons/source/10.3390-ma17020314"
+    },
+    {
+      "id": "scale:commons/10.3390-ma17020314/var/tauc_coefficient/reported-in/10.3390-ma17020314",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 11, Figure 8 caption"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.3390-ma17020314/var/tauc_coefficient",
+      "target": "scale:commons/source/10.3390-ma17020314"
+    },
+    {
+      "id": "scale:commons/10.3390-ma17020314/var/threshold_difference/reported-in/10.3390-ma17020314",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 9, section 3.5"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.3390-ma17020314/var/threshold_difference",
+      "target": "scale:commons/source/10.3390-ma17020314"
+    },
+    {
+      "id": "scale:commons/10.3390-ma17020314/var/transport_gap/reported-in/10.3390-ma17020314",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 1, abstract"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.3390-ma17020314/var/transport_gap",
+      "target": "scale:commons/source/10.3390-ma17020314"
+    },
+    {
+      "id": "scale:commons/10.3390-ma17020314/var/work_function/reported-in/10.3390-ma17020314",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 9, section 3.5"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.3390-ma17020314/var/work_function",
+      "target": "scale:commons/source/10.3390-ma17020314"
+    }
+  ],
+  "schema_version": "0.8.2",
+  "source": "scale:commons/source/10.3390-ma17020314"
+}

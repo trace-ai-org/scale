@@ -14,3 +14,613 @@ sources:
       PDF page 2 footer: ''This is an open access article under the CC BY-NC-ND license (http://creativecommons.org/licenses/by-nc-nd/4.0/)'');
       version of record'
     text_chars: 51442
+  scale:commons/source/10.3390-inorganics7020020:
+    class: open
+    licence: CC-BY-4.0
+    basis: licences recorded with the DOI (10.3390/inorganics7020020)
+    text_chars: 33163
+  scale:commons/source/10.3390-molecules28031074:
+    class: open
+    licence: CC-BY-4.0
+    basis: 'licence statement on the first page of the copy read: distributed under the Creative Commons
+      Attribution (CC BY) license'
+    text_chars: 53899
+  scale:commons/source/10.1039-d2sc05160e:
+    class: open
+    licence: CC-BY-3.0
+    basis: licences recorded with the DOI (10.1039/d2sc05160e)
+    text_chars: 46532
+  scale:commons/source/10.3390-catal16020156:
+    class: open
+    licence: CC-BY-4.0
+    basis: published under CC BY 4.0, read from the first page of the version of record ("open access article
+      distributed under the terms and conditions of the Creative Commons Attribution (CC BY) license")
+    text_chars: 125200
+  scale:commons/source/10.1021-jacs.7b03958:
+    class: open
+    licence: CC-BY-4.0
+    basis: 'the copy read (1006547.pdf, version of record) states on its first page: "This is an open access
+      article published under a Creative Commons Attribution (CC-BY) License, which permits unrestricted
+      use, distribution and reproduction in any medium, provided the author and source are cited."'
+    text_chars: 57631
+  scale:commons/source/10.1039-d4na01019a:
+    class: open
+    licence: CC-BY-3.0
+    basis: licences recorded with the DOI (10.1039/d4na01019a); the version of record read is open access
+      under CC-BY 3.0 (© 2025 The Author(s), Royal Society of Chemistry)
+    text_chars: 57096
+  scale:commons/source/10.1016-j.joei.2022.02.014:
+    class: open
+    licence: CC-BY-4.0
+    basis: licences recorded with the DOI (10.1016/j.joei.2022.02.014)
+    text_chars: 42037
+  scale:commons/source/10.1038-s41598-024-74768-9:
+    class: open
+    licence: CC-BY-4.0
+    basis: licences recorded with the DOI (10.1038/s41598-024-74768-9)
+    text_chars: 80208
+  scale:commons/source/10.1002-adfm.202424753:
+    class: open
+    licence: CC-BY-4.0
+    basis: licences recorded with the DOI (10.1002/adfm.202424753)
+    text_chars: 48979
+  scale:commons/source/10.3390-powders5020013:
+    class: open
+    licence: CC-BY-4.0
+    basis: 'first page of the copy read: "Copyright: 2026 by the authors. Licensee MDPI, Basel, Switzerland.
+      This article is an open access article distributed under the terms and conditions of the Creative
+      Commons Attribution (CC BY) license."'
+    text_chars: 41865
+  scale:commons/source/10.1021-acscatal.4c00365:
+    class: open
+    licence: CC-BY-4.0
+    basis: first page of the copy read states "This article is licensed under CC-BY 4.0" (© 2024 The Authors,
+      American Chemical Society); version of record
+    text_chars: 93260
+  scale:commons/source/10.1155-2023-9277179:
+    class: open
+    licence: CC-BY-4.0
+    basis: the article's first page states it is "an open access article distributed under the Creative
+      Commons Attribution License"; the copy read is the version of record (Hindawi/Wiley, International
+      Journal of Energy Research, 2023, doi:10.1155/2023/9277179)
+    text_chars: 44174
+  scale:commons/source/10.1038-s41467-023-36721-8:
+    class: open
+    licence: CC-BY-4.0
+    basis: the copy read (1013369.pdf, version of record) carries an Open Access Creative Commons Attribution
+      4.0 International licence statement and the copyright line of The Author(s) 2023 on its first page
+    text_chars: 50674
+  scale:commons/source/10.1002-aenm.202304247:
+    class: open
+    licence: CC-BY-4.0
+    basis: the copy read (version of record, 20 pages) states on its first page "This is an open access
+      article under the terms of the Creative Commons Attribution License"; licence also recorded with the
+      DOI
+    text_chars: 104973
+  scale:commons/source/10.1007-s11090-023-10417-9:
+    class: open
+    licence: CC-BY-4.0
+    basis: 'Open Access statement of the copy read (version of record, PDF p. 41): "This article is licensed
+      under a Creative Commons Attribution 4.0 International License"; © The Author(s) 2023. Figures reproduced
+      from third-party works inside the review keep their own credit lines and were only read (digitized)
+      as printed; no third-party material is redistributed.'
+    text_chars: 154879
+  scale:commons/source/10.1002-ppap.202200207:
+    class: open
+    licence: CC-BY-4.0
+    basis: open access under the Creative Commons Attribution License, stated on the first page of the version-of-record
+      copy read (Wiley, 10.1002/ppap.202200207)
+    text_chars: 85172
+  scale:commons/source/10.3390-ma17020314:
+    class: open
+    licence: CC-BY-4.0
+    basis: 'published under CC BY 4.0 — the copy read (publisher PDF, version of record) states on its first
+      page: "This article is an open access article distributed under the terms and conditions of the Creative
+      Commons Attribution (CC BY) license (https://creativecommons.org/licenses/by/4.0/)."'
+    text_chars: 34976
+  scale:commons/source/10.1007-s11090-023-10419-7:
+    class: open
+    licence: CC-BY-4.0
+    basis: the copy read is the Research Square preprint v1 (doi 10.21203/rs.3.rs-3100965/v1); its first
+      page states "This work is licensed under a Creative Commons Attribution 4.0 International License"
+    text_chars: 100585
+  scale:commons/source/10.1038-s41699-026-00685-2:
+    class: open
+    licence: CC-BY-4.0
+    basis: the copy read is the Research Square preprint v1 (DOI 10.21203/rs.3.rs-8207533/v1, accepted manuscript);
+      its first page states "This work is licensed under a Creative Commons Attribution 4.0 International
+      License"
+    text_chars: 83077
+  scale:commons/source/10.1016-j.surfin.2026.110279:
+    class: open
+    licence: CC-BY-4.0
+    basis: 'The copy read (version of record, publisher PDF) states on its first page: "2468-0230/© 2026
+      The Authors. Published by Elsevier B.V. This is an open access article under the CC BY license ( http://creativecommons.org/licenses/by/4.0/
+      )." (p. 1); matches the index verdict (licence cc-by).'
+    text_chars: 82782
+  scale:commons/source/10.1038-s41467-021-20961-7:
+    class: open
+    licence: CC-BY-4.0
+    basis: licences recorded with the DOI (10.1038/s41467-021-20961-7)
+    text_chars: 65266
+  scale:commons/source/10.3390-en13112844:
+    class: open
+    licence: CC-BY-4.0
+    basis: licence statement on the copy read (the published article carries the CC BY 4.0 statement)
+    text_chars: 29181
+  scale:commons/source/1044147:
+    class: open
+    licence: CC-BY-4.0
+    basis: the PDF copy carries no licence statement; the Zenodo record for DOI 10.5281/zenodo.4740371 (resolves
+      to record 4740372) gives licence cc-by-4.0, resource type "presentation", published 2021-04-21 (checked
+      2026-11-21)
+    text_chars: 3082
+  scale:commons/source/10.1016-j.cej.2021.130501:
+    class: open
+    licence: CC-BY-4.0
+    basis: first page of the copy read states "This is an open access article under the CC BY license (http://creativecommons.org/licenses/by/4.0/)"
+    text_chars: 108777
+  scale:commons/source/10.1039-d2ta05214h:
+    class: open
+    licence: CC-BY-3.0
+    basis: licences recorded with the DOI (10.1039/d2ta05214h)
+    text_chars: 57537
+  scale:commons/source/10.1002-anie.202217253:
+    class: open
+    licence: CC-BY-4.0
+    basis: 'first page of the copy read (version of record, Wiley-VCH 2023): this is an open access article
+      under the terms of the Creative Commons Attribution License (CC BY 4.0), matching the index verdict
+      (licence cc-by; copy version_of_record)'
+    text_chars: 36935
+  scale:commons/source/10.1002-celc.202200924:
+    class: open
+    licence: CC-BY-4.0
+    basis: first page of the copy states "© 2023 The Authors. ChemElectroChem published by Wiley-VCH GmbH.
+      This is an open access article under the terms of the Creative Commons Attribution License"; the copy
+      is the version of record (ChemElectroChem 2023, 10, e202200924), not a submitted manuscript as the
+      index verdict guessed
+    text_chars: 40584
+  scale:commons/source/10.1038-s42004-024-01151-0:
+    class: open
+    licence: CC-BY-4.0
+    basis: published under CC BY 4.0; the licence statement ("Open Access This article is licensed under
+      a Creative Commons Attribution 4.0 International License") and the © The Author(s) 2024 line are on
+      the first page of the version-of-record copy read; Open Access funding enabled and organized by Projekt
+      DEAL
+    text_chars: 68670
+  scale:commons/source/10.1021-acscentsci.4c01534:
+    class: open
+    licence: CC-BY-4.0
+    basis: version of record; first page of the copy states "This article is licensed under CC-BY 4.0" (ACS
+      Central Science, 2024)
+    text_chars: 34252
+  scale:commons/source/10.3390-catal11070828:
+    class: open
+    licence: CC-BY-4.0
+    basis: licences recorded with the DOI (10.3390/catal11070828)
+    text_chars: 37781
+  scale:commons/source/10.1021-acs.inorgchem.6c00957:
+    class: open
+    licence: CC-BY-4.0
+    basis: the copy's first page states "This article is licensed under CC-BY 4.0" (© 2026 The Authors,
+      published by the American Chemical Society)
+    text_chars: 55520
+  scale:commons/source/10.1039-d5gc06974b:
+    class: open
+    licence: CC-BY-4.0
+    basis: copy read is the version of record (RSC, Green Chem., 2026, 28, 7993-8003); its first page states
+      "Licensed under CC-BY 4.0" (work/texts/10.1039-d5gc06974b.txt, [page 1])
+    text_chars: 53256
+  scale:commons/source/10.1016-j.pmatsci.2026.101762:
+    class: open
+    licence: CC-BY-4.0
+    basis: 'first page of the copy read: This is an open access article under the CC BY license ( http://creativecommons.org/licenses/by/4.0/
+      ) - 0079-6425/(c) 2026 The Author(s). Published by Elsevier Ltd.'
+    text_chars: 282480
+  scale:commons/source/10.1039-d6se00442c:
+    class: open
+    licence: CC-BY-4.0
+    basis: the copy read (pdfs/10.1039-d6se00442c.pdf) states on its first page that the article is "Licensed
+      under CC-BY 4.0"; the source index's verdict (licence cc-by) agrees on open CC BY
+    text_chars: 77947
+  scale:commons/source/10.1021-acselectrochem.6c00077:
+    class: open
+    licence: CC-BY-4.0
+    basis: first page of the copy read states "This article is licensed under CC-BY 4.0" (ACS Electrochem.
+      2026, 2, 1795-1806; (c) 2026 The Authors, published by ACS, version of record, doi:10.1021/acselectrochem.6c00077)
+    text_chars: 73541
+  scale:commons/source/10.5772-intechopen.1011365:
+    class: open
+    licence: CC-BY-4.0
+    basis: 'the copy read (version of record) states on its author-details page (p. 18): "This chapter is
+      distributed under the terms of the Creative Commons Attribution License (http://creativecommons.org/licenses/by/4.0)";
+      open, no quote cap'
+    text_chars: 94402
+  scale:commons/source/10.1088-1361-6463-adebfc:
+    class: open
+    licence: CC-BY-4.0
+    basis: licences recorded with the DOI (10.1088/1361-6463/adebfc)
+    text_chars: 36675
+  scale:commons/source/10.1021-acsmaterialsau.5c00174:
+    class: open
+    licence: CC-BY-4.0
+    basis: 'first page of the copy read (version of record, ACS Mater. Au 2026, 6, 379-389): "(c) 2026 The
+      Authors. Published by American Chemical Society" and "This article is licensed under CC-BY 4.0" (printed
+      twice); also stated in the source index (licence cc-by, copy version_of_record)'
+    text_chars: 55558
+  scale:commons/source/10.3390-molecules30194025:
+    class: open
+    licence: CC-BY-4.0
+    basis: first page of the copy states "This article is an open access article distributed under the terms
+      and conditions of the Creative Commons Attribution (CC BY) license (https://creativecommons.org/licenses/by/4.0/)";
+      the copy is the version of record (Molecules 2025, 30, 4025)
+    text_chars: 45904
+  scale:commons/source/10.26599-nr.2025.94907248:
+    class: open
+    licence: CC-BY-4.0
+    basis: 'version-of-record copy read states: "This is an open access article under the terms of the Creative
+      Commons Attribution 4.0 International License (CC BY 4.0)" (last page); first page marked Open Access,
+      Tsinghua University Press'
+    text_chars: 45481
+  scale:commons/source/10.1002-celc.202500404:
+    class: open
+    licence: CC-BY-4.0
+    basis: 'the copy read (version of record) states on its first page: This is an open access article under
+      the terms of the Creative Commons Attribution License; matches the cc-by verdict recorded with the
+      DOI (10.1002/celc.202500404)'
+    text_chars: 61472
+  scale:commons/source/10.1002-eom2.12260:
+    class: open
+    licence: CC-BY-4.0
+    basis: version-of-record PDF read; its first page states "open access article under the terms of the
+      Creative Commons Attribution License" (CC BY 4.0, Wiley)
+    text_chars: 46857
+  scale:commons/source/10.1038-s41467-019-14237-4:
+    class: open
+    licence: CC-BY-4.0
+    basis: published under CC BY 4.0 (Open Access licence statement on the first page of the copy read,
+      version of record)
+    text_chars: 56224
+  scale:commons/source/10.3390-nano13152273:
+    class: open
+    licence: CC-BY-4.0
+    basis: published under CC BY 4.0 — licence statement on the first page of the copy read ("open access
+      article distributed under the terms and conditions of the Creative Commons Attribution (CC BY) license"),
+      MDPI Nanomaterials, version of record
+    text_chars: 67913
+  scale:commons/source/10.26599-nr.2025.94908086:
+    class: open
+    licence: CC-BY-4.0
+    basis: 'published open access under the Creative Commons Attribution 4.0 International License (CC BY
+      4.0) on the version-of-record copy read: p. 1 footer "Open Access", p. 9 licence statement'
+    text_chars: 40317
+  scale:commons/source/10.1038-s41467-023-42759-5:
+    class: open
+    licence: CC-BY-4.0
+    basis: published under CC BY 4.0; licence statement ("Open Access This article is licensed under a Creative
+      Commons Attribution 4.0 International License") on the last page of the version-of-record copy read
+    text_chars: 67939
+  scale:commons/source/10.1016-j.catcom.2023.106707:
+    class: open
+    licence: CC-BY-4.0
+    basis: version of record, read as the PDF copy in this folder; its first page states "© 2023 The Author(s).
+      Published by Elsevier B.V. This is an open access article under the CC BY license (http://creativecommons.org/licenses/by/4.0/)"
+    text_chars: 24034
+  scale:commons/source/10.26599-nre.2023.9120052:
+    class: open
+    licence: CC-BY-4.0
+    basis: 'first page of the copy read (version of record): "The articles published in this open access
+      journal are distributed under the terms of the Creative Commons Attribution 4.0 International License
+      (http://creativecommons.org/licenses/by/4.0/)" — © The Author(s) 2023, published by Tsinghua University
+      Press'
+    text_chars: 100449
+  scale:commons/source/10.1186-s13068-019-1413-z:
+    class: open
+    licence: CC-BY-4.0
+    basis: licences recorded with the DOI (10.1186/s13068-019-1413-z)
+    text_chars: 52740
+  scale:commons/source/10.1002-cey2.444:
+    class: open
+    licence: CC-BY-4.0
+    basis: licences recorded with the DOI (10.1002/cey2.444)
+    text_chars: 42912
+  scale:commons/source/10.1002-advs.202414431:
+    class: open
+    licence: CC-BY-4.0
+    basis: licences recorded with the DOI (10.1002/advs.202414431)
+    text_chars: 35034
+  scale:commons/source/10.1002-advs.202402964:
+    class: open
+    licence: CC-BY-4.0
+    basis: the copy read (10.1002/advs.202402964.pdf, version of record) is published open access under
+      CC BY 4.0, stated on its first page
+    text_chars: 69191
+  scale:commons/source/10.1038-s41467-023-43303-1:
+    class: open
+    licence: CC-BY-4.0
+    basis: licences recorded with the DOI (10.1038/s41467-023-43303-1)
+    text_chars: 64315
+  scale:commons/source/10.3390-en15010063:
+    class: open
+    licence: CC-BY-4.0
+    basis: first page of the version-of-record copy read states the article is open access under the Creative
+      Commons Attribution (CC BY) 4.0 license
+    text_chars: 230412
+  scale:commons/source/10.1016-j.jcou.2025.103269:
+    class: open
+    licence: CC-BY-4.0
+    basis: published open access under the CC BY license (http://creativecommons.org/licenses/by/4.0/),
+      © 2025 The Author(s), Elsevier Ltd — first page of the copy read (version_of_record)
+    text_chars: 56475
+  scale:commons/source/10.1002-advs.202304735:
+    class: open
+    licence: CC-BY-4.0
+    basis: published open access under the Creative Commons Attribution License, as stated on the first
+      page of the version-of-record copy read ("© 2023 The Authors. Advanced Science published by Wiley-VCH
+      GmbH. This is an open access article under the terms of the Creative Commons Attribution License")
+    text_chars: 27979
+  scale:commons/source/10.3389-fmicb.2020.00059:
+    class: open
+    licence: CC-BY-4.0
+    basis: licences recorded with the DOI (10.3389/fmicb.2020.00059)
+    text_chars: 55244
+  scale:commons/source/10.3390-en19153544:
+    class: open
+    licence: CC-BY-4.0
+    basis: copy read is the version_of_record; its first page states it is an open access article distributed
+      under the terms and conditions of the Creative Commons Attribution (CC BY) license (10.3390/en19153544)
+    text_chars: 108668
+  scale:commons/source/10.1021-acsomega.6c02410:
+    class: open
+    licence: CC-BY-4.0
+    basis: first page of the copy read states "This article is licensed under CC-BY 4.0" (version_of_record
+      copy)
+    text_chars: 65910
+  scale:commons/source/10.1002-smll.75324:
+    class: open
+    licence: CC-BY-4.0
+    basis: first page of the copy read states "This is an open access article under the terms of the Creative
+      Commons Attribution License"; version_of_record, also Wiley TDM licence with the DOI
+    text_chars: 68530
+  scale:commons/source/10.3390-ma18214964:
+    class: open
+    licence: CC-BY-4.0
+    basis: 'copyright block on p. 1 of the copy read: open access under the Creative Commons Attribution
+      (CC BY) license, https://creativecommons.org/licenses/by/4.0/'
+    text_chars: 95888
+  scale:commons/source/10.1021-acsomega.5c10136:
+    class: open
+    licence: CC-BY-4.0
+    basis: 'published under a CC BY 4.0 licence (first page of the copy read: "This article is licensed
+      under a Creative Commons Attribution (CC BY) license"); the source index records licence cc-by, copy
+      version_of_record'
+    text_chars: 39764
+  scale:commons/source/10.1002-smll.75118:
+    class: open
+    licence: CC-BY-4.0
+    basis: first page of the copy states open access under the Creative Commons Attribution License (c)
+      2026 The Author(s), Small published by Wiley-VCH GmbH; TDM licence recorded with the DOI
+    text_chars: 55379
+  scale:commons/source/10.1039-d6sc00957c:
+    class: open
+    licence: CC-BY-4.0
+    basis: first page of the copy read states "Licensed under CC-BY 4.0"
+  scale:commons/source/10.1021-acsami.6c11350:
+    class: open
+    licence: CC-BY-4.0
+    basis: 'the copy read states on its first page: "This article is licensed under CC-BY 4.0" and "© 2026
+      The Authors. Published by American Chemical Society" (work/texts/10.1021-acsami.6c11350.txt, page
+      1)'
+    text_chars: 58983
+  scale:commons/source/10.3389-fchem.2026.1940515:
+    class: open
+    licence: CC-BY-4.0
+    basis: copyright statement on the first page of the copy read — open-access article distributed under
+      the terms of the Creative Commons Attribution License (CC BY)
+    text_chars: 71233
+  scale:commons/source/10.1002-aenm.70759:
+    class: open
+    licence: CC-BY-4.0
+    basis: licences recorded with the DOI (10.1002/aenm.70759)
+    text_chars: 50083
+  scale:commons/source/10.1002-smll.74602:
+    class: open
+    licence: CC-BY-4.0
+    basis: licences recorded with the DOI (10.1002/smll.74602)
+    text_chars: 36139
+  scale:commons/source/10.1002-cssc.70810:
+    class: open
+    licence: CC-BY-4.0
+    basis: first page states 'This is an open access article under the terms of the Creative Commons Attribution
+      License, which permits use, distribution and reproduction in any medium, provided the original work
+      is properly cited.' (c) 2026 The Author(s). ChemSusChem published by Wiley-VCH GmbH
+    text_chars: 47105
+  scale:commons/source/10.1021-jacs.6c05565:
+    class: open
+    licence: CC-BY-4.0
+    basis: licences recorded with the DOI (10.1021/jacs.6c05565)
+    text_chars: 70108
+  scale:commons/source/10.1186-s13065-025-01627-7:
+    class: open
+    licence: CC-BY-4.0
+    basis: copy read is the version of record; its first page states the article is licensed under a Creative
+      Commons Attribution 4.0 International License (10.1186/s13065-025-01627-7)
+    text_chars: 42106
+  scale:commons/source/10.1002-smll.74606:
+    class: open
+    licence: CC-BY-4.0
+    basis: licences recorded with the DOI (10.1002/smll.74606)
+    text_chars: 53805
+  scale:commons/source/10.1002-advs.202509904:
+    class: open
+    licence: CC-BY-4.0
+    basis: first page of the copy read — "© 2025 The Author(s). Advanced Science published by Wiley-VCH
+      GmbH. This is an open access article under the terms of the Creative Commons Attribution License,
+      which permits use, distribution and reproduction in any medium, provided the original work is properly
+      cited."
+    text_chars: 29013
+  scale:commons/source/10.1021-jacs.5c21287:
+    class: open
+    licence: CC-BY-4.0
+    basis: licences recorded with the DOI (10.1021/jacs.5c21287)
+    text_chars: 44338
+  scale:commons/source/10.1002-advs.76512:
+    class: open
+    licence: CC-BY-4.0
+    basis: 'published under the Creative Commons Attribution License; the copy read (version of record,
+      https://doi.org/10.1002/advs.76512) states on its first page: "This is an open access article under
+      the terms of the Creative Commons Attribution License, which permits use, distribution and reproduction
+      in any medium, provided the original work is properly cited." (Wiley-VCH; also Wiley TDM licence 1.1)'
+    text_chars: 78667
+  scale:commons/source/10.1021-jacs.5c22767:
+    class: open
+    licence: CC-BY-4.0
+    basis: 'the copy read (eScholarship deposit, page 1) states: "This work is made available under the
+      terms of a Creative Commons Attribution License, available at https://creativecommons.org/licenses/by/4.0/";
+      the publisher-side licences recorded with the DOI are ACS policy links (10.15223/policy-029, -037,
+      -045)'
+    text_chars: 111901
+  scale:commons/source/10.3389-fchem.2025.1525245:
+    class: open
+    licence: CC-BY-4.0
+    basis: article first page states "Copyright © 2025 Wan, Zhang, Liu, Chen, Zheng, Ren, Drisdell and Zheng"
+      with an open-access CC BY licence ("distributed under the terms of the Creative Commons Attribution
+      License (CC BY)"); the copy read is the version of record
+    text_chars: 46127
+  scale:commons/source/10.1021-acs.iecr.5c04396:
+    class: open
+    licence: CC-BY-4.0
+    basis: licences recorded with the DOI (10.1021/acs.iecr.5c04396)
+    text_chars: 78279
+  scale:commons/source/10.1093-nsr-nwaf330:
+    class: open
+    licence: CC-BY-4.0
+    basis: 'published under CC BY 4.0 per the first page of the copy read: "This is an Open Access article
+      distributed under the terms of the Creative Commons Attribution License (https://creativecommons.org/licenses/by/4.0/)"
+      — version of record, National Science Review 12: nwaf330 (2025)'
+    text_chars: 34529
+  scale:commons/source/10.1039-d6cc02925f:
+    class: open
+    licence: CC-BY-4.0
+    basis: first page of the copy read (version of record) states "Licensed under CC-BY 4.0"; the index
+      metadata's CC BY 3.0 URL is superseded by the copy
+    text_chars: 67451
+  scale:commons/source/10.1002-smsc.70268:
+    class: open
+    licence: CC-BY-4.0
+    basis: first page of the copy read states "This is an open access article under the terms of the Creative
+      Commons Attribution License" (© 2026 The Author(s), Wiley-VCH); version_of_record
+    text_chars: 63843
+  scale:commons/source/10.1002-anie.202525189:
+    class: open
+    licence: CC-BY-4.0
+    basis: licences recorded with the DOI (10.1002/anie.202525189)
+    text_chars: 59991
+  scale:commons/source/10.1021-acs.jpcc.5c02677:
+    class: open
+    licence: CC-BY-4.0
+    basis: licences recorded with the DOI (10.1021/acs.jpcc.5c02677)
+    text_chars: 49790
+  scale:commons/source/10.1021-acsnano.5c09659:
+    class: open
+    licence: CC-BY-4.0
+    basis: version of record, read from the copy in pdfs/10.1021-acsnano.5c09659.pdf; its first page states
+      "This article is licensed under CC-BY 4.0" (© 2025 The Authors. Published by American Chemical Society)
+    text_chars: 47227
+  scale:commons/source/10.1021-acs.chemrev.6c00095:
+    class: open
+    licence: CC-BY-4.0
+    basis: first page of the copy read (version of record) states "This article is licensed under CC-BY
+      4.0" (10.1021/acs.chemrev.6c00095)
+    text_chars: 320784
+  scale:commons/source/10.1039-d6cp01600f:
+    class: open
+    licence: CC-BY-4.0
+    basis: published under CC BY 4.0 (first page of the copy read states "Licensed under CC-BY 4.0")
+    text_chars: 81731
+  scale:commons/source/10.1021-acs.chemmater.5c00135:
+    class: open
+    licence: CC-BY-4.0
+    basis: copy read is the version of record; its first page states "© 2025 The Authors. Published by American
+      Chemical Society … This article is licensed under CC-BY 4.0" (10.1021/acs.chemmater.5c00135)
+    text_chars: 52092
+  scale:commons/source/10.1002-chem.202501897:
+    class: open
+    licence: CC-BY-4.0
+    basis: version of record read (Wiley Online Library copy); published open access under the Creative
+      Commons Attribution 4.0 licence (http://creativecommons.org/licenses/by/4.0/, article front matter)
+    text_chars: 39365
+  scale:commons/source/10.3390-polym18091129:
+    class: open
+    licence: CC-BY-4.0
+    basis: 'the copy read (publisher version of record, pdfs/10.3390-polym18091129.pdf, p. 1) states: "This
+      article is an open access article distributed under the terms and conditions of the Creative Commons
+      Attribution (CC BY) license."; licence recorded with the DOI (10.3390/polym18091129)'
+    text_chars: 63262
+  scale:commons/source/10.1002-cssc.202400209:
+    class: open
+    licence: CC-BY-4.0
+    basis: 'The curated copy (1070593.pdf, version of record) states on its first page: "(c) 2024 The Authors.
+      ChemSusChem published by Wiley-VCH GmbH. This is an open access article under the terms of the Creative
+      Commons Attribution License, which permits use, distribution and reproduction in any medium, provided
+      the original work is properly cited." (CC-BY 4.0, https://creativecommons.org/licenses/by/4.0/)'
+    text_chars: 39832
+  scale:commons/source/10.3390-ijms27020789:
+    class: open
+    licence: CC-BY-4.0
+    basis: published under CC BY 4.0, stated on the first page of the version-of-record PDF read ("This
+      article is an open access article distributed under the terms and conditions of the Creative Commons
+      Attribution (CC BY) license"); matches the index verdict (licence cc-by, copy version_of_record)
+    text_chars: 46021
+  scale:commons/source/10.1021-acs.jpclett.5c01974:
+    class: open
+    licence: CC-BY-4.0
+    basis: licences recorded with the DOI (10.1021/acs.jpclett.5c01974)
+    text_chars: 42338
+  scale:commons/source/10.3390-molecules30173475:
+    class: open
+    licence: CC-BY-4.0
+    basis: 'published under CC BY 4.0 (copy read: version of record; its first page states the article is
+      open access under the Creative Commons Attribution (CC BY) license, https://creativecommons.org/licenses/by/4.0/)'
+    text_chars: 42419
+  scale:commons/source/10.1039-d6dt01484d:
+    class: open
+    licence: CC-BY-4.0
+    basis: 'copy read is HAL hal-05728981v1, whose first page states "Distributed under a Creative Commons
+      CC BY 4.0 - Attribution - International License" (the index verdict "cc-by; copy: not known" checked
+      against this copy)'
+    text_chars: 46974
+  scale:commons/source/10.1002-advs.75911:
+    class: open
+    licence: CC-BY-4.0
+    basis: licences recorded with the DOI (10.1002/advs.75911)
+    text_chars: 53360
+  scale:commons/source/10.1021-acsaem.4c02830:
+    class: open
+    licence: CC-BY-4.0
+    basis: the copy read is the version of record and its first page states 'This article is licensed under
+      a Creative Commons Attribution (CC-BY) 4.0 International License'; matches the source index verdict
+      (licence cc-by; copy version_of_record)
+    text_chars: 45887
+  scale:commons/source/10.1039-d5dt02433a:
+    class: open
+    licence: CC-BY-4.0
+    basis: 'the copy read (version of record) states on its first page: Licensed under CC-BY 4.0'
+    text_chars: 62574
+  scale:commons/source/10.1021-jacsau.4c00857:
+    class: open
+    licence: CC-BY-4.0
+    basis: licences recorded with the DOI (10.1021/jacsau.4c00857)
+    text_chars: 48448
+  scale:commons/source/10.1021-acs.jpclett.6c00902:
+    class: open
+    licence: CC-BY-4.0
+    basis: the copy read is the version of record; its first page states (c) 2026 The Authors, Published
+      by American Chemical Society, and 'This article is licensed under CC-BY 4.0' (10.1021/acs.jpclett.6c00902)
+    text_chars: 45666
+  scale:commons/source/10.1038-s41467-024-49158-4:
+    class: open
+    licence: CC-BY-4.0
+    basis: licence stated in the version-of-record copy read (CC BY 4.0), consistent with the licence recorded
+      with DOI 10.1038/s41467-024-49158-4
+    text_chars: 72483

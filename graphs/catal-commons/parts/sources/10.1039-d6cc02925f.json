@@ -1,0 +1,1492 @@
+{
+  "nodes": [
+    {
+      "id": "scale:commons/10.1039-d6cc02925f/claim/cu-edtmpa-han",
+      "label": "Claim",
+      "props": {
+        "name": "EDTMPA steers Cu(110), 64% FE(CH4)",
+        "claim_kind": "finding",
+        "claim_status": "supported",
+        "evidence": [
+          {
+            "id": "ex:pub/10.1039-d6cc02925f/ev/c5a",
+            "kind": "text",
+            "evidence_type": "ECO:0000033",
+            "locator": "p. 3",
+            "note": "Second-hand: result reported by this review from Han et al., Nat. Commun. 2022 (ref 35); curate value objects from the cited work itself.",
+            "quote": "employed to induce the generation of Cu(110) facets during electrocatalysis",
+            "source": "scale:commons/source/10.1039-d6cc02925f"
+          },
+          {
+            "id": "ex:pub/10.1039-d6cc02925f/ev/c5b",
+            "kind": "text",
+            "evidence_type": "ECO:0000033",
+            "locator": "p. 3",
+            "note": "Second-hand: result reported by this review from Han et al., Nat. Commun. 2022 (ref 35); curate value objects from the cited work itself. The text layer loses the superscript minus: the PDF prints '192 mA cm-2'.",
+            "quote": "a stable CH4 faradaic efficiency of 64% at a partial current density of 192 mA cm\u00022 in an alkaline flow cell",
+            "source": "scale:commons/source/10.1039-d6cc02925f"
+          }
+        ],
+        "inference_type": "interventional",
+        "origin": "curated",
+        "scope": "Polycrystalline Cu with EDTMPA additive in an alkaline flow cell; Han et al., Nat. Commun. 2022 (ref 35).",
+        "statement": "Electrolyte engineering with an EDTMPA additive deliberately steers reconstruction of polycrystalline Cu towards Cu(110) facets during electrocatalysis; adsorbed EDTMPA supplies protons and stabilizes *CHO through hydrogen bonds, giving a stable CH4 faradaic efficiency of 64% at a partial current density of 192 mA cm-2 in an alkaline flow cell."
+      }
+    },
+    {
+      "id": "scale:commons/10.1039-d6cc02925f/claim/cu-kim-pathways",
+      "label": "Claim",
+      "props": {
+        "name": "Oxide formation vs dissolution-redeposition pathways",
+        "claim_kind": "mechanism",
+        "claim_status": "supported",
+        "evidence": [
+          {
+            "id": "ex:pub/10.1039-d6cc02925f/ev/c10a",
+            "kind": "text",
+            "evidence_type": "ECO:0000033",
+            "locator": "p. 3",
+            "note": "Second-hand: result reported by this review from Kim et al., JACS 2026 (ref 12); curate value objects from the cited work itself.",
+            "quote": "proposed two distinct surface reconstruction pathways to mechanistically understand the Cu dynamic behaviors during the CO2RR: surface oxide formation (Fig. 1a) and metal dissolution (Fig. 1b)",
+            "source": "scale:commons/source/10.1039-d6cc02925f"
+          },
+          {
+            "id": "ex:pub/10.1039-d6cc02925f/ev/c10b",
+            "kind": "text",
+            "evidence_type": "ECO:0000033",
+            "locator": "p. 3",
+            "note": "Second-hand: result reported by this review from Kim et al., JACS 2026 (ref 12); curate value objects from the cited work itself.",
+            "quote": "they proposed a novel strategy to construct a dynamic electrochemical interface by introducing trace amounts of Cu2+ into the electrolyte",
+            "source": "scale:commons/source/10.1039-d6cc02925f"
+          }
+        ],
+        "inference_type": "interventional",
+        "origin": "curated",
+        "scope": "Cu electrocatalysts in CO2RR; Kim et al., JACS 2026 (ref 12).",
+        "statement": "Two distinct Cu reconstruction pathways operate during CO2RR: surface oxide formation, where CuOx species form transient active sites for C2+ that are reduced cathodically, and potential-induced metal dissolution into Cu2+ with redeposition under cathodic conditions, which renews the catalytic interface; adding trace Cu2+ to the electrolyte builds such a dynamic interface and sustains C2+ generation without anodic pulsing."
+      }
+    },
+    {
+      "id": "scale:commons/10.1039-d6cc02925f/claim/cu-oh-adatoms",
+      "label": "Claim",
+      "props": {
+        "name": "OH-driven Cu adatom ejection on Cu(111)",
+        "claim_kind": "mechanism",
+        "claim_status": "supported",
+        "evidence": [
+          {
+            "id": "ex:pub/10.1039-d6cc02925f/ev/c1a",
+            "kind": "text",
+            "locator": "p. 2",
+            "quote": "Cu(111) represents the most thermodynamically stable low-index facet",
+            "source": "scale:commons/source/10.1039-d6cc02925f"
+          },
+          {
+            "id": "ex:pub/10.1039-d6cc02925f/ev/c1b",
+            "kind": "text",
+            "evidence_type": "ECO:0000033",
+            "locator": "p. 2",
+            "note": "Second-hand: result reported by this review from the Cu(111) reconstruction studies this section reviews (refs 13, 27); curate value objects from the cited work itself.",
+            "quote": "These isolated adatoms are subsequently captured and stabilized by *CO molecules",
+            "source": "scale:commons/source/10.1039-d6cc02925f"
+          }
+        ],
+        "inference_type": "observational",
+        "origin": "curated",
+        "scope": "Cu(111) in CO2RR conditions, as reviewed here from the cited studies.",
+        "statement": "During CO2RR on Cu(111), specific adsorption of OH- on terrace sites drives the ejection of undercoordinated Cu adatoms from the lattice, and the isolated adatoms are captured and stabilized by adsorbed *CO."
+      }
+    },
+    {
+      "id": "scale:commons/10.1039-d6cc02925f/claim/cu-oh-co-restructuring",
+      "label": "Claim",
+      "props": {
+        "name": "CO/OH adlayer lifts Cu into nanoclusters",
+        "claim_kind": "mechanism",
+        "claim_status": "supported",
+        "evidence": [
+          {
+            "id": "ex:pub/10.1039-d6cc02925f/ev/c3a",
+            "kind": "text",
+            "evidence_type": "ECO:0000033",
+            "locator": "p. 4",
+            "note": "Second-hand: result reported by this review from Wei et al., JACS 2025 (ref 13); curate value objects from the cited work itself. The text layer drops the minus signs of the printed potentials (-0.15 to -0.35 VRHE).",
+            "quote": "a mixed adlayer of COad and kinetically trapped OHad collaboratively lifts surface Cu atoms into metastable CuCO(OH)n complexes",
+            "source": "scale:commons/source/10.1039-d6cc02925f"
+          },
+          {
+            "id": "ex:pub/10.1039-d6cc02925f/ev/c3b",
+            "kind": "text",
+            "evidence_type": "ECO:0000033",
+            "locator": "p. 4",
+            "note": "Second-hand: result reported by this review from Wei et al., JACS 2025 (ref 13); curate value objects from the cited work itself.",
+            "quote": "they undergo ripening, aggregation, or dissolution into monatomic islands/surface vacancies",
+            "source": "scale:commons/source/10.1039-d6cc02925f"
+          },
+          {
+            "id": "ex:pub/10.1039-d6cc02925f/ev/c3c",
+            "kind": "text",
+            "locator": "p. 4",
+            "note": "The text layer stores the printed minus signs as a control character; the PDF prints \"-0.15 to -0.35 VRHE\".",
+            "quote": "under CO saturation at mild cathodic potentials (\u00020.15 to \u00020.35 VRHE)",
+            "source": "scale:commons/source/10.1039-d6cc02925f"
+          },
+          {
+            "id": "ex:pub/10.1039-d6cc02925f/ev/c3d",
+            "kind": "text",
+            "locator": "p. 4",
+            "note": "The PDF prints \"less than -0.5 VRHE\".",
+            "quote": "at highly cathodic potentials (less than \u00020.5 VRHE)",
+            "source": "scale:commons/source/10.1039-d6cc02925f"
+          }
+        ],
+        "inference_type": "observational",
+        "origin": "curated",
+        "scope": "Cu electrodes in Ar- or CO-saturated 0.1 M KOH, mild (-0.15 to -0.35 VRHE) vs. highly cathodic (< -0.5 VRHE) potentials; EC-AFM/SHINERS plus grand-canonical global optimization by Wei et al., JACS 2025 (ref 13).",
+        "statement": "On Cu under CO electroreduction, a mixed adlayer of adsorbed CO and kinetically trapped OH lifts surface Cu atoms into metastable CuCO(OH)n complexes, turning flat terraces into low-coordinated Cu nanoclusters; at more cathodic potentials (below about -0.5 VRHE) rapid CO consumption destabilizes these clusters, which ripen, aggregate or dissolve into monatomic islands and surface vacancies while OH stays trapped on the roughened surface."
+      }
+    },
+    {
+      "id": "scale:commons/10.1039-d6cc02925f/claim/cu-oxide-reduction-lee",
+      "label": "Claim",
+      "props": {
+        "name": "Cu oxide reduced before CO2RR onset",
+        "claim_kind": "finding",
+        "claim_status": "supported",
+        "evidence": [
+          {
+            "id": "ex:pub/10.1039-d6cc02925f/ev/c4a",
+            "kind": "text",
+            "evidence_type": "ECO:0000033",
+            "locator": "p. 3",
+            "note": "Second-hand: result reported by this review from Lee et al., JACS 2021 (ref 5); curate value objects from the cited work itself.",
+            "quote": "the surface Cu oxide layer could be fully reduced into metallic Cu before the onset potential for the CO2RR",
+            "source": "scale:commons/source/10.1039-d6cc02925f"
+          },
+          {
+            "id": "ex:pub/10.1039-d6cc02925f/ev/c4b",
+            "kind": "text",
+            "evidence_type": "ECO:0000033",
+            "locator": "p. 3",
+            "note": "Second-hand: result reported by this review from Lee et al., JACS 2021 (ref 5); curate value objects from the cited work itself.",
+            "quote": "surface reconstruction of the polycrystalline Cu was preferentially towards (100) facets in the presence of CO2",
+            "source": "scale:commons/source/10.1039-d6cc02925f"
+          }
+        ],
+        "inference_type": "observational",
+        "origin": "curated",
+        "scope": "Polycrystalline Cu electrodes under in situ reaction conditions; Lee et al., JACS 2021 (ref 5).",
+        "statement": "GIXAS/GIXRD showed that the surface Cu oxide layer of polycrystalline Cu electrodes is fully reduced to metallic Cu before the CO2RR onset potential, and that surface reconstruction proceeds preferentially towards (100) facets in the presence of CO2."
+      }
+    },
+    {
+      "id": "scale:commons/10.1039-d6cc02925f/claim/cu-pulsed-kok",
+      "label": "Claim",
+      "props": {
+        "name": "Anodic pulses reset Cu, ethylene lifetime x20",
+        "claim_kind": "finding",
+        "claim_status": "supported",
+        "evidence": [
+          {
+            "id": "ex:pub/10.1039-d6cc02925f/ev/c11a",
+            "kind": "text",
+            "evidence_type": "ECO:0000033",
+            "locator": "p. 5",
+            "note": "Second-hand: result reported by this review from Kok et al., JACS 2024 (ref 45); curate value objects from the cited work itself.",
+            "quote": "the application of an anodic potential induces two distinct pathways for Cu surface reconstruction: the reformation of surface oxides or the anodic dissolution",
+            "source": "scale:commons/source/10.1039-d6cc02925f"
+          },
+          {
+            "id": "ex:pub/10.1039-d6cc02925f/ev/c11b",
+            "kind": "text",
+            "evidence_type": "ECO:0000033",
+            "locator": "p. 5",
+            "note": "Second-hand: result reported by this review from Kok et al., JACS 2024 (ref 45); curate value objects from the cited work itself.",
+            "quote": "enhance the duration of stable ethylene production by a factor of 20",
+            "source": "scale:commons/source/10.1039-d6cc02925f"
+          }
+        ],
+        "inference_type": "interventional",
+        "origin": "curated",
+        "scope": "Cu-based CO2 electroreduction catalysts under pulsed electrolysis; in situ Raman plus electrochemical measurements by Kok et al., JACS 2024 (ref 45).",
+        "statement": "Periodic anodic oxidation pulses stabilize Cu-based CO2RR catalysts by resetting the surface microenvironment: an applied anodic potential reforms surface oxides or dissolves Cu, and the subsequent cathodic step reduces the oxides or redeposits the dissolved Cu, continuously regenerating coordinatively unsaturated Cu active centres; this extends the duration of stable ethylene production by a factor of 20 but only mitigates, and cannot eradicate, catalyst failure by directional Cu dissolution and migration."
+      }
+    },
+    {
+      "id": "scale:commons/10.1039-d6cc02925f/claim/cu-shifted-row-zhang",
+      "label": "Claim",
+      "props": {
+        "name": "H-induced shifted-row reconstruction of Cu(100)",
+        "claim_kind": "mechanism",
+        "claim_status": "supported",
+        "evidence": [
+          {
+            "id": "ex:pub/10.1039-d6cc02925f/ev/c7a",
+            "kind": "text",
+            "evidence_type": "ECO:0000033",
+            "locator": "p. 4",
+            "note": "Second-hand: result reported by this review from Zhang et al., JACS 2022 (ref 37); curate value objects from the cited work itself.",
+            "quote": "hydrogen adsorption weakens the Cu–Cu bonds between the topmost and subsurface layers, triggering the displacement of Cu atomic rows",
+            "source": "scale:commons/source/10.1039-d6cc02925f"
+          },
+          {
+            "id": "ex:pub/10.1039-d6cc02925f/ev/c7b",
+            "kind": "text",
+            "locator": "p. 4",
+            "quote": "creates 3-fold hollow sites with an exceptionally high binding affinity for hydrogen",
+            "source": "scale:commons/source/10.1039-d6cc02925f"
+          }
+        ],
+        "inference_type": "computational",
+        "origin": "curated",
+        "scope": "Cu(100) under electroreduction conditions; global optimization + GCDFT + AIMD by Zhang et al., JACS 2022 (ref 37).",
+        "statement": "Hydrogen-induced \"shifted-row reconstruction\" of Cu(100) under electroreduction: H adsorption weakens the Cu-Cu bonds between topmost and subsurface layers and displaces Cu atomic rows, creating 3-fold hollow sites with exceptionally high hydrogen binding affinity that thermodynamically stabilize the distortion at elevated H coverage."
+      }
+    },
+    {
+      "id": "scale:commons/10.1039-d6cc02925f/claim/cu-strain",
+      "label": "Claim",
+      "props": {
+        "name": "Tensile strain lowers CO2RR limiting potentials on Cu",
+        "claim_kind": "mechanism",
+        "claim_status": "supported",
+        "evidence": [
+          {
+            "id": "ex:pub/10.1039-d6cc02925f/ev/c9a",
+            "kind": "text",
+            "evidence_type": "ECO:0000033",
+            "locator": "p. 4",
+            "note": "Second-hand: result reported by this review from Du & An, J. Phys. Chem. C 2021 (ref 41); curate value objects from the cited work itself.",
+            "quote": "tensile strain on facets like Cu(100) or Cu(211) can selectively lower the limiting potentials for distinct CO2RR pathways",
+            "source": "scale:commons/source/10.1039-d6cc02925f"
+          }
+        ],
+        "inference_type": "computational",
+        "origin": "curated",
+        "scope": "Cu(100) and Cu(211) facets under CO2RR; theoretical prediction reviewed here (ref 41).",
+        "statement": "Theoretical simulations predict that specific degrees of tensile strain on facets such as Cu(100) or Cu(211) can selectively lower the limiting potentials of distinct CO2RR pathways; strain engineering is tied to reconstruction because atomic-scale restructuring is largely a stress-relief mechanism balancing intrinsic lattice strain and adsorbate-induced strain."
+      }
+    },
+    {
+      "id": "scale:commons/10.1039-d6cc02925f/claim/cu-wavelike-zhang",
+      "label": "Claim",
+      "props": {
+        "name": "Wave-like Cu*CO diffusion, 0.10 eV barrier",
+        "claim_kind": "mechanism",
+        "claim_status": "supported",
+        "evidence": [
+          {
+            "id": "ex:pub/10.1039-d6cc02925f/ev/c8a",
+            "kind": "text",
+            "evidence_type": "ECO:0000033",
+            "locator": "p. 4",
+            "note": "Second-hand: result reported by this review from Zhang et al., JACS 2024 (ref 38); curate value objects from the cited work itself. The text layer drops the minus signs of the printed potential window (-0.5 to -1.0 VRHE).",
+            "quote": "with a kinetic barrier as low as 0.10 eV",
+            "source": "scale:commons/source/10.1039-d6cc02925f"
+          },
+          {
+            "id": "ex:pub/10.1039-d6cc02925f/ev/c8b",
+            "kind": "text",
+            "locator": "p. 4",
+            "note": "The PDF prints \"-0.5 to -1.0 VRHE\".",
+            "quote": "Within the critical potential window of \u00020.5 to \u00021.0 VRHE",
+            "source": "scale:commons/source/10.1039-d6cc02925f"
+          }
+        ],
+        "inference_type": "computational",
+        "origin": "curated",
+        "scope": "Cu electrodes under realistic reduction conditions, -0.5 to -1.0 VRHE; GCGA global optimization + quasi-kMC by Zhang et al., JACS 2024 (ref 38).",
+        "statement": "Within about -0.5 to -1.0 VRHE, synergistic adsorbed *H and atop *CO drive dynamic surface roughening of Cu: metastable Cu*CO species diffuse by a \"wave-like\" propagation mechanism with a kinetic barrier as low as 0.10 eV and dimerize to form the actual active sites governing selective CO2 reduction to C2+ products."
+      }
+    },
+    {
+      "id": "scale:commons/10.1039-d6cc02925f/claim/cu111-to-cu100",
+      "label": "Claim",
+      "props": {
+        "name": "Cu(111) converts to Cu(100)-like surface",
+        "claim_kind": "finding",
+        "claim_status": "supported",
+        "evidence": [
+          {
+            "id": "ex:pub/10.1039-d6cc02925f/ev/c2a",
+            "kind": "text",
+            "evidence_type": "ECO:0000033",
+            "locator": "p. 3",
+            "note": "Second-hand: result reported by this review from the EC-STM study of Kim & Baricuatro et al., Langmuir 2014 (ref 27); curate value objects from the cited work itself.",
+            "quote": "Cu(100)-like surface, which elegantly explains why polycrystal- line Cu eventually exhibits Cu(100)-like selectivity toward C2+",
+            "source": "scale:commons/source/10.1039-d6cc02925f"
+          }
+        ],
+        "inference_type": "observational",
+        "origin": "curated",
+        "scope": "Cu(111) under prolonged cathodic polarization, EC-STM observation reviewed here (ref 27).",
+        "statement": "Operando EC-STM has captured a step-wise conversion of Cu(111) domains into a Cu(100)-like surface under prolonged cathodic polarization, which explains why polycrystalline Cu eventually shows Cu(100)-like C2+ selectivity."
+      }
+    },
+    {
+      "id": "scale:commons/10.1039-d6cc02925f/claim/cu8-gcn4-zhu",
+      "label": "Claim",
+      "props": {
+        "name": "Cu8 speciation and 0.25 eV CO coupling barrier",
+        "claim_kind": "finding",
+        "claim_status": "supported",
+        "evidence": [
+          {
+            "id": "ex:pub/10.1039-d6cc02925f/ev/c18a",
+            "kind": "text",
+            "evidence_type": "ECO:0000033",
+            "locator": "p. 10",
+            "note": "Second-hand: result reported by this review from Zhu et al., JACS 2026 (ref 25); curate value objects from the cited work itself. The text layer loses the inequality and minus glyphs: the PDF prints '(≤ -0.40 VRHE)'.",
+            "quote": "As the potential shifts negatively (r\u00020.40 VRHE), *CO gradually replaces *HCOO",
+            "source": "scale:commons/source/10.1039-d6cc02925f"
+          },
+          {
+            "id": "ex:pub/10.1039-d6cc02925f/ev/c18b",
+            "kind": "text",
+            "evidence_type": "ECO:0000033",
+            "locator": "p. 10",
+            "note": "Second-hand: result reported by this review from Zhu et al., JACS 2026 (ref 25); curate value objects from the cited work itself.",
+            "quote": "the *CO-saturated cluster is thermodynamically more stable than bulk Cu",
+            "source": "scale:commons/source/10.1039-d6cc02925f"
+          },
+          {
+            "id": "ex:pub/10.1039-d6cc02925f/ev/c18c",
+            "kind": "text",
+            "evidence_type": "ECO:0000033",
+            "locator": "p. 10",
+            "note": "Second-hand: result reported by this review from Zhu et al., JACS 2026 (ref 25); curate value objects from the cited work itself.",
+            "quote": "the lowest energy barrier for *CO–*CO coupling on Cu8(CO)15 is only 0.25 eV, following an atop–atop coupling pathway",
+            "source": "scale:commons/source/10.1039-d6cc02925f"
+          },
+          {
+            "id": "ex:pub/10.1039-d6cc02925f/ev/c18d",
+            "kind": "text",
+            "locator": "p. 10",
+            "quote": "results show that at a 0.00 VRHE, the Cu8 surface is predomi- nantly covered by *HCOO",
+            "source": "scale:commons/source/10.1039-d6cc02925f"
+          },
+          {
+            "id": "ex:pub/10.1039-d6cc02925f/ev/c18e",
+            "kind": "text",
+            "locator": "p. 10",
+            "note": "The PDF prints \"-0.50 to -1.00 VRHE\".",
+            "quote": "under operating potentials of \u00020.50 to \u00021.00 VRHE",
+            "source": "scale:commons/source/10.1039-d6cc02925f"
+          },
+          {
+            "id": "ex:pub/10.1039-d6cc02925f/ev/c18f",
+            "kind": "text",
+            "locator": "p. 10",
+            "note": "The PDF prints \"-1.00 VRHE\".",
+            "quote": "a *CO-saturated Cu8(CO)15 complex at \u00021.00 VRHE",
+            "source": "scale:commons/source/10.1039-d6cc02925f"
+          }
+        ],
+        "inference_type": "computational",
+        "origin": "curated",
+        "scope": "Cu8/g-C3N4 clusters, ML-GCMC/GCDFT at 0.00 to -1.00 VRHE; Zhu et al., JACS 2026 (ref 25).",
+        "statement": "ML-accelerated GCMC and GCDFT on Cu8/g-C3N4 show potential-driven surface speciation: at 0.00 VRHE the Cu8 surface is predominantly covered by *HCOO, and as the potential shifts negatively (to -0.40 VRHE and below) *CO replaces *HCOO until a *CO-saturated Cu8(CO)15 complex forms at -1.00 VRHE; under operating potentials of -0.50 to -1.00 VRHE the *CO-saturated cluster is thermodynamically more stable than bulk Cu, and at -1.00 VRHE the lowest barrier for *CO-*CO coupling on Cu8(CO)15 is only 0.25 eV, following an atop-atop pathway distinct from the bridge-site pathway of Cu(100)."
+      }
+    },
+    {
+      "id": "scale:commons/10.1039-d6cc02925f/claim/cuo-precursor-rollier",
+      "label": "Claim",
+      "props": {
+        "name": "CuO precursor size controls derived Cu surfaces",
+        "claim_kind": "finding",
+        "claim_status": "supported",
+        "evidence": [
+          {
+            "id": "ex:pub/10.1039-d6cc02925f/ev/c6a",
+            "kind": "text",
+            "evidence_type": "ECO:0000033",
+            "locator": "p. 3",
+            "note": "Second-hand: result reported by this review from Rollier et al., ACS Catal. 2024 (ref 7); curate value objects from the cited work itself.",
+            "quote": "designed medium-sized CuO precursors (10–20 nm) to control the electrochemistry-induced surface structures of derived Cu particles",
+            "source": "scale:commons/source/10.1039-d6cc02925f"
+          }
+        ],
+        "inference_type": "interventional",
+        "origin": "curated",
+        "scope": "CuO-derived Cu particles of 10-20 nm precursor size; Rollier et al., ACS Catal. 2024 (ref 7).",
+        "statement": "Medium-sized CuO precursors (10-20 nm) were designed to control the electrochemistry-induced surface structures of the derived Cu particles; the surface defects created by reconstruction affect the competition between CO dimerization and the HER and thereby the product distribution."
+      }
+    },
+    {
+      "id": "scale:commons/10.1039-d6cc02925f/claim/framework",
+      "label": "Claim",
+      "props": {
+        "name": "Environment-reconstruction-performance framework",
+        "claim_kind": "conclusion",
+        "claim_status": "proposed",
+        "evidence": [
+          {
+            "id": "ex:pub/10.1039-d6cc02925f/ev/c19a",
+            "kind": "text",
+            "locator": "p. 1",
+            "quote": "we emphasize the importance of uncovering the dynamic structural evolutions of working electrocatalysts",
+            "source": "scale:commons/source/10.1039-d6cc02925f"
+          },
+          {
+            "id": "ex:pub/10.1039-d6cc02925f/ev/c19b",
+            "kind": "text",
+            "locator": "p. 11",
+            "quote": "bridging atomic-scale active interfaces with macroscopic catalytic performance",
+            "source": "scale:commons/source/10.1039-d6cc02925f"
+          }
+        ],
+        "inference_type": "meta_analysis",
+        "origin": "curated",
+        "scope": "CO2RR electrocatalysts generally; this review's unifying framework.",
+        "statement": "Surface reconstruction is the central mechanistic link between the electrochemical environment (applied potential, local pH, electrolyte species) and CO2RR performance: coverage and reconstruction reorganize surface structure and electronics across length scales, and the reconstructed interfaces govern intermediate adsorption, stabilization and C-C coupling, hence reaction pathways and product distributions (the review's environment-reconstruction-performance framework, Fig. 8).",
+        "unmodeled": [
+          "Fig. 8 is a schematic conceptual framework (reproduced/drawn, not data); its graphical content is not digitized"
+        ]
+      }
+    },
+    {
+      "id": "scale:commons/10.1039-d6cc02925f/claim/outlook",
+      "label": "Claim",
+      "props": {
+        "name": "Three outlook priorities for reconstruction research",
+        "claim_kind": "generalization",
+        "claim_status": "proposed",
+        "evidence": [
+          {
+            "id": "ex:pub/10.1039-d6cc02925f/ev/c21a",
+            "kind": "text",
+            "locator": "p. 13",
+            "quote": "the active implementation of pulsed electrolysis strategies can achieve the dynamic refreshing and regeneration of active sites",
+            "source": "scale:commons/source/10.1039-d6cc02925f"
+          }
+        ],
+        "inference_type": "expert_opinion",
+        "origin": "curated",
+        "scope": "Future directions for CO2RR reconstruction research, as proposed by this review.",
+        "statement": "The review's outlook names three priorities: integrated in situ characterization with ultrahigh spatiotemporal (femtosecond-level temporal, atomic-level spatial) resolution under industrially relevant conditions; deepening machine-learning and multiscale simulation for mesoscopic/nanosecond dynamic evolution; and a shift from passive understanding to active steering of reconstruction, e.g. pulsed electrolysis to refresh and regenerate active sites and electrolyte/additive engineering to lock in favourable reconstructed configurations."
+      }
+    },
+    {
+      "id": "scale:commons/10.1039-d6cc02925f/claim/pcu2o-ovs-mao",
+      "label": "Claim",
+      "props": {
+        "name": "P-Cu2O loses P and O, 87.0% FE(C2+)",
+        "claim_kind": "finding",
+        "claim_status": "supported",
+        "evidence": [
+          {
+            "id": "ex:pub/10.1039-d6cc02925f/ev/c12a",
+            "kind": "text",
+            "evidence_type": "ECO:0000033",
+            "locator": "p. 5",
+            "note": "Second-hand: result reported by this review from Mao et al., ACS Nano 2025 (ref 18); curate value objects from the cited work itself.",
+            "quote": "the P element binds with lattice oxygen (Olatt) and desorbs from the catalyst surface into the aqueous electrolyte",
+            "source": "scale:commons/source/10.1039-d6cc02925f"
+          },
+          {
+            "id": "ex:pub/10.1039-d6cc02925f/ev/c12b",
+            "kind": "text",
+            "evidence_type": "ECO:0000033",
+            "locator": "p. 5",
+            "note": "Second-hand: result reported by this review from Mao et al., ACS Nano 2025 (ref 18); computational result of that work; curate value objects from the cited work itself.",
+            "quote": "lowers the free energy for the formation of *O*CCO from 1.73 eV on Cu2O(200) down to 1.11 eV on the fully reduced surface",
+            "source": "scale:commons/source/10.1039-d6cc02925f"
+          },
+          {
+            "id": "ex:pub/10.1039-d6cc02925f/ev/c12c",
+            "kind": "text",
+            "evidence_type": "ECO:0000033",
+            "locator": "p. 5",
+            "note": "Second-hand: result reported by this review from Mao et al., ACS Nano 2025 (ref 18); curate value objects from the cited work itself. The text layer loses the superscript minus: the PDF prints '347.8 mA cm-2'.",
+            "quote": "faradaic efficiency of 87.0% at a partial current density of 347.8 mA cm\u00022, with 46.1% for FEC2H4 and 31.5% for FEC2H5OH",
+            "source": "scale:commons/source/10.1039-d6cc02925f"
+          }
+        ],
+        "inference_type": "interventional",
+        "origin": "curated",
+        "scope": "Surface-P-doped Cu2O nanoparticles in CO2RR; Mao et al., ACS Nano 2025 (ref 18); the free energies are that work's calculations.",
+        "statement": "In surface-P-doped Cu2O under CO2RR cathodic potentials, P binds lattice oxygen and desorbs into the electrolyte, extracting lattice O and rapidly generating a very high density of oxygen vacancies (XPS Olatt and Cu 2p shifts; in situ EPR shows the vacancies persist and grow with reduction time); the vacancy-rich microenvironment lowers the computed free energy of *O*CCO formation from 1.73 eV on Cu2O(200) to 1.11 eV on the fully reduced surface and enables a C2+ faradaic efficiency of 87.0% at a partial current density of 347.8 mA cm-2, with 46.1% FE(C2H4) and 31.5% FE(C2H5OH)."
+      }
+    },
+    {
+      "id": "scale:commons/10.1039-d6cc02925f/claim/pourbaix-method",
+      "label": "Claim",
+      "props": {
+        "name": "Field-corrected RHE-referenced Pourbaix needed",
+        "claim_kind": "conclusion",
+        "claim_status": "supported",
+        "evidence": [
+          {
+            "id": "ex:pub/10.1039-d6cc02925f/ev/c20a",
+            "kind": "text",
+            "locator": "p. 9",
+            "quote": "the conventional approach is inherently linked to the standard hydrogen electrode (SHE) scale",
+            "source": "scale:commons/source/10.1039-d6cc02925f"
+          },
+          {
+            "id": "ex:pub/10.1039-d6cc02925f/ev/c20b",
+            "kind": "text",
+            "locator": "p. 9",
+            "quote": "Pt(111) exhibits H*-covered surfaces during the HER in acidic media",
+            "source": "scale:commons/source/10.1039-d6cc02925f"
+          },
+          {
+            "id": "ex:pub/10.1039-d6cc02925f/ev/c20c",
+            "kind": "text",
+            "locator": "p. 9",
+            "quote": "the pH-dependent diagram referenced to the RHE scale is considered more accurate",
+            "source": "scale:commons/source/10.1039-d6cc02925f"
+          }
+        ],
+        "inference_type": "meta_analysis",
+        "origin": "curated",
+        "scope": "Surface Pourbaix analysis of electrochemical interfaces, exemplified on Pt(111); field-corrected scheme by Liu et al., Langmuir 2024 (ref 70).",
+        "statement": "Classical surface Pourbaix diagrams treat pH through a concentration-dependent proton correction and are therefore tied to the SHE scale while remaining RHE-scale-independent, which can contradict experiment at moderate-to-high pH (Pt(111) is H*-covered in acidic media but HO*-covered in alkaline media at the same RHE potential); a field-corrected, pH-dependent Pourbaix scheme that accounts for the electric field, adsorbate dipole/polarizability and the PZC reproduces the experimental trends and is considered more accurate."
+      }
+    },
+    {
+      "id": "scale:commons/10.1039-d6cc02925f/claim/sn-datamining",
+      "label": "Claim",
+      "props": {
+        "name": "SnO2-based ~65% vs SnO ~3% of literature",
+        "claim_kind": "finding",
+        "claim_status": "supported",
+        "evidence": [
+          {
+            "id": "ex:pub/10.1039-d6cc02925f/ev/c15a",
+            "kind": "text",
+            "locator": "p. 7",
+            "quote": "account for approximately 65% of the reported Sn-based mate- rials, overwhelmingly favour the formation of HCOOH/HCOO\u0002 as a main C1 product",
+            "source": "scale:commons/source/10.1039-d6cc02925f"
+          },
+          {
+            "id": "ex:pub/10.1039-d6cc02925f/ev/c15b",
+            "kind": "text",
+            "locator": "p. 7",
+            "note": "The text layer renders the printed tilde as 'B' ('B3%'); the PDF prints '~3%' (checked against the page image).",
+            "quote": "rarely investigated SnO-based materials (only B3% of the literature) exhibit the distinct capacity to co-produce HCOOH and CO in comparable ratios",
+            "source": "scale:commons/source/10.1039-d6cc02925f"
+          }
+        ],
+        "inference_type": "meta_analysis",
+        "origin": "curated",
+        "scope": "Experimental CO2RR literature on Sn-based oxides, archived in the DigCat database (https://www.digcat.org/); data mining reported by this review with ref 11.",
+        "statement": "Large-scale data mining of the experimental CO2RR literature (DigCat database) shows a divergence among Sn oxides: mainstream SnO2-based catalysts, about 65% of the reported Sn-based materials, overwhelmingly favour HCOOH/HCOO- as the main C1 product, whereas rarely investigated SnO-based materials, only about 3% of the literature, co-produce HCOOH and CO in comparable ratios over a wide range of applied potentials."
+      }
+    },
+    {
+      "id": "scale:commons/10.1039-d6cc02925f/claim/sn-metallic-reduction",
+      "label": "Claim",
+      "props": {
+        "name": "Sn facets reduce to metallic Sn with defects",
+        "claim_kind": "generalization",
+        "claim_status": "supported",
+        "evidence": [
+          {
+            "id": "ex:pub/10.1039-d6cc02925f/ev/c13a",
+            "kind": "text",
+            "locator": "p. 5",
+            "quote": "are generally reduced to metallic Sn accompanied by the formation of surface defects",
+            "source": "scale:commons/source/10.1039-d6cc02925f"
+          }
+        ],
+        "inference_type": "meta_analysis",
+        "origin": "curated",
+        "scope": "Sn-based CO2RR electrocatalysts, as reviewed here from refs 10, 11, 24 and 52.",
+        "statement": "The exposed facets of Sn-based CO2RR electrocatalysts are generally reduced to metallic Sn accompanied by the formation of surface defects."
+      }
+    },
+    {
+      "id": "scale:commons/10.1039-d6cc02925f/claim/sn-mlp-wang",
+      "label": "Claim",
+      "props": {
+        "name": "SnO2 nanorods vs rough amorphous SnS2",
+        "claim_kind": "finding",
+        "claim_status": "supported",
+        "evidence": [
+          {
+            "id": "ex:pub/10.1039-d6cc02925f/ev/c14a",
+            "kind": "text",
+            "evidence_type": "ECO:0000033",
+            "locator": "p. 6",
+            "note": "Second-hand: result reported by this review from Wang et al., Adv. Funct. Mater. 2025 (ref 24); curate value objects from the cited work itself.",
+            "quote": "This structural evolution ultimately yields an anisotropic, nanorod-like morphology",
+            "source": "scale:commons/source/10.1039-d6cc02925f"
+          },
+          {
+            "id": "ex:pub/10.1039-d6cc02925f/ev/c14b",
+            "kind": "text",
+            "evidence_type": "ECO:0000033",
+            "locator": "p. 7",
+            "note": "Second-hand: result reported by this review from Wang et al., Adv. Funct. Mater. 2025 (ref 24); curate value objects from the cited work itself.",
+            "quote": "the SnS2 surface evolves into a highly rough and disordered amorphous phase",
+            "source": "scale:commons/source/10.1039-d6cc02925f"
+          },
+          {
+            "id": "ex:pub/10.1039-d6cc02925f/ev/c14c",
+            "kind": "text",
+            "evidence_type": "ECO:0000033",
+            "locator": "p. 7",
+            "note": "Second-hand: result reported by this review from Wang et al., Adv. Funct. Mater. 2025 (ref 24); curate value objects from the cited work itself.",
+            "quote": "optimized adsorption energies towards the critical *OCHO intermediate, ultimately resulting in high selectivity for HCOOH",
+            "source": "scale:commons/source/10.1039-d6cc02925f"
+          }
+        ],
+        "inference_type": "computational",
+        "origin": "curated",
+        "scope": "SnO2 and SnS2 under CO2RR conditions, active-learning MLP MD with HRTEM validation; Wang et al., Adv. Funct. Mater. 2025 (ref 24).",
+        "statement": "ML-accelerated MD shows divergent reconstruction pathways for Sn compounds under cathodic polarization: SnO2 depletes lattice oxygen to near-complete reduction of the outermost layer and aggregates surface Sn into an anisotropic nanorod-like morphology (confirmed by HRTEM), while SnS2, driven by Sn-S bond cleavage and sulfur vacancies, evolves into a highly rough, disordered amorphous phase; the anion-vacancy-dominated reconstructed surfaces (SnO2-x(R), SnS2-x(R)) adsorb the *OCHO intermediate more favourably than the pristine stoichiometric surfaces, giving high HCOOH selectivity."
+      }
+    },
+    {
+      "id": "scale:commons/10.1039-d6cc02925f/claim/sno-resting-guo",
+      "label": "Claim",
+      "props": {
+        "name": "SnO resting state: vacancies and Sn clusters",
+        "claim_kind": "mechanism",
+        "claim_status": "supported",
+        "evidence": [
+          {
+            "id": "ex:pub/10.1039-d6cc02925f/ev/c16a",
+            "kind": "text",
+            "evidence_type": "ECO:0000033",
+            "locator": "p. 7",
+            "note": "Second-hand: result reported by this review from Guo et al., ACS Catal. 2025 (ref 11); curate value objects from the cited work itself. The text layer drops the minus signs: the PDF prints \"-0.7 to -1.4 V vs. RHE\" (checked against the page image).",
+            "quote": "resolved the in situ resting-state surface model of SnO under practical operating potentials of the CO2RR (approximately \u00020.7 to \u00021.4 V vs. RHE)",
+            "source": "scale:commons/source/10.1039-d6cc02925f"
+          },
+          {
+            "id": "ex:pub/10.1039-d6cc02925f/ev/c16b",
+            "kind": "text",
+            "evidence_type": "ECO:0000033",
+            "locator": "p. 8",
+            "note": "Second-hand: result reported by this review from Guo et al., ACS Catal. 2025 (ref 11); curate value objects from the cited work itself.",
+            "quote": "lattice oxygen (OL) in SnO is prohibitively high (2.25 eV)",
+            "source": "scale:commons/source/10.1039-d6cc02925f"
+          },
+          {
+            "id": "ex:pub/10.1039-d6cc02925f/ev/c16c",
+            "kind": "text",
+            "evidence_type": "ECO:0000033",
+            "locator": "p. 8",
+            "note": "Second-hand: result reported by this review from Guo et al., ACS Catal. 2025 (ref 11); curate value objects from the cited work itself.",
+            "quote": "the two-dimensional layered surface of SnO becomes fully terminated by a 1 ML coverage of OV*",
+            "source": "scale:commons/source/10.1039-d6cc02925f"
+          },
+          {
+            "id": "ex:pub/10.1039-d6cc02925f/ev/c16d",
+            "kind": "text",
+            "evidence_type": "ECO:0000033",
+            "locator": "p. 8",
+            "note": "Second-hand: result reported by this review from Guo et al., ACS Catal. 2025 (ref 11); curate value objects from the cited work itself.",
+            "quote": "the oxidation state of surface Sn transitions from Sn2+ to an electron-rich metallic Sn0 state",
+            "source": "scale:commons/source/10.1039-d6cc02925f"
+          },
+          {
+            "id": "ex:pub/10.1039-d6cc02925f/ev/c16e",
+            "kind": "text",
+            "evidence_type": "ECO:0000033",
+            "locator": "p. 8",
+            "note": "Second-hand: result reported by this review from Guo et al., ACS Catal. 2025 (ref 11); curate value objects from the cited work itself.",
+            "quote": "enabling the interface to exhibit extremely strong adsorption affinities for both *COOH and *OCHO intermediates",
+            "source": "scale:commons/source/10.1039-d6cc02925f"
+          },
+          {
+            "id": "ex:pub/10.1039-d6cc02925f/ev/c16f",
+            "kind": "text",
+            "evidence_type": "ECO:0000033",
+            "locator": "p. 8",
+            "note": "Second-hand: result reported by this review from Guo et al., ACS Catal. 2025 (ref 11); curate value objects from the cited work itself.",
+            "quote": "the reaction trajectory is almost entirely diverted toward the * - *OCHO - HCOOH pathway",
+            "source": "scale:commons/source/10.1039-d6cc02925f"
+          }
+        ],
+        "inference_type": "computational",
+        "origin": "curated",
+        "scope": "SnO surfaces at about -0.7 to -1.4 V vs. RHE; surface Pourbaix + AIMD + constant-potential simulations by Guo et al., ACS Catal. 2025 (ref 11).",
+        "statement": "Surface Pourbaix plus AIMD resolved the in situ resting state of SnO under CO2RR operating potentials (about -0.7 to -1.4 V vs. RHE): lattice-O migration in SnO has a prohibitively high barrier (2.25 eV), but oxygen vacancies become thermodynamically favourable under reduction via H2(OL)* intermediates, until a 1 ML OV* coverage fully terminates the layered surface and surface Sn turns from Sn2+ into electron-rich metallic Sn0 with Sn clusters; constant-potential simulations show pristine p-SnO binds *OCHO optimally but *COOH too weakly (trajectory diverted to *OCHO -> HCOOH), while the reconstructed r-SnO binds both *COOH and *OCHO strongly, so electrochemically induced vacancies and the accompanying reconstruction govern the dynamic HCOOH/HCOO- vs. CO product distribution."
+      }
+    },
+    {
+      "id": "scale:commons/10.1039-d6cc02925f/claim/sno2-snlayer-guo",
+      "label": "Claim",
+      "props": {
+        "name": "Metallic Sn layer is the true active phase",
+        "claim_kind": "finding",
+        "claim_status": "supported",
+        "evidence": [
+          {
+            "id": "ex:pub/10.1039-d6cc02925f/ev/c17a",
+            "kind": "text",
+            "evidence_type": "ECO:0000033",
+            "locator": "p. 10",
+            "note": "Second-hand: result reported by this review from Guo et al., Angew. Chem. Int. Ed. 2024 (ref 10); curate value objects from the cited work itself.",
+            "quote": "ultimately led to the formation of an electron-rich metallic Sn cluster layer",
+            "source": "scale:commons/source/10.1039-d6cc02925f"
+          },
+          {
+            "id": "ex:pub/10.1039-d6cc02925f/ev/c17b",
+            "kind": "text",
+            "evidence_type": "ECO:0000033",
+            "locator": "p. 10",
+            "note": "Second-hand: result reported by this review from Guo et al., Angew. Chem. Int. Ed. 2024 (ref 10); curate value objects from the cited work itself.",
+            "quote": "featuring a substantially lowered energy barrier for the potential-determining step",
+            "source": "scale:commons/source/10.1039-d6cc02925f"
+          },
+          {
+            "id": "ex:pub/10.1039-d6cc02925f/ev/c17c",
+            "kind": "text",
+            "locator": "p. 10",
+            "quote": "low-coordinated Sn species (e.g., Sn2C, Sn3C, and Sn4C)",
+            "source": "scale:commons/source/10.1039-d6cc02925f"
+          }
+        ],
+        "inference_type": "computational",
+        "origin": "curated",
+        "scope": "SnO2-x surfaces under CO2 electrocatalysis; constrained genetic algorithm global search by Guo et al., Angew. Chem. Int. Ed. 2024 (ref 10).",
+        "statement": "A constrained genetic algorithm search on SnO2-x surfaces shows oxygen vacancies convert surrounding Sn atoms into low-coordinated species (Sn2C, Sn3C, Sn4C) and ultimately build an electron-rich metallic Sn cluster layer (the \"Sn layer\"), the true active phase for HCOOH selectivity; HCOOH production proceeds most favourably on the reconstructed s-SnO2-x(110) surface, with a substantially lowered barrier for the potential-determining initial hydrogenation step."
+      }
+    },
+    {
+      "id": "scale:commons/10.1039-d6cc02925f/material/cu",
+      "label": "Material",
+      "props": {
+        "name": "Cu (CO2RR electrocatalyst)",
+        "evidence": [
+          {
+            "id": "ex:pub/10.1039-d6cc02925f/ev/m-cu",
+            "kind": "text",
+            "locator": "p. 2",
+            "quote": "Copper is uniquely distinguished among heterogeneous transition metal catalysts",
+            "source": "scale:commons/source/10.1039-d6cc02925f"
+          }
+        ],
+        "generality": "kind",
+        "material_family": "metal",
+        "nominal_formula": "Cu",
+        "origin": "curated"
+      }
+    },
+    {
+      "id": "scale:commons/10.1039-d6cc02925f/material/cu8-gc3n4",
+      "label": "Material",
+      "props": {
+        "name": "Cu8/g-C3N4 (subnanometer Cu8 clusters on graphitic carbon nitride)",
+        "evidence": [
+          {
+            "id": "ex:pub/10.1039-d6cc02925f/ev/m-cu8",
+            "kind": "text",
+            "evidence_type": "ECO:0000033",
+            "locator": "p. 10",
+            "note": "Second-hand: comparative statement citing refs 81-84 of this review; the potential-dependent speciation was simulated by Zhu et al., JACS 2026 (ref 25).",
+            "quote": "supported subnanometer Cu clusters (e.g., Cu8/g-C3N4, Cu/C-0.4, and Cu2-CuN3) recently have demon- strated superior C2+ product selectivity compared to bulk Cu",
+            "source": "scale:commons/source/10.1039-d6cc02925f"
+          }
+        ],
+        "generality": "kind",
+        "material_family": "carbon",
+        "origin": "curated"
+      }
+    },
+    {
+      "id": "scale:commons/10.1039-d6cc02925f/material/ovs-cu2o",
+      "label": "Material",
+      "props": {
+        "name": "OVs–Cu2O (Cu2O with a high surface density of oxygen vacancies, formed under cathodic reduction)",
+        "evidence": [
+          {
+            "id": "ex:pub/10.1039-d6cc02925f/ev/m-ovscu2o",
+            "kind": "text",
+            "evidence_type": "ECO:0000033",
+            "locator": "p. 5",
+            "note": "Second-hand: reconstructed state of P-Cu2O reported by Mao et al. (ref 18 of this review).",
+            "quote": "rapidly generating an ultra-high density of OVs (Ovs–Cu2O) on the catalyst surface",
+            "source": "scale:commons/source/10.1039-d6cc02925f"
+          }
+        ],
+        "generality": "kind",
+        "material_family": "oxide",
+        "origin": "curated"
+      }
+    },
+    {
+      "id": "scale:commons/10.1039-d6cc02925f/material/p-cu2o",
+      "label": "Material",
+      "props": {
+        "name": "P-Cu2O (surface-P-doped Cu2O precatalyst)",
+        "evidence": [
+          {
+            "id": "ex:pub/10.1039-d6cc02925f/ev/m-pcu2o",
+            "kind": "text",
+            "evidence_type": "ECO:0000033",
+            "locator": "p. 5",
+            "note": "Second-hand: synthesis of Mao et al., ACS Nano 2025 (ref 18 of this review).",
+            "quote": "synthesized surface-P-doped Cu2O nanoparticles (P–Cu2O) at room temperature using a liquid-phase method",
+            "source": "scale:commons/source/10.1039-d6cc02925f"
+          }
+        ],
+        "generality": "kind",
+        "material_family": "oxide",
+        "nominal_formula": "Cu2O",
+        "origin": "curated"
+      }
+    },
+    {
+      "id": "scale:commons/10.1039-d6cc02925f/material/sno",
+      "label": "Material",
+      "props": {
+        "name": "SnO (CO2RR electrocatalyst)",
+        "evidence": [
+          {
+            "id": "ex:pub/10.1039-d6cc02925f/ev/m-sno",
+            "kind": "text",
+            "locator": "p. 7",
+            "quote": "underlying the distinct catalytic properties of SnO",
+            "source": "scale:commons/source/10.1039-d6cc02925f"
+          }
+        ],
+        "generality": "kind",
+        "material_family": "oxide",
+        "nominal_formula": "SnO",
+        "origin": "curated"
+      }
+    },
+    {
+      "id": "scale:commons/10.1039-d6cc02925f/material/sno2",
+      "label": "Material",
+      "props": {
+        "name": "SnO2 (CO2RR electrocatalyst)",
+        "evidence": [
+          {
+            "id": "ex:pub/10.1039-d6cc02925f/ev/m-sno2",
+            "kind": "text",
+            "evidence_type": "ECO:0000033",
+            "locator": "p. 6",
+            "note": "Second-hand: MLP-MD simulation of Wang et al., Adv. Funct. Mater. 2025 (ref 24 of this review).",
+            "quote": "the SnO2 surface initially undergoes proton-coupled adsorption",
+            "source": "scale:commons/source/10.1039-d6cc02925f"
+          }
+        ],
+        "generality": "kind",
+        "material_family": "oxide",
+        "nominal_formula": "SnO2",
+        "origin": "curated"
+      }
+    },
+    {
+      "id": "scale:commons/10.1039-d6cc02925f/material/sns2",
+      "label": "Material",
+      "props": {
+        "name": "SnS2 (CO2RR electrocatalyst)",
+        "evidence": [
+          {
+            "id": "ex:pub/10.1039-d6cc02925f/ev/m-sns2",
+            "kind": "text",
+            "evidence_type": "ECO:0000033",
+            "locator": "p. 7",
+            "note": "Second-hand: MLP-MD simulation of Wang et al. (ref 24 of this review).",
+            "quote": "SnS2 and SnO2 exhibit fundamentally different surface reconstruction pathways",
+            "source": "scale:commons/source/10.1039-d6cc02925f"
+          }
+        ],
+        "generality": "kind",
+        "material_family": "sulfide",
+        "nominal_formula": "SnS2",
+        "origin": "curated"
+      }
+    },
+    {
+      "id": "scale:commons/source/10.1039-d6cc02925f",
+      "label": "Source",
+      "props": {
+        "name": "Operando surface reconstruction steers the electrochemical CO 2 reduction behaviors",
+        "kind": "review_report",
+        "doi": "10.1039/d6cc02925f",
+        "licence": "https://creativecommons.org/licenses/by/4.0/",
+        "note": "First page of the copy read states 'Licensed under CC-BY 4.0'; the earlier licence entry (CC BY 3.0) came from index metadata and is superseded by the copy.",
+        "origin": "curated",
+        "retrieved_from": "1069596.pdf",
+        "retrieved_on": "2026-11-04",
+        "text_sha256": "1185144d56a34e05036c55e18f4fe49c3a2b6c4130ca8803afd02c260124edfd",
+        "text_version": "version_of_record",
+        "title": "Operando surface reconstruction steers the electrochemical CO 2 reduction behaviors",
+        "url": "https://doi.org/10.1039/d6cc02925f",
+        "venue": "Chemical Communications",
+        "year": 2026
+      }
+    }
+  ],
+  "links": [
+    {
+      "id": "scale:commons/10.1039-d6cc02925f/claim/cu-edtmpa-han/reported-in/10.1039-d6cc02925f",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 3"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.1039-d6cc02925f/claim/cu-edtmpa-han",
+      "target": "scale:commons/source/10.1039-d6cc02925f"
+    },
+    {
+      "id": "scale:commons/10.1039-d6cc02925f/claim/cu-kim-pathways/reported-in/10.1039-d6cc02925f",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 3"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.1039-d6cc02925f/claim/cu-kim-pathways",
+      "target": "scale:commons/source/10.1039-d6cc02925f"
+    },
+    {
+      "id": "scale:commons/10.1039-d6cc02925f/claim/cu-oh-adatoms/reported-in/10.1039-d6cc02925f",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 2"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.1039-d6cc02925f/claim/cu-oh-adatoms",
+      "target": "scale:commons/source/10.1039-d6cc02925f"
+    },
+    {
+      "id": "scale:commons/10.1039-d6cc02925f/claim/cu-oh-co-restructuring/reported-in/10.1039-d6cc02925f",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 4"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.1039-d6cc02925f/claim/cu-oh-co-restructuring",
+      "target": "scale:commons/source/10.1039-d6cc02925f"
+    },
+    {
+      "id": "scale:commons/10.1039-d6cc02925f/claim/cu-oxide-reduction-lee/reported-in/10.1039-d6cc02925f",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 3"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.1039-d6cc02925f/claim/cu-oxide-reduction-lee",
+      "target": "scale:commons/source/10.1039-d6cc02925f"
+    },
+    {
+      "id": "scale:commons/10.1039-d6cc02925f/claim/cu-pulsed-kok/reported-in/10.1039-d6cc02925f",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 5"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.1039-d6cc02925f/claim/cu-pulsed-kok",
+      "target": "scale:commons/source/10.1039-d6cc02925f"
+    },
+    {
+      "id": "scale:commons/10.1039-d6cc02925f/claim/cu-shifted-row-zhang/reported-in/10.1039-d6cc02925f",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 4"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.1039-d6cc02925f/claim/cu-shifted-row-zhang",
+      "target": "scale:commons/source/10.1039-d6cc02925f"
+    },
+    {
+      "id": "scale:commons/10.1039-d6cc02925f/claim/cu-strain/reported-in/10.1039-d6cc02925f",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 4"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.1039-d6cc02925f/claim/cu-strain",
+      "target": "scale:commons/source/10.1039-d6cc02925f"
+    },
+    {
+      "id": "scale:commons/10.1039-d6cc02925f/claim/cu-wavelike-zhang/reported-in/10.1039-d6cc02925f",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 4"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.1039-d6cc02925f/claim/cu-wavelike-zhang",
+      "target": "scale:commons/source/10.1039-d6cc02925f"
+    },
+    {
+      "id": "scale:commons/10.1039-d6cc02925f/claim/cu111-to-cu100/reported-in/10.1039-d6cc02925f",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 3"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.1039-d6cc02925f/claim/cu111-to-cu100",
+      "target": "scale:commons/source/10.1039-d6cc02925f"
+    },
+    {
+      "id": "scale:commons/10.1039-d6cc02925f/claim/cu8-gcn4-zhu/reported-in/10.1039-d6cc02925f",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 10"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.1039-d6cc02925f/claim/cu8-gcn4-zhu",
+      "target": "scale:commons/source/10.1039-d6cc02925f"
+    },
+    {
+      "id": "scale:commons/10.1039-d6cc02925f/claim/cuo-precursor-rollier/reported-in/10.1039-d6cc02925f",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 3"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.1039-d6cc02925f/claim/cuo-precursor-rollier",
+      "target": "scale:commons/source/10.1039-d6cc02925f"
+    },
+    {
+      "id": "scale:commons/10.1039-d6cc02925f/claim/framework/reported-in/10.1039-d6cc02925f",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 1",
+          "p. 11"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.1039-d6cc02925f/claim/framework",
+      "target": "scale:commons/source/10.1039-d6cc02925f"
+    },
+    {
+      "id": "scale:commons/10.1039-d6cc02925f/claim/outlook/reported-in/10.1039-d6cc02925f",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 13"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.1039-d6cc02925f/claim/outlook",
+      "target": "scale:commons/source/10.1039-d6cc02925f"
+    },
+    {
+      "id": "scale:commons/10.1039-d6cc02925f/claim/pcu2o-ovs-mao/reported-in/10.1039-d6cc02925f",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 5"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.1039-d6cc02925f/claim/pcu2o-ovs-mao",
+      "target": "scale:commons/source/10.1039-d6cc02925f"
+    },
+    {
+      "id": "scale:commons/10.1039-d6cc02925f/claim/pourbaix-method/reported-in/10.1039-d6cc02925f",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 9"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.1039-d6cc02925f/claim/pourbaix-method",
+      "target": "scale:commons/source/10.1039-d6cc02925f"
+    },
+    {
+      "id": "scale:commons/10.1039-d6cc02925f/claim/sn-datamining/reported-in/10.1039-d6cc02925f",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 7"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.1039-d6cc02925f/claim/sn-datamining",
+      "target": "scale:commons/source/10.1039-d6cc02925f"
+    },
+    {
+      "id": "scale:commons/10.1039-d6cc02925f/claim/sn-metallic-reduction/reported-in/10.1039-d6cc02925f",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 5"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.1039-d6cc02925f/claim/sn-metallic-reduction",
+      "target": "scale:commons/source/10.1039-d6cc02925f"
+    },
+    {
+      "id": "scale:commons/10.1039-d6cc02925f/claim/sn-mlp-wang/reported-in/10.1039-d6cc02925f",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 6",
+          "p. 7"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.1039-d6cc02925f/claim/sn-mlp-wang",
+      "target": "scale:commons/source/10.1039-d6cc02925f"
+    },
+    {
+      "id": "scale:commons/10.1039-d6cc02925f/claim/sno-resting-guo/reported-in/10.1039-d6cc02925f",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 7",
+          "p. 8"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.1039-d6cc02925f/claim/sno-resting-guo",
+      "target": "scale:commons/source/10.1039-d6cc02925f"
+    },
+    {
+      "id": "scale:commons/10.1039-d6cc02925f/claim/sno2-snlayer-guo/reported-in/10.1039-d6cc02925f",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 10"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.1039-d6cc02925f/claim/sno2-snlayer-guo",
+      "target": "scale:commons/source/10.1039-d6cc02925f"
+    },
+    {
+      "id": "scale:commons/10.1039-d6cc02925f/link/cu-edtmpa-han-about-0",
+      "type": "ABOUT",
+      "props": {
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.1039-d6cc02925f/claim/cu-edtmpa-han",
+      "target": "scale:commons/10.1039-d6cc02925f/material/cu"
+    },
+    {
+      "id": "scale:commons/10.1039-d6cc02925f/link/cu-kim-pathways-about-0",
+      "type": "ABOUT",
+      "props": {
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.1039-d6cc02925f/claim/cu-kim-pathways",
+      "target": "scale:commons/10.1039-d6cc02925f/material/cu"
+    },
+    {
+      "id": "scale:commons/10.1039-d6cc02925f/link/cu-oh-adatoms-about-0",
+      "type": "ABOUT",
+      "props": {
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.1039-d6cc02925f/claim/cu-oh-adatoms",
+      "target": "scale:commons/10.1039-d6cc02925f/material/cu"
+    },
+    {
+      "id": "scale:commons/10.1039-d6cc02925f/link/cu-oh-co-restructuring-about-0",
+      "type": "ABOUT",
+      "props": {
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.1039-d6cc02925f/claim/cu-oh-co-restructuring",
+      "target": "scale:commons/10.1039-d6cc02925f/material/cu"
+    },
+    {
+      "id": "scale:commons/10.1039-d6cc02925f/link/cu-oxide-reduction-lee-about-0",
+      "type": "ABOUT",
+      "props": {
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.1039-d6cc02925f/claim/cu-oxide-reduction-lee",
+      "target": "scale:commons/10.1039-d6cc02925f/material/cu"
+    },
+    {
+      "id": "scale:commons/10.1039-d6cc02925f/link/cu-pulsed-kok-about-0",
+      "type": "ABOUT",
+      "props": {
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.1039-d6cc02925f/claim/cu-pulsed-kok",
+      "target": "scale:commons/10.1039-d6cc02925f/material/cu"
+    },
+    {
+      "id": "scale:commons/10.1039-d6cc02925f/link/cu-shifted-row-zhang-about-0",
+      "type": "ABOUT",
+      "props": {
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.1039-d6cc02925f/claim/cu-shifted-row-zhang",
+      "target": "scale:commons/10.1039-d6cc02925f/material/cu"
+    },
+    {
+      "id": "scale:commons/10.1039-d6cc02925f/link/cu-strain-about-0",
+      "type": "ABOUT",
+      "props": {
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.1039-d6cc02925f/claim/cu-strain",
+      "target": "scale:commons/10.1039-d6cc02925f/material/cu"
+    },
+    {
+      "id": "scale:commons/10.1039-d6cc02925f/link/cu-wavelike-zhang-about-0",
+      "type": "ABOUT",
+      "props": {
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.1039-d6cc02925f/claim/cu-wavelike-zhang",
+      "target": "scale:commons/10.1039-d6cc02925f/material/cu"
+    },
+    {
+      "id": "scale:commons/10.1039-d6cc02925f/link/cu111-to-cu100-about-0",
+      "type": "ABOUT",
+      "props": {
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.1039-d6cc02925f/claim/cu111-to-cu100",
+      "target": "scale:commons/10.1039-d6cc02925f/material/cu"
+    },
+    {
+      "id": "scale:commons/10.1039-d6cc02925f/link/cu8-gcn4-zhu-about-0",
+      "type": "ABOUT",
+      "props": {
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.1039-d6cc02925f/claim/cu8-gcn4-zhu",
+      "target": "scale:commons/10.1039-d6cc02925f/material/cu8-gc3n4"
+    },
+    {
+      "id": "scale:commons/10.1039-d6cc02925f/link/cuo-precursor-rollier-about-0",
+      "type": "ABOUT",
+      "props": {
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.1039-d6cc02925f/claim/cuo-precursor-rollier",
+      "target": "scale:commons/10.1039-d6cc02925f/material/cu"
+    },
+    {
+      "id": "scale:commons/10.1039-d6cc02925f/link/framework-about-0",
+      "type": "ABOUT",
+      "props": {
+        "origin": "curated",
+        "role": "unifying framework"
+      },
+      "source": "scale:commons/10.1039-d6cc02925f/claim/framework",
+      "target": "scale:commons/source/10.1039-d6cc02925f"
+    },
+    {
+      "id": "scale:commons/10.1039-d6cc02925f/link/outlook-about-0",
+      "type": "ABOUT",
+      "props": {
+        "origin": "curated",
+        "role": "outlook"
+      },
+      "source": "scale:commons/10.1039-d6cc02925f/claim/outlook",
+      "target": "scale:commons/source/10.1039-d6cc02925f"
+    },
+    {
+      "id": "scale:commons/10.1039-d6cc02925f/link/pcu2o-ovs-mao-about-0",
+      "type": "ABOUT",
+      "props": {
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.1039-d6cc02925f/claim/pcu2o-ovs-mao",
+      "target": "scale:commons/10.1039-d6cc02925f/material/p-cu2o"
+    },
+    {
+      "id": "scale:commons/10.1039-d6cc02925f/link/pcu2o-ovs-mao-about-1",
+      "type": "ABOUT",
+      "props": {
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.1039-d6cc02925f/claim/pcu2o-ovs-mao",
+      "target": "scale:commons/10.1039-d6cc02925f/material/ovs-cu2o"
+    },
+    {
+      "id": "scale:commons/10.1039-d6cc02925f/link/pourbaix-method-about-0",
+      "type": "ABOUT",
+      "props": {
+        "origin": "curated",
+        "role": "methodology"
+      },
+      "source": "scale:commons/10.1039-d6cc02925f/claim/pourbaix-method",
+      "target": "scale:commons/source/10.1039-d6cc02925f"
+    },
+    {
+      "id": "scale:commons/10.1039-d6cc02925f/link/sn-datamining-about-0",
+      "type": "ABOUT",
+      "props": {
+        "origin": "curated",
+        "role": "dominant product trend"
+      },
+      "source": "scale:commons/10.1039-d6cc02925f/claim/sn-datamining",
+      "target": "scale:commons/10.1039-d6cc02925f/material/sno2"
+    },
+    {
+      "id": "scale:commons/10.1039-d6cc02925f/link/sn-datamining-about-1",
+      "type": "ABOUT",
+      "props": {
+        "origin": "curated",
+        "role": "minority co-production behaviour"
+      },
+      "source": "scale:commons/10.1039-d6cc02925f/claim/sn-datamining",
+      "target": "scale:commons/10.1039-d6cc02925f/material/sno"
+    },
+    {
+      "id": "scale:commons/10.1039-d6cc02925f/link/sn-metallic-reduction-about-0",
+      "type": "ABOUT",
+      "props": {
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.1039-d6cc02925f/claim/sn-metallic-reduction",
+      "target": "scale:commons/10.1039-d6cc02925f/material/sno2"
+    },
+    {
+      "id": "scale:commons/10.1039-d6cc02925f/link/sn-metallic-reduction-about-1",
+      "type": "ABOUT",
+      "props": {
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.1039-d6cc02925f/claim/sn-metallic-reduction",
+      "target": "scale:commons/10.1039-d6cc02925f/material/sns2"
+    },
+    {
+      "id": "scale:commons/10.1039-d6cc02925f/link/sn-mlp-wang-about-0",
+      "type": "ABOUT",
+      "props": {
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.1039-d6cc02925f/claim/sn-mlp-wang",
+      "target": "scale:commons/10.1039-d6cc02925f/material/sno2"
+    },
+    {
+      "id": "scale:commons/10.1039-d6cc02925f/link/sn-mlp-wang-about-1",
+      "type": "ABOUT",
+      "props": {
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.1039-d6cc02925f/claim/sn-mlp-wang",
+      "target": "scale:commons/10.1039-d6cc02925f/material/sns2"
+    },
+    {
+      "id": "scale:commons/10.1039-d6cc02925f/link/sno-resting-guo-about-0",
+      "type": "ABOUT",
+      "props": {
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.1039-d6cc02925f/claim/sno-resting-guo",
+      "target": "scale:commons/10.1039-d6cc02925f/material/sno"
+    },
+    {
+      "id": "scale:commons/10.1039-d6cc02925f/link/sno2-snlayer-guo-about-0",
+      "type": "ABOUT",
+      "props": {
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.1039-d6cc02925f/claim/sno2-snlayer-guo",
+      "target": "scale:commons/10.1039-d6cc02925f/material/sno2"
+    },
+    {
+      "id": "scale:commons/10.1039-d6cc02925f/material/cu/reported-in/10.1039-d6cc02925f",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 2"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.1039-d6cc02925f/material/cu",
+      "target": "scale:commons/source/10.1039-d6cc02925f"
+    },
+    {
+      "id": "scale:commons/10.1039-d6cc02925f/material/cu8-gc3n4/reported-in/10.1039-d6cc02925f",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 10"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.1039-d6cc02925f/material/cu8-gc3n4",
+      "target": "scale:commons/source/10.1039-d6cc02925f"
+    },
+    {
+      "id": "scale:commons/10.1039-d6cc02925f/material/ovs-cu2o/reported-in/10.1039-d6cc02925f",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 5"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.1039-d6cc02925f/material/ovs-cu2o",
+      "target": "scale:commons/source/10.1039-d6cc02925f"
+    },
+    {
+      "id": "scale:commons/10.1039-d6cc02925f/material/p-cu2o/reported-in/10.1039-d6cc02925f",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 5"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.1039-d6cc02925f/material/p-cu2o",
+      "target": "scale:commons/source/10.1039-d6cc02925f"
+    },
+    {
+      "id": "scale:commons/10.1039-d6cc02925f/material/sno/reported-in/10.1039-d6cc02925f",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 7"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.1039-d6cc02925f/material/sno",
+      "target": "scale:commons/source/10.1039-d6cc02925f"
+    },
+    {
+      "id": "scale:commons/10.1039-d6cc02925f/material/sno2/reported-in/10.1039-d6cc02925f",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 6"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.1039-d6cc02925f/material/sno2",
+      "target": "scale:commons/source/10.1039-d6cc02925f"
+    },
+    {
+      "id": "scale:commons/10.1039-d6cc02925f/material/sns2/reported-in/10.1039-d6cc02925f",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 7"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.1039-d6cc02925f/material/sns2",
+      "target": "scale:commons/source/10.1039-d6cc02925f"
+    }
+  ],
+  "schema_version": "0.8.2",
+  "source": "scale:commons/source/10.1039-d6cc02925f"
+}

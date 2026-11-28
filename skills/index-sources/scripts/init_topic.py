@@ -4,7 +4,7 @@
   python3 -I init_topic.py --slug mxene-her --probe       # does the topic exist? what has been done? (changes nothing)
   python3 -I init_topic.py --topic "MXene catalysts for HER" --email you@uni.edu \
           --access OA,OA+ND,Free-to-read --screening claude [--slug mxene-her] [--databases openalex,crossref,...]
-          [--base-url https://llm.example.edu/api/v1 --model gpt-oss-120b] [--threshold 3]
+          [--base-url https://llm.example.edu/api/v1 --model MODEL] [--threshold 3]
   python3 -I init_topic.py --slug mxene-her --check       # validate config.json, queries.json, gate, criteria/keywords
 
 Creates sources/<slug>/index/ and sources/<slug>/files/{OA,OA+ND,Free-to-read,Paywalled}/ (SI folders appear

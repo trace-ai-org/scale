@@ -1,0 +1,2006 @@
+{
+  "nodes": [
+    {
+      "id": "scale:commons/10.3390-inorganics7020020/analysis/figure-digitization",
+      "label": "Analysis",
+      "props": {
+        "name": "digitization of Figures 2–4",
+        "analysis_kind": "other",
+        "evidence": [
+          {
+            "id": "ev_dig_note",
+            "kind": "figure",
+            "locator": "p. 6, Figures 2 and 3; p. 7, Figure 4",
+            "note": "digitization of published simulated curves; axis scales and ticks as listed in the method; each point read twice, second reading (visual) kept here and agreeing within the stated uncertainty; in the attempt-1 fix the pH 5.0 point at J = 1e-6 A cm-2 (Figure 2) was re-digitized after it failed a consistency check against the other digitized points; in the attempt-2 fix the axis calibration was re-verified against the 300-dpi page image of p. 6 and the printed values were confirmed as printed (not rescaled), with the source's ~1000x figure-vs-caption-parameter inconsistency (printed axis vs Equation (16)) flagged on the computation record",
+            "quote": "The parameters used for simulation were: αET = 1, kD = 10 mA cm mol−1, B0 = 0.1 M, pKaB = 7, Je0 = 10−12 A cm−2.",
+            "source": "scale:commons/source/10.3390-inorganics7020020"
+          }
+        ],
+        "experiment_status": "completed",
+        "goal": "compute",
+        "method": "pixel-coordinate extraction of the plotted curves from 400-dpi page images with Python/Pillow; each axis calibrated on two or more labelled ticks (Figure 2: x logarithmic, ticks 10−6/10−5/10−4/10−3 A cm−2, 236.5 px per decade; y linear, ticks 1.1/1.2/1.3/1.4 V vs NHE, 1403.3 px per V; Figure 3: x logarithmic, ticks 10−7/10−6/10−5/10−4 A cm−2, 186.8 px per decade; y linear, ticks 60/80/100/120/140 mV dec−1, 5.15 px per mV dec−1; Figure 4: x linear, ticks pH 5–9, 173.0 px per pH unit; y linear, ticks 60/62/64/66 mV dec−1, 78.75 px per mV dec−1); every point read twice (programmatic pixel extraction and independent visual reading) with agreement within the stated uncertainty",
+        "origin": "curated"
+      }
+    },
+    {
+      "id": "scale:commons/10.3390-inorganics7020020/claim/buffer-requirement",
+      "label": "Claim",
+      "props": {
+        "name": "OER at pH 2-12 essentially requires buffer molecules",
+        "claim_kind": "conclusion",
+        "claim_status": "supported",
+        "evidence": [
+          {
+            "id": "ev_claim_buf",
+            "kind": "text",
+            "locator": "p. 9, Conclusions, item 1",
+            "quote": "For pH values ranging from about 2 to 12, the OER reaction essentially requires buffer molecules that facilitate proton transport. In the absence of an explicit buffer base, either only water molecules or hydroxide ions could serve as proton-transporting buffer bases; both cannot support signiﬁcant current densities.",
+            "source": "scale:commons/source/10.3390-inorganics7020020"
+          }
+        ],
+        "inference_type": "computational",
+        "limitations": "first-order model; proton-transport limitations at the catalyst–electrolyte interface and within the catalyst film are excluded; for water or OH− as proton acceptors Equation (15) is no longer exact",
+        "note": "Attempt-3 fix: the statement's closing qualifier 'in the near-neutral pH region' was removed (replaced by 'over this pH 2-12 range') to align with the source's conclusion, which is stated for pH about 2-12 (p. 9, Conclusions, item 1), not only near-neutral pH.",
+        "origin": "curated",
+        "scope": "OER in aqueous electrolytes, pH about 2–12, per the presented first-order model",
+        "statement": "For pH values from about 2 to 12, the oxygen-evolution reaction essentially requires dissolved buffer molecules to transport protons; in the absence of an added buffer base, neither water molecules nor hydroxide ions can support significant current densities over this pH 2-12 range."
+      }
+    },
+    {
+      "id": "scale:commons/10.3390-inorganics7020020/claim/diffusion-h3o-oh-vs-buffers",
+      "label": "Claim",
+      "props": {
+        "name": "water-species diffusion coefficients vs buffer bases",
+        "claim_kind": "comparison",
+        "claim_status": "supported",
+        "evidence": [
+          {
+            "id": "ev_claim_diff",
+            "kind": "text",
+            "locator": "p. 8, Discussion",
+            "quote": "Then Equation (15) predicts sizeable current densities, inter alia because the diffusion coefﬁcient (D) is about 10 times higher for H3O+ and ﬁve times higher for OH−than for the commonly used buffer bases (e.g., HPO42−/H2PO4−)",
+            "source": "scale:commons/source/10.3390-inorganics7020020"
+          }
+        ],
+        "inference_type": "not_stated",
+        "origin": "curated",
+        "statement": "Diffusion coefficients of the water species are higher than those of commonly used buffer bases: about 10 times higher for H3O+ and about 5 times higher for OH− than for buffer bases such as the HPO4²−/H2PO4− pair, which is why sizeable current densities are predicted in strongly acidic and alkaline electrolytes without an added buffer base."
+      }
+    },
+    {
+      "id": "scale:commons/10.3390-inorganics7020020/claim/jmax-unprotonated",
+      "label": "Claim",
+      "props": {
+        "name": "maximal current density set by unprotonated buffer concentration",
+        "claim_kind": "conclusion",
+        "claim_status": "supported",
+        "evidence": [
+          {
+            "id": "ev_claim_jmax1",
+            "kind": "text",
+            "locator": "p. 9, Conclusions, item 2",
+            "quote": "In the presence of a buffer base, the maximal current density is determined by the concentration of unprotonated buffer molecules and, thus, by the solution pH and the pKa value of the used buffer, in line with experimental ﬁndings [15].",
+            "source": "scale:commons/source/10.3390-inorganics7020020"
+          },
+          {
+            "id": "ev_claim_jmax2",
+            "kind": "text",
+            "locator": "p. 5, Section 2.3",
+            "quote": "Thus, Jmax scales with the fraction of unprotonated buffer molecules.",
+            "source": "scale:commons/source/10.3390-inorganics7020020"
+          }
+        ],
+        "inference_type": "computational",
+        "origin": "curated",
+        "scope": "buffered electrolytes at high overpotentials (J approaching Jmax of Equation (16))",
+        "statement": "In the presence of a buffer base, the maximal current density at high overpotentials is determined by the concentration of unprotonated buffer molecules, and thus by the solution pH and the pKa of the buffer; Jmax scales with the fraction of unprotonated buffer molecules."
+      }
+    },
+    {
+      "id": "scale:commons/10.3390-inorganics7020020/claim/lit-bediako-tafel",
+      "label": "Claim",
+      "props": {
+        "name": "CoOx Tafel slopes 59/118 mV/dec (Bediako et al., ref 28)",
+        "claim_kind": "comparison",
+        "claim_status": "supported",
+        "evidence": [
+          {
+            "id": "ev_claim_lit2",
+            "kind": "text",
+            "evidence_type": "ECO:0000033",
+            "locator": "p. 2, Introduction",
+            "note": "second-hand: results of reference [28], reported by the source",
+            "quote": "Corresponding experiments on a CoOx catalyst resulted in a Tafel slope of 59 mV dec−1 for high buffer concentrations and 118 mV dec−1 for buffer-free solutions, in accordance with their model predictions.",
+            "source": "scale:commons/source/10.3390-inorganics7020020"
+          },
+          {
+            "id": "ev_claim_lit2b",
+            "kind": "text",
+            "evidence_type": "ECO:0000033",
+            "locator": "p. 2, Introduction",
+            "note": "second-hand: model prediction of reference [28], reported by the source",
+            "quote": "In the intermediate cases, they predicted a transition between the two behaviors controlled by the buffer diffusion in solution.",
+            "source": "scale:commons/source/10.3390-inorganics7020020"
+          }
+        ],
+        "inference_type": "observational",
+        "origin": "curated",
+        "scope": "second-hand: results of reference [28] (Bediako et al., J. Am. Chem. Soc. 2013) as cited by this source",
+        "statement": "Experiments on a CoOx catalyst (Bediako et al.) gave a Tafel slope of 59 mV dec−1 at high buffer concentration and 118 mV dec−1 in buffer-free solution, in accordance with their model's predictions; in intermediate cases they predicted a transition controlled by buffer diffusion in solution."
+      }
+    },
+    {
+      "id": "scale:commons/10.3390-inorganics7020020/claim/lit-buffer-availability",
+      "label": "Claim",
+      "props": {
+        "name": "activity proportional to unprotonated buffer availability (refs 15, 21)",
+        "claim_kind": "finding",
+        "claim_status": "supported",
+        "evidence": [
+          {
+            "id": "ev_claim_lit1",
+            "kind": "text",
+            "evidence_type": "ECO:0000033",
+            "locator": "p. 1, Introduction",
+            "note": "second-hand: results of references [15] and [21], reported by the source",
+            "quote": "we reported that the catalytic activity at high current density is proportional to the availability of unprotonated buffer molecules for a variety of tested buffer electrolytes [15]. The same has been observed for a Mn-based catalyst in phosphate buffer [21].",
+            "source": "scale:commons/source/10.3390-inorganics7020020"
+          }
+        ],
+        "inference_type": "observational",
+        "origin": "curated",
+        "scope": "second-hand: results of reference [15] (Klingan et al., ChemSusChem 2014) and [21] (Bergmann et al.) as cited by this source",
+        "statement": "Earlier work reported by these authors (Klingan et al.) found the catalytic activity at high current density to be proportional to the availability of unprotonated buffer molecules for a variety of tested buffer electrolytes; the same was observed for a Mn-based catalyst in phosphate buffer."
+      }
+    },
+    {
+      "id": "scale:commons/10.3390-inorganics7020020/claim/lit-mn-pka-pcet",
+      "label": "Claim",
+      "props": {
+        "name": "Mn-oxide performance improves with buffer pKa; PCET (ref 22)",
+        "claim_kind": "finding",
+        "claim_status": "supported",
+        "evidence": [
+          {
+            "id": "ev_claim_lit3a",
+            "kind": "text",
+            "evidence_type": "ECO:0000033",
+            "locator": "p. 1, Introduction",
+            "note": "second-hand: result of reference [22], reported by the source; sentence continues on p. 2 (next evidence item)",
+            "quote": "A related effect was observed for Mn-based catalysts where catalytic performances improved when the buffer pKa was",
+            "source": "scale:commons/source/10.3390-inorganics7020020"
+          },
+          {
+            "id": "ev_claim_lit3b",
+            "kind": "text",
+            "evidence_type": "ECO:0000033",
+            "locator": "p. 2, Introduction",
+            "note": "second-hand: continuation of the sentence started on p. 1",
+            "quote": "increased, which has been attributed to a coupled proton–electron transfer mechanism between the catalyst and the buffer molecules [22].",
+            "source": "scale:commons/source/10.3390-inorganics7020020"
+          }
+        ],
+        "inference_type": "observational",
+        "origin": "curated",
+        "scope": "second-hand: result of reference [22] (Yamaguchi et al., Nat. Commun. 2014) as cited by this source",
+        "statement": "For Mn-based catalysts, catalytic performance improved when the buffer pKa was increased, which has been attributed to a coupled proton–electron transfer mechanism between the catalyst and the buffer molecules."
+      }
+    },
+    {
+      "id": "scale:commons/10.3390-inorganics7020020/claim/nernstian-60mv-per-ph",
+      "label": "Claim",
+      "props": {
+        "name": "Nernstian 60 mV per pH at low current densities",
+        "claim_kind": "conclusion",
+        "claim_status": "supported",
+        "evidence": [
+          {
+            "id": "ev_claim_nernst",
+            "kind": "text",
+            "locator": "p. 6, Section 2.4",
+            "quote": "In this current regime, the slopes are equal to the intrinsic Tafel slope of the electrocatalyst material (sET, here assumed being 60 mV per decade), and the potential (vs. NHE) has a Nernstian dependence, i.e., decreases by 60 mV per pH unit.",
+            "source": "scale:commons/source/10.3390-inorganics7020020"
+          },
+          {
+            "id": "ev_claim_nernst2",
+            "kind": "text",
+            "locator": "p. 8, Discussion",
+            "quote": "At constant current density, a decrease in the required electric overpotential by ln(10) e/kT (about 60 mV at room temperature) per pH unit is predicted, as repeatedly observed in experimental studies [29–31].",
+            "source": "scale:commons/source/10.3390-inorganics7020020"
+          },
+          {
+            "id": "ev_claim_nernst3",
+            "kind": "text",
+            "locator": "p. 5, Section 2.3",
+            "quote": "For very small JBH (JBH << Jmax), X equals cH. Then the proton activity in buffer layer and catalyst (X) corresponds to the pH in the bulk electrolyte so that the local pH is very close to the bulk pH.",
+            "source": "scale:commons/source/10.3390-inorganics7020020"
+          }
+        ],
+        "inference_type": "computational",
+        "origin": "curated",
+        "statement": "At very low overpotentials (J << Jmax) the catalytic current is not affected by proton transfer to the bulk electrolyte: the Tafel slope equals the intrinsic Tafel slope, the potential decreases by about 60 mV per pH unit at constant current density, and the local pH stays close to the bulk pH; this Nernstian behaviour has repeatedly been observed experimentally."
+      }
+    },
+    {
+      "id": "scale:commons/10.3390-inorganics7020020/claim/tafel-60-120",
+      "label": "Claim",
+      "props": {
+        "name": "intrinsic Tafel slope: alpha_ET 1.0 ~ 60, 0.5 ~ 120 mV/dec",
+        "claim_kind": "conclusion",
+        "claim_status": "supported",
+        "evidence": [
+          {
+            "id": "ev_claim_tafel",
+            "kind": "text",
+            "locator": "p. 3, Section 2.2",
+            "quote": "For example, an αET value of 1.0 corresponds to about 60 mV per decade (at room temperature); an αET value of 0.5 corresponds to about 120 mV per decade.",
+            "source": "scale:commons/source/10.3390-inorganics7020020"
+          }
+        ],
+        "inference_type": "computational",
+        "origin": "curated",
+        "statement": "The intrinsic Tafel slope sET of the catalyst material is set by the electrocatalytic transfer coefficient αET: at room temperature αET = 1.0 corresponds to about 60 mV per decade and αET = 0.5 to about 120 mV per decade."
+      }
+    },
+    {
+      "id": "scale:commons/10.3390-inorganics7020020/claim/tafel-increase-mass-transport",
+      "label": "Claim",
+      "props": {
+        "name": "Tafel-slope increase at intermediate overpotentials from buffer diffusion",
+        "claim_kind": "conclusion",
+        "claim_status": "supported",
+        "evidence": [
+          {
+            "id": "ev_claim_rde",
+            "kind": "text",
+            "locator": "p. 8, Discussion",
+            "quote": "At intermediate overpotentials, the Tafel slope increases in comparison to its low-overpotential value, which has been assigned before to mass transport limitations and largely can be avoided by the employment of a rotating-disc electrode [28,32–34]. In the described model, the mass transport limitations result from diffusion of protonated and unprotonated buffer bases in the electrolyte, without involving buffer base diffusion within the catalyst ﬁlm.",
+            "source": "scale:commons/source/10.3390-inorganics7020020"
+          },
+          {
+            "id": "ev_claim_rde2",
+            "kind": "text",
+            "locator": "p. 8, Discussion",
+            "quote": "The use of a rotating disc electrode (or just stirring of the solution) would increase the value of kD.",
+            "source": "scale:commons/source/10.3390-inorganics7020020"
+          }
+        ],
+        "inference_type": "computational",
+        "note": "the observed increase 'has been assigned before to mass transport limitations' with references [28,32–34] cited by the source",
+        "origin": "curated",
+        "statement": "At intermediate overpotentials the Tafel slope increases compared with its low-overpotential value; in the model this mass-transport limitation results from diffusion of protonated and unprotonated buffer bases in the electrolyte (not within the catalyst film) and can be reduced by increasing the effective diffusion constant kD, e.g. with a rotating-disc electrode or stirring."
+      }
+    },
+    {
+      "id": "scale:commons/10.3390-inorganics7020020/computation/tafel-simulations",
+      "label": "Computation",
+      "props": {
+        "name": "simulated current–voltage relations and Tafel slopes for a pKa 7 buffer (Figures 2–4)",
+        "computation_kind": "other",
+        "evidence": [
+          {
+            "id": "ev_fig2",
+            "kind": "figure",
+            "locator": "p. 6, Figure 2",
+            "note": "axis scales and ticks: x logarithmic (10−6, 10−5, 10−4, 10−3 A cm−2); y linear (1.1–1.4 V vs NHE, ticks 1.1, 1.2, 1.3, 1.4); curves for pH 5.0–9.0 in 0.5 steps; each digitized point read twice (pixel extraction and visual reading), agreement within the stated uncertainty",
+            "quote": "Current–voltage relation (Tafel-plots) at various pH, calculated according to Equation (20). The parameters used for simulation were: αET = 1, kD = 10 mA cm mol−1, B0 = 0.1 M, pKaB = 7, Je0 = 10−12 A cm−2.",
+            "source": "scale:commons/source/10.3390-inorganics7020020"
+          },
+          {
+            "id": "ev_fig3",
+            "kind": "figure",
+            "locator": "p. 6, Figure 3",
+            "note": "axis scales and ticks: x logarithmic (10−7, 10−6, 10−5, 10−4 A cm−2); y linear (60–140 mV dec−1, ticks 60, 80, 100, 120, 140); curves for pH 5.0–9.0 in 0.5 steps; each digitized point read twice, agreement within the stated uncertainty",
+            "quote": "Tafel slopes at various pH, calculated according to the derivative of Equation (20). At low current densities at all investigated pH the Tafel slope is close to the “classical” value of 60 mV dec−1, while at high current densities it increases due to proton transport limitations.",
+            "source": "scale:commons/source/10.3390-inorganics7020020"
+          },
+          {
+            "id": "ev_fig4",
+            "kind": "figure",
+            "locator": "p. 7, Figure 4",
+            "note": "axis scales and ticks: x linear (pH 5, 6, 7, 8, 9); y linear (60–66 mV dec−1, ticks 60, 62, 64, 66); nine plotted points at pH 5.0–9.0 in 0.5 steps, read twice (pixel extraction of the point centres and visual reading), agreement within the stated uncertainty",
+            "quote": "Tafel slopes at various pH extrapolated at 1 µA cm−2, calculated according to the derivative of Equation (20). The pH dependence of the Tafel slope is closely related to the inverse of the buffer capacity of the electrolyte.",
+            "source": "scale:commons/source/10.3390-inorganics7020020"
+          },
+          {
+            "id": "ev_fig4_params",
+            "kind": "figure",
+            "locator": "p. 7, Figure 4 caption",
+            "note": "Je0 is not restated in the Figure 4 caption; the caption says 'The following parameters were used in the simulation'",
+            "quote": "The following parameters were used in the simulation: αET = 1, kD = 10 mA\ncm mol−1, B0 = 0.1 M, pKaB = 7.",
+            "source": "scale:commons/source/10.3390-inorganics7020020"
+          },
+          {
+            "id": "ev_sim_eq20",
+            "kind": "text",
+            "locator": "p. 6, Section 2.4",
+            "quote": "Figure 2 shows current–voltage relations for a buffer with a pKa of 7 simulated based on Equation (20). At high potentials, the maximal current density, Jmax, is reached.",
+            "source": "scale:commons/source/10.3390-inorganics7020020"
+          },
+          {
+            "id": "ev_eq16",
+            "kind": "text",
+            "locator": "p. 5, Section 2.3, Equation (16)",
+            "note": "flag basis (attempt-2 fix): with the captions' stated parameters kD = 10 mA cm mol-1 (0.01 A cm mol-1) and B0 = 0.1 M = 0.1 mol L-1 = 1e-4 mol cm-3, Equations (15)-(16) give Jmax = kD B0 KaB/(KaB + cH) < 1e-6 A cm-2 at every pH (about 9.9e-9 A cm-2 at pH 5, 5e-7 at pH 7, 9.9e-7 at pH 9); the curves printed in Figures 2 and 3 instead approach the printed asymptotes 9.9e-6, 9.1e-5, 5e-4 and 9.9e-4 A cm-2 at pH 5, 6, 7 and 9, i.e. kD B0 = 1e-3 A cm-2 scaled by the same unprotonated fraction - a ~1000x internal inconsistency of the source, consistent with B0 = 0.1 M having been evaluated as 0.1 mol cm-3 in the simulation",
+            "quote": "Jmax = kD B0 [1 −cH/(KaB + cH)] = kD B0 [KaB/(KaB + cH)]",
+            "source": "scale:commons/source/10.3390-inorganics7020020"
+          }
+        ],
+        "experiment_status": "completed",
+        "goal": "compute",
+        "method": "numerical evaluation of the model's current–voltage relation (Equation (20)) and of its derivative (Equation (7)) for pH 5.0–9.0 in 0.5 steps; Figure 4 shows the Tafel slope extrapolated to 1 µA cm−2",
+        "note": "Figures 2–4 are simulated curves (calculated per Equation (20) and its derivative), so the digitized result_values have origin 'computed'; produced_by remains the figure-digitization analysis. FLAG (attempt-2 fix): the printed current-density axis of Figures 2 and 3 is internally inconsistent with the captions' stated parameters. Equation (16) with kD = 10 mA cm mol-1 and B0 = 0.1 M = 1e-4 mol cm-3 gives Jmax = kD B0 KaB/(KaB + cH) < 1e-6 A cm-2 at every pH (about 9.9e-9 A cm-2 at pH 5, 5e-7 at pH 7, 9.9e-7 at pH 9), while the printed curves approach the printed asymptotes (9.9e-6, 9.1e-5, 5e-4, 9.9e-4 A cm-2 at pH 5, 6, 7, 9), i.e. kD B0 = 1e-3 A cm-2 scaled by the same unprotonated fraction - consistent with B0 = 0.1 M having been evaluated as 0.1 mol cm-3 in the simulation (~1000x). The digitized values are kept exactly as printed on the figure axes (axis calibration re-verified against the 300-dpi page image of p. 6); they are not rescaled, since values are recorded as printed. Consequently the recorded potentials at J = 1e-5 and 1e-4 A cm-2, the Figure 3 slopes at J >= 1e-6 A cm-2 and the Figure 4 slopes extrapolated at 1 µA cm-2 are unreachable at the stated pH under the captions' literal parameters but are read off the printed curves as such; each affected value carries a note. Attempt-3 verification: the second reading flagged five Figure 3 values and the Figure 4 pH 9 value as inconsistent with Equation (20) and the Figure 2 limiting currents even after the ~1000x B0 correction (p. 6 Figure 3, p. 7 Figure 4). The issue does not hold: Equation (20)'s proton-transport term carries beta^-1 with beta = e/kBT per natural-log unit (Eqs. (3)-(4)), so the decadic Tafel-slope contribution is ln10*beta^-1 = 59.2-60.2 mV dec-1 at 298-303 K (Eq. (6); the paper's own Eqs. (5)/(21) state ~60 mV dec-1 per pH). With the Figure 2 asymptote Jmax values (9.9e-6 and 9.9e-4 A cm-2 at pH 5 and 9), Equation (20) reproduces the printed values: pH 9 slopes 89.5-91.0 (printed 90.8) at J = 1e-5 and 111.7-113.6 (printed 113.3) at J = 5e-5 A cm-2; pH 5 slope 85.1-86.5 (printed 86.0) at J = 3e-6 A cm-2; 120 mV dec-1 crossings at 4.9-5.0e-6 (printed 5e-6, pH 5) and 0.87-1.03e-4 (printed 9e-5, pH 9, within the reading uncertainty and the Jmax asymptote uncertainty) A cm-2; Figure 4 pH 9 at 1 uA cm-2: 64.6-65.7 with Eq. (20) (65.2 with the Eq. (27) approximation) vs printed 65.5. The flagged discrepancy arose from evaluating the proton-transport term with beta^-1 = 25.7 mV dec-1 directly, a factor ln10 too small. Pixel re-measurement of the 300/400-dpi page image (p. 6) confirms each printed curve position (86.3, 91.1, 113.2 mV dec-1; 4.99e-6 and 9.01e-5 A cm-2 at 120 mV dec-1), matching the digitized values.",
+        "origin": "curated",
+        "result_values": [
+          {
+            "id": "fig2_ph7_e_at_1e5",
+            "status": "present",
+            "definition": "potential of the pH 7 curve at J = 1e-5 A cm-2, digitized from Figure 2",
+            "evidence_ids": [
+              "ev_fig2"
+            ],
+            "note": "read off the printed Figure 2 curve; with the captions' stated parameters J exceeds the Equation (16) Jmax at pH 7 (about 5e-7 A cm-2), so the printed curve reflects the ~1000x larger Jmax of the printed axis (B0 seemingly evaluated as 0.1 mol cm-3); kept as printed (values are recorded as printed), see the computation note",
+            "origin": "computed",
+            "produced_by": "scale:commons/10.3390-inorganics7020020/analysis/figure-digitization",
+            "qualifier": "approximate",
+            "uncertainty": 0.005,
+            "uncertainty_evaluation": "type_b",
+            "uncertainty_kind": "standard_uncertainty",
+            "unit": "V vs NHE",
+            "value": 1.231,
+            "variable": "scale:commons/10.3390-inorganics7020020/variable/electrode-potential"
+          },
+          {
+            "id": "fig2_ph7_e_at_1e4",
+            "status": "present",
+            "definition": "potential of the pH 7 curve at J = 1e-4 A cm-2, digitized from Figure 2",
+            "evidence_ids": [
+              "ev_fig2"
+            ],
+            "note": "read off the printed Figure 2 curve; with the captions' stated parameters J exceeds the Equation (16) Jmax at pH 7 (about 5e-7 A cm-2), so the printed curve reflects the ~1000x larger Jmax of the printed axis (B0 seemingly evaluated as 0.1 mol cm-3); kept as printed (values are recorded as printed), see the computation note",
+            "origin": "computed",
+            "produced_by": "scale:commons/10.3390-inorganics7020020/analysis/figure-digitization",
+            "qualifier": "approximate",
+            "uncertainty": 0.005,
+            "uncertainty_evaluation": "type_b",
+            "uncertainty_kind": "standard_uncertainty",
+            "unit": "V vs NHE",
+            "value": 1.299,
+            "variable": "scale:commons/10.3390-inorganics7020020/variable/electrode-potential"
+          },
+          {
+            "id": "fig2_ph5_e_at_1e6",
+            "status": "present",
+            "definition": "potential of the pH 5 curve at J = 1e-6 A cm-2, digitized from Figure 2",
+            "evidence_ids": [
+              "ev_fig2"
+            ],
+            "note": "re-digitized in the attempt-1 fix from the 400-dpi page image (p. 6): at J = 1e-6 A cm-2 the pH 5.0 (black) curve reads E = 1.292 V; axis calibration verified against the pH 7 and pH 9 curves at J = 1e-5 A cm-2 (read 1.232 and 1.132 V, matching the other digitized points); recorded as printed. Corrected note (attempt-2 fix): with the captions' stated parameters Equation (16) gives Jmax about 9.9e-9 A cm-2 at pH 5, so J = 1e-6 A cm-2 exceeds Jmax and Equation (20) cannot be evaluated there; the attempt-1 claim that this point is consistent with Equation (20) under the stated parameters was incorrect. The printed curve is consistent only with the ~1000x larger Jmax of the printed axis (B0 seemingly evaluated as 0.1 mol cm-3); see the computation note",
+            "origin": "computed",
+            "produced_by": "scale:commons/10.3390-inorganics7020020/analysis/figure-digitization",
+            "qualifier": "approximate",
+            "uncertainty": 0.005,
+            "uncertainty_evaluation": "type_b",
+            "uncertainty_kind": "standard_uncertainty",
+            "unit": "V vs NHE",
+            "value": 1.292,
+            "variable": "scale:commons/10.3390-inorganics7020020/variable/electrode-potential"
+          },
+          {
+            "id": "fig2_ph9_e_at_1e5",
+            "status": "present",
+            "definition": "potential of the pH 9 curve at J = 1e-5 A cm-2, digitized from Figure 2",
+            "evidence_ids": [
+              "ev_fig2"
+            ],
+            "note": "read off the printed Figure 2 curve; with the captions' stated parameters J exceeds the Equation (16) Jmax at pH 9 (about 9.9e-7 A cm-2), so the printed curve reflects the ~1000x larger Jmax of the printed axis (B0 seemingly evaluated as 0.1 mol cm-3); kept as printed (values are recorded as printed), see the computation note",
+            "origin": "computed",
+            "produced_by": "scale:commons/10.3390-inorganics7020020/analysis/figure-digitization",
+            "qualifier": "approximate",
+            "uncertainty": 0.005,
+            "uncertainty_evaluation": "type_b",
+            "uncertainty_kind": "standard_uncertainty",
+            "unit": "V vs NHE",
+            "value": 1.132,
+            "variable": "scale:commons/10.3390-inorganics7020020/variable/electrode-potential"
+          },
+          {
+            "id": "fig2_ph5_j_at_e140",
+            "status": "present",
+            "definition": "current density at which the pH 5 curve reaches the top of the plotted potential range (E ≈ 1.40 V vs NHE); near-asymptote reading of the limiting current, digitized from Figure 2",
+            "evidence_ids": [
+              "ev_fig2"
+            ],
+            "note": "printed limiting-current (asymptote) reading; the printed value corresponds to kD B0 = 1e-3 A cm-2, ~1000x the Equation (16) Jmax with the captions' stated parameters (about 9.9e-9 A cm-2 at pH 5); kept as printed (values are recorded as printed), see the computation note",
+            "origin": "computed",
+            "produced_by": "scale:commons/10.3390-inorganics7020020/analysis/figure-digitization",
+            "qualifier": "approximate",
+            "uncertainty": 8e-07,
+            "uncertainty_evaluation": "type_b",
+            "uncertainty_kind": "standard_uncertainty",
+            "unit": "A cm-2",
+            "value": 9.9e-06,
+            "variable": "scale:commons/10.3390-inorganics7020020/variable/current-density"
+          },
+          {
+            "id": "fig2_ph6_j_at_e140",
+            "status": "present",
+            "definition": "current density at which the pH 6 curve reaches the top of the plotted potential range (E ≈ 1.40 V vs NHE); near-asymptote reading of the limiting current, digitized from Figure 2",
+            "evidence_ids": [
+              "ev_fig2"
+            ],
+            "note": "printed limiting-current (asymptote) reading; the printed value corresponds to kD B0 = 1e-3 A cm-2, ~1000x the Equation (16) Jmax with the captions' stated parameters (about 9.1e-8 A cm-2 at pH 6); kept as printed (values are recorded as printed), see the computation note",
+            "origin": "computed",
+            "produced_by": "scale:commons/10.3390-inorganics7020020/analysis/figure-digitization",
+            "qualifier": "approximate",
+            "uncertainty": 7e-06,
+            "uncertainty_evaluation": "type_b",
+            "uncertainty_kind": "standard_uncertainty",
+            "unit": "A cm-2",
+            "value": 9.1e-05,
+            "variable": "scale:commons/10.3390-inorganics7020020/variable/current-density"
+          },
+          {
+            "id": "fig2_ph7_j_at_e140",
+            "status": "present",
+            "definition": "current density at which the pH 7 curve reaches the top of the plotted potential range (E ≈ 1.40 V vs NHE); near-asymptote reading of the limiting current, digitized from Figure 2",
+            "evidence_ids": [
+              "ev_fig2"
+            ],
+            "note": "printed limiting-current (asymptote) reading; the printed value corresponds to kD B0 = 1e-3 A cm-2, ~1000x the Equation (16) Jmax with the captions' stated parameters (about 5e-7 A cm-2 at pH 7); kept as printed (values are recorded as printed), see the computation note",
+            "origin": "computed",
+            "produced_by": "scale:commons/10.3390-inorganics7020020/analysis/figure-digitization",
+            "qualifier": "approximate",
+            "uncertainty": 4e-05,
+            "uncertainty_evaluation": "type_b",
+            "uncertainty_kind": "standard_uncertainty",
+            "unit": "A cm-2",
+            "value": 0.0005,
+            "variable": "scale:commons/10.3390-inorganics7020020/variable/current-density"
+          },
+          {
+            "id": "fig2_ph9_j_at_e140",
+            "status": "present",
+            "definition": "current density at which the pH 9 curve reaches the top of the plotted potential range (E ≈ 1.40 V vs NHE); near-asymptote reading of the limiting current, digitized from Figure 2",
+            "evidence_ids": [
+              "ev_fig2"
+            ],
+            "note": "printed limiting-current (asymptote) reading; the printed value corresponds to kD B0 = 1e-3 A cm-2, ~1000x the Equation (16) Jmax with the captions' stated parameters (about 9.9e-7 A cm-2 at pH 9); kept as printed (values are recorded as printed), see the computation note",
+            "origin": "computed",
+            "produced_by": "scale:commons/10.3390-inorganics7020020/analysis/figure-digitization",
+            "qualifier": "approximate",
+            "uncertainty": 8e-05,
+            "uncertainty_evaluation": "type_b",
+            "uncertainty_kind": "standard_uncertainty",
+            "unit": "A cm-2",
+            "value": 0.00099,
+            "variable": "scale:commons/10.3390-inorganics7020020/variable/current-density"
+          },
+          {
+            "id": "fig3_ph5_s_at_1e6",
+            "status": "present",
+            "definition": "Tafel slope of the pH 5 curve at J = 1e-6 A cm-2, digitized from Figure 3",
+            "evidence_ids": [
+              "ev_fig3"
+            ],
+            "note": "read off the printed Figure 3 curve; with the captions' stated parameters J = 1e-6 A cm-2 exceeds the Equation (16) Jmax at pH 5 (about 9.9e-9 A cm-2), so the printed curve reflects the ~1000x larger Jmax of the printed axis; kept as printed (values are recorded as printed), see the computation note",
+            "origin": "computed",
+            "produced_by": "scale:commons/10.3390-inorganics7020020/analysis/figure-digitization",
+            "qualifier": "approximate",
+            "uncertainty": 1.0,
+            "uncertainty_evaluation": "type_b",
+            "uncertainty_kind": "standard_uncertainty",
+            "unit": "mV dec-1",
+            "value": 66.7,
+            "variable": "scale:commons/10.3390-inorganics7020020/variable/tafel-slope"
+          },
+          {
+            "id": "fig3_ph5_s_at_3e6",
+            "status": "present",
+            "definition": "Tafel slope of the pH 5 curve at J = 3e-6 A cm-2 (rising branch), digitized from Figure 3",
+            "evidence_ids": [
+              "ev_fig3"
+            ],
+            "note": "read off the printed Figure 3 curve; with the captions' stated parameters J = 3e-6 A cm-2 exceeds the Equation (16) Jmax at pH 5 (about 9.9e-9 A cm-2), so the printed curve reflects the ~1000x larger Jmax of the printed axis; kept as printed (values are recorded as printed), see the computation note Verification (attempt-3 fix): pixel re-measurement of the 300/400-dpi page image confirms the printed curve reads this value within the stated uncertainty, and Equation (20) with the Figure 2 asymptote Jmax reproduces it when the proton-transport term is converted to the decadic Tafel slope with ln10*beta^-1 (beta = e/kBT is per natural-log unit per Equations (3)-(4), Eq. (6) gives s10-ET = ln10*sET), i.e. about 59.2-60.2 mV dec-1 at 298-303 K; a check using beta^-1 = 25.7 mV dec-1 directly (the second reading's approach) understates the slope by a factor ln10.",
+            "origin": "computed",
+            "produced_by": "scale:commons/10.3390-inorganics7020020/analysis/figure-digitization",
+            "qualifier": "approximate",
+            "uncertainty": 2.0,
+            "uncertainty_evaluation": "type_b",
+            "uncertainty_kind": "standard_uncertainty",
+            "unit": "mV dec-1",
+            "value": 86.0,
+            "variable": "scale:commons/10.3390-inorganics7020020/variable/tafel-slope"
+          },
+          {
+            "id": "fig3_ph5_j_at_120_mv",
+            "status": "present",
+            "definition": "current density at which the pH 5 curve reaches a Tafel slope of 120 mV dec-1, digitized from Figure 3",
+            "evidence_ids": [
+              "ev_fig3"
+            ],
+            "note": "read off the printed Figure 3 curve; with the captions' stated parameters the printed current density exceeds the Equation (16) Jmax at pH 5 (about 9.9e-9 A cm-2), so the printed curve reflects the ~1000x larger Jmax of the printed axis; kept as printed (values are recorded as printed), see the computation note Verification (attempt-3 fix): pixel re-measurement of the 300/400-dpi page image confirms the printed curve reads this value within the stated uncertainty, and Equation (20) with the Figure 2 asymptote Jmax reproduces it when the proton-transport term is converted to the decadic Tafel slope with ln10*beta^-1 (beta = e/kBT is per natural-log unit per Equations (3)-(4), Eq. (6) gives s10-ET = ln10*sET), i.e. about 59.2-60.2 mV dec-1 at 298-303 K; a check using beta^-1 = 25.7 mV dec-1 directly (the second reading's approach) understates the slope by a factor ln10.",
+            "origin": "computed",
+            "produced_by": "scale:commons/10.3390-inorganics7020020/analysis/figure-digitization",
+            "qualifier": "approximate",
+            "uncertainty": 5e-07,
+            "uncertainty_evaluation": "type_b",
+            "uncertainty_kind": "standard_uncertainty",
+            "unit": "A cm-2",
+            "value": 5e-06,
+            "variable": "scale:commons/10.3390-inorganics7020020/variable/current-density"
+          },
+          {
+            "id": "fig3_ph7_s_at_1e5",
+            "status": "present",
+            "definition": "Tafel slope of the pH 7 curve at J = 1e-5 A cm-2, digitized from Figure 3",
+            "evidence_ids": [
+              "ev_fig3"
+            ],
+            "note": "read off the printed Figure 3 curve; with the captions' stated parameters J = 1e-5 A cm-2 exceeds the Equation (16) Jmax at pH 7 (about 5e-7 A cm-2), so the printed curve reflects the ~1000x larger Jmax of the printed axis; kept as printed (values are recorded as printed), see the computation note",
+            "origin": "computed",
+            "produced_by": "scale:commons/10.3390-inorganics7020020/analysis/figure-digitization",
+            "qualifier": "approximate",
+            "uncertainty": 1.0,
+            "uncertainty_evaluation": "type_b",
+            "uncertainty_kind": "standard_uncertainty",
+            "unit": "mV dec-1",
+            "value": 62.2,
+            "variable": "scale:commons/10.3390-inorganics7020020/variable/tafel-slope"
+          },
+          {
+            "id": "fig3_ph9_s_at_1e5",
+            "status": "present",
+            "definition": "Tafel slope of the pH 9 curve at J = 1e-5 A cm-2 (rising branch), digitized from Figure 3",
+            "evidence_ids": [
+              "ev_fig3"
+            ],
+            "note": "read off the printed Figure 3 curve; with the captions' stated parameters J = 1e-5 A cm-2 exceeds the Equation (16) Jmax at pH 9 (about 9.9e-7 A cm-2), so the printed curve reflects the ~1000x larger Jmax of the printed axis; kept as printed (values are recorded as printed), see the computation note Verification (attempt-3 fix): pixel re-measurement of the 300/400-dpi page image confirms the printed curve reads this value within the stated uncertainty, and Equation (20) with the Figure 2 asymptote Jmax reproduces it when the proton-transport term is converted to the decadic Tafel slope with ln10*beta^-1 (beta = e/kBT is per natural-log unit per Equations (3)-(4), Eq. (6) gives s10-ET = ln10*sET), i.e. about 59.2-60.2 mV dec-1 at 298-303 K; a check using beta^-1 = 25.7 mV dec-1 directly (the second reading's approach) understates the slope by a factor ln10.",
+            "origin": "computed",
+            "produced_by": "scale:commons/10.3390-inorganics7020020/analysis/figure-digitization",
+            "qualifier": "approximate",
+            "uncertainty": 2.0,
+            "uncertainty_evaluation": "type_b",
+            "uncertainty_kind": "standard_uncertainty",
+            "unit": "mV dec-1",
+            "value": 90.8,
+            "variable": "scale:commons/10.3390-inorganics7020020/variable/tafel-slope"
+          },
+          {
+            "id": "fig3_ph9_s_at_5e5",
+            "status": "present",
+            "definition": "Tafel slope of the pH 9 curve at J = 5e-5 A cm-2 (rising branch), digitized from Figure 3",
+            "evidence_ids": [
+              "ev_fig3"
+            ],
+            "note": "read off the printed Figure 3 curve; with the captions' stated parameters J = 5e-5 A cm-2 exceeds the Equation (16) Jmax at pH 9 (about 9.9e-7 A cm-2), so the printed curve reflects the ~1000x larger Jmax of the printed axis; kept as printed (values are recorded as printed), see the computation note Verification (attempt-3 fix): pixel re-measurement of the 300/400-dpi page image confirms the printed curve reads this value within the stated uncertainty, and Equation (20) with the Figure 2 asymptote Jmax reproduces it when the proton-transport term is converted to the decadic Tafel slope with ln10*beta^-1 (beta = e/kBT is per natural-log unit per Equations (3)-(4), Eq. (6) gives s10-ET = ln10*sET), i.e. about 59.2-60.2 mV dec-1 at 298-303 K; a check using beta^-1 = 25.7 mV dec-1 directly (the second reading's approach) understates the slope by a factor ln10.",
+            "origin": "computed",
+            "produced_by": "scale:commons/10.3390-inorganics7020020/analysis/figure-digitization",
+            "qualifier": "approximate",
+            "uncertainty": 2.0,
+            "uncertainty_evaluation": "type_b",
+            "uncertainty_kind": "standard_uncertainty",
+            "unit": "mV dec-1",
+            "value": 113.3,
+            "variable": "scale:commons/10.3390-inorganics7020020/variable/tafel-slope"
+          },
+          {
+            "id": "fig3_ph9_j_at_120_mv",
+            "status": "present",
+            "definition": "current density at which the pH 9 curve reaches a Tafel slope of 120 mV dec-1, digitized from Figure 3",
+            "evidence_ids": [
+              "ev_fig3"
+            ],
+            "note": "read off the printed Figure 3 curve; with the captions' stated parameters the printed current density exceeds the Equation (16) Jmax at pH 9 (about 9.9e-7 A cm-2), so the printed curve reflects the ~1000x larger Jmax of the printed axis; kept as printed (values are recorded as printed), see the computation note Verification (attempt-3 fix): pixel re-measurement of the 300/400-dpi page image confirms the printed curve reads this value within the stated uncertainty, and Equation (20) with the Figure 2 asymptote Jmax reproduces it when the proton-transport term is converted to the decadic Tafel slope with ln10*beta^-1 (beta = e/kBT is per natural-log unit per Equations (3)-(4), Eq. (6) gives s10-ET = ln10*sET), i.e. about 59.2-60.2 mV dec-1 at 298-303 K; a check using beta^-1 = 25.7 mV dec-1 directly (the second reading's approach) understates the slope by a factor ln10.",
+            "origin": "computed",
+            "produced_by": "scale:commons/10.3390-inorganics7020020/analysis/figure-digitization",
+            "qualifier": "approximate",
+            "uncertainty": 7e-06,
+            "uncertainty_evaluation": "type_b",
+            "uncertainty_kind": "standard_uncertainty",
+            "unit": "A cm-2",
+            "value": 9e-05,
+            "variable": "scale:commons/10.3390-inorganics7020020/variable/current-density"
+          },
+          {
+            "id": "fig4_ph5_0",
+            "status": "present",
+            "definition": "Tafel slope extrapolated at 1 µA cm-2 at pH 5.0, digitized from Figure 4",
+            "evidence_ids": [
+              "ev_fig4"
+            ],
+            "note": "Figure 4's 1 µA cm-2 (1e-6 A cm-2) extrapolation current exceeds the Equation (16) Jmax with the captions' stated parameters at every pH (Jmax < 1e-6 A cm-2, about 9.9e-9 A cm-2 at pH 5), so the printed plot is consistent only with the ~1000x larger Jmax of the printed Figures 2-3 axis (B0 seemingly evaluated as 0.1 mol cm-3); kept as printed (values are recorded as printed), see the computation note",
+            "origin": "computed",
+            "produced_by": "scale:commons/10.3390-inorganics7020020/analysis/figure-digitization",
+            "qualifier": "approximate",
+            "uncertainty": 0.3,
+            "uncertainty_evaluation": "type_b",
+            "uncertainty_kind": "standard_uncertainty",
+            "unit": "mV dec-1",
+            "value": 66.8,
+            "variable": "scale:commons/10.3390-inorganics7020020/variable/tafel-slope"
+          },
+          {
+            "id": "fig4_ph5_5",
+            "status": "present",
+            "definition": "Tafel slope extrapolated at 1 µA cm-2 at pH 5.5, digitized from Figure 4",
+            "evidence_ids": [
+              "ev_fig4"
+            ],
+            "note": "Figure 4's 1 µA cm-2 (1e-6 A cm-2) extrapolation current exceeds the Equation (16) Jmax with the captions' stated parameters at every pH (Jmax < 1e-6 A cm-2, about 9.9e-9 A cm-2 at pH 5), so the printed plot is consistent only with the ~1000x larger Jmax of the printed Figures 2-3 axis (B0 seemingly evaluated as 0.1 mol cm-3); kept as printed (values are recorded as printed), see the computation note",
+            "origin": "computed",
+            "produced_by": "scale:commons/10.3390-inorganics7020020/analysis/figure-digitization",
+            "qualifier": "approximate",
+            "uncertainty": 0.3,
+            "uncertainty_evaluation": "type_b",
+            "uncertainty_kind": "standard_uncertainty",
+            "unit": "mV dec-1",
+            "value": 62.1,
+            "variable": "scale:commons/10.3390-inorganics7020020/variable/tafel-slope"
+          },
+          {
+            "id": "fig4_ph6_0",
+            "status": "present",
+            "definition": "Tafel slope extrapolated at 1 µA cm-2 at pH 6.0, digitized from Figure 4",
+            "evidence_ids": [
+              "ev_fig4"
+            ],
+            "note": "Figure 4's 1 µA cm-2 (1e-6 A cm-2) extrapolation current exceeds the Equation (16) Jmax with the captions' stated parameters at every pH (Jmax < 1e-6 A cm-2, about 9.9e-9 A cm-2 at pH 5), so the printed plot is consistent only with the ~1000x larger Jmax of the printed Figures 2-3 axis (B0 seemingly evaluated as 0.1 mol cm-3); kept as printed (values are recorded as printed), see the computation note",
+            "origin": "computed",
+            "produced_by": "scale:commons/10.3390-inorganics7020020/analysis/figure-digitization",
+            "qualifier": "approximate",
+            "uncertainty": 0.3,
+            "uncertainty_evaluation": "type_b",
+            "uncertainty_kind": "standard_uncertainty",
+            "unit": "mV dec-1",
+            "value": 60.7,
+            "variable": "scale:commons/10.3390-inorganics7020020/variable/tafel-slope"
+          },
+          {
+            "id": "fig4_ph6_5",
+            "status": "present",
+            "definition": "Tafel slope extrapolated at 1 µA cm-2 at pH 6.5, digitized from Figure 4",
+            "evidence_ids": [
+              "ev_fig4"
+            ],
+            "note": "Figure 4's 1 µA cm-2 (1e-6 A cm-2) extrapolation current exceeds the Equation (16) Jmax with the captions' stated parameters at every pH (Jmax < 1e-6 A cm-2, about 9.9e-9 A cm-2 at pH 5), so the printed plot is consistent only with the ~1000x larger Jmax of the printed Figures 2-3 axis (B0 seemingly evaluated as 0.1 mol cm-3); kept as printed (values are recorded as printed), see the computation note",
+            "origin": "computed",
+            "produced_by": "scale:commons/10.3390-inorganics7020020/analysis/figure-digitization",
+            "qualifier": "approximate",
+            "uncertainty": 0.3,
+            "uncertainty_evaluation": "type_b",
+            "uncertainty_kind": "standard_uncertainty",
+            "unit": "mV dec-1",
+            "value": 60.3,
+            "variable": "scale:commons/10.3390-inorganics7020020/variable/tafel-slope"
+          },
+          {
+            "id": "fig4_ph7_0",
+            "status": "present",
+            "definition": "Tafel slope extrapolated at 1 µA cm-2 at pH 7.0, digitized from Figure 4",
+            "evidence_ids": [
+              "ev_fig4"
+            ],
+            "note": "Figure 4's 1 µA cm-2 (1e-6 A cm-2) extrapolation current exceeds the Equation (16) Jmax with the captions' stated parameters at every pH (Jmax < 1e-6 A cm-2, about 9.9e-9 A cm-2 at pH 5), so the printed plot is consistent only with the ~1000x larger Jmax of the printed Figures 2-3 axis (B0 seemingly evaluated as 0.1 mol cm-3); kept as printed (values are recorded as printed), see the computation note",
+            "origin": "computed",
+            "produced_by": "scale:commons/10.3390-inorganics7020020/analysis/figure-digitization",
+            "qualifier": "approximate",
+            "uncertainty": 0.3,
+            "uncertainty_evaluation": "type_b",
+            "uncertainty_kind": "standard_uncertainty",
+            "unit": "mV dec-1",
+            "value": 60.2,
+            "variable": "scale:commons/10.3390-inorganics7020020/variable/tafel-slope"
+          },
+          {
+            "id": "fig4_ph7_5",
+            "status": "present",
+            "definition": "Tafel slope extrapolated at 1 µA cm-2 at pH 7.5, digitized from Figure 4",
+            "evidence_ids": [
+              "ev_fig4"
+            ],
+            "note": "Figure 4's 1 µA cm-2 (1e-6 A cm-2) extrapolation current exceeds the Equation (16) Jmax with the captions' stated parameters at every pH (Jmax < 1e-6 A cm-2, about 9.9e-9 A cm-2 at pH 5), so the printed plot is consistent only with the ~1000x larger Jmax of the printed Figures 2-3 axis (B0 seemingly evaluated as 0.1 mol cm-3); kept as printed (values are recorded as printed), see the computation note",
+            "origin": "computed",
+            "produced_by": "scale:commons/10.3390-inorganics7020020/analysis/figure-digitization",
+            "qualifier": "approximate",
+            "uncertainty": 0.3,
+            "uncertainty_evaluation": "type_b",
+            "uncertainty_kind": "standard_uncertainty",
+            "unit": "mV dec-1",
+            "value": 60.3,
+            "variable": "scale:commons/10.3390-inorganics7020020/variable/tafel-slope"
+          },
+          {
+            "id": "fig4_ph8_0",
+            "status": "present",
+            "definition": "Tafel slope extrapolated at 1 µA cm-2 at pH 8.0, digitized from Figure 4",
+            "evidence_ids": [
+              "ev_fig4"
+            ],
+            "note": "Figure 4's 1 µA cm-2 (1e-6 A cm-2) extrapolation current exceeds the Equation (16) Jmax with the captions' stated parameters at every pH (Jmax < 1e-6 A cm-2, about 9.9e-9 A cm-2 at pH 5), so the printed plot is consistent only with the ~1000x larger Jmax of the printed Figures 2-3 axis (B0 seemingly evaluated as 0.1 mol cm-3); kept as printed (values are recorded as printed), see the computation note",
+            "origin": "computed",
+            "produced_by": "scale:commons/10.3390-inorganics7020020/analysis/figure-digitization",
+            "qualifier": "approximate",
+            "uncertainty": 0.3,
+            "uncertainty_evaluation": "type_b",
+            "uncertainty_kind": "standard_uncertainty",
+            "unit": "mV dec-1",
+            "value": 60.7,
+            "variable": "scale:commons/10.3390-inorganics7020020/variable/tafel-slope"
+          },
+          {
+            "id": "fig4_ph8_5",
+            "status": "present",
+            "definition": "Tafel slope extrapolated at 1 µA cm-2 at pH 8.5, digitized from Figure 4",
+            "evidence_ids": [
+              "ev_fig4"
+            ],
+            "note": "Figure 4's 1 µA cm-2 (1e-6 A cm-2) extrapolation current exceeds the Equation (16) Jmax with the captions' stated parameters at every pH (Jmax < 1e-6 A cm-2, about 9.9e-9 A cm-2 at pH 5), so the printed plot is consistent only with the ~1000x larger Jmax of the printed Figures 2-3 axis (B0 seemingly evaluated as 0.1 mol cm-3); kept as printed (values are recorded as printed), see the computation note",
+            "origin": "computed",
+            "produced_by": "scale:commons/10.3390-inorganics7020020/analysis/figure-digitization",
+            "qualifier": "approximate",
+            "uncertainty": 0.3,
+            "uncertainty_evaluation": "type_b",
+            "uncertainty_kind": "standard_uncertainty",
+            "unit": "mV dec-1",
+            "value": 62.0,
+            "variable": "scale:commons/10.3390-inorganics7020020/variable/tafel-slope"
+          },
+          {
+            "id": "fig4_ph9_0",
+            "status": "present",
+            "definition": "Tafel slope extrapolated at 1 µA cm-2 at pH 9.0, digitized from Figure 4",
+            "evidence_ids": [
+              "ev_fig4"
+            ],
+            "note": "Figure 4's 1 µA cm-2 (1e-6 A cm-2) extrapolation current exceeds the Equation (16) Jmax with the captions' stated parameters at every pH (Jmax < 1e-6 A cm-2, about 9.9e-9 A cm-2 at pH 5), so the printed plot is consistent only with the ~1000x larger Jmax of the printed Figures 2-3 axis (B0 seemingly evaluated as 0.1 mol cm-3); kept as printed (values are recorded as printed), see the computation note Verification (attempt-3 fix): pixel re-measurement of the 300/400-dpi page image confirms the printed curve reads this value within the stated uncertainty, and Equation (20) with the Figure 2 asymptote Jmax reproduces it when the proton-transport term is converted to the decadic Tafel slope with ln10*beta^-1 (beta = e/kBT is per natural-log unit per Equations (3)-(4), Eq. (6) gives s10-ET = ln10*sET), i.e. about 59.2-60.2 mV dec-1 at 298-303 K; a check using beta^-1 = 25.7 mV dec-1 directly (the second reading's approach) understates the slope by a factor ln10.",
+            "origin": "computed",
+            "produced_by": "scale:commons/10.3390-inorganics7020020/analysis/figure-digitization",
+            "qualifier": "approximate",
+            "uncertainty": 0.3,
+            "uncertainty_evaluation": "type_b",
+            "uncertainty_kind": "standard_uncertainty",
+            "unit": "mV dec-1",
+            "value": 65.5,
+            "variable": "scale:commons/10.3390-inorganics7020020/variable/tafel-slope"
+          }
+        ],
+        "settings": {
+          "alpha_et": {
+            "status": "present",
+            "as_reported": "αET = 1",
+            "evidence_ids": [
+              "ev_fig2"
+            ],
+            "unit": "1",
+            "value": 1
+          },
+          "b_0": {
+            "status": "present",
+            "as_reported": "B0 = 0.1 M",
+            "evidence_ids": [
+              "ev_fig2"
+            ],
+            "unit": "M",
+            "value": 0.1
+          },
+          "je_0": {
+            "status": "present",
+            "as_reported": "Je0 = 10−12 A cm−2",
+            "definition": "formal exchange current density; stated for Figures 2 and 3, not restated for Figure 4",
+            "evidence_ids": [
+              "ev_fig2"
+            ],
+            "unit": "A cm-2",
+            "value": 1e-12
+          },
+          "k_d": {
+            "status": "present",
+            "as_reported": "kD = 10 mA cm mol−1",
+            "evidence_ids": [
+              "ev_fig2"
+            ],
+            "unit": "mA cm mol-1",
+            "value": 10
+          },
+          "pka_b": {
+            "status": "present",
+            "as_reported": "pKaB = 7",
+            "evidence_ids": [
+              "ev_fig2"
+            ],
+            "unit": "1",
+            "value": 7
+          }
+        }
+      }
+    },
+    {
+      "id": "scale:commons/10.3390-inorganics7020020/hypothesis/equal-proton-activities",
+      "label": "Hypothesis",
+      "props": {
+        "name": "auxiliary assumption: equal proton activities in catalyst film and buffer layer",
+        "evidence": [
+          {
+            "id": "ev_hyp",
+            "kind": "text",
+            "locator": "p. 2, Section 2.1",
+            "quote": "It is furthermore assumed that the effective proton concentrations, that is, the proton activities in A and B are equal once ﬂuxes (of electrons and protons) and concentrations have reached a steady-state.",
+            "source": "scale:commons/source/10.3390-inorganics7020020"
+          }
+        ],
+        "hypothesis_kind": "auxiliary",
+        "hypothesis_status": "proposed",
+        "note": "the source states the assumption is exact only if proton transport inside the film and transfer from film to solvent are kinetically not limiting",
+        "origin": "curated",
+        "scope": "continuous (steady-state) operation of the OER catalyst film in a buffered electrolyte",
+        "statement": "At steady state, the effective proton activities in the OER catalyst film and in the near-surface electrolyte ('buffer layer') are equal, so the two compartments can be described by one proton activity X."
+      }
+    },
+    {
+      "id": "scale:commons/10.3390-inorganics7020020/institution/bmbf",
+      "label": "Institution",
+      "props": {
+        "name": "Bundesministerium für Bildung und Forschung (BMBF)",
+        "country": "Germany",
+        "evidence": [
+          {
+            "id": "ev_fund",
+            "kind": "text",
+            "locator": "p. 9, Funding",
+            "quote": "This research was funded by the Bundesministerium für Bildung und Forschung (BMBF) in the framework of the CO2EKAT project (03SF0523B)",
+            "source": "scale:commons/source/10.3390-inorganics7020020"
+          }
+        ],
+        "institution_kind": "funding_agency",
+        "origin": "curated"
+      }
+    },
+    {
+      "id": "scale:commons/10.3390-inorganics7020020/institution/dfg",
+      "label": "Institution",
+      "props": {
+        "name": "Deutsche Forschungsgemeinschaft (DFG)",
+        "country": "Germany",
+        "evidence": [
+          {
+            "id": "ev_fund2",
+            "kind": "text",
+            "locator": "p. 9, Funding",
+            "quote": "and by the Deutsche Forschungsgemeinschaft (DFG) in the framework of the priority program SPP 1613 (DA 402/7-2)",
+            "source": "scale:commons/source/10.3390-inorganics7020020"
+          }
+        ],
+        "institution_kind": "funding_agency",
+        "origin": "curated"
+      }
+    },
+    {
+      "id": "scale:commons/10.3390-inorganics7020020/institution/fu-berlin",
+      "label": "Institution",
+      "props": {
+        "name": "Free University Berlin",
+        "country": "Germany",
+        "evidence": [
+          {
+            "id": "ev_affil",
+            "kind": "text",
+            "locator": "p. 1, author affiliations",
+            "quote": "Department of Physics, Free University Berlin, Arnimallee 14, 141595 Berlin, Germany",
+            "source": "scale:commons/source/10.3390-inorganics7020020"
+          }
+        ],
+        "institution_kind": "university",
+        "origin": "curated"
+      }
+    },
+    {
+      "id": "scale:commons/10.3390-inorganics7020020/model/proton-transport",
+      "label": "Model",
+      "props": {
+        "name": "buffer-base proton-transport model for near-neutral-pH OER",
+        "assumptions": [
+          "the effective proton concentrations (proton activities) in the catalyst film (region A) and the near-surface buffer layer (region B) are equal at steady state: XCat = XLayer = X",
+          "proton transport inside the catalyst film and proton transfer from the film to the solvent are kinetically not limiting (clearly faster than transport over macroscopic distances in the solvent)",
+          "protonated and unprotonated buffer are exchanged between the buffer layer and the bulk by diffusion described by one effective diffusion constant kD; all details of the diffusion geometry are covered by kD",
+          "the total buffer concentration B0 is the same in all three regions",
+          "at steady state the electric current density equals the proton current density (Je = JBH = J)"
+        ],
+        "equations": [
+          "µx = kBT ln X  (Eq 1)",
+          "Je = Je0 exp[αET(e∆V − µx)/kBT]  (Eq 2)",
+          "BL−X/BLH = KaB  (Eq 8)",
+          "JBH,L=>S = kD BLH ; JBH,S=>L = kD BSH  (Eqs 11–12)",
+          "JBH = kD (BLH − BLS)  (Eq 13)",
+          "kD = F D/(del/2), for two parallel electrodes of identical area at distance del  (Eq 14)",
+          "JBH = kD B0 [X/(KaB + X) − cH/(KaB + cH)]  (Eq 15)",
+          "Jmax = kD B0 [KaB/(KaB + cH)] = kD B0 [BS−/(BS− + BSH)]  (Eqs 16–17)",
+          "X = [cH + (JBH/Jmax) KaB]/[1 − (JBH/Jmax)]  (Eq 18)",
+          "∆V = sET ln J/Je0 + β−1 ln{[cH + (J/Jmax) KaB]/[1 − (J/Jmax)]}  (Eq 20)",
+          "s = d∆V/d ln Je = sET + β−1 d ln X(Je)/d ln Je  (Eq 7)",
+          "s = sET + sPT, sPT = β−1 d ln X/d ln J  (Eqs 22–23)",
+          "sPT = β−1 J [KDB0 KaB X/(KaB + X)²]⁻¹  (Eq 26); for X = cH: sPT = β−1 J KD/βB  (Eq 27)",
+          "βB = B0 KaB cH/(KaB + cH)²  (Eq 28)"
+        ],
+        "evidence": [
+          {
+            "id": "ev_model_aim",
+            "kind": "text",
+            "locator": "p. 2, Section 2.1",
+            "quote": "We are aiming at a simple model that describes the inﬂuence of proton transport mediated by buffer molecules on the catalytic activity.",
+            "source": "scale:commons/source/10.3390-inorganics7020020"
+          },
+          {
+            "id": "ev_model_eq15",
+            "kind": "text",
+            "locator": "p. 5, Section 2.3, Equation (15)",
+            "quote": "JBH = kD B0 [X/(KaB + X) −cH/(KaB + cH)]",
+            "source": "scale:commons/source/10.3390-inorganics7020020"
+          },
+          {
+            "id": "ev_model_eq16",
+            "kind": "text",
+            "locator": "p. 5, Section 2.3, Equation (16)",
+            "quote": "Jmax = kD B0 [1 −cH/(KaB + cH)] = kD B0 [KaB/(KaB + cH)]",
+            "source": "scale:commons/source/10.3390-inorganics7020020"
+          },
+          {
+            "id": "ev_model_eq20",
+            "kind": "text",
+            "locator": "p. 6, Section 2.4, Equation (20)",
+            "quote": "∆V = sET ln J/Je0 + β−1 ln {[cH + (J/Jmax) KaB]/[1 −(J/Jmax)]}",
+            "source": "scale:commons/source/10.3390-inorganics7020020"
+          },
+          {
+            "id": "ev_model_eq22",
+            "kind": "text",
+            "locator": "p. 7, Section 3, Equation (22)",
+            "quote": "s = sET + sPT",
+            "source": "scale:commons/source/10.3390-inorganics7020020"
+          },
+          {
+            "id": "ev_model_eq28",
+            "kind": "text",
+            "locator": "p. 7, Section 3, Equation (28)",
+            "quote": "βB = B0 KaB cH/(KaB + cH)2",
+            "source": "scale:commons/source/10.3390-inorganics7020020"
+          },
+          {
+            "id": "ev_model_eq14",
+            "kind": "text",
+            "locator": "p. 5, Section 2.3, Equation (14)",
+            "quote": "kD = F D/(del/2)",
+            "source": "scale:commons/source/10.3390-inorganics7020020"
+          },
+          {
+            "id": "ev_model_domain",
+            "kind": "text",
+            "locator": "p. 8, Discussion",
+            "quote": "We note that for water or OH−ion as proton acceptors, Equation (15) is no longer exact; at very low pH (<−1) and very high pH (>15) the imprecision will be sizable.",
+            "source": "scale:commons/source/10.3390-inorganics7020020"
+          }
+        ],
+        "model_kind": "analytical transport–kinetic model (proton transport by diffusing buffer bases coupled to a Butler–Volmer-type catalytic current)",
+        "origin": "curated",
+        "unmodeled": [
+          "the idealized two-electrode cell and the spatial concentration profiles of Figure 1 are a schematic illustration (stated illustrative values: maximal BH concentration 100 mM to 1 M, anode–cathode distance about 1 cm, catalyst film about 500 nm, example pH 7); the source gives no numerical concentration profiles"
+        ],
+        "validity_domain": "OER at near-neutral pH with dissolved buffer bases (stated to apply from about pH 2 to 12, extended to extreme pH by substituting the water species H2O/H3O+ or OH−/H2O as the buffer pair, with increasing imprecision at pH < −1 and pH > 15); proton-transport limitations at the catalyst–electrolyte interface and within the catalyst material are excluded by construction; at high current densities Ohmic electrolyte conductivity is expected to cause further deviations."
+      }
+    },
+    {
+      "id": "scale:commons/10.3390-inorganics7020020/person/chiara-pasquini",
+      "label": "Person",
+      "props": {
+        "name": "Chiara Pasquini",
+        "given_names": "Chiara",
+        "origin": "curated",
+        "surname": "Pasquini"
+      }
+    },
+    {
+      "id": "scale:commons/10.3390-inorganics7020020/person/holger-dau",
+      "label": "Person",
+      "props": {
+        "name": "Holger Dau",
+        "given_names": "Holger",
+        "origin": "curated",
+        "surname": "Dau"
+      }
+    },
+    {
+      "id": "scale:commons/10.3390-inorganics7020020/prediction/buffer-capacity-tafel-slope",
+      "label": "Prediction",
+      "props": {
+        "name": "Tafel slope reflects reciprocal buffer capacity; minimum at pKa",
+        "direction": "qualitative",
+        "evidence": [
+          {
+            "id": "ev_pred_bc1",
+            "kind": "text",
+            "locator": "p. 8, Discussion",
+            "quote": "Moreover, the model predicts that at intermediate overpotentials the Tafel slope does not reﬂect the concentration of unprotonated buffer molecules, but rather the pH-buffering capacity of the BH/B−pH-buffer system (Equation (28), Figure 4). This dependence on an effective buffering capacity has not been reported before (to our best knowledge), and it, thus, represents another testable prediction of the presented model.",
+            "source": "scale:commons/source/10.3390-inorganics7020020"
+          },
+          {
+            "id": "ev_pred_bc2",
+            "kind": "text",
+            "locator": "p. 1, Abstract",
+            "quote": "(4) a Tafel slope that depends on the reciprocal buffer capacity; both predictions are awaiting experimental veriﬁcation.",
+            "source": "scale:commons/source/10.3390-inorganics7020020"
+          },
+          {
+            "id": "ev_pred_bc3",
+            "kind": "text",
+            "locator": "p. 7, Section 3",
+            "quote": "Equation (27) correctly predicts the minimum of the Tafel slope at pH values close to the pKa of the buffer molecules (Figure 4).",
+            "source": "scale:commons/source/10.3390-inorganics7020020"
+          }
+        ],
+        "note": "the source states this dependence 'has not been reported before (to our best knowledge)' and 'still requires experimental verification'",
+        "origin": "curated",
+        "proposed_at": "2019-02-13",
+        "statement": "At intermediate overpotentials the Tafel slope does not reflect the concentration of unprotonated buffer molecules but the pH-buffering capacity βB of the BH/B− buffer system (Equation (28)); the Tafel slope therefore has a minimum at pH values close to the buffer pKa, and its pH dependence tracks the reciprocal buffer capacity."
+      }
+    },
+    {
+      "id": "scale:commons/10.3390-inorganics7020020/prediction/local-ph-region",
+      "label": "Prediction",
+      "props": {
+        "name": "macroscopic pH region near the OER electrode at intermediate overpotentials",
+        "direction": "qualitative",
+        "evidence": [
+          {
+            "id": "ev_pred_ph1",
+            "kind": "text",
+            "locator": "p. 1, Abstract",
+            "quote": "The model predicts (3) a macroscopic region of increased pH close to the OER electrode and at intermediate overpotentials, (4) a Tafel slope that depends on the reciprocal buffer capacity; both predictions are awaiting experimental veriﬁcation.",
+            "source": "scale:commons/source/10.3390-inorganics7020020"
+          },
+          {
+            "id": "ev_pred_ph2",
+            "kind": "text",
+            "locator": "p. 8, Discussion",
+            "quote": "The model predicts a macroscopic acidiﬁcation in the electrolyte close to the catalyst surface, a prediction that still requires experimental veriﬁcation.",
+            "source": "scale:commons/source/10.3390-inorganics7020020"
+          },
+          {
+            "id": "ev_pred_ph3",
+            "kind": "text",
+            "locator": "p. 9, Conclusions, item 5",
+            "quote": "This assumption predicts (macroscopic) acidiﬁcation of the electrolyte near the electrode surface, a prediction that still awaits experimental veriﬁcation.",
+            "source": "scale:commons/source/10.3390-inorganics7020020"
+          }
+        ],
+        "note": "ambiguous_in_source: the abstract calls it 'a macroscopic region of increased pH close to the OER electrode and at intermediate overpotentials', while the Discussion and Conclusions call it a 'macroscopic acidiﬁcation in the electrolyte close to the catalyst surface' / '(macroscopic) acidiﬁcation of the electrolyte near the electrode surface'; the two formulations disagree, and the source states the prediction still requires experimental verification",
+        "origin": "curated",
+        "proposed_at": "2019-02-13",
+        "statement": "The model predicts a macroscopic pH change in the electrolyte near the OER electrode at intermediate overpotentials, stated in the source as 'a macroscopic region of increased pH close to the OER electrode and at intermediate overpotentials' (Abstract) and as a 'macroscopic acidiﬁcation in the electrolyte close to the catalyst surface' (Discussion) / '(macroscopic) acidiﬁcation of the electrolyte near the electrode surface' (Conclusions); both formulations are the source's own and they disagree in sign wording."
+      }
+    },
+    {
+      "id": "scale:commons/10.3390-inorganics7020020/reaction/oer",
+      "label": "Reaction",
+      "props": {
+        "name": "oxygen evolution reaction (water oxidation)",
+        "balance_status": "not_reported",
+        "direction": "forward",
+        "evidence": [
+          {
+            "id": "ev_oer",
+            "kind": "text",
+            "locator": "p. 1, Introduction",
+            "quote": "The water oxidation reaction entails the release of four protons per each molecule of water produced.",
+            "source": "scale:commons/source/10.3390-inorganics7020020"
+          }
+        ],
+        "generality": "kind",
+        "note": "the source states no balanced equation; it says the water oxidation reaction 'entails the release of four protons per each molecule of water produced' (p. 1, Introduction)",
+        "origin": "curated"
+      }
+    },
+    {
+      "id": "scale:commons/10.3390-inorganics7020020/software/python-pil",
+      "label": "Software",
+      "props": {
+        "name": "Python 3 with Pillow (pixel analysis)",
+        "note": "used by the curating agent to extract pixel coordinates of the plotted curves; version not stated in the source (curation tool)",
+        "origin": "curated",
+        "software_kind": "library"
+      }
+    },
+    {
+      "id": "scale:commons/10.3390-inorganics7020020/species/buffer-acid-BH",
+      "label": "ChemicalSpecies",
+      "props": {
+        "name": "BH (protonated buffer base, generic)",
+        "charge": 0,
+        "evidence": [
+          {
+            "id": "ev_bh_id",
+            "kind": "text",
+            "locator": "p. 3, Figure 1 caption",
+            "quote": "spatial concentration proﬁles of the protonated form of the buffer base (BH, violet line)",
+            "source": "scale:commons/source/10.3390-inorganics7020020"
+          },
+          {
+            "id": "ev_bh",
+            "kind": "text",
+            "locator": "p. 3, Figure 1 caption",
+            "quote": "a typical maximal BH concentration would be in the range of 100 mM to 1 M (e.g., of phosphate buffer)",
+            "source": "scale:commons/source/10.3390-inorganics7020020"
+          }
+        ],
+        "formula": "BH",
+        "note": "generic protonated form of an electrolyte buffer base; typical maximal concentration 100 mM to 1 M (e.g., phosphate buffer) per Figure 1 caption",
+        "origin": "curated",
+        "species_kind": "molecule"
+      }
+    },
+    {
+      "id": "scale:commons/10.3390-inorganics7020020/species/buffer-base-Bminus",
+      "label": "ChemicalSpecies",
+      "props": {
+        "name": "B− (unprotonated buffer base, generic)",
+        "charge": -1,
+        "evidence": [
+          {
+            "id": "ev_bminus",
+            "kind": "text",
+            "locator": "p. 3, Figure 1 caption",
+            "quote": "spatial concentration proﬁles of the protonated form of the buffer base (BH, violet line), its deprotonated form (B−, cyan line)",
+            "source": "scale:commons/source/10.3390-inorganics7020020"
+          }
+        ],
+        "formula": "B-",
+        "note": "generic unprotonated form of an electrolyte buffer base; the proton-accepting, proton-transporting species of the model",
+        "origin": "curated",
+        "species_kind": "ion"
+      }
+    },
+    {
+      "id": "scale:commons/10.3390-inorganics7020020/species/h2o",
+      "label": "ChemicalSpecies",
+      "props": {
+        "name": "H2O (water)",
+        "charge": 0,
+        "elemental_composition": {
+          "H": 2,
+          "O": 1
+        },
+        "formula": "H2O",
+        "origin": "curated",
+        "species_kind": "molecule"
+      }
+    },
+    {
+      "id": "scale:commons/10.3390-inorganics7020020/species/h2po4minus",
+      "label": "ChemicalSpecies",
+      "props": {
+        "name": "H2PO4− (dihydrogen phosphate)",
+        "charge": -1,
+        "elemental_composition": {
+          "H": 2,
+          "O": 4,
+          "P": 1
+        },
+        "evidence": [
+          {
+            "id": "ev_po4",
+            "kind": "text",
+            "locator": "p. 8, Discussion",
+            "quote": "than for the commonly used buffer bases (e.g., HPO42−/H2PO4−)",
+            "source": "scale:commons/source/10.3390-inorganics7020020"
+          }
+        ],
+        "formula": "H2PO4-",
+        "note": "named as one of the commonly used buffer bases",
+        "origin": "curated",
+        "species_kind": "ion"
+      }
+    },
+    {
+      "id": "scale:commons/10.3390-inorganics7020020/species/h3oplus",
+      "label": "ChemicalSpecies",
+      "props": {
+        "name": "H3O+ (hydronium ion)",
+        "charge": 1,
+        "elemental_composition": {
+          "H": 3,
+          "O": 1
+        },
+        "evidence": [
+          {
+            "id": "ev_h3okab",
+            "kind": "text",
+            "locator": "p. 7, Discussion",
+            "quote": "(for H3O+/H2O, formal pKaB of −1.74 or KaB of 55 M)",
+            "source": "scale:commons/source/10.3390-inorganics7020020"
+          }
+        ],
+        "formula": "H3O+",
+        "origin": "curated",
+        "properties": {
+          "formal_pkab_h3o_h2o": {
+            "status": "present",
+            "as_reported": "formal pKaB of −1.74",
+            "definition": "formal pKaB of the H3O+/H2O buffer pair (the source's KaB notation)",
+            "evidence_ids": [
+              "ev_h3okab"
+            ],
+            "unit": "1",
+            "value": -1.74
+          },
+          "kab_h3o_h2o": {
+            "status": "present",
+            "as_reported": "55 M",
+            "definition": "KaB of the H3O+/H2O buffer pair",
+            "evidence_ids": [
+              "ev_h3okab"
+            ],
+            "unit": "M",
+            "value": 55
+          }
+        },
+        "species_kind": "ion"
+      }
+    },
+    {
+      "id": "scale:commons/10.3390-inorganics7020020/species/hplus",
+      "label": "ChemicalSpecies",
+      "props": {
+        "name": "H+ (proton)",
+        "charge": 1,
+        "elemental_composition": {
+          "H": 1
+        },
+        "formula": "H+",
+        "origin": "curated",
+        "species_kind": "ion"
+      }
+    },
+    {
+      "id": "scale:commons/10.3390-inorganics7020020/species/hpo4_2minus",
+      "label": "ChemicalSpecies",
+      "props": {
+        "name": "HPO4²− (hydrogen phosphate)",
+        "charge": -2,
+        "elemental_composition": {
+          "H": 1,
+          "O": 4,
+          "P": 1
+        },
+        "evidence": [
+          {
+            "id": "ev_po4b",
+            "kind": "text",
+            "locator": "p. 8, Discussion",
+            "quote": "than for the commonly used buffer bases (e.g., HPO42−/H2PO4−)",
+            "source": "scale:commons/source/10.3390-inorganics7020020"
+          }
+        ],
+        "formula": "HPO4^2-",
+        "note": "named as one of the commonly used buffer bases",
+        "origin": "curated",
+        "species_kind": "ion"
+      }
+    },
+    {
+      "id": "scale:commons/10.3390-inorganics7020020/species/o2",
+      "label": "ChemicalSpecies",
+      "props": {
+        "name": "O2 (oxygen)",
+        "charge": 0,
+        "elemental_composition": {
+          "O": 2
+        },
+        "formula": "O2",
+        "origin": "curated",
+        "species_kind": "molecule"
+      }
+    },
+    {
+      "id": "scale:commons/10.3390-inorganics7020020/species/ohminus",
+      "label": "ChemicalSpecies",
+      "props": {
+        "name": "OH- (hydroxide ion)",
+        "charge": -1,
+        "elemental_composition": {
+          "H": 1,
+          "O": 1
+        },
+        "evidence": [
+          {
+            "id": "ev_ohkab",
+            "kind": "text",
+            "locator": "p. 8, Discussion",
+            "quote": "(for H2O/OH−, formal pKaB of 15.74 or KaB of 1.8 × 10−16)",
+            "source": "scale:commons/source/10.3390-inorganics7020020"
+          }
+        ],
+        "formula": "OH-",
+        "origin": "curated",
+        "properties": {
+          "formal_pkab_h2o_oh": {
+            "status": "present",
+            "as_reported": "formal pKaB of 15.74",
+            "definition": "formal pKaB of the H2O/OH- buffer pair (the source's KaB notation)",
+            "evidence_ids": [
+              "ev_ohkab"
+            ],
+            "unit": "1",
+            "value": 15.74
+          },
+          "kab_h2o_oh": {
+            "status": "present",
+            "as_reported": "1.8 × 10−16",
+            "definition": "KaB of the H2O/OH- buffer pair",
+            "evidence_ids": [
+              "ev_ohkab"
+            ],
+            "unit": "M",
+            "value": 1.8e-16
+          }
+        },
+        "species_kind": "ion"
+      }
+    },
+    {
+      "id": "scale:commons/10.3390-inorganics7020020/variable/current-density",
+      "label": "Variable",
+      "props": {
+        "name": "current density J",
+        "definition": "catalytic current density of the simulated OER electrode",
+        "origin": "curated",
+        "quantity_kind": "current_density",
+        "scale": "quantitative",
+        "unit": "A cm-2"
+      }
+    },
+    {
+      "id": "scale:commons/10.3390-inorganics7020020/variable/electrode-potential",
+      "label": "Variable",
+      "props": {
+        "name": "electrode potential E",
+        "definition": "potential of the simulated OER electrode, plotted as E (V_NHE) in Figure 2",
+        "origin": "curated",
+        "quantity_kind": "electrode_potential",
+        "scale": "quantitative",
+        "unit": "V vs NHE"
+      }
+    },
+    {
+      "id": "scale:commons/10.3390-inorganics7020020/variable/tafel-slope",
+      "label": "Variable",
+      "props": {
+        "name": "Tafel slope",
+        "definition": "Tafel slope s of the simulated current–voltage relation, defined as the natural-log derivative s = d∆V/d ln Je (Equation (7)); the classical decadic Tafel slope in mV dec−1 is s10 = ln10·s (the intrinsic decadic slope is s10-ET = ln10·sET, Equation (6)); the slopes of Figures 3 and 4 and the digitized slopes recorded here are decadic values in mV dec−1",
+        "evidence": [
+          {
+            "id": "ev_tafel_s",
+            "kind": "text",
+            "locator": "p. 4, Section 2.2, Equation (7)",
+            "quote": "The generalized deﬁnition of the Tafel slope is (based on the natural logarithm): s = d ∆V/d ln Je = sET + β−1 d ln X(Je)/d ln Je",
+            "source": "scale:commons/source/10.3390-inorganics7020020"
+          },
+          {
+            "id": "ev_tafel_s10",
+            "kind": "text",
+            "locator": "p. 4, Section 2.2, Equation (6)",
+            "quote": "The above value of sET relates to the natural logarithm; the classical decadic Tafel slope is obtained by: s10-ET = ln10 sET",
+            "source": "scale:commons/source/10.3390-inorganics7020020"
+          }
+        ],
+        "note": "quantity_kind 'tafel_slope' is not among the schema's declared kinds; recorded as stated. The source defines s as the natural-log derivative (Eq 7) and the decadic slope separately (Eq 6: s10-ET = ln10 sET); Tafel slopes quoted in mV dec−1 (60/120 mV dec−1, Figures 3 and 4) are decadic, s10 = ln10·s",
+        "origin": "curated",
+        "quantity_kind": "tafel_slope",
+        "scale": "quantitative",
+        "unit": "mV dec-1"
+      }
+    },
+    {
+      "id": "scale:commons/source/10.3390-inorganics7020020",
+      "label": "Source",
+      "props": {
+        "name": "Modelling the (Essential) Role of Proton Transport by Electrolyte Bases for Electrochemical Water Oxidation at Near-Neutral pH",
+        "kind": "article",
+        "doi": "10.3390/inorganics7020020",
+        "licence": "https://creativecommons.org/licenses/by/4.0/",
+        "origin": "curated",
+        "retrieved_from": "1001334.pdf",
+        "retrieved_on": "2026-11-04",
+        "text_sha256": "60492395bb274919bd53e6fbd709517df5195b4ccc4d2578857ae0277e756e1c",
+        "text_version": "version_of_record",
+        "title": "Modelling the (Essential) Role of Proton Transport by Electrolyte Bases for Electrochemical Water Oxidation at Near-Neutral pH",
+        "url": "https://doi.org/10.3390/inorganics7020020",
+        "venue": "Inorganics",
+        "year": 2019
+      }
+    }
+  ],
+  "links": [
+    {
+      "id": "scale:commons/10.3390-inorganics7020020/analysis/figure-digitization/input/computation",
+      "type": "HAS_INPUT",
+      "props": {
+        "note": "the digitization reads the curves this computation produced",
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.3390-inorganics7020020/analysis/figure-digitization",
+      "target": "scale:commons/10.3390-inorganics7020020/computation/tafel-simulations"
+    },
+    {
+      "id": "scale:commons/10.3390-inorganics7020020/analysis/figure-digitization/reported-in/10.3390-inorganics7020020",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 6, Figures 2 and 3; p. 7, Figure 4"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.3390-inorganics7020020/analysis/figure-digitization",
+      "target": "scale:commons/source/10.3390-inorganics7020020"
+    },
+    {
+      "id": "scale:commons/10.3390-inorganics7020020/analysis/figure-digitization/uses/python-pil",
+      "type": "USES_SOFTWARE",
+      "props": {},
+      "source": "scale:commons/10.3390-inorganics7020020/analysis/figure-digitization",
+      "target": "scale:commons/10.3390-inorganics7020020/software/python-pil"
+    },
+    {
+      "id": "scale:commons/10.3390-inorganics7020020/claim/buffer-requirement/reported-in/10.3390-inorganics7020020",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 9, Conclusions, item 1"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.3390-inorganics7020020/claim/buffer-requirement",
+      "target": "scale:commons/source/10.3390-inorganics7020020"
+    },
+    {
+      "id": "scale:commons/10.3390-inorganics7020020/claim/diffusion-h3o-oh-vs-buffers/reported-in/10.3390-inorganics7020020",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 8, Discussion"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.3390-inorganics7020020/claim/diffusion-h3o-oh-vs-buffers",
+      "target": "scale:commons/source/10.3390-inorganics7020020"
+    },
+    {
+      "id": "scale:commons/10.3390-inorganics7020020/claim/jmax-unprotonated/reported-in/10.3390-inorganics7020020",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 5, Section 2.3",
+          "p. 9, Conclusions, item 2"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.3390-inorganics7020020/claim/jmax-unprotonated",
+      "target": "scale:commons/source/10.3390-inorganics7020020"
+    },
+    {
+      "id": "scale:commons/10.3390-inorganics7020020/claim/lit-bediako-tafel/reported-in/10.3390-inorganics7020020",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 2, Introduction"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.3390-inorganics7020020/claim/lit-bediako-tafel",
+      "target": "scale:commons/source/10.3390-inorganics7020020"
+    },
+    {
+      "id": "scale:commons/10.3390-inorganics7020020/claim/lit-buffer-availability/reported-in/10.3390-inorganics7020020",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 1, Introduction"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.3390-inorganics7020020/claim/lit-buffer-availability",
+      "target": "scale:commons/source/10.3390-inorganics7020020"
+    },
+    {
+      "id": "scale:commons/10.3390-inorganics7020020/claim/lit-mn-pka-pcet/reported-in/10.3390-inorganics7020020",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 1, Introduction",
+          "p. 2, Introduction"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.3390-inorganics7020020/claim/lit-mn-pka-pcet",
+      "target": "scale:commons/source/10.3390-inorganics7020020"
+    },
+    {
+      "id": "scale:commons/10.3390-inorganics7020020/claim/nernstian-60mv-per-ph/reported-in/10.3390-inorganics7020020",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 5, Section 2.3",
+          "p. 6, Section 2.4",
+          "p. 8, Discussion"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.3390-inorganics7020020/claim/nernstian-60mv-per-ph",
+      "target": "scale:commons/source/10.3390-inorganics7020020"
+    },
+    {
+      "id": "scale:commons/10.3390-inorganics7020020/claim/tafel-60-120/about/model",
+      "type": "ABOUT",
+      "props": {
+        "origin": "curated",
+        "role": "interpretation of the model's intrinsic Tafel slope"
+      },
+      "source": "scale:commons/10.3390-inorganics7020020/claim/tafel-60-120",
+      "target": "scale:commons/10.3390-inorganics7020020/model/proton-transport"
+    },
+    {
+      "id": "scale:commons/10.3390-inorganics7020020/claim/tafel-60-120/reported-in/10.3390-inorganics7020020",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 3, Section 2.2"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.3390-inorganics7020020/claim/tafel-60-120",
+      "target": "scale:commons/source/10.3390-inorganics7020020"
+    },
+    {
+      "id": "scale:commons/10.3390-inorganics7020020/claim/tafel-increase-mass-transport/reported-in/10.3390-inorganics7020020",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 8, Discussion"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.3390-inorganics7020020/claim/tafel-increase-mass-transport",
+      "target": "scale:commons/source/10.3390-inorganics7020020"
+    },
+    {
+      "id": "scale:commons/10.3390-inorganics7020020/computation/concludes/buffer-requirement",
+      "type": "CONCLUDES",
+      "props": {},
+      "source": "scale:commons/10.3390-inorganics7020020/computation/tafel-simulations",
+      "target": "scale:commons/10.3390-inorganics7020020/claim/buffer-requirement"
+    },
+    {
+      "id": "scale:commons/10.3390-inorganics7020020/computation/concludes/jmax-unprotonated",
+      "type": "CONCLUDES",
+      "props": {},
+      "source": "scale:commons/10.3390-inorganics7020020/computation/tafel-simulations",
+      "target": "scale:commons/10.3390-inorganics7020020/claim/jmax-unprotonated"
+    },
+    {
+      "id": "scale:commons/10.3390-inorganics7020020/computation/concludes/nernstian",
+      "type": "CONCLUDES",
+      "props": {},
+      "source": "scale:commons/10.3390-inorganics7020020/computation/tafel-simulations",
+      "target": "scale:commons/10.3390-inorganics7020020/claim/nernstian-60mv-per-ph"
+    },
+    {
+      "id": "scale:commons/10.3390-inorganics7020020/computation/concludes/tafel-increase",
+      "type": "CONCLUDES",
+      "props": {},
+      "source": "scale:commons/10.3390-inorganics7020020/computation/tafel-simulations",
+      "target": "scale:commons/10.3390-inorganics7020020/claim/tafel-increase-mass-transport"
+    },
+    {
+      "id": "scale:commons/10.3390-inorganics7020020/computation/tafel-simulations/of/oer",
+      "type": "OF_REACTION",
+      "props": {
+        "origin": "curated",
+        "role": "current–voltage relation and Tafel slopes simulated"
+      },
+      "source": "scale:commons/10.3390-inorganics7020020/computation/tafel-simulations",
+      "target": "scale:commons/10.3390-inorganics7020020/reaction/oer"
+    },
+    {
+      "id": "scale:commons/10.3390-inorganics7020020/computation/tafel-simulations/reported-in/10.3390-inorganics7020020",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 5, Section 2.3, Equation (16)",
+          "p. 6, Figure 2",
+          "p. 6, Figure 3",
+          "p. 6, Section 2.4",
+          "p. 7, Figure 4",
+          "p. 7, Figure 4 caption"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.3390-inorganics7020020/computation/tafel-simulations",
+      "target": "scale:commons/source/10.3390-inorganics7020020"
+    },
+    {
+      "id": "scale:commons/10.3390-inorganics7020020/computation/tafel-simulations/uses/model",
+      "type": "USES_MODEL",
+      "props": {},
+      "source": "scale:commons/10.3390-inorganics7020020/computation/tafel-simulations",
+      "target": "scale:commons/10.3390-inorganics7020020/model/proton-transport"
+    },
+    {
+      "id": "scale:commons/10.3390-inorganics7020020/hypothesis/equal-proton-activities/about/model",
+      "type": "ABOUT",
+      "props": {
+        "origin": "curated",
+        "role": "auxiliary assumption the model is built on"
+      },
+      "source": "scale:commons/10.3390-inorganics7020020/hypothesis/equal-proton-activities",
+      "target": "scale:commons/10.3390-inorganics7020020/model/proton-transport"
+    },
+    {
+      "id": "scale:commons/10.3390-inorganics7020020/hypothesis/equal-proton-activities/reported-in/10.3390-inorganics7020020",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 2, Section 2.1"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.3390-inorganics7020020/hypothesis/equal-proton-activities",
+      "target": "scale:commons/source/10.3390-inorganics7020020"
+    },
+    {
+      "id": "scale:commons/10.3390-inorganics7020020/institution/bmbf/reported-in/10.3390-inorganics7020020",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 9, Funding"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.3390-inorganics7020020/institution/bmbf",
+      "target": "scale:commons/source/10.3390-inorganics7020020"
+    },
+    {
+      "id": "scale:commons/10.3390-inorganics7020020/institution/dfg/reported-in/10.3390-inorganics7020020",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 9, Funding"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.3390-inorganics7020020/institution/dfg",
+      "target": "scale:commons/source/10.3390-inorganics7020020"
+    },
+    {
+      "id": "scale:commons/10.3390-inorganics7020020/institution/fu-berlin/reported-in/10.3390-inorganics7020020",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 1, author affiliations"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.3390-inorganics7020020/institution/fu-berlin",
+      "target": "scale:commons/source/10.3390-inorganics7020020"
+    },
+    {
+      "id": "scale:commons/10.3390-inorganics7020020/model/derives/buffer-capacity-tafel-slope",
+      "type": "DERIVES",
+      "props": {},
+      "source": "scale:commons/10.3390-inorganics7020020/model/proton-transport",
+      "target": "scale:commons/10.3390-inorganics7020020/prediction/buffer-capacity-tafel-slope"
+    },
+    {
+      "id": "scale:commons/10.3390-inorganics7020020/model/derives/local-ph-region",
+      "type": "DERIVES",
+      "props": {},
+      "source": "scale:commons/10.3390-inorganics7020020/model/proton-transport",
+      "target": "scale:commons/10.3390-inorganics7020020/prediction/local-ph-region"
+    },
+    {
+      "id": "scale:commons/10.3390-inorganics7020020/model/proton-transport/reported-in/10.3390-inorganics7020020",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 2, Section 2.1",
+          "p. 5, Section 2.3, Equation (14)",
+          "p. 5, Section 2.3, Equation (15)",
+          "p. 5, Section 2.3, Equation (16)",
+          "p. 6, Section 2.4, Equation (20)",
+          "p. 7, Section 3, Equation (22)",
+          "p. 7, Section 3, Equation (28)",
+          "p. 8, Discussion"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.3390-inorganics7020020/model/proton-transport",
+      "target": "scale:commons/source/10.3390-inorganics7020020"
+    },
+    {
+      "id": "scale:commons/10.3390-inorganics7020020/person/chiara-pasquini/member/fu-berlin",
+      "type": "MEMBER_OF",
+      "props": {
+        "origin": "curated",
+        "role": "Department of Physics"
+      },
+      "source": "scale:commons/10.3390-inorganics7020020/person/chiara-pasquini",
+      "target": "scale:commons/10.3390-inorganics7020020/institution/fu-berlin"
+    },
+    {
+      "id": "scale:commons/10.3390-inorganics7020020/person/holger-dau/member/fu-berlin",
+      "type": "MEMBER_OF",
+      "props": {
+        "origin": "curated",
+        "role": "Department of Physics"
+      },
+      "source": "scale:commons/10.3390-inorganics7020020/person/holger-dau",
+      "target": "scale:commons/10.3390-inorganics7020020/institution/fu-berlin"
+    },
+    {
+      "id": "scale:commons/10.3390-inorganics7020020/prediction/buffer-capacity-tafel-slope/reported-in/10.3390-inorganics7020020",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 1, Abstract",
+          "p. 7, Section 3",
+          "p. 8, Discussion"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.3390-inorganics7020020/prediction/buffer-capacity-tafel-slope",
+      "target": "scale:commons/source/10.3390-inorganics7020020"
+    },
+    {
+      "id": "scale:commons/10.3390-inorganics7020020/prediction/local-ph-region/reported-in/10.3390-inorganics7020020",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 1, Abstract",
+          "p. 8, Discussion",
+          "p. 9, Conclusions, item 5"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.3390-inorganics7020020/prediction/local-ph-region",
+      "target": "scale:commons/source/10.3390-inorganics7020020"
+    },
+    {
+      "id": "scale:commons/10.3390-inorganics7020020/reaction/oer/has/h2o",
+      "type": "HAS_PARTICIPANT",
+      "props": {
+        "origin": "curated",
+        "role": "reactant"
+      },
+      "source": "scale:commons/10.3390-inorganics7020020/reaction/oer",
+      "target": "scale:commons/10.3390-inorganics7020020/species/h2o"
+    },
+    {
+      "id": "scale:commons/10.3390-inorganics7020020/reaction/oer/has/hplus",
+      "type": "HAS_PARTICIPANT",
+      "props": {
+        "note": "protons released; the source states four protons per each molecule of water produced",
+        "origin": "curated",
+        "role": "product"
+      },
+      "source": "scale:commons/10.3390-inorganics7020020/reaction/oer",
+      "target": "scale:commons/10.3390-inorganics7020020/species/hplus"
+    },
+    {
+      "id": "scale:commons/10.3390-inorganics7020020/reaction/oer/has/o2",
+      "type": "HAS_PARTICIPANT",
+      "props": {
+        "origin": "curated",
+        "role": "product"
+      },
+      "source": "scale:commons/10.3390-inorganics7020020/reaction/oer",
+      "target": "scale:commons/10.3390-inorganics7020020/species/o2"
+    },
+    {
+      "id": "scale:commons/10.3390-inorganics7020020/reaction/oer/reported-in/10.3390-inorganics7020020",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 1, Introduction"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.3390-inorganics7020020/reaction/oer",
+      "target": "scale:commons/source/10.3390-inorganics7020020"
+    },
+    {
+      "id": "scale:commons/10.3390-inorganics7020020/source/author/chiara-pasquini",
+      "type": "AUTHORED_BY",
+      "props": {
+        "evidence": [
+          {
+            "id": "ev_auth2",
+            "kind": "text",
+            "locator": "p. 1",
+            "quote": "and Chiara Pasquini",
+            "source": "scale:commons/source/10.3390-inorganics7020020"
+          }
+        ],
+        "origin": "curated",
+        "position": 2,
+        "role": "author"
+      },
+      "source": "scale:commons/source/10.3390-inorganics7020020",
+      "target": "scale:commons/10.3390-inorganics7020020/person/chiara-pasquini"
+    },
+    {
+      "id": "scale:commons/10.3390-inorganics7020020/source/author/holger-dau",
+      "type": "AUTHORED_BY",
+      "props": {
+        "evidence": [
+          {
+            "id": "ev_auth1",
+            "kind": "text",
+            "locator": "p. 1",
+            "quote": "Holger Dau *",
+            "source": "scale:commons/source/10.3390-inorganics7020020"
+          }
+        ],
+        "origin": "curated",
+        "position": 1,
+        "role": "author"
+      },
+      "source": "scale:commons/source/10.3390-inorganics7020020",
+      "target": "scale:commons/10.3390-inorganics7020020/person/holger-dau"
+    },
+    {
+      "id": "scale:commons/10.3390-inorganics7020020/source/funded/bmbf",
+      "type": "FUNDED_BY",
+      "props": {
+        "award_id": "03SF0523B",
+        "origin": "curated"
+      },
+      "source": "scale:commons/source/10.3390-inorganics7020020",
+      "target": "scale:commons/10.3390-inorganics7020020/institution/bmbf"
+    },
+    {
+      "id": "scale:commons/10.3390-inorganics7020020/source/funded/dfg",
+      "type": "FUNDED_BY",
+      "props": {
+        "award_id": "DA 402/7-2",
+        "note": "priority program SPP 1613",
+        "origin": "curated"
+      },
+      "source": "scale:commons/source/10.3390-inorganics7020020",
+      "target": "scale:commons/10.3390-inorganics7020020/institution/dfg"
+    },
+    {
+      "id": "scale:commons/10.3390-inorganics7020020/source/supports/jmax-unprotonated",
+      "type": "SUPPORTS",
+      "props": {
+        "evidence": [
+          {
+            "id": "ev_sup_klingan",
+            "kind": "text",
+            "evidence_type": "ECO:0000033",
+            "locator": "p. 8, Discussion",
+            "note": "second-hand: experimental verification by reference [15]",
+            "quote": "This prediction has been veriﬁed by Klingan et al., where it was shown for nine buffer bases that the pH dependence of the current density at high overpotentials is determined by the protonation state of the respective buffer base [15].",
+            "source": "scale:commons/source/10.3390-inorganics7020020"
+          }
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/source/10.3390-inorganics7020020",
+      "target": "scale:commons/10.3390-inorganics7020020/claim/jmax-unprotonated"
+    },
+    {
+      "id": "scale:commons/10.3390-inorganics7020020/source/supports/nernstian",
+      "type": "SUPPORTS",
+      "props": {
+        "evidence": [
+          {
+            "id": "ev_sup_nernst",
+            "kind": "text",
+            "evidence_type": "ECO:0000033",
+            "locator": "p. 8, Discussion",
+            "note": "second-hand: experimental studies cited as references [29–31]",
+            "quote": "as repeatedly observed in experimental studies [29–31]",
+            "source": "scale:commons/source/10.3390-inorganics7020020"
+          }
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/source/10.3390-inorganics7020020",
+      "target": "scale:commons/10.3390-inorganics7020020/claim/nernstian-60mv-per-ph"
+    },
+    {
+      "id": "scale:commons/10.3390-inorganics7020020/species/buffer-acid-BH/reported-in/10.3390-inorganics7020020",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 3, Figure 1 caption"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.3390-inorganics7020020/species/buffer-acid-BH",
+      "target": "scale:commons/source/10.3390-inorganics7020020"
+    },
+    {
+      "id": "scale:commons/10.3390-inorganics7020020/species/buffer-base-Bminus/reported-in/10.3390-inorganics7020020",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 3, Figure 1 caption"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.3390-inorganics7020020/species/buffer-base-Bminus",
+      "target": "scale:commons/source/10.3390-inorganics7020020"
+    },
+    {
+      "id": "scale:commons/10.3390-inorganics7020020/species/h2po4minus/reported-in/10.3390-inorganics7020020",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 8, Discussion"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.3390-inorganics7020020/species/h2po4minus",
+      "target": "scale:commons/source/10.3390-inorganics7020020"
+    },
+    {
+      "id": "scale:commons/10.3390-inorganics7020020/species/h3oplus/reported-in/10.3390-inorganics7020020",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 7, Discussion"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.3390-inorganics7020020/species/h3oplus",
+      "target": "scale:commons/source/10.3390-inorganics7020020"
+    },
+    {
+      "id": "scale:commons/10.3390-inorganics7020020/species/hpo4_2minus/reported-in/10.3390-inorganics7020020",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 8, Discussion"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.3390-inorganics7020020/species/hpo4_2minus",
+      "target": "scale:commons/source/10.3390-inorganics7020020"
+    },
+    {
+      "id": "scale:commons/10.3390-inorganics7020020/species/ohminus/reported-in/10.3390-inorganics7020020",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 8, Discussion"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.3390-inorganics7020020/species/ohminus",
+      "target": "scale:commons/source/10.3390-inorganics7020020"
+    },
+    {
+      "id": "scale:commons/10.3390-inorganics7020020/variable/tafel-slope/reported-in/10.3390-inorganics7020020",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 4, Section 2.2, Equation (6)",
+          "p. 4, Section 2.2, Equation (7)"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.3390-inorganics7020020/variable/tafel-slope",
+      "target": "scale:commons/source/10.3390-inorganics7020020"
+    }
+  ],
+  "schema_version": "0.8.2",
+  "source": "scale:commons/source/10.3390-inorganics7020020"
+}

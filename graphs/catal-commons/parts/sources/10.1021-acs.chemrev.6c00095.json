@@ -1,0 +1,639 @@
+{
+  "nodes": [
+    {
+      "id": "scale:commons/10.1021-acs.chemrev.6c00095/analysis/fig1a-digitization",
+      "label": "Analysis",
+      "props": {
+        "name": "Digitization of the Pourbaix curve in Figure 1a",
+        "evidence": [
+          {
+            "id": "fig1a",
+            "kind": "figure",
+            "locator": "p. 2, Figure 1a",
+            "note": "x axis: pH 0–14, linear, labelled ticks every 2; y axis: E 0.0 to −1.0 V vs SHE, linear, labelled ticks every 0.2; calibrated on the plot frame. Second reading: the traced points were cross-checked against eq 2 evaluated with the printed parameters (agreement within 0.011 V).",
+            "quote": "reduction potentials (blue solid line) were calculated using the Nernst equation (eq 2)",
+            "source": "scale:commons/source/10.1021-acs.chemrev.6c00095"
+          }
+        ],
+        "experiment_status": "completed",
+        "goal": "compute",
+        "method": "pixel trace of the plotted blue curve on the page image",
+        "origin": "reported",
+        "results": {
+          "e_at_ph_10": {
+            "id": "e_at_ph_10",
+            "status": "present",
+            "basis": "vs SHE",
+            "definition": "reduction potential of the CO2/formate curve (blue line, Figure 1a) read at pH 10",
+            "evidence_ids": [
+              "fig1a"
+            ],
+            "interval_method": "judgement",
+            "note": "pixel trace −0.593 V; eq 2 with the printed parameters gives −0.594 V",
+            "qualifier": "approximate",
+            "uncertainty": 0.005,
+            "uncertainty_evaluation": "type_b",
+            "uncertainty_kind": "standard_uncertainty",
+            "unit": "V",
+            "value": -0.593
+          },
+          "e_at_ph_13p9": {
+            "id": "e_at_ph_13p9",
+            "status": "present",
+            "basis": "vs SHE",
+            "definition": "reduction potential of the CO2/formate curve (blue line, Figure 1a) read at pH ≈13.9, the last readable point of the traced curve (the source figure does not extend to pH 14)",
+            "evidence_ids": [
+              "fig1a"
+            ],
+            "interval_method": "judgement",
+            "note": "pixel trace −0.928 V at the curve end, pH ≈13.9; eq 2 with the printed parameters gives −0.939 V at pH 13.9. The figure provides no pH 14 point.",
+            "qualifier": "approximate",
+            "uncertainty": 0.007,
+            "uncertainty_evaluation": "type_b",
+            "uncertainty_kind": "standard_uncertainty",
+            "unit": "V",
+            "value": -0.928
+          },
+          "e_at_ph_4": {
+            "id": "e_at_ph_4",
+            "status": "present",
+            "basis": "vs SHE",
+            "definition": "reduction potential of the CO2/formate curve (blue line, Figure 1a) read at pH 4",
+            "evidence_ids": [
+              "fig1a"
+            ],
+            "interval_method": "judgement",
+            "note": "pixel trace −0.299 V; eq 2 with the printed parameters gives −0.299 V",
+            "qualifier": "approximate",
+            "uncertainty": 0.005,
+            "uncertainty_evaluation": "type_b",
+            "uncertainty_kind": "standard_uncertainty",
+            "unit": "V",
+            "value": -0.299
+          },
+          "e_at_ph_7": {
+            "id": "e_at_ph_7",
+            "status": "present",
+            "basis": "vs SHE",
+            "definition": "reduction potential of the CO2/formate curve (blue line, Figure 1a) read at pH 7",
+            "evidence_ids": [
+              "fig1a"
+            ],
+            "interval_method": "judgement",
+            "note": "pixel trace −0.414 V; eq 2 with the printed parameters gives −0.414 V",
+            "qualifier": "approximate",
+            "uncertainty": 0.005,
+            "uncertainty_evaluation": "type_b",
+            "uncertainty_kind": "standard_uncertainty",
+            "unit": "V",
+            "value": -0.414
+          }
+        }
+      }
+    },
+    {
+      "id": "scale:commons/10.1021-acs.chemrev.6c00095/claim/co2-not-bicarbonate",
+      "label": "Claim",
+      "props": {
+        "name": "CO2, not bicarbonate, is the Fdh substrate",
+        "claim_kind": "finding",
+        "claim_status": "supported",
+        "evidence": [
+          {
+            "kind": "text",
+            "locator": "p. 13, Section 3.1",
+            "quote": "Experimental evidence indicates that Fdh catalyzes the interconversion between CO2 and formate, rather than involving bicarbonate (HCO3 −) as a direct substrate or product",
+            "source": "scale:commons/source/10.1021-acs.chemrev.6c00095"
+          },
+          {
+            "kind": "text",
+            "locator": "p. 13, Section 3.1",
+            "quote": "In the oxidative direction, it has been established that Fdhs use formate as the sole substrate (Figure 14)",
+            "source": "scale:commons/source/10.1021-acs.chemrev.6c00095"
+          }
+        ],
+        "inference_type": "meta_analysis",
+        "origin": "reported",
+        "scope": "metal-dependent Fdhs, in vitro and in vivo",
+        "statement": "Fdh catalyzes the interconversion between CO2 and formate directly: CO2, not bicarbonate, is the substrate of the reductive reaction, and formate the sole substrate of the oxidative reaction."
+      }
+    },
+    {
+      "id": "scale:commons/10.1021-acs.chemrev.6c00095/claim/iodoacetamide-unreliable",
+      "label": "Claim",
+      "props": {
+        "name": "Iodoacetamide labeling is an unselective probe",
+        "claim_kind": "finding",
+        "claim_status": "supported",
+        "evidence": [
+          {
+            "kind": "text",
+            "locator": "p. 16, Section 3.4",
+            "quote": "these results indicate that iodoacetamide labeling is unselective and therefore an unreliable probe for assessing the specific role of the active site Sec or Cys residue",
+            "source": "scale:commons/source/10.1021-acs.chemrev.6c00095"
+          }
+        ],
+        "inference_type": "meta_analysis",
+        "origin": "reported",
+        "scope": "metal-dependent Fdhs",
+        "statement": "Iodoacetamide labeling is unselective and therefore an unreliable probe for assessing the specific role of the active-site Sec or Cys residue."
+      }
+    },
+    {
+      "id": "scale:commons/10.1021-acs.chemrev.6c00095/claim/reversible-electrocatalyst",
+      "label": "Claim",
+      "props": {
+        "name": "Metal-dependent Fdhs are reversible electrocatalysts",
+        "claim_kind": "conclusion",
+        "claim_status": "supported",
+        "evidence": [
+          {
+            "kind": "text",
+            "locator": "p. 21, Section 5.1",
+            "quote": "metal-dependent Fdhs are reversible electrocatalysts that showcases high electrocatalytic exchange currents and correspondingly, very minimal overpotential requirement in either direction",
+            "source": "scale:commons/source/10.1021-acs.chemrev.6c00095"
+          }
+        ],
+        "inference_type": "meta_analysis",
+        "origin": "reported",
+        "scope": "metal-dependent Fdhs on electrodes",
+        "statement": "Metal-dependent Fdhs are reversible electrocatalysts: they show high electrocatalytic exchange currents and need very little overpotential in either direction."
+      }
+    },
+    {
+      "id": "scale:commons/10.1021-acs.chemrev.6c00095/claim/second-sphere-hydride",
+      "label": "Claim",
+      "props": {
+        "name": "Second-sphere hydride-transfer consensus mechanism",
+        "claim_kind": "mechanism",
+        "claim_status": "supported",
+        "evidence": [
+          {
+            "kind": "text",
+            "locator": "p. 15, Section 3.3",
+            "quote": "Current evidence supports a mechanism in which the Sec or Cys ligand remains coordinated to the metal, and CO2 is reduced to formate in the second coordination sphere, without direct binding of the substrate to the metal center",
+            "source": "scale:commons/source/10.1021-acs.chemrev.6c00095"
+          },
+          {
+            "kind": "text",
+            "locator": "p. 15, Section 3.3",
+            "quote": "the reduced active site, commonly presented in the protonated form as Mo(IV)-SH or W(IV)-SH, acts as a hydride donor to CO2, reducing it to formate in the second coordination sphere without direct substrate binding to the metal",
+            "source": "scale:commons/source/10.1021-acs.chemrev.6c00095"
+          }
+        ],
+        "inference_type": "meta_analysis",
+        "origin": "reported",
+        "scope": "metal-dependent Fdhs",
+        "statement": "Consensus mechanism: the Sec or Cys ligand stays coordinated to the Mo/W center throughout catalysis, and CO2 is reduced to formate in the second coordination sphere by formal hydride transfer from the protonated terminal sulfur ligand (Mo(IV)-SH / W(IV)-SH), without direct substrate binding to the metal."
+      }
+    },
+    {
+      "id": "scale:commons/10.1021-acs.chemrev.6c00095/claim/shift-to-det",
+      "label": "Claim",
+      "props": {
+        "name": "Field shift from mediated to direct electron transfer",
+        "claim_kind": "conclusion",
+        "claim_status": "supported",
+        "evidence": [
+          {
+            "kind": "text",
+            "locator": "p. 35, Section 7.3",
+            "quote": "Four decades after the first MV-mediated semiartificial CO2 fixation using Fdh, research has clearly shifted toward DET",
+            "source": "scale:commons/source/10.1021-acs.chemrev.6c00095"
+          },
+          {
+            "kind": "text",
+            "locator": "p. 35, Section 7.3",
+            "quote": "This strategy offers distinct advantages in device integration and minimizing enzyme demand",
+            "source": "scale:commons/source/10.1021-acs.chemrev.6c00095"
+          }
+        ],
+        "inference_type": "meta_analysis",
+        "origin": "reported",
+        "scope": "Fdh-based semiartificial CO2 fixation",
+        "statement": "Four decades after the first mediator-based semiartificial CO2 fixation with Fdh, research has shifted toward direct electron transfer, which eases device integration and lowers enzyme demand."
+      }
+    },
+    {
+      "id": "scale:commons/10.1021-acs.chemrev.6c00095/computation/pourbaix-co2-formate",
+      "label": "Computation",
+      "props": {
+        "name": "Nernst-equation Pourbaix calculation of the CO2/formate reduction potential",
+        "computation_kind": "thermodynamic",
+        "evidence": [
+          {
+            "id": "cap",
+            "kind": "figure",
+            "locator": "p. 2, Figure 1 caption",
+            "quote": "Pourbaix diagram for the interconversion among formic acid, formate, CO2, carbonate, bicarbonate, and carbonic acid at 25 °C. The pH-dependent reduction potentials (blue solid line) were calculated using the Nernst equation (eq 2) using the following parameters: pKred1 = 3.75, pKox1 = 6.39, pKox2 = 10.32, and formal potential (E°) of −0.075 V",
+            "source": "scale:commons/source/10.1021-acs.chemrev.6c00095"
+          }
+        ],
+        "experiment_status": "completed",
+        "goal": "compute",
+        "method": "Nernst equation (eq 2), plotted as the pH-dependent reduction potential in Figure 1a",
+        "note": "The parameters are the calculation's inputs, compiled by the authors from refs 45−49; the plotted curve is its output.",
+        "origin": "reported",
+        "results": {
+          "formal_potential": {
+            "status": "present",
+            "as_reported": "formal potential (E°) of −0.075 V",
+            "basis": "vs SHE",
+            "definition": "formal potential E°' of the CO2/formate couple, the pH 0 intercept of Figure 1a",
+            "evidence_ids": [
+              "cap"
+            ],
+            "note": "basis 'vs SHE' is inferred from the Figure 1a y-axis label (E vs SHE); the caption (p. 2, Figure 1 caption) states only 'formal potential (E°) of −0.075 V'",
+            "unit": "V",
+            "value": -0.075
+          },
+          "pk_ox1": {
+            "status": "present",
+            "as_reported": "pKox1 = 6.39",
+            "definition": "acid–base parameter of the CO2/bicarbonate couple in eq 2 (Kox1 = 10^−pKox1)",
+            "evidence_ids": [
+              "cap"
+            ],
+            "unit": "1",
+            "value": 6.39
+          },
+          "pk_ox2": {
+            "status": "present",
+            "as_reported": "pKox2 = 10.32",
+            "definition": "acid–base parameter of the bicarbonate/carbonate couple in eq 2 (Kox2 = 10^−pKox2)",
+            "evidence_ids": [
+              "cap"
+            ],
+            "unit": "1",
+            "value": 10.32
+          },
+          "pk_red1": {
+            "status": "present",
+            "as_reported": "pKred1 = 3.75",
+            "definition": "acid–base parameter of the formic acid/formate couple in eq 2 (Kred1 = 10^−pKred1)",
+            "evidence_ids": [
+              "cap"
+            ],
+            "unit": "1",
+            "value": 3.75
+          }
+        },
+        "temperature": {
+          "status": "present",
+          "unit": "°C",
+          "value": 25
+        }
+      }
+    },
+    {
+      "id": "scale:commons/10.1021-acs.chemrev.6c00095/reaction/co2-formate",
+      "label": "Reaction",
+      "props": {
+        "name": "CO2 reduction to formate (eq 1)",
+        "balance_status": "balanced",
+        "direction": "reversible",
+        "equation": "CO2 + H+ + 2 e- ⇌ HCOO-",
+        "evidence": [
+          {
+            "kind": "text",
+            "locator": "p. 2, eq 1",
+            "quote": "catalyze the reversible interconversion between CO2, protons (H+), electrons (e−), and formate (HCOO−) at neutral pH",
+            "source": "scale:commons/source/10.1021-acs.chemrev.6c00095"
+          }
+        ],
+        "generality": "kind",
+        "note": "The source prints eq 1 with 2 e− on the reactant side; electrons are not recorded as a ChemicalSpecies.",
+        "origin": "reported"
+      }
+    },
+    {
+      "id": "scale:commons/10.1021-acs.chemrev.6c00095/software/pixel-trace",
+      "label": "Software",
+      "props": {
+        "name": "Python 3.12 pixel-trace script (Pillow)",
+        "note": "curation tool used to trace the plotted curve; not named in the source",
+        "origin": "curated",
+        "software_kind": "library",
+        "version": "3.12"
+      }
+    },
+    {
+      "id": "scale:commons/10.1021-acs.chemrev.6c00095/species/co2",
+      "label": "ChemicalSpecies",
+      "props": {
+        "name": "carbon dioxide",
+        "charge": 0,
+        "elemental_composition": {
+          "C": 1,
+          "O": 2
+        },
+        "evidence": [
+          {
+            "kind": "text",
+            "locator": "p. 2, eq 1",
+            "quote": "catalyze the reversible interconversion between CO2, protons (H+), electrons (e−), and formate (HCOO−) at neutral pH",
+            "source": "scale:commons/source/10.1021-acs.chemrev.6c00095"
+          }
+        ],
+        "formula": "CO2",
+        "origin": "reported",
+        "species_kind": "molecule"
+      }
+    },
+    {
+      "id": "scale:commons/10.1021-acs.chemrev.6c00095/species/formate",
+      "label": "ChemicalSpecies",
+      "props": {
+        "name": "formate",
+        "charge": -1,
+        "evidence": [
+          {
+            "kind": "text",
+            "locator": "p. 2, eq 1",
+            "quote": "catalyze the reversible interconversion between CO2, protons (H+), electrons (e−), and formate (HCOO−) at neutral pH",
+            "source": "scale:commons/source/10.1021-acs.chemrev.6c00095"
+          }
+        ],
+        "formula": "HCOO-",
+        "note": "printed as HCOO−",
+        "origin": "reported",
+        "species_kind": "ion"
+      }
+    },
+    {
+      "id": "scale:commons/10.1021-acs.chemrev.6c00095/species/proton",
+      "label": "ChemicalSpecies",
+      "props": {
+        "name": "proton",
+        "charge": 1,
+        "evidence": [
+          {
+            "kind": "text",
+            "locator": "p. 2, eq 1",
+            "quote": "catalyze the reversible interconversion between CO2, protons (H+), electrons (e−), and formate (HCOO−) at neutral pH",
+            "source": "scale:commons/source/10.1021-acs.chemrev.6c00095"
+          }
+        ],
+        "formula": "H+",
+        "origin": "reported",
+        "species_kind": "ion"
+      }
+    },
+    {
+      "id": "scale:commons/source/10.1021-acs.chemrev.6c00095",
+      "label": "Source",
+      "props": {
+        "name": "Semiartificial CO2 Fixation Using Metal-Dependent Formate Dehydrogenase",
+        "kind": "article",
+        "doi": "10.1021/acs.chemrev.6c00095",
+        "licence": "https://creativecommons.org/licenses/by/4.0/",
+        "origin": "curated",
+        "retrieved_from": "1070030.pdf",
+        "retrieved_on": "2026-11-04",
+        "text_sha256": "88934efe9bed8655b7aafc34774483911b6584f3f73d9461a5e95eb8b656978f",
+        "text_version": "version_of_record",
+        "title": "Semiartificial CO2 Fixation Using Metal-Dependent Formate Dehydrogenase",
+        "url": "https://doi.org/10.1021/acs.chemrev.6c00095",
+        "venue": "Chemical Reviews",
+        "year": 2026
+      }
+    }
+  ],
+  "links": [
+    {
+      "id": "scale:commons/10.1021-acs.chemrev.6c00095/analysis/fig1a-digitization/of-reaction",
+      "type": "OF_REACTION",
+      "props": {
+        "evidence": [
+          {
+            "kind": "figure",
+            "locator": "p. 2, Figure 1a",
+            "quote": "reduction potentials (blue solid line) were calculated using the Nernst equation (eq 2)",
+            "source": "scale:commons/source/10.1021-acs.chemrev.6c00095"
+          }
+        ],
+        "origin": "reported"
+      },
+      "source": "scale:commons/10.1021-acs.chemrev.6c00095/analysis/fig1a-digitization",
+      "target": "scale:commons/10.1021-acs.chemrev.6c00095/reaction/co2-formate"
+    },
+    {
+      "id": "scale:commons/10.1021-acs.chemrev.6c00095/analysis/fig1a-digitization/reported-in/10.1021-acs.chemrev.6c00095",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 2, Figure 1a"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.1021-acs.chemrev.6c00095/analysis/fig1a-digitization",
+      "target": "scale:commons/source/10.1021-acs.chemrev.6c00095"
+    },
+    {
+      "id": "scale:commons/10.1021-acs.chemrev.6c00095/analysis/fig1a-digitization/uses-software",
+      "type": "USES_SOFTWARE",
+      "props": {
+        "note": "digitization tool used by the curator",
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.1021-acs.chemrev.6c00095/analysis/fig1a-digitization",
+      "target": "scale:commons/10.1021-acs.chemrev.6c00095/software/pixel-trace"
+    },
+    {
+      "id": "scale:commons/10.1021-acs.chemrev.6c00095/claim/co2-not-bicarbonate/reported-in/10.1021-acs.chemrev.6c00095",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 13, Section 3.1"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.1021-acs.chemrev.6c00095/claim/co2-not-bicarbonate",
+      "target": "scale:commons/source/10.1021-acs.chemrev.6c00095"
+    },
+    {
+      "id": "scale:commons/10.1021-acs.chemrev.6c00095/claim/iodoacetamide-unreliable/reported-in/10.1021-acs.chemrev.6c00095",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 16, Section 3.4"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.1021-acs.chemrev.6c00095/claim/iodoacetamide-unreliable",
+      "target": "scale:commons/source/10.1021-acs.chemrev.6c00095"
+    },
+    {
+      "id": "scale:commons/10.1021-acs.chemrev.6c00095/claim/reversible-electrocatalyst/reported-in/10.1021-acs.chemrev.6c00095",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 21, Section 5.1"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.1021-acs.chemrev.6c00095/claim/reversible-electrocatalyst",
+      "target": "scale:commons/source/10.1021-acs.chemrev.6c00095"
+    },
+    {
+      "id": "scale:commons/10.1021-acs.chemrev.6c00095/claim/second-sphere-hydride/reported-in/10.1021-acs.chemrev.6c00095",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 15, Section 3.3"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.1021-acs.chemrev.6c00095/claim/second-sphere-hydride",
+      "target": "scale:commons/source/10.1021-acs.chemrev.6c00095"
+    },
+    {
+      "id": "scale:commons/10.1021-acs.chemrev.6c00095/claim/shift-to-det/reported-in/10.1021-acs.chemrev.6c00095",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 35, Section 7.3"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.1021-acs.chemrev.6c00095/claim/shift-to-det",
+      "target": "scale:commons/source/10.1021-acs.chemrev.6c00095"
+    },
+    {
+      "id": "scale:commons/10.1021-acs.chemrev.6c00095/computation/pourbaix-co2-formate/of-reaction",
+      "type": "OF_REACTION",
+      "props": {
+        "evidence": [
+          {
+            "kind": "figure",
+            "locator": "p. 2, Figure 1 caption",
+            "quote": "were calculated using the Nernst equation (eq 2) using the following parameters: pKred1 = 3.75, pKox1 = 6.39, pKox2 = 10.32, and formal potential (E°) of −0.075 V",
+            "source": "scale:commons/source/10.1021-acs.chemrev.6c00095"
+          }
+        ],
+        "origin": "reported"
+      },
+      "source": "scale:commons/10.1021-acs.chemrev.6c00095/computation/pourbaix-co2-formate",
+      "target": "scale:commons/10.1021-acs.chemrev.6c00095/reaction/co2-formate"
+    },
+    {
+      "id": "scale:commons/10.1021-acs.chemrev.6c00095/computation/pourbaix-co2-formate/reported-in/10.1021-acs.chemrev.6c00095",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 2, Figure 1 caption"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.1021-acs.chemrev.6c00095/computation/pourbaix-co2-formate",
+      "target": "scale:commons/source/10.1021-acs.chemrev.6c00095"
+    },
+    {
+      "id": "scale:commons/10.1021-acs.chemrev.6c00095/reaction/co2-formate/participant/co2",
+      "type": "HAS_PARTICIPANT",
+      "props": {
+        "coefficient": 1,
+        "evidence": [
+          {
+            "kind": "text",
+            "locator": "p. 2, eq 1",
+            "quote": "catalyze the reversible interconversion between CO2, protons (H+), electrons (e−), and formate (HCOO−) at neutral pH",
+            "source": "scale:commons/source/10.1021-acs.chemrev.6c00095"
+          }
+        ],
+        "origin": "reported",
+        "role": "reactant"
+      },
+      "source": "scale:commons/10.1021-acs.chemrev.6c00095/reaction/co2-formate",
+      "target": "scale:commons/10.1021-acs.chemrev.6c00095/species/co2"
+    },
+    {
+      "id": "scale:commons/10.1021-acs.chemrev.6c00095/reaction/co2-formate/participant/formate",
+      "type": "HAS_PARTICIPANT",
+      "props": {
+        "coefficient": 1,
+        "evidence": [
+          {
+            "kind": "text",
+            "locator": "p. 2, eq 1",
+            "quote": "catalyze the reversible interconversion between CO2, protons (H+), electrons (e−), and formate (HCOO−) at neutral pH",
+            "source": "scale:commons/source/10.1021-acs.chemrev.6c00095"
+          }
+        ],
+        "origin": "reported",
+        "role": "product"
+      },
+      "source": "scale:commons/10.1021-acs.chemrev.6c00095/reaction/co2-formate",
+      "target": "scale:commons/10.1021-acs.chemrev.6c00095/species/formate"
+    },
+    {
+      "id": "scale:commons/10.1021-acs.chemrev.6c00095/reaction/co2-formate/participant/proton",
+      "type": "HAS_PARTICIPANT",
+      "props": {
+        "coefficient": 1,
+        "evidence": [
+          {
+            "kind": "text",
+            "locator": "p. 2, eq 1",
+            "quote": "catalyze the reversible interconversion between CO2, protons (H+), electrons (e−), and formate (HCOO−) at neutral pH",
+            "source": "scale:commons/source/10.1021-acs.chemrev.6c00095"
+          }
+        ],
+        "origin": "reported",
+        "role": "reactant"
+      },
+      "source": "scale:commons/10.1021-acs.chemrev.6c00095/reaction/co2-formate",
+      "target": "scale:commons/10.1021-acs.chemrev.6c00095/species/proton"
+    },
+    {
+      "id": "scale:commons/10.1021-acs.chemrev.6c00095/reaction/co2-formate/reported-in/10.1021-acs.chemrev.6c00095",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 2, eq 1"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.1021-acs.chemrev.6c00095/reaction/co2-formate",
+      "target": "scale:commons/source/10.1021-acs.chemrev.6c00095"
+    },
+    {
+      "id": "scale:commons/10.1021-acs.chemrev.6c00095/species/co2/reported-in/10.1021-acs.chemrev.6c00095",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 2, eq 1"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.1021-acs.chemrev.6c00095/species/co2",
+      "target": "scale:commons/source/10.1021-acs.chemrev.6c00095"
+    },
+    {
+      "id": "scale:commons/10.1021-acs.chemrev.6c00095/species/formate/reported-in/10.1021-acs.chemrev.6c00095",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 2, eq 1"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.1021-acs.chemrev.6c00095/species/formate",
+      "target": "scale:commons/source/10.1021-acs.chemrev.6c00095"
+    },
+    {
+      "id": "scale:commons/10.1021-acs.chemrev.6c00095/species/proton/reported-in/10.1021-acs.chemrev.6c00095",
+      "type": "REPORTED_IN",
+      "props": {
+        "locators": [
+          "p. 2, eq 1"
+        ],
+        "origin": "curated"
+      },
+      "source": "scale:commons/10.1021-acs.chemrev.6c00095/species/proton",
+      "target": "scale:commons/source/10.1021-acs.chemrev.6c00095"
+    }
+  ],
+  "schema_version": "0.8.2",
+  "source": "scale:commons/source/10.1021-acs.chemrev.6c00095"
+}

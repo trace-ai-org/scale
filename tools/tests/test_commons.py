@@ -56,6 +56,13 @@ def folder(tmp_path):
     (d / "contributors.yaml").unlink(missing_ok=True)
     text = (d / "rights.yaml").read_text(encoding="utf-8")
     (d / "rights.yaml").write_text(text[: text.index("\nsources:") + 1] + "sources: {}\n", encoding="utf-8")
+    # the shared records the sources brought go with them: only the steward and the project the header names stay
+    st = load_doc(d / "parts" / "header.json")["graph"]["stewardship"]
+    own = set(st.get("contributed_by") or []) | {st.get("project")}
+    shared = json.loads((d / "parts" / "shared.json").read_text(encoding="utf-8"))
+    shared["nodes"] = [n for n in shared["nodes"] if n["id"] in own]
+    shared["links"] = [lk for lk in shared["links"] if lk["source"] in own and lk["target"] in own]
+    write_canonical(d / "parts" / "shared.json", shared)
     return d
 
 
