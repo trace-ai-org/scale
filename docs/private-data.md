@@ -26,14 +26,30 @@ by its owner only (mode 0700), with no remote, holding:
 
 | file | what it is |
 |---|---|
-| `scale-data.yaml` | the policy: `repository.readers` (stewardship keys `access`, `project`, `contributed_by`), `repository.remotes` (none), `repository.raw_data` (none), `repository.copyright_cap` (true), `defaults.stewardship` (the stewardship to give each new document, `access: project` by default; no tool applies it: `scale call template` and `scale source start` write `access: public`, so set it in the graph header yourself) and `egress.endpoints` (none). Unknown keys are refused, so a misspelt key never loosens it. |
+| `scale-data.yaml` | the policy: `repository.readers` (stewardship keys `access`, `project`, `contributed_by`), `repository.remotes` (none), `repository.raw_data` (none), `repository.copyright_cap` (true), `defaults.stewardship` (the stewardship of each new document: the readers' access, the project and the contributor, `--contributor` or `<prefix>:org/my-lab`; `scale data new`, `scale add-source`, `scale call template` and `scale source start` write it when they run inside the repository) and `egress.endpoints` (none). Unknown keys are refused, so a misspelt key never loosens it. |
 | `rights.yaml` | the rights of the sources the documents quote, as in this repository ([curation.md](curation.md)) |
 | `.gitignore` | `raw/`, `index/`, `exports/`, `cache/`, `work/` and evidence indexes stay on the computer |
 | `README.md` | the model, for whoever opens the repository |
-| `graphs/` | the scale-catal documents |
+| `graphs/` | the scale-catal documents, starting with `graphs/lab.json`: an empty, valid research_data document stating `defaults.stewardship`, to add sources to (`scale add-source FILE --into graphs/lab.json`, [data.md](data.md#your-own-data-from-any-source)) |
 
 and installs the data guard's hooks (below). Raw data (instrument files, simulation output, spreadsheets) stays in
-`raw/`; a document cites it by a Dataset record (its `uri` and `sha256`), never by copying it. `scale kg update`
+`raw/`; a document cites it by a Dataset record (its `uri` and `sha256`), never by copying it (`scale add-source`
+copies a table from outside the repository into `raw/` and points its Dataset there).
+
+**New documents take the policy's stewardship.** Inside a data repository (the document's folder, or for `scale call
+template` the working directory, else the current one), every tool that writes a new document states
+`defaults.stewardship` in its header and names its project and contributor:
+
+| tool | what it writes |
+|---|---|
+| `scale data new DOC` (`scale_data_new`) | an empty, valid research_data document; `--project`, `--contributor` and `--access` override the defaults, and a document narrower than the repository's readers is refused |
+| `scale add-source FILE --into DOC` | a table's records under DOC's header; a publication's curation folder in `work/sources/` with DOC's stewardship; the rights entries of what it quotes in `rights.yaml` |
+| `scale call template` (`scale_template`) | the template with the defaults' access, project and institutions |
+| `scale source start` | its folder (by default `work/sources/<slug>` when run inside the repository) with the defaults' stewardship; `--contributor` adds a contributor, refused where it would widen an institution audience |
+
+Outside a data repository they write as before: `scale call template` and `scale source start` write `access:
+public`. None of them writes project data into the SCALE framework repository: `scale data new` and `scale
+add-source` refuse a destination inside it. `scale kg update`
 moves the repository's documents to a new schema version when its maintainers decide to.
 
 `--access institution --institution <id>` or `--access consortium` declare other readers. A remote is added only

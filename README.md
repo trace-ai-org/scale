@@ -21,6 +21,7 @@ with its source, its reported unit, a short verbatim quote and its uncertainty, 
 | look at a graph and ask it questions, with nothing to install | [the graph explorer](https://trace-ai-org.github.io/scale/) ([how to use it](#use-the-graph-explorer)) |
 | have my AI agent query SCALE | [`agents/`](agents/README.md): an instruction file and the MCP setup |
 | add my paper | [Contribute your first paper](#contribute-your-first-paper) |
+| turn my own data and papers into a private graph | [Your own data](#your-own-data) |
 | suggest a change or report an error | [Suggest a change](#suggest-a-change) |
 | install the tools, or develop SCALE | [Install](#install) · [Develop](#develop) |
 
@@ -53,6 +54,24 @@ with its source, its reported unit, a short verbatim quote and its uncertainty, 
 
 With the SCALE web service ([`service/`](service/README.md), not yet public), signed-in readers can also curate a
 paper on the page with no API key of their own, and contribute a graph in one click.
+
+## Your own data
+
+Your measurements, calculations and the papers you work from become a graph of your own, kept in a private data
+repository that is never this one ([docs/data.md](docs/data.md#your-own-data-from-any-source)):
+
+```bash
+pip install "scale-catal[pdf]"     # [pdf]: reading PDFs
+scale data init ~/data/co2 --project lab:project/co2 --contributor lab:org/ni-group   # private repository, starter graph
+cd ~/data/co2
+scale add-source ~/Downloads/fe-runs.xlsx --into graphs/lab.json     # a table: imported, or questions back
+scale add-source ~/papers/smith2025.pdf --into graphs/lab.json       # a paper (or a DOI): a curation folder to fill
+scale graph validate graphs/lab.json && scale data verify graphs/lab.json
+git add -A && git commit -m "first data"                             # the durable copy; the hooks check it
+```
+
+Open `graphs/lab.json` in the [graph explorer](#use-the-graph-explorer) (*Open a graph or bundle*) to look at it, or
+ask an agent "turn this file into a graph": the add-source skill does the same and asks you only what is uncertain.
 
 ## Contribute your first paper
 
